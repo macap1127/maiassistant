@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCoWsrT-b3BQdoFYhj8d2DnULAHgo4qCFo",
+  apiKey: "AIzaSyCoWsrT-b3BQdoFYhjBd2DnULAHgo4qCFo",
   authDomain: "my-family-assistant-now.firebaseapp.com",
   projectId: "my-family-assistant-now",
   storageBucket: "my-family-assistant-now.firebasestorage.app",
