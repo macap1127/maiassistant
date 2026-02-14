@@ -5,7 +5,15 @@ import maiLogo from "@/assets/mai-logo.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { data } = useFamilyData();
+  const { data, loading } = useFamilyData();
+
+  if (loading) {
+    return (
+      <div className="page-container flex items-center justify-center min-h-[60vh]">
+        <p className="text-sm text-muted-foreground animate-pulse">Loading family data…</p>
+      </div>
+    );
+  }
 
   const pendingGroceries = data.groceryList.filter((g) => !g.completed).length;
   const pendingTasks = data.tasks.filter((t) => !t.completed).length;

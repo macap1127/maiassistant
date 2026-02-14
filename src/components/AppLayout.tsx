@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, Settings } from "lucide-react";
+import { Home, ShoppingCart, CheckSquare, CalendarDays, Users } from "lucide-react";
+import { getSavedPhone } from "@/lib/store";
+import ConnectPhone from "@/pages/ConnectPhone";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
@@ -12,6 +15,11 @@ const navItems = [
 const AppLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [connected, setConnected] = useState(!!getSavedPhone());
+
+  if (!connected) {
+    return <ConnectPhone onConnected={() => setConnected(true)} />;
+  }
 
   return (
     <div className="min-h-screen bg-background">
