@@ -41,6 +41,7 @@ export interface CalendarEvent {
   location?: string;
   notes?: string;
   addedBy: string;
+  source?: string; // e.g. "Jake's School", "Soccer League"
 }
 
 export interface FamilyData {
@@ -98,6 +99,7 @@ function docToFamilyData(raw: Record<string, any>): FamilyData {
       location: e.location || undefined,
       notes: e.notes || undefined,
       addedBy: e.addedBy || "",
+      source: e.source || undefined,
     })),
   };
 }
@@ -137,6 +139,7 @@ function familyDataToDoc(data: FamilyData): Record<string, any> {
       location: e.location || "",
       notes: e.notes || "",
       addedBy: e.addedBy,
+      source: e.source || "",
     })),
   };
 }

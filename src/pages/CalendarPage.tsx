@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { Plus, MapPin, Clock, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, MapPin, Clock, Trash2, ChevronLeft, ChevronRight, Upload, Tag, FileUp, X } from "lucide-react";
 import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
+import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
+import { toast } from "sonner";
 import {
   format,
   startOfMonth,
@@ -13,17 +15,35 @@ import {
   startOfWeek,
   endOfWeek,
   isToday,
-  parseISO,
 } from "date-fns";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+// Color palette for source tags
+const SOURCE_COLORS = [
+  "bg-blue-500/15 text-blue-700 border-blue-500/20",
+  "bg-purple-500/15 text-purple-700 border-purple-500/20",
+  "bg-amber-500/15 text-amber-700 border-amber-500/20",
+  "bg-emerald-500/15 text-emerald-700 border-emerald-500/20",
+  "bg-rose-500/15 text-rose-700 border-rose-500/20",
+  "bg-cyan-500/15 text-cyan-700 border-cyan-500/20",
+];
+
+function getSourceColor(source: string, allSources: string[]) {
+  const idx = allSources.indexOf(source);
+  return SOURCE_COLORS[idx % SOURCE_COLORS.length];
+}
 
 const CalendarPage = () => {
   const { data, update } = useFamilyData();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: "", time: "", location: "", notes: "" });
+  const [uploadSource, setUploadSource] = useState("");
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -33,8 +53,10 @@ const CalendarPage = () => {
 
   const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
   const eventsForDate = data.events.filter((e) => e.date === selectedDateStr);
-
   const datesWithEvents = new Set(data.events.map((e) => e.date));
+
+  // All unique sources for color mapping
+  const allSources = [...new Set(data.events.map((e) => e.source).filter(Boolean))] as string[];
 
   const addEvent = () => {
     const title = newEvent.title.trim();
@@ -60,6 +82,47 @@ const CalendarPage = () => {
 
   const removeEvent = (id: string) =>
     update((d) => ({ ...d, events: d.events.filter((e) => e.id !== id) }));
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const source = uploadSource.trim();
+    if (!source) {
+      toast.error("Please enter a source label first (e.g. \"Jake's School\")");
+      return;
+    }
+
+    if (!file.name.toLowerCase().endsWith(".ics")) {
+      toast.error("Please upload an .ics calendar file");
+      return;
+    }
+
+    setImporting(true);
+    try {
+      const text = await readFileAsText(file);
+      const parsed = parseIcsFile(text, source);
+
+      if (parsed.length === 0) {
+        toast.error("No events found in the file");
+        return;
+      }
+
+      update((d) => ({
+        ...d,
+        events: [...d.events, ...parsed],
+      }));
+
+      toast.success(`Imported ${parsed.length} event${parsed.length > 1 ? "s" : ""} from "${source}"`);
+      setShowUpload(false);
+      setUploadSource("");
+    } catch {
+      toast.error("Failed to parse the calendar file");
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <div className="page-container">
@@ -127,19 +190,77 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      {/* Selected date events */}
+      {/* Action buttons */}
       <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-serif font-semibold">
             {isToday(selectedDate) ? "Today" : format(selectedDate, "MMM d, yyyy")}
           </h3>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setShowUpload(!showUpload); setShowForm(false); }}
+              className="w-8 h-8 rounded-full bg-secondary text-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
+              title="Import calendar"
+            >
+              <Upload className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => { setShowForm(!showForm); setShowUpload(false); }}
+              className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
         </div>
+
+        {/* Import calendar form */}
+        {showUpload && (
+          <div className="bg-card rounded-2xl border border-border p-4 mb-3 space-y-3 animate-slide-up">
+            <div className="flex items-center gap-2 mb-1">
+              <FileUp className="w-4 h-4 text-primary" />
+              <p className="text-sm font-medium">Import Calendar File</p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Upload an .ics file from your kid's school, sports league, or any calendar source.
+            </p>
+            <div className="relative">
+              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                value={uploadSource}
+                onChange={(e) => setUploadSource(e.target.value)}
+                placeholder="Source label (e.g. Jake's School)"
+                className="w-full bg-background border border-border rounded-xl pl-9 pr-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".ics"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => {
+                if (!uploadSource.trim()) {
+                  toast.error("Enter a source label first");
+                  return;
+                }
+                fileInputRef.current?.click();
+              }}
+              disabled={importing}
+              className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <Upload className="w-4 h-4" />
+              {importing ? "Importing…" : "Choose .ics File"}
+            </button>
+            <button
+              onClick={() => setShowUpload(false)}
+              className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
 
         {/* Add event form */}
         {showForm && (
@@ -179,8 +300,22 @@ const CalendarPage = () => {
           </div>
         )}
 
+        {/* Source filter chips */}
+        {allSources.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {allSources.map((src) => (
+              <span
+                key={src}
+                className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${getSourceColor(src, allSources)}`}
+              >
+                {src}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Event list */}
-        {eventsForDate.length === 0 && !showForm && (
+        {eventsForDate.length === 0 && !showForm && !showUpload && (
           <p className="text-sm text-muted-foreground text-center py-8">No events for this day</p>
         )}
         <div className="space-y-2">
@@ -193,7 +328,16 @@ const CalendarPage = () => {
               >
                 <div className="w-1 self-stretch rounded-full bg-primary shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{event.title}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium">{event.title}</p>
+                    {event.source && (
+                      <span
+                        className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full border shrink-0 ${getSourceColor(event.source, allSources)}`}
+                      >
+                        {event.source}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
                     {event.time && (
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
@@ -226,10 +370,10 @@ const CalendarPage = () => {
       {/* Sync info */}
       <div className="mt-6 bg-secondary/50 rounded-2xl p-4 animate-slide-up" style={{ animationDelay: "200ms" }}>
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-          Calendar Sync
+          Calendar Import
         </p>
         <p className="text-sm text-muted-foreground">
-          Connect your Google, Apple, or Outlook calendar to sync events automatically. Coming soon!
+          Upload .ics files from schools, sports leagues, or any calendar app. Events are tagged by source so you always know where they came from.
         </p>
       </div>
     </div>
