@@ -67,7 +67,7 @@ const Dashboard = () => {
             <Phone className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <p className="font-medium text-sm">Mai Voice Assistant</p>
+            <p className="font-medium text-sm">Mai Assistant</p>
             <p className="text-xs text-muted-foreground">Active · Ready to take calls</p>
           </div>
         </div>
