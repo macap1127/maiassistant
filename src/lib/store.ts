@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { db } from "./firebase";
+import { useAuth } from "./auth";
 import {
   doc,
   onSnapshot,
@@ -50,7 +51,7 @@ export interface FamilyData {
   events: CalendarEvent[];
 }
 
-const PHONE_KEY = "mai-family-phone";
+
 
 const defaultData: FamilyData = {
   familyName: "My Family",
@@ -60,13 +61,6 @@ const defaultData: FamilyData = {
   events: [],
 };
 
-/** Get / set the phone number used to identify this family in Firestore */
-export function getSavedPhone(): string | null {
-  return localStorage.getItem(PHONE_KEY);
-}
-export function savePhone(phone: string) {
-  localStorage.setItem(PHONE_KEY, phone);
-}
 
 /**
  * Map a Firestore family document to our app's FamilyData shape.
@@ -149,10 +143,11 @@ function familyDataToDoc(data: FamilyData): Record<string, any> {
 
 /**
  * Real-time Firestore-backed family data hook.
- * Uses the phone number stored in localStorage to identify the family document.
+ * Uses the authenticated user's phone number to identify the family document.
  */
-export function useFamilyData(phoneOverride?: string) {
-  const phone = phoneOverride || getSavedPhone();
+export function useFamilyData() {
+  const { user } = useAuth();
+  const phone = user?.phoneNumber || null;
   const [data, setData] = useState<FamilyData>(defaultData);
   const [loading, setLoading] = useState(true);
   const skipNextSnapshot = useRef(false);
