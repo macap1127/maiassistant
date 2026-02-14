@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Home, ShoppingCart, CheckSquare, CalendarDays, Users } from "lucide-react";
+import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import AuthPage from "@/pages/AuthPage";
 
@@ -14,7 +14,7 @@ const navItems = [
 const AppLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   if (loading) {
     return (
@@ -30,6 +30,15 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <div className="fixed top-0 right-0 z-50 p-3">
+        <button
+          onClick={logout}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card border border-border rounded-lg px-3 py-1.5"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          Sign out
+        </button>
+      </div>
       <Outlet />
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border">
         <div className="max-w-lg mx-auto flex items-center justify-around h-[var(--nav-height)] px-2">
