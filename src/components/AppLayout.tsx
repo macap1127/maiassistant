@@ -1,12 +1,12 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Home, ShoppingCart, CheckSquare, Users, Settings } from "lucide-react";
+import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, Settings } from "lucide-react";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
   { path: "/grocery", icon: ShoppingCart, label: "Grocery" },
   { path: "/tasks", icon: CheckSquare, label: "Tasks" },
+  { path: "/calendar", icon: CalendarDays, label: "Calendar" },
   { path: "/family", icon: Users, label: "Family" },
-  { path: "/settings", icon: Settings, label: "Settings" },
 ];
 
 const AppLayout = () => {
