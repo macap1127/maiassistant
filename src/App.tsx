@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import GroceryList from "./pages/GroceryList";
 import Tasks from "./pages/Tasks";
 import Family from "./pages/Family";
+import CalendarPage from "./pages/CalendarPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/grocery" element={<GroceryList />} />
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/family" element={<Family />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>

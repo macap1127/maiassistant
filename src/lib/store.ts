@@ -24,11 +24,22 @@ export interface Task {
   completed: boolean;
 }
 
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  date: string; // ISO date string YYYY-MM-DD
+  time?: string; // HH:mm
+  location?: string;
+  notes?: string;
+  addedBy: string;
+}
+
 export interface FamilyData {
   familyName: string;
   members: FamilyMember[];
   groceryList: GroceryItem[];
   tasks: Task[];
+  events: CalendarEvent[];
 }
 
 const STORAGE_KEY = "mai-family-data";
@@ -49,6 +60,10 @@ const defaultData: FamilyData = {
     { id: "t1", title: "Pick up Jake at 3pm", assignedTo: "Dad", dueDate: "Today", completed: false },
     { id: "t2", title: "Dentist appointment", assignedTo: "Mom", dueDate: "Tomorrow", completed: false },
     { id: "t3", title: "Homework review", assignedTo: "Mom", dueDate: "Today", completed: true },
+  ],
+  events: [
+    { id: "e1", title: "Soccer Practice", date: new Date().toISOString().slice(0, 10), time: "16:00", location: "City Park", addedBy: "Mom" },
+    { id: "e2", title: "Family Dinner", date: new Date().toISOString().slice(0, 10), time: "19:00", location: "Home", addedBy: "Dad" },
   ],
 };
 
