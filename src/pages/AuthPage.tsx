@@ -15,6 +15,7 @@ declare global {
 }
 
 const AuthPage = () => {
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -122,11 +123,17 @@ const AuthPage = () => {
       <div className="w-full max-w-sm text-center animate-fade-in">
         <img src={maiLogo} alt="Mai Assistant" className="w-16 h-16 rounded-2xl shadow-sm mx-auto mb-6" />
         <h1 className="text-2xl font-serif font-semibold mb-2">
-          {step === "phone" ? "Welcome to Mai Assistant" : "Enter Verification Code"}
+          {step === "phone"
+            ? mode === "signin"
+              ? "Welcome Back"
+              : "Create Your Account"
+            : "Enter Verification Code"}
         </h1>
         <p className="text-sm text-muted-foreground mb-8">
           {step === "phone"
-            ? "Sign in with your phone number to get started."
+            ? mode === "signin"
+              ? "Sign in with your phone number."
+              : "Enter your phone number to create a new account."
             : `We sent a 6-digit code to ${phone}`}
         </p>
 
@@ -156,11 +163,34 @@ const AuthPage = () => {
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  Send Code
+                  {mode === "signin" ? "Send Code" : "Create Account"}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
+            <p className="text-sm text-muted-foreground">
+              {mode === "signin" ? (
+                <>
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => { setMode("signup"); setError(""); }}
+                    className="text-primary font-medium hover:underline"
+                  >
+                    Create one
+                  </button>
+                </>
+              ) : (
+                <>
+                  Already have an account?{" "}
+                  <button
+                    onClick={() => { setMode("signin"); setError(""); }}
+                    className="text-primary font-medium hover:underline"
+                  >
+                    Sign in
+                  </button>
+                </>
+              )}
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
