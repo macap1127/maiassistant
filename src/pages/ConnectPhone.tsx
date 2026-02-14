@@ -25,9 +25,9 @@ const ConnectPhone = ({ onConnected }: Props) => {
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-sm text-center animate-fade-in">
         <img src={maiLogo} alt="Mai" className="w-16 h-16 rounded-2xl shadow-sm mx-auto mb-6" />
-        <h1 className="text-2xl font-serif font-semibold mb-2">Welcome to Mai</h1>
+        <h1 className="text-2xl font-serif font-semibold mb-2">Welcome to Mai Assistant</h1>
         <p className="text-sm text-muted-foreground mb-8">
-          Enter your family phone number to connect with your assistant.
+          Enter your family phone number to connect with your Mai Assistant.
         </p>
 
         <div className="space-y-4">
@@ -55,7 +55,7 @@ const ConnectPhone = ({ onConnected }: Props) => {
         </div>
 
         <p className="text-xs text-muted-foreground mt-6">
-          This is the phone number linked to your Mai voice assistant.
+          This is the phone number linked to your Mai Assistant.
         </p>
       </div>
     </div>
