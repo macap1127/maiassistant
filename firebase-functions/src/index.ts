@@ -25,8 +25,9 @@ interface VapiToolCallPayload {
   };
 }
 
-interface FamilyDoc {
+interface HouseholdDoc {
   name?: string;
+  primaryPhone?: string;
   familyMembers?: any[];
   groceryList?: any[];
   tasks?: any[];
@@ -40,34 +41,39 @@ function genId(): string {
 }
 
 /**
- * Normalize phone to E.164 (+1XXXXXXXXXX).
+ * Normalize phone to digits-only (e.g. "16462352143").
  */
 function normalizePhone(raw: string): string {
   const digits = raw.replace(/\D/g, "");
-  if (digits.length === 10) return `+1${digits}`;
-  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
-  return raw; // already E.164 or international
+  if (digits.length === 10) return `1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return digits;
+  return digits;
 }
 
 /**
- * Look up the family doc for a caller's phone number.
+ * Look up the household doc for a caller's phone number.
+ * Queries the `households` collection where `primaryPhone` matches.
  */
-async function getFamilyDoc(phone: string): Promise<{
+async function getHouseholdDoc(phone: string): Promise<{
   ref: admin.firestore.DocumentReference;
-  data: FamilyDoc;
+  data: HouseholdDoc;
 } | null> {
   const normalized = normalizePhone(phone);
-  const ref = db.collection("families").doc(normalized);
-  const snap = await ref.get();
-  if (!snap.exists) return null;
-  return { ref, data: snap.data() as FamilyDoc };
+  const snap = await db
+    .collection("households")
+    .where("primaryPhone", "==", normalized)
+    .limit(1)
+    .get();
+  if (snap.empty) return null;
+  const doc = snap.docs[0];
+  return { ref: doc.ref, data: doc.data() as HouseholdDoc };
 }
 
 // ─── Tool Handlers ───────────────────────────────────────────────────
 
 async function addGroceryItem(phone: string, args: { item: string; quantity?: string }) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found for this phone number." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found for this phone number." };
 
   const newItem = {
     id: genId(),
@@ -77,34 +83,34 @@ async function addGroceryItem(phone: string, args: { item: string; quantity?: st
     completed: false,
   };
 
-  const list = family.data.groceryList || [];
+  const list = household.data.groceryList || [];
   list.push(newItem);
-  await family.ref.update({ groceryList: list });
+  await household.ref.update({ groceryList: list });
 
   return { success: true, message: `Added "${args.item}" to the grocery list.` };
 }
 
 async function removeGroceryItem(phone: string, args: { item: string }) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found." };
 
-  const list = family.data.groceryList || [];
+  const list = household.data.groceryList || [];
   const idx = list.findIndex(
     (g: any) => g.name.toLowerCase() === args.item.toLowerCase()
   );
   if (idx === -1) return { success: false, message: `"${args.item}" is not on the grocery list.` };
 
   list.splice(idx, 1);
-  await family.ref.update({ groceryList: list });
+  await household.ref.update({ groceryList: list });
 
   return { success: true, message: `Removed "${args.item}" from the grocery list.` };
 }
 
 async function getGroceryList(phone: string) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found." };
 
-  const pending = (family.data.groceryList || []).filter((g: any) => !g.completed);
+  const pending = (household.data.groceryList || []).filter((g: any) => !g.completed);
   if (pending.length === 0) return { success: true, message: "Your grocery list is empty." };
 
   const items = pending.map((g: any) => g.quantity ? `${g.name} (${g.quantity})` : g.name);
@@ -122,13 +128,13 @@ async function addCalendarEvent(phone: string, args: {
   notes?: string;
   source?: string;
 }) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found." };
 
   const newEvent = {
     id: genId(),
     title: args.title,
-    date: args.date, // YYYY-MM-DD
+    date: args.date,
     time: args.time || "",
     location: args.location || "",
     notes: args.notes || "",
@@ -136,23 +142,22 @@ async function addCalendarEvent(phone: string, args: {
     source: args.source || "",
   };
 
-  const appointments = family.data.appointments || [];
+  const appointments = household.data.appointments || [];
   appointments.push(newEvent);
-  await family.ref.update({ appointments });
+  await household.ref.update({ appointments });
 
   return { success: true, message: `Added "${args.title}" on ${args.date} to the calendar.` };
 }
 
 async function getCalendarEvents(phone: string, args: { date?: string }) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found." };
 
-  let events = family.data.appointments || [];
+  let events = household.data.appointments || [];
 
   if (args.date) {
     events = events.filter((e: any) => e.date === args.date);
   } else {
-    // Default to today
     const today = new Date().toISOString().split("T")[0];
     events = events.filter((e: any) => e.date === today);
   }
@@ -179,8 +184,8 @@ async function addTask(phone: string, args: {
   assignedTo?: string;
   dueDate?: string;
 }) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found." };
 
   const newTask = {
     id: genId(),
@@ -190,34 +195,34 @@ async function addTask(phone: string, args: {
     completed: false,
   };
 
-  const tasks = family.data.tasks || [];
+  const tasks = household.data.tasks || [];
   tasks.push(newTask);
-  await family.ref.update({ tasks });
+  await household.ref.update({ tasks });
 
   return { success: true, message: `Added task "${args.title}".` };
 }
 
 async function completeTask(phone: string, args: { title: string }) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found." };
 
-  const tasks = family.data.tasks || [];
+  const tasks = household.data.tasks || [];
   const task = tasks.find(
     (t: any) => t.title.toLowerCase().includes(args.title.toLowerCase()) && !t.completed
   );
   if (!task) return { success: false, message: `No pending task matching "${args.title}".` };
 
   task.completed = true;
-  await family.ref.update({ tasks });
+  await household.ref.update({ tasks });
 
   return { success: true, message: `Marked "${task.title}" as complete.` };
 }
 
 async function getTasks(phone: string) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found." };
 
-  const pending = (family.data.tasks || []).filter((t: any) => !t.completed);
+  const pending = (household.data.tasks || []).filter((t: any) => !t.completed);
   if (pending.length === 0) return { success: true, message: "No pending tasks." };
 
   const descriptions = pending.map((t: any) => {
@@ -233,16 +238,16 @@ async function getTasks(phone: string) {
 }
 
 async function getFamilyInfo(phone: string) {
-  const family = await getFamilyDoc(phone);
-  if (!family) return { success: false, message: "Family not found." };
+  const household = await getHouseholdDoc(phone);
+  if (!household) return { success: false, message: "Household not found." };
 
-  const members = family.data.familyMembers || [];
+  const members = household.data.familyMembers || [];
   if (members.length === 0) return { success: true, message: "No family members registered yet." };
 
   const descriptions = members.map((m: any) => `${m.name} (${m.role})`);
   return {
     success: true,
-    message: `Your family "${family.data.name}" has ${members.length} member${members.length > 1 ? "s" : ""}: ${descriptions.join(", ")}.`,
+    message: `Your household "${household.data.name}" has ${members.length} member${members.length > 1 ? "s" : ""}: ${descriptions.join(", ")}.`,
   };
 }
 
@@ -261,7 +266,6 @@ const toolHandlers: Record<string, (phone: string, args: any) => Promise<any>> =
 };
 
 export const vapiWebhook = functions.https.onRequest(async (req, res) => {
-  // CORS
   res.set("Access-Control-Allow-Origin", "*");
   res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.set("Access-Control-Allow-Headers", "Content-Type");
@@ -279,16 +283,13 @@ export const vapiWebhook = functions.https.onRequest(async (req, res) => {
   try {
     const payload = req.body as VapiToolCallPayload;
 
-    // Extract caller phone number
     const callerPhone = payload.message?.call?.customer?.number;
     if (!callerPhone) {
       res.status(400).json({ error: "No caller phone number found" });
       return;
     }
 
-    // Vapi sends tool-calls messages
     if (payload.message?.type !== "tool-calls") {
-      // For other message types (status-update, etc.), just acknowledge
       res.status(200).json({});
       return;
     }

@@ -5,8 +5,10 @@ import {
   doc,
   onSnapshot,
   setDoc,
-  updateDoc,
-  getDoc,
+  query,
+  collection,
+  where,
+  getDocs,
 } from "firebase/firestore";
 
 export interface FamilyMember {
@@ -145,24 +147,58 @@ function familyDataToDoc(data: FamilyData): Record<string, any> {
 }
 
 /**
+ * Normalize phone to digits-only for comparison.
+ */
+function normalizePhone(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("1")) return digits;
+  if (digits.length === 10) return "1" + digits;
+  return digits;
+}
+
+/**
  * Real-time Firestore-backed family data hook.
- * Uses the authenticated user's phone number to identify the family document.
+ * Looks up the household document by querying primaryPhone field.
  */
 export function useFamilyData() {
   const { user } = useAuth();
   const phone = user?.phoneNumber || null;
   const [data, setData] = useState<FamilyData>(defaultData);
   const [loading, setLoading] = useState(true);
+  const [householdId, setHouseholdId] = useState<string | null>(null);
   const skipNextSnapshot = useRef(false);
 
-  // Real-time listener
+  // Step 1: Find the household doc by phone number
   useEffect(() => {
     if (!phone) {
       setLoading(false);
       return;
     }
 
-    const docRef = doc(db, "families", phone);
+    const normalized = normalizePhone(phone);
+
+    const findHousehold = async () => {
+      const q = query(
+        collection(db, "households"),
+        where("primaryPhone", "==", normalized)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        setHouseholdId(snap.docs[0].id);
+      } else {
+        console.warn("No household found for phone:", normalized);
+        setLoading(false);
+      }
+    };
+
+    findHousehold();
+  }, [phone]);
+
+  // Step 2: Real-time listener on the found household doc
+  useEffect(() => {
+    if (!householdId) return;
+
+    const docRef = doc(db, "households", householdId);
     const unsub = onSnapshot(
       docRef,
       (snap) => {
@@ -184,22 +220,19 @@ export function useFamilyData() {
     );
 
     return unsub;
-  }, [phone]);
+  }, [householdId]);
 
-  // Update function — writes to Firestore (real-time listener will update local state)
+  // Update function — writes to Firestore
   const update = useCallback(
     (updater: (d: FamilyData) => FamilyData) => {
-      if (!phone) return;
+      if (!householdId) return;
 
       setData((prev) => {
         const next = updater(prev);
-
-        // Optimistic update — skip the next snapshot to avoid flicker
         skipNextSnapshot.current = true;
 
-        const docRef = doc(db, "families", phone);
+        const docRef = doc(db, "households", householdId);
         const payload = familyDataToDoc(next);
-        // Use setDoc with merge to create or update
         setDoc(docRef, payload, { merge: true }).catch((err) => {
           console.error("Firestore write error:", err);
           skipNextSnapshot.current = false;
@@ -208,10 +241,10 @@ export function useFamilyData() {
         return next;
       });
     },
-    [phone]
+    [householdId]
   );
 
-  return { data, update, loading, connected: !!phone };
+  return { data, update, loading, connected: !!householdId };
 }
 
 let _id = Date.now();
