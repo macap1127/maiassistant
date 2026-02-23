@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
@@ -265,10 +265,7 @@ const toolHandlers: Record<string, (phone: string, args: any) => Promise<any>> =
   getFamilyInfo,
 };
 
-export const vapiWebhook = functions.https.onRequest(async (req, res) => {
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.set("Access-Control-Allow-Headers", "Content-Type");
+export const vapiWebhook = onRequest({ cors: true }, async (req, res) => {
 
   if (req.method === "OPTIONS") {
     res.status(204).send("");
