@@ -2,7 +2,10 @@ import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
-const db = admin.firestore();
+
+function getDb() {
+  return admin.firestore();
+}
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -59,7 +62,7 @@ async function getHouseholdDoc(phone: string): Promise<{
   data: HouseholdDoc;
 } | null> {
   const normalized = normalizePhone(phone);
-  const snap = await db
+  const snap = await getDb()
     .collection("households")
     .where("primaryPhone", "==", normalized)
     .limit(1)
