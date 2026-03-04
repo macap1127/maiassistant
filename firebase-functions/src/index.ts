@@ -1,9 +1,13 @@
 import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 
-admin.initializeApp();
+let initialized = false;
 
 function getDb() {
+  if (!initialized) {
+    admin.initializeApp();
+    initialized = true;
+  }
   return admin.firestore();
 }
 
