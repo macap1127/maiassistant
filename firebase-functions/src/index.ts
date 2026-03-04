@@ -12,12 +12,23 @@ function getDb() {
 interface VapiToolCallPayload {
   message: {
     type: "tool-calls";
-    toolCallList: Array<{
+    toolCallList?: Array<{
       id: string;
       type: "function";
       function: {
         name: string;
         arguments: Record<string, any>;
+      };
+    }>;
+    toolWithToolCallList?: Array<{
+      name: string;
+      toolCall: {
+        id: string;
+        parameters?: Record<string, any>;
+        function?: {
+          name: string;
+          arguments: Record<string, any>;
+        };
       };
     }>;
     call?: {
@@ -296,18 +307,32 @@ export const vapiWebhook = onRequest({ cors: true }, async (req, res) => {
 
     const results = [];
 
-    for (const toolCall of payload.message.toolCallList) {
-      const handler = toolHandlers[toolCall.function.name];
+    // Support both toolWithToolCallList (newer) and toolCallList (legacy)
+    const toolCalls = payload.message.toolWithToolCallList
+      ? payload.message.toolWithToolCallList.map((t: any) => ({
+          id: t.toolCall.id,
+          name: t.toolCall.function?.name || t.name,
+          arguments: t.toolCall.function?.arguments || t.toolCall.parameters || {},
+        }))
+      : (payload.message.toolCallList || []).map((t: any) => ({
+          id: t.id,
+          name: t.function.name,
+          arguments: t.function.arguments,
+        }));
+
+    for (const toolCall of toolCalls) {
+      const handler = toolHandlers[toolCall.name];
 
       let result: string;
       if (handler) {
-        const response = await handler(callerPhone, toolCall.function.arguments);
-        result = response.message;
+        const response = await handler(callerPhone, toolCall.arguments);
+        result = JSON.stringify(response);
       } else {
-        result = `Unknown tool: ${toolCall.function.name}`;
+        result = JSON.stringify({ success: false, message: `Unknown tool: ${toolCall.name}` });
       }
 
       results.push({
+        name: toolCall.name,
         toolCallId: toolCall.id,
         result,
       });
