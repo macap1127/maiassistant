@@ -1,73 +1,55 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Phone, ArrowRight, Loader2 } from "lucide-react";
-import { auth } from "@/lib/auth";
-import {
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  type ConfirmationResult,
-} from "firebase/auth";
+import { supabase } from "@/integrations/supabase/client";
 import maiLogo from "@/assets/mai-logo.png";
 
-declare global {
-  interface Window {
-    recaptchaVerifier?: RecaptchaVerifier;
+/**
+ * Normalize a phone input to E.164. Defaults to US (+1) if no country code.
+ */
+function toE164(raw: string): string | null {
+  const cleaned = raw.trim().replace(/[\s()\-.]/g, "");
+  if (!cleaned) return null;
+  if (cleaned.startsWith("+")) {
+    const digits = cleaned.slice(1);
+    if (!/^\d{8,15}$/.test(digits)) return null;
+    return "+" + digits;
   }
+  const digits = cleaned.replace(/\D/g, "");
+  if (digits.length === 10) return "+1" + digits;
+  if (digits.length === 11 && digits.startsWith("1")) return "+" + digits;
+  return null;
 }
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
+  const [e164, setE164] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [confirmation, setConfirmation] = useState<ConfirmationResult | null>(null);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
-
-  // Set up invisible reCAPTCHA
-  useEffect(() => {
-    if (!window.recaptchaVerifier && recaptchaContainerRef.current) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
-        size: "invisible",
-      });
-    }
-    return () => {
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = undefined;
-      }
-    };
-  }, []);
 
   const sendCode = async () => {
-    const cleaned = phone.trim().replace(/[\s()-]/g, "");
-    if (!cleaned || cleaned.length < 10) {
+    const formatted = toE164(phone);
+    if (!formatted) {
       setError("Enter a valid phone number (e.g. +16465551234)");
       return;
     }
-    const formatted = cleaned.startsWith("+") ? cleaned : `+1${cleaned}`;
 
     setLoading(true);
     setError("");
 
     try {
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current!, {
-          size: "invisible",
-        });
-      }
-      const result = await signInWithPhoneNumber(auth, formatted, window.recaptchaVerifier);
-      setConfirmation(result);
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: formatted,
+      });
+      if (error) throw error;
+      setE164(formatted);
       setStep("otp");
     } catch (err: any) {
       console.error("SMS send error:", err);
       setError(err.message || "Failed to send verification code. Try again.");
-      // Reset reCAPTCHA on error
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = undefined;
-      }
     } finally {
       setLoading(false);
     }
@@ -79,19 +61,55 @@ const AuthPage = () => {
       setError("Enter the full 6-digit code");
       return;
     }
-    if (!confirmation) return;
 
     setLoading(true);
     setError("");
 
     try {
-      await confirmation.confirm(code);
-      // Auth state listener in AuthProvider will handle the rest
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone: e164,
+        token: code,
+        type: "sms",
+      });
+      if (error) throw error;
+      if (!data.user) throw new Error("Verification failed");
+
+      // For new signups, ensure a household exists
+      if (mode === "signup") {
+        await ensureHousehold(data.user.id, e164);
+      } else {
+        // For sign-in, also create household if none exists yet
+        await ensureHousehold(data.user.id, e164);
+      }
+      // AuthProvider listener handles routing
     } catch (err: any) {
       console.error("OTP verify error:", err);
-      setError("Invalid code. Please try again.");
+      setError(err.message || "Invalid code. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const ensureHousehold = async (userId: string, phoneE164: string) => {
+    try {
+      // Check if user already has a household membership
+      const { data: existing } = await supabase
+        .from("household_members")
+        .select("household_id")
+        .eq("user_id", userId)
+        .limit(1);
+
+      if (existing && existing.length > 0) return;
+
+      // Create new household; trigger auto-adds owner as member
+      const { error } = await supabase.from("households").insert({
+        owner_user_id: userId,
+        primary_phone: phoneE164,
+        name: "My Family",
+      });
+      if (error) console.error("Household create error:", error);
+    } catch (err) {
+      console.error("ensureHousehold error:", err);
     }
   };
 
@@ -104,18 +122,14 @@ const AuthPage = () => {
     setOtp(next);
     setError("");
 
-    if (value && index < 5) {
-      otpRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 5) otpRefs.current[index + 1]?.focus();
   };
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       otpRefs.current[index - 1]?.focus();
     }
-    if (e.key === "Enter" && otp.join("").length === 6) {
-      verifyCode();
-    }
+    if (e.key === "Enter" && otp.join("").length === 6) verifyCode();
   };
 
   return (
@@ -134,7 +148,7 @@ const AuthPage = () => {
             ? mode === "signin"
               ? "Sign in with your phone number."
               : "Enter your phone number to create a new account."
-            : `We sent a 6-digit code to ${phone}`}
+            : `We sent a 6-digit code to ${e164}`}
         </p>
 
         {step === "phone" ? (
@@ -144,10 +158,7 @@ const AuthPage = () => {
               <input
                 type="tel"
                 value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value);
-                  setError("");
-                }}
+                onChange={(e) => { setPhone(e.target.value); setError(""); }}
                 onKeyDown={(e) => e.key === "Enter" && sendCode()}
                 placeholder="+1 (646) 555-1234"
                 className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
@@ -215,11 +226,7 @@ const AuthPage = () => {
               disabled={loading}
               className="w-full bg-primary text-primary-foreground rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                "Verify & Sign In"
-              )}
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify & Sign In"}
             </button>
             <button
               onClick={() => {
@@ -237,9 +244,6 @@ const AuthPage = () => {
         <p className="text-xs text-muted-foreground mt-8">
           By signing in, you agree to receive SMS messages for verification.
         </p>
-
-        {/* Invisible reCAPTCHA container */}
-        <div ref={recaptchaContainerRef} />
       </div>
     </div>
   );
