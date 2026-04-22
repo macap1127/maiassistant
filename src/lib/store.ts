@@ -294,13 +294,13 @@ async function syncList<T extends { id: string }>(
       if (isUuid(item.id)) row.id = item.id;
       return row;
     });
-    const { error } = await supabase.from(table).insert(rows);
+    const { error } = await (supabase.from(table) as any).insert(rows);
     if (error) console.error(`insert ${table}`, error);
   }
 
   for (const item of toModify) {
     if (!isUuid(item.id)) continue;
-    const { error } = await supabase.from(table).update(toUpdate(item)).eq("id", item.id);
+    const { error } = await (supabase.from(table) as any).update(toUpdate(item)).eq("id", item.id);
     if (error) console.error(`update ${table}`, error);
   }
 
