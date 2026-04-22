@@ -14,16 +14,254 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          added_by: string
+          created_at: string
+          date: string
+          household_id: string
+          id: string
+          location: string | null
+          notes: string | null
+          source: string | null
+          time: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          added_by?: string
+          created_at?: string
+          date: string
+          household_id: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          source?: string | null
+          time?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          date?: string
+          household_id?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          source?: string | null
+          time?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_members: {
+        Row: {
+          avatar: string | null
+          created_at: string
+          household_id: string
+          id: string
+          name: string
+          phone: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string
+          household_id: string
+          id?: string
+          name: string
+          phone?: string
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string
+          household_id?: string
+          id?: string
+          name?: string
+          phone?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_members_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grocery_items: {
+        Row: {
+          added_by: string
+          completed: boolean
+          created_at: string
+          household_id: string
+          id: string
+          name: string
+          quantity: string
+          updated_at: string
+        }
+        Insert: {
+          added_by?: string
+          completed?: boolean
+          created_at?: string
+          household_id: string
+          id?: string
+          name: string
+          quantity?: string
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string
+          completed?: boolean
+          created_at?: string
+          household_id?: string
+          id?: string
+          name?: string
+          quantity?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grocery_items_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      household_members: {
+        Row: {
+          created_at: string
+          household_id: string
+          id: string
+          role: Database["public"]["Enums"]["household_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          household_id: string
+          id?: string
+          role?: Database["public"]["Enums"]["household_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          household_id?: string
+          id?: string
+          role?: Database["public"]["Enums"]["household_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_members_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      households: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_user_id: string
+          primary_phone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_user_id: string
+          primary_phone: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_user_id?: string
+          primary_phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          assigned_to: string
+          completed: boolean
+          created_at: string
+          due_date: string | null
+          household_id: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string
+          completed?: boolean
+          created_at?: string
+          due_date?: string | null
+          household_id: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string
+          completed?: boolean
+          created_at?: string
+          due_date?: string | null
+          household_id?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_household_member: {
+        Args: { _household_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_household_owner: {
+        Args: { _household_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      household_role: "owner" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +388,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      household_role: ["owner", "member"],
+    },
   },
 } as const
