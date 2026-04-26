@@ -108,6 +108,7 @@ export type Database = {
       grocery_items: {
         Row: {
           added_by: string
+          category: string
           completed: boolean
           created_at: string
           household_id: string
@@ -118,6 +119,7 @@ export type Database = {
         }
         Insert: {
           added_by?: string
+          category?: string
           completed?: boolean
           created_at?: string
           household_id: string
@@ -128,6 +130,7 @@ export type Database = {
         }
         Update: {
           added_by?: string
+          category?: string
           completed?: boolean
           created_at?: string
           household_id?: string

@@ -1,22 +1,89 @@
-import { useState } from "react";
-import { Plus, Check, Trash2 } from "lucide-react";
-import { useFamilyData, genId } from "@/lib/store";
+import { useState, useMemo } from "react";
+import { Plus, Check, Trash2, Sparkles, ChevronDown } from "lucide-react";
+import { useFamilyData, genId, type GroceryItem } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+const CATEGORY_ORDER = [
+  "Produce",
+  "Dairy",
+  "Meat",
+  "Bakery",
+  "Pantry",
+  "Frozen",
+  "Beverages",
+  "Household",
+  "Other",
+] as const;
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  Produce: "🥬",
+  Dairy: "🥛",
+  Meat: "🍗",
+  Bakery: "🥖",
+  Pantry: "🥫",
+  Frozen: "🧊",
+  Beverages: "🧃",
+  Household: "🧺",
+  Other: "🛒",
+};
 
 const GroceryList = () => {
   const { data, update } = useFamilyData();
   const [newItem, setNewItem] = useState("");
+  const [newQty, setNewQty] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [collapsedDone, setCollapsedDone] = useState(true);
 
-  const addItem = () => {
+  const addItem = async () => {
     const name = newItem.trim();
-    if (!name) return;
+    if (!name || adding) return;
+    setAdding(true);
+
+    // Optimistic add with placeholder category
+    const id = genId();
     update((d) => ({
       ...d,
       groceryList: [
         ...d.groceryList,
-        { id: genId(), name, quantity: "", addedBy: "You", completed: false },
+        {
+          id,
+          name,
+          quantity: newQty.trim(),
+          addedBy: "You",
+          completed: false,
+          category: "Other",
+        },
       ],
     }));
     setNewItem("");
+    setNewQty("");
+
+    // Categorize via edge function, then patch the item
+    try {
+      const { data: result, error } = await supabase.functions.invoke(
+        "categorize-grocery",
+        { body: { name } }
+      );
+      if (error) throw error;
+      const category =
+        (result as any)?.category &&
+        CATEGORY_ORDER.includes((result as any).category)
+          ? (result as any).category
+          : "Other";
+
+      update((d) => ({
+        ...d,
+        groceryList: d.groceryList.map((g) =>
+          g.id === id ? { ...g, category } : g
+        ),
+      }));
+    } catch (e: any) {
+      console.error("categorize failed", e);
+      // silent — item still added under "Other"
+    } finally {
+      setAdding(false);
+    }
   };
 
   const toggle = (id: string) =>
@@ -33,57 +100,147 @@ const GroceryList = () => {
       groceryList: d.groceryList.filter((g) => g.id !== id),
     }));
 
+  const clearCompleted = () => {
+    const count = data.groceryList.filter((g) => g.completed).length;
+    if (!count) return;
+    update((d) => ({
+      ...d,
+      groceryList: d.groceryList.filter((g) => !g.completed),
+    }));
+    toast.success(`Cleared ${count} item${count === 1 ? "" : "s"}`);
+  };
+
   const pending = data.groceryList.filter((g) => !g.completed);
   const completed = data.groceryList.filter((g) => g.completed);
 
+  const grouped = useMemo(() => {
+    const map = new Map<string, GroceryItem[]>();
+    for (const cat of CATEGORY_ORDER) map.set(cat, []);
+    for (const item of pending) {
+      const key = CATEGORY_ORDER.includes(item.category as any)
+        ? item.category
+        : "Other";
+      map.get(key)!.push(item);
+    }
+    return CATEGORY_ORDER.filter((c) => (map.get(c)?.length || 0) > 0).map(
+      (c) => ({ category: c, items: map.get(c)! })
+    );
+  }, [pending]);
+
   return (
     <div className="page-container">
-      <h1 className="text-2xl font-serif font-semibold mb-1 animate-fade-in">Grocery List</h1>
+      <div className="flex items-baseline justify-between mb-1 animate-fade-in">
+        <h1 className="text-2xl font-serif font-semibold">Grocery List</h1>
+        {completed.length > 0 && (
+          <button
+            onClick={clearCompleted}
+            className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+          >
+            Clear done
+          </button>
+        )}
+      </div>
       <p className="text-sm text-muted-foreground mb-6 animate-fade-in">
-        {pending.length} items to get
+        {pending.length} {pending.length === 1 ? "item" : "items"} to get
+        {completed.length > 0 && ` · ${completed.length} done`}
       </p>
 
       {/* Add input */}
-      <div className="flex gap-2 mb-6 animate-slide-up">
-        <input
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addItem()}
-          placeholder="Add an item..."
-          className="flex-1 bg-card border border-border rounded-xl px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-        <button
-          onClick={addItem}
-          className="bg-primary text-primary-foreground rounded-xl px-4 flex items-center justify-center hover:opacity-90 transition-opacity"
-        >
-          <Plus className="w-5 h-5" />
-        </button>
+      <div className="bg-card border border-border rounded-2xl p-2 mb-6 animate-slide-up">
+        <div className="flex gap-2">
+          <input
+            value={newItem}
+            onChange={(e) => setNewItem(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addItem()}
+            placeholder="Add an item..."
+            className="flex-1 bg-transparent px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none"
+          />
+          <input
+            value={newQty}
+            onChange={(e) => setNewQty(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addItem()}
+            placeholder="Qty"
+            className="w-16 bg-transparent px-2 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none border-l border-border"
+          />
+          <button
+            onClick={addItem}
+            disabled={adding || !newItem.trim()}
+            className="bg-primary text-primary-foreground rounded-xl px-3 flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="flex items-center gap-1.5 px-3 pt-1 pb-1">
+          <Sparkles className="w-3 h-3 text-primary" />
+          <p className="text-[10px] text-muted-foreground">
+            Auto-sorted into categories with AI
+          </p>
+        </div>
       </div>
 
-      {/* Pending */}
-      <div className="space-y-2 mb-6">
-        {pending.map((item, i) => (
+      {/* Empty state */}
+      {pending.length === 0 && completed.length === 0 && (
+        <div className="text-center py-12 animate-fade-in">
+          <div className="text-5xl mb-3">🛒</div>
+          <p className="text-sm text-muted-foreground">
+            Your list is empty. Add the first item above.
+          </p>
+        </div>
+      )}
+
+      {/* Grouped pending */}
+      <div className="space-y-5 mb-6">
+        {grouped.map(({ category, items }, gi) => (
           <div
-            key={item.id}
-            className="bg-card rounded-xl p-3 border border-border flex items-center gap-3 animate-slide-up"
-            style={{ animationDelay: `${i * 50}ms` }}
+            key={category}
+            className="animate-slide-up"
+            style={{ animationDelay: `${gi * 60}ms` }}
           >
-            <button
-              onClick={() => toggle(item.id)}
-              className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0 transition-colors hover:bg-primary/10"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium">{item.name}</p>
-              {item.quantity && (
-                <p className="text-xs text-muted-foreground">{item.quantity}</p>
-              )}
+            <div className="flex items-center gap-2 mb-2 px-1">
+              <span className="text-base">{CATEGORY_EMOJI[category]}</span>
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {category}
+              </p>
+              <span className="text-xs text-muted-foreground">
+                {items.length}
+              </span>
             </div>
-            <button
-              onClick={() => remove(item.id)}
-              className="text-muted-foreground hover:text-destructive transition-colors"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+            <div className="space-y-2">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-card rounded-xl p-3 border border-border flex items-center gap-3 group"
+                >
+                  <button
+                    onClick={() => toggle(item.id)}
+                    className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0 transition-colors hover:bg-primary/10"
+                    aria-label="Mark complete"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{item.name}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {item.quantity && (
+                        <span className="text-xs text-muted-foreground">
+                          {item.quantity}
+                        </span>
+                      )}
+                      {item.addedBy && (
+                        <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full">
+                          {item.addedBy}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => remove(item.id)}
+                    className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
@@ -91,25 +248,41 @@ const GroceryList = () => {
       {/* Completed */}
       {completed.length > 0 && (
         <div>
-          <p className="text-xs text-muted-foreground font-medium mb-2 uppercase tracking-wider">
+          <button
+            onClick={() => setCollapsedDone((v) => !v)}
+            className="flex items-center gap-1 text-xs text-muted-foreground font-medium mb-2 uppercase tracking-wider hover:text-foreground transition-colors"
+          >
+            <ChevronDown
+              className={`w-3 h-3 transition-transform ${collapsedDone ? "-rotate-90" : ""}`}
+            />
             Completed ({completed.length})
-          </p>
-          <div className="space-y-2">
-            {completed.map((item) => (
-              <div
-                key={item.id}
-                className="bg-card/50 rounded-xl p-3 border border-border flex items-center gap-3 opacity-60"
-              >
-                <button
-                  onClick={() => toggle(item.id)}
-                  className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0"
+          </button>
+          {!collapsedDone && (
+            <div className="space-y-2">
+              {completed.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-card/50 rounded-xl p-3 border border-border flex items-center gap-3 opacity-60"
                 >
-                  <Check className="w-3.5 h-3.5 text-primary-foreground" />
-                </button>
-                <p className="text-sm line-through">{item.name}</p>
-              </div>
-            ))}
-          </div>
+                  <button
+                    onClick={() => toggle(item.id)}
+                    className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0"
+                  >
+                    <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                  </button>
+                  <p className="text-sm line-through flex-1 min-w-0 truncate">
+                    {item.name}
+                  </p>
+                  <button
+                    onClick={() => remove(item.id)}
+                    className="text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
