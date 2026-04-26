@@ -1,1 +1,4 @@
 project_id = "kdrtvdkmggscyrkmxhws"
+
+[functions.categorize-grocery]
+verify_jwt = false
