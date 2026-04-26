@@ -16,6 +16,7 @@ export interface GroceryItem {
   quantity: string;
   addedBy: string;
   completed: boolean;
+  category: string;
 }
 
 export interface Task {
@@ -129,6 +130,7 @@ export function useFamilyData() {
           quantity: g.quantity,
           addedBy: g.added_by,
           completed: g.completed,
+          category: g.category || "Other",
         })),
         tasks: (tasks.data || []).map((t: any) => ({
           id: t.id,
@@ -212,8 +214,15 @@ export function useFamilyData() {
             quantity: g.quantity,
             added_by: g.addedBy,
             completed: g.completed,
+            category: g.category || "Other",
           }),
-          (g) => ({ name: g.name, quantity: g.quantity, added_by: g.addedBy, completed: g.completed }),
+          (g) => ({
+            name: g.name,
+            quantity: g.quantity,
+            added_by: g.addedBy,
+            completed: g.completed,
+            category: g.category || "Other",
+          }),
           "grocery_items"
         );
 
