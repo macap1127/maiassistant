@@ -1,11 +1,11 @@
-import { useConversation } from "@elevenlabs/react";
+import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { useCallback, useState } from "react";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
-export const VoiceAssistant = () => {
+const VoiceAssistantInner = () => {
   const [connecting, setConnecting] = useState(false);
 
   const conversation = useConversation({
@@ -61,3 +61,9 @@ export const VoiceAssistant = () => {
     </button>
   );
 };
+
+export const VoiceAssistant = () => (
+  <ConversationProvider>
+    <VoiceAssistantInner />
+  </ConversationProvider>
+);
