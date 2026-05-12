@@ -14,13 +14,13 @@ Deno.serve(async (req) => {
     if (!agentId) throw new Error("agentId required");
 
     const res = await fetch(
-      `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${agentId}`,
+      `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${agentId}`,
       { headers: { "xi-api-key": apiKey } }
     );
 
     if (!res.ok) {
       const text = await res.text();
-      console.error("ElevenLabs token error:", res.status, text);
+      console.error("ElevenLabs signed URL error:", res.status, text);
       return new Response(JSON.stringify({ error: text }), {
         status: res.status,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     }
 
     const data = await res.json();
-    return new Response(JSON.stringify(data), {
+    return new Response(JSON.stringify({ signedUrl: data.signed_url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
