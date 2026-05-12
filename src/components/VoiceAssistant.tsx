@@ -4,6 +4,7 @@ import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
+const SARAH_VOICE_ID = "EXAVITQu4vr4xnSDxMaL";
 
 const getStartErrorMessage = (err: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
@@ -43,7 +44,11 @@ const VoiceAssistantInner = () => {
         body: { agentId: AGENT_ID },
       });
       if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
-      await conversation.startSession({ signedUrl: data.signedUrl, connectionType: "websocket" });
+      await conversation.startSession({
+        signedUrl: data.signedUrl,
+        connectionType: "websocket",
+        overrides: { tts: { voiceId: SARAH_VOICE_ID } },
+      });
     } catch (err) {
       console.error(err);
       const message = getStartErrorMessage(err);
