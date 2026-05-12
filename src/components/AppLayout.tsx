@@ -44,10 +44,10 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 py-2">
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 py-2 pointer-events-none">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <button className="flex items-center justify-center w-9 h-9 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground transition-colors">
+            <button className="pointer-events-auto flex items-center justify-center w-9 h-9 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground transition-colors">
               <Menu className="w-4.5 h-4.5" />
             </button>
           </SheetTrigger>
