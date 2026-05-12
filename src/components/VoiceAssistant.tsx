@@ -23,7 +23,12 @@ const VoiceAssistantInner = () => {
     setConnecting(true);
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      await conversation.startSession({ agentId: AGENT_ID, connectionType: "websocket" });
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
+        body: { agentId: AGENT_ID },
+      });
+      if (error || !data?.token) throw new Error(error?.message || "Failed to get token");
+      await conversation.startSession({ conversationToken: data.token, connectionType: "webrtc" });
     } catch (err) {
       console.error(err);
       toast({
