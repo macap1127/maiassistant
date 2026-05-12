@@ -1,4 +1,4 @@
-import { useConversation } from "@elevenlabs/react";
+import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { useCallback, useState } from "react";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
