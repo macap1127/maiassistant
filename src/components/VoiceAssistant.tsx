@@ -22,19 +22,18 @@ const VoiceAssistantInner = () => {
   const start = useCallback(async () => {
     setConnecting(true);
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
       const { supabase } = await import("@/integrations/supabase/client");
       const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
         body: { agentId: AGENT_ID },
       });
-      if (error || !data?.token) throw new Error(error?.message || "Failed to get token");
-      await conversation.startSession({ conversationToken: data.token, connectionType: "webrtc" });
+      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
+      await conversation.startSession({ signedUrl: data.signedUrl, connectionType: "websocket" });
     } catch (err) {
       console.error(err);
       toast({
         variant: "destructive",
-        title: "Microphone access required",
-        description: "Please allow microphone access to talk to Mai.",
+        title: "Couldn’t start Mai",
+        description: err instanceof Error ? err.message : "Please allow microphone access and try again.",
       });
     } finally {
       setConnecting(false);
