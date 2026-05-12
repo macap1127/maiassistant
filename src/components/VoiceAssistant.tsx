@@ -23,7 +23,7 @@ const VoiceAssistantInner = () => {
     setConnecting(true);
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      await conversation.startSession({ agentId: AGENT_ID, connectionType: "webrtc" });
+      await conversation.startSession({ agentId: AGENT_ID, connectionType: "websocket" });
     } catch (err) {
       console.error(err);
       toast({
