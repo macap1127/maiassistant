@@ -93,6 +93,7 @@ const AppLayout = () => {
       </div>
 
       <Outlet />
+      <VoiceAssistant />
 
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border">
         <div className="max-w-lg mx-auto flex items-center justify-around h-[var(--nav-height)] px-2">
