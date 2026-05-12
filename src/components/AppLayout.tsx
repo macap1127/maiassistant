@@ -5,6 +5,7 @@ import AuthPage from "@/pages/AuthPage";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import maiLogo from "@/assets/mai-logo.png";
+import { VoiceAssistant } from "@/components/VoiceAssistant";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
