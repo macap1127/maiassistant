@@ -5,6 +5,12 @@ import { toast } from "@/hooks/use-toast";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
+const getStartErrorMessage = (err: unknown) => {
+  if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
+  if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mai.";
+  return err instanceof Error ? err.message : "Please allow microphone access and try again.";
+};
+
 const VoiceAssistantInner = () => {
   const [connecting, setConnecting] = useState(false);
 
@@ -35,7 +41,7 @@ const VoiceAssistantInner = () => {
       toast({
         variant: "destructive",
         title: "Couldn’t start Mai",
-        description: err instanceof Error ? err.message : "Please allow microphone access and try again.",
+        description: getStartErrorMessage(err),
       });
     } finally {
       micStream?.getTracks().forEach((track) => track.stop());
