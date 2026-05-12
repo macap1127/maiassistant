@@ -21,7 +21,9 @@ const VoiceAssistantInner = () => {
 
   const start = useCallback(async () => {
     setConnecting(true);
+    let micStream: MediaStream | null = null;
     try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const { supabase } = await import("@/integrations/supabase/client");
       const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
         body: { agentId: AGENT_ID },
@@ -36,6 +38,7 @@ const VoiceAssistantInner = () => {
         description: err instanceof Error ? err.message : "Please allow microphone access and try again.",
       });
     } finally {
+      micStream?.getTracks().forEach((track) => track.stop());
       setConnecting(false);
     }
   }, [conversation]);
