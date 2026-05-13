@@ -32,6 +32,8 @@ const GroceryList = () => {
   const { data, update } = useFamilyData();
   const [newItem, setNewItem] = useState("");
   const [newQty, setNewQty] = useState("");
+  const [newStore, setNewStore] = useState("");
+  const [storeFilter, setStoreFilter] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [collapsedDone, setCollapsedDone] = useState(true);
 
@@ -40,8 +42,8 @@ const GroceryList = () => {
     if (!name || adding) return;
     setAdding(true);
 
-    // Optimistic add with placeholder category
     const id = genId();
+    const store = newStore.trim() || undefined;
     update((d) => ({
       ...d,
       groceryList: [
@@ -53,13 +55,14 @@ const GroceryList = () => {
           addedBy: "You",
           completed: false,
           category: "Other",
+          store,
         },
       ],
     }));
     setNewItem("");
     setNewQty("");
+    // keep store sticky so the user can add several items for the same store
 
-    // Categorize via edge function, then patch the item
     try {
       const { data: result, error } = await supabase.functions.invoke(
         "categorize-grocery",
@@ -80,7 +83,6 @@ const GroceryList = () => {
       }));
     } catch (e: any) {
       console.error("categorize failed", e);
-      // silent — item still added under "Other"
     } finally {
       setAdding(false);
     }
