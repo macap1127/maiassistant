@@ -305,10 +305,16 @@ const GroceryList = () => {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       {item.quantity && (
                         <span className="text-xs text-muted-foreground">
                           {item.quantity}
+                        </span>
+                      )}
+                      {item.store && (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                          <StoreIcon className="w-2.5 h-2.5" />
+                          {item.store}
                         </span>
                       )}
                       {item.addedBy && (
