@@ -127,6 +127,9 @@ const VoiceAssistantInner = () => {
   const voiceConnectionPromiseRef = useRef<Promise<string> | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
+  const sessionStartedAtRef = useRef<number | null>(null);
+  const lastStartTapAtRef = useRef<number | null>(null);
+  const lastErrorRef = useRef<unknown>(null);
 
   // Resolve current household once user is known
   useEffect(() => {
