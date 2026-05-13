@@ -264,8 +264,10 @@ const VoiceAssistantInner = () => {
           });
           if (error) {
             console.error("[Mai] addTask insert error", error);
+            toast({ variant: "destructive", title: "Couldn't add task", description: error.message });
             return `Failed to add: ${error.message}`;
           }
+          toast({ title: "Task added", description: params.title });
           return `Added task: ${params.title}.`;
         } catch (e: unknown) {
           console.error("[Mai] addTask threw", e);
