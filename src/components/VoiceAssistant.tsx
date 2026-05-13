@@ -375,7 +375,7 @@ const VoiceAssistantInner = () => {
       conversation.startSession({
         conversationToken: token,
         connectionType: "webrtc",
-        useWakeLock: true,
+        useWakeLock: false,
       });
     } catch (err) {
       console.error(err);
