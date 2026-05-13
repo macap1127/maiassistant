@@ -44,6 +44,8 @@ const CalendarPage = () => {
   const [newEvent, setNewEvent] = useState({ title: "", time: "", location: "", notes: "" });
   const [uploadSource, setUploadSource] = useState("");
   const [importing, setImporting] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState({ title: "", time: "", location: "", notes: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
