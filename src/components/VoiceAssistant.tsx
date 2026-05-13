@@ -47,7 +47,6 @@ const VoiceAssistantInner = () => {
       await conversation.startSession({
         signedUrl: data.signedUrl,
         connectionType: "websocket",
-        overrides: { tts: { voiceId: SARAH_VOICE_ID } },
       });
     } catch (err) {
       console.error(err);
