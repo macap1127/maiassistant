@@ -1,6 +1,6 @@
 import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Mic, MicOff, Loader2, MessageSquare, Send, X } from "lucide-react";
+import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -110,8 +110,6 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
   return Array.from(recentAdds).some(([recentKey, addedAt]) => recentKey.startsWith(namePrefix) && now - addedAt <= 20_000);
 };
 
-type TextSessionOptions = Parameters<ReturnType<typeof useConversation>["startSession"]>[0] & { textOnly?: boolean };
-
 type VoiceConnection = { signedUrl: string; createdAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
@@ -120,9 +118,6 @@ const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [textMode, setTextMode] = useState(false);
-  const [textInput, setTextInput] = useState("");
-  const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
   const [voiceReady, setVoiceReady] = useState(false);
   const [preparingVoice, setPreparingVoice] = useState(false);
   const householdIdRef = useRef<string | null>(null);
@@ -130,7 +125,6 @@ const VoiceAssistantInner = () => {
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
   const voiceConnectionPromiseRef = useRef<Promise<string> | null>(null);
-  const connectionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
 
@@ -313,7 +307,6 @@ const VoiceAssistantInner = () => {
         message?.user_transcription_event?.user_transcript;
       const source = message?.source || message?.type;
       if (text && (source === "ai" || source === "agent_response")) {
-        setChatLog((l) => [...l, { from: "mai", text }]);
         awaitingGroceryItemRef.current = /\bgrocery list\b/i.test(text) && /\b(quantity|specific|include|just|what would|which item)\b/i.test(text);
 
         const confirmedItems = extractGroceryItemFromAgentConfirmation(text);
@@ -330,7 +323,6 @@ const VoiceAssistantInner = () => {
             });
         }
       } else if (text && (source === "user" || source === "user_transcript")) {
-        setChatLog((l) => [...l, { from: "you", text }]);
         const spokenItems = extractGroceryItemsFromUserText(text, awaitingGroceryItemRef.current);
         console.log("[Mai] user transcript parsed grocery items", { text, spokenItems });
         if (spokenItems.length > 0) {
@@ -349,20 +341,12 @@ const VoiceAssistantInner = () => {
       }
     },
     onConnect: () => {
-      if (connectionTimeoutRef.current) {
-        clearTimeout(connectionTimeoutRef.current);
-        connectionTimeoutRef.current = null;
-      }
       setConnecting(false);
       wasConnectedRef.current = true;
       setStatusMessage("Listening…");
       toast({ title: "Connected to Mai", description: "Start speaking…" });
     },
     onDisconnect: () => {
-      if (connectionTimeoutRef.current) {
-        clearTimeout(connectionTimeoutRef.current);
-        connectionTimeoutRef.current = null;
-      }
       setConnecting(false);
       setStatusMessage(null);
       if (!userEndedSessionRef.current) void prepareVoiceConnection().catch((error) => console.error("[Mai] voice reconnect prepare failed", error));
@@ -376,10 +360,6 @@ const VoiceAssistantInner = () => {
     },
     onError: (error) => {
       console.error("ElevenLabs error:", error);
-      if (connectionTimeoutRef.current) {
-        clearTimeout(connectionTimeoutRef.current);
-        connectionTimeoutRef.current = null;
-      }
       setConnecting(false);
       const message = getStartErrorMessage(error);
       setStatusMessage(message);
@@ -390,10 +370,6 @@ const VoiceAssistantInner = () => {
   const isConnected = conversation.status === "connected";
 
   const start = useCallback(() => {
-    if (connectionTimeoutRef.current) {
-      clearTimeout(connectionTimeoutRef.current);
-      connectionTimeoutRef.current = null;
-    }
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
@@ -421,14 +397,6 @@ const VoiceAssistantInner = () => {
         connectionType: "websocket",
         useWakeLock: false,
       });
-      connectionTimeoutRef.current = setTimeout(() => {
-        if (conversation.status !== "connected") {
-          void conversation.endSession();
-          connectionTimeoutRef.current = null;
-          setConnecting(false);
-          setStatusMessage("Connection timed out. Tap the microphone to try again.");
-        }
-      }, 10_000);
     } catch (err) {
       console.error(err);
       voiceConnectionRef.current = null;
@@ -441,151 +409,24 @@ const VoiceAssistantInner = () => {
         description: message,
       });
     } finally {
-      if (!connectionTimeoutRef.current) setConnecting(false);
-    }
-  }, [conversation, prepareVoiceConnection]);
-
-  useEffect(() => () => {
-    if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
-  }, []);
-
-  const startText = useCallback(async () => {
-    setConnecting(true);
-    setStatusMessage("Connecting to Mai…");
-    try {
-      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID },
-      });
-      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
-      await conversation.startSession({
-        signedUrl: data.signedUrl,
-        connectionType: "websocket",
-        textOnly: true,
-      } as TextSessionOptions);
-      setStatusMessage("Type a message to Mai");
-    } catch (err) {
-      console.error(err);
-      const message = err instanceof Error ? err.message : "Failed to connect";
-      setStatusMessage(message);
-      toast({ variant: "destructive", title: "Couldn't start Mai", description: message });
-    } finally {
       setConnecting(false);
     }
-  }, [conversation]);
+  }, [conversation, prepareVoiceConnection]);
 
   const stop = useCallback(async () => {
     userEndedSessionRef.current = true;
     await conversation.endSession();
-    setChatLog([]);
   }, [conversation]);
-
-  const sendText = useCallback(async () => {
-    const t = textInput.trim();
-    if (!t) return;
-    setChatLog((l) => [...l, { from: "you", text: t }]);
-    setTextInput("");
-    const textGroceryItems = extractGroceryItemsFromUserText(t, awaitingGroceryItemRef.current);
-    if (textGroceryItems.length > 0) {
-      awaitingGroceryItemRef.current = false;
-      try {
-        const added = await addGroceryItems(textGroceryItems);
-        if (added.length > 0) {
-          setChatLog((l) => [...l, { from: "mai", text: `Added ${added.join(", ")} to your grocery list.` }]);
-          toast({ title: "Added to grocery list", description: added.join(", ") });
-          return;
-        }
-      } catch (e: unknown) {
-        console.error("[Mai] text grocery add failed", e);
-        toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(e) });
-        return;
-      }
-    }
-    if ((conversation.status as string) !== "connected") {
-      await startText();
-      // wait briefly for connection to settle
-      for (let i = 0; i < 50; i++) {
-        if ((conversation.status as string) === "connected") break;
-        await new Promise((r) => setTimeout(r, 100));
-      }
-    }
-    try {
-      conversation.sendUserMessage(t);
-    } catch (e) {
-      console.error("[Mai] sendUserMessage failed", e);
-      toast({ variant: "destructive", title: "Send failed", description: "Try again in a moment." });
-    }
-  }, [textInput, addGroceryItems, startText, conversation]);
 
   return (
     <div className="fixed bottom-[calc(var(--nav-height)+1rem)] right-4 z-40 flex flex-col items-end gap-2">
-      {statusMessage && !textMode && (
+      {statusMessage && (
         <div className="max-w-64 rounded-md border border-border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-lg" role="status">
           {statusMessage}
         </div>
       )}
 
-      {textMode && (
-        <div className="w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover shadow-lg flex flex-col">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-            <div className="text-sm font-medium text-popover-foreground">Type to Mai</div>
-            <button
-              onClick={() => { setTextMode(false); if (isConnected) stop(); }}
-              aria-label="Close text chat"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="max-h-64 overflow-y-auto p-3 space-y-2 text-sm">
-            {chatLog.length === 0 ? (
-              <div className="text-muted-foreground">
-                Try: "add eggs and milk to the grocery list"
-              </div>
-            ) : (
-              chatLog.map((m, i) => (
-                <div key={i} className={m.from === "you" ? "text-right" : "text-left"}>
-                  <span className={`inline-block px-2 py-1 rounded ${m.from === "you" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
-                    {m.text}
-                  </span>
-                </div>
-              ))
-            )}
-            {statusMessage && (
-              <div className="text-xs text-muted-foreground">{statusMessage}</div>
-            )}
-          </div>
-          <form
-            onSubmit={(e) => { e.preventDefault(); sendText(); }}
-            className="flex items-center gap-2 p-2 border-t border-border"
-          >
-            <input
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              placeholder="Type a message…"
-              className="flex-1 bg-background border border-border rounded px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary"
-            />
-            <button
-              type="submit"
-              disabled={connecting || !textInput.trim()}
-              aria-label="Send"
-              className="flex items-center justify-center w-8 h-8 rounded bg-primary text-primary-foreground disabled:opacity-50"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
-        </div>
-      )}
-
       <div className="flex items-center gap-2">
-        {!textMode && (
-          <button
-            onClick={() => setTextMode(true)}
-            aria-label="Type to Mai"
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary text-secondary-foreground shadow-lg hover:scale-105"
-          >
-            <MessageSquare className="w-5 h-5" />
-          </button>
-        )}
         <button
           onClick={isConnected ? stop : start}
           disabled={connecting}
