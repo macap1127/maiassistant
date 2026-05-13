@@ -537,7 +537,9 @@ const VoiceAssistantInner = () => {
           className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
             isConnected
               ? "bg-destructive text-destructive-foreground animate-pulse"
-              : "bg-primary text-primary-foreground hover:scale-105"
+              : voiceReady
+                ? "bg-primary text-primary-foreground hover:scale-105"
+                : "bg-secondary text-secondary-foreground hover:scale-105"
           }`}
         >
           {connecting ? (
