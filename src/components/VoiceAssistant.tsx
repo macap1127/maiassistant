@@ -370,10 +370,6 @@ const VoiceAssistantInner = () => {
   const isConnected = conversation.status === "connected";
 
   const start = useCallback(() => {
-    if (connectionTimeoutRef.current) {
-      clearTimeout(connectionTimeoutRef.current);
-      connectionTimeoutRef.current = null;
-    }
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
@@ -401,14 +397,6 @@ const VoiceAssistantInner = () => {
         connectionType: "websocket",
         useWakeLock: false,
       });
-      connectionTimeoutRef.current = setTimeout(() => {
-        if (conversation.status !== "connected") {
-          void conversation.endSession();
-          connectionTimeoutRef.current = null;
-          setConnecting(false);
-          setStatusMessage("Connection timed out. Tap the microphone to try again.");
-        }
-      }, 10_000);
     } catch (err) {
       console.error(err);
       voiceConnectionRef.current = null;
@@ -421,80 +409,14 @@ const VoiceAssistantInner = () => {
         description: message,
       });
     } finally {
-      if (!connectionTimeoutRef.current) setConnecting(false);
-    }
-  }, [conversation, prepareVoiceConnection]);
-
-  useEffect(() => () => {
-    if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
-  }, []);
-
-  const startText = useCallback(async () => {
-    setConnecting(true);
-    setStatusMessage("Connecting to Mai…");
-    try {
-      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID },
-      });
-      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
-      await conversation.startSession({
-        signedUrl: data.signedUrl,
-        connectionType: "websocket",
-        textOnly: true,
-      } as TextSessionOptions);
-      setStatusMessage("Type a message to Mai");
-    } catch (err) {
-      console.error(err);
-      const message = err instanceof Error ? err.message : "Failed to connect";
-      setStatusMessage(message);
-      toast({ variant: "destructive", title: "Couldn't start Mai", description: message });
-    } finally {
       setConnecting(false);
     }
-  }, [conversation]);
+  }, [conversation, prepareVoiceConnection]);
 
   const stop = useCallback(async () => {
     userEndedSessionRef.current = true;
     await conversation.endSession();
-    setChatLog([]);
   }, [conversation]);
-
-  const sendText = useCallback(async () => {
-    const t = textInput.trim();
-    if (!t) return;
-    setChatLog((l) => [...l, { from: "you", text: t }]);
-    setTextInput("");
-    const textGroceryItems = extractGroceryItemsFromUserText(t, awaitingGroceryItemRef.current);
-    if (textGroceryItems.length > 0) {
-      awaitingGroceryItemRef.current = false;
-      try {
-        const added = await addGroceryItems(textGroceryItems);
-        if (added.length > 0) {
-          setChatLog((l) => [...l, { from: "mai", text: `Added ${added.join(", ")} to your grocery list.` }]);
-          toast({ title: "Added to grocery list", description: added.join(", ") });
-          return;
-        }
-      } catch (e: unknown) {
-        console.error("[Mai] text grocery add failed", e);
-        toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(e) });
-        return;
-      }
-    }
-    if ((conversation.status as string) !== "connected") {
-      await startText();
-      // wait briefly for connection to settle
-      for (let i = 0; i < 50; i++) {
-        if ((conversation.status as string) === "connected") break;
-        await new Promise((r) => setTimeout(r, 100));
-      }
-    }
-    try {
-      conversation.sendUserMessage(t);
-    } catch (e) {
-      console.error("[Mai] sendUserMessage failed", e);
-      toast({ variant: "destructive", title: "Send failed", description: "Try again in a moment." });
-    }
-  }, [textInput, addGroceryItems, startText, conversation]);
 
   return (
     <div className="fixed bottom-[calc(var(--nav-height)+1rem)] right-4 z-40 flex flex-col items-end gap-2">
