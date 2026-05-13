@@ -96,6 +96,15 @@ const extractGroceryItemFromAgentConfirmation = (text: string): { name: string; 
   return [];
 };
 
+const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: string | undefined, now: number) => {
+  const key = `${name}:${store || ""}`.toLowerCase();
+  if (now - (recentAdds.get(key) ?? 0) <= 20_000) return true;
+  if (store) return false;
+
+  const namePrefix = `${name}:`.toLowerCase();
+  return Array.from(recentAdds).some(([recentKey, addedAt]) => recentKey.startsWith(namePrefix) && now - addedAt <= 20_000);
+};
+
 type TextSessionOptions = Parameters<ReturnType<typeof useConversation>["startSession"]>[0] & { textOnly?: boolean };
 
 const VoiceAssistantInner = () => {
@@ -139,7 +148,7 @@ const VoiceAssistantInner = () => {
     const rows = items
       .map((item) => ({ ...item, name: cleanGroceryName(item.name) }))
       .filter((item) => item.name)
-      .filter((item) => now - (recentGroceryAddsRef.current.get(`${item.name}:${item.store || ""}`.toLowerCase()) ?? 0) > 20_000)
+      .filter((item) => !wasRecentlyAdded(recentGroceryAddsRef.current, item.name, item.store, now))
       .map((item) => ({
         household_id: hid,
         name: item.name,
