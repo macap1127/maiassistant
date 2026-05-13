@@ -531,6 +531,11 @@ const CalendarPage = () => {
                             {event.location}
                           </span>
                         )}
+                        {event.assignedTo && (
+                          <span className="text-xs text-primary font-medium">
+                            • {event.assignedTo}
+                          </span>
+                        )}
                       </div>
                       {event.notes && (
                         <p className="text-xs text-muted-foreground mt-1">{event.notes}</p>
