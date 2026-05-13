@@ -46,29 +46,47 @@ const VoiceAssistantInner = () => {
   const conversation = useConversation({
     clientTools: {
       addGrocery: async (params: { name: string; quantity?: string; category?: string }) => {
-        const hid = requireHousehold();
-        const { error } = await supabase.from("grocery_items").insert({
-          household_id: hid,
-          name: params.name,
-          quantity: params.quantity ?? "",
-          category: params.category ?? "Other",
-          added_by: "Mai",
-          completed: false,
-        });
-        if (error) return `Failed to add: ${error.message}`;
-        return `Added ${params.name} to the grocery list.`;
+        console.log("[Mai] addGrocery called", params);
+        try {
+          const hid = requireHousehold();
+          const { error } = await supabase.from("grocery_items").insert({
+            household_id: hid,
+            name: params.name,
+            quantity: params.quantity ?? "",
+            category: params.category ?? "Other",
+            added_by: "Mai",
+            completed: false,
+          });
+          if (error) {
+            console.error("[Mai] addGrocery insert error", error);
+            return `Failed to add: ${error.message}`;
+          }
+          return `Added ${params.name} to the grocery list.`;
+        } catch (e: any) {
+          console.error("[Mai] addGrocery threw", e);
+          return `Failed to add: ${e?.message || "unknown error"}`;
+        }
       },
       addTask: async (params: { title: string; assignedTo?: string; dueDate?: string }) => {
-        const hid = requireHousehold();
-        const { error } = await supabase.from("tasks").insert({
-          household_id: hid,
-          title: params.title,
-          assigned_to: params.assignedTo ?? "",
-          due_date: params.dueDate || null,
-          completed: false,
-        });
-        if (error) return `Failed to add: ${error.message}`;
-        return `Added task: ${params.title}.`;
+        console.log("[Mai] addTask called", params);
+        try {
+          const hid = requireHousehold();
+          const { error } = await supabase.from("tasks").insert({
+            household_id: hid,
+            title: params.title,
+            assigned_to: params.assignedTo ?? "",
+            due_date: params.dueDate || null,
+            completed: false,
+          });
+          if (error) {
+            console.error("[Mai] addTask insert error", error);
+            return `Failed to add: ${error.message}`;
+          }
+          return `Added task: ${params.title}.`;
+        } catch (e: any) {
+          console.error("[Mai] addTask threw", e);
+          return `Failed to add: ${e?.message || "unknown error"}`;
+        }
       },
       addEvent: async (params: {
         title: string;
@@ -77,19 +95,31 @@ const VoiceAssistantInner = () => {
         location?: string;
         notes?: string;
       }) => {
-        const hid = requireHousehold();
-        const { error } = await supabase.from("events").insert({
-          household_id: hid,
-          title: params.title,
-          date: params.date,
-          time: params.time || null,
-          location: params.location || null,
-          notes: params.notes || null,
-          added_by: "Mai",
-        });
-        if (error) return `Failed to add: ${error.message}`;
-        return `Added event: ${params.title} on ${params.date}.`;
+        console.log("[Mai] addEvent called", params);
+        try {
+          const hid = requireHousehold();
+          const { error } = await supabase.from("events").insert({
+            household_id: hid,
+            title: params.title,
+            date: params.date,
+            time: params.time || null,
+            location: params.location || null,
+            notes: params.notes || null,
+            added_by: "Mai",
+          });
+          if (error) {
+            console.error("[Mai] addEvent insert error", error);
+            return `Failed to add: ${error.message}`;
+          }
+          return `Added event: ${params.title} on ${params.date}.`;
+        } catch (e: any) {
+          console.error("[Mai] addEvent threw", e);
+          return `Failed to add: ${e?.message || "unknown error"}`;
+        }
       },
+    },
+    onMessage: (message: any) => {
+      console.log("[Mai] message", message);
     },
     onConnect: () => {
       setStatusMessage("Listening…");
