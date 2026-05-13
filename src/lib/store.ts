@@ -65,6 +65,10 @@ export const genId = () => crypto.randomUUID();
 export function useFamilyData() {
   const { user } = useAuth();
   const [data, setData] = useState<FamilyData>(defaultData);
+  const dataRef = useRef<FamilyData>(defaultData);
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
   const [loading, setLoading] = useState(true);
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const householdIdRef = useRef<string | null>(null);
@@ -183,10 +187,11 @@ export function useFamilyData() {
       const hid = householdIdRef.current;
       if (!hid) return;
 
-      const prev = data;
+      const prev = dataRef.current;
       const next = updater(prev);
 
       // Optimistic local update
+      dataRef.current = next;
       setData(next);
 
       try {
@@ -276,7 +281,7 @@ export function useFamilyData() {
         console.error("update sync error", err);
       }
     },
-    [data]
+    []
   );
 
   return { data, update, loading, connected: !!householdId };
