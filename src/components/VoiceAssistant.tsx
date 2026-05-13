@@ -38,19 +38,33 @@ const splitGroceryNames = (value: string) =>
     .map(cleanGroceryName)
     .filter((name) => name.length > 0 && name.length < 80);
 
-const extractGroceryItemsFromUserText = (text: string, awaitingItem: boolean) => {
+const cleanStoreName = (value: string) =>
+  value
+    .replace(/[“”"']/g, "")
+    .replace(/\b(grocery|groceries|shopping|list|please)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .replace(/^[\s,.;:!?-]+|[\s,.;:!?-]+$/g, "")
+    .trim();
+
+const extractGroceryItemsFromUserText = (text: string, awaitingItem: boolean): { name: string; store?: string }[] => {
   const lower = text.toLowerCase();
-  const isGroceryCommand = /\b(grocery|groceries|shopping list)\b/.test(lower);
+  const isGroceryCommand = /\b(grocery|groceries|shopping list|list)\b/.test(lower);
   const isAddCommand = /^\s*(add|put|include)\b/i.test(text);
   const mentionsOtherArea = /\b(task|chore|calendar|event|appointment|reminder)\b/.test(lower);
 
+  const storeMatch = text.match(/^\s*(?:add|put|include)\s+(.+?)\s+(?:to|on|in)\s+(?:my\s+|our\s+|the\s+)?(.+?)\s+(?:grocery\s+|shopping\s+)?list\b/i);
+  if (storeMatch?.[1] && storeMatch?.[2]) {
+    const store = cleanStoreName(storeMatch[2]);
+    return splitGroceryNames(storeMatch[1]).map((name) => ({ name, store: store || undefined }));
+  }
+
   if (isGroceryCommand && isAddCommand) {
     const afterAdd = text.replace(/^\s*(add|put|include)\b/i, "").split(/\b(?:to|on|in)\b\s+(?:my\s+|our\s+)?(?:grocery|groceries|shopping list)/i)[0];
-    return splitGroceryNames(afterAdd);
+    return splitGroceryNames(afterAdd).map((name) => ({ name }));
   }
 
   if (awaitingItem || (isAddCommand && !mentionsOtherArea)) {
-    return splitGroceryNames(text.replace(/^\s*(add|put|include)\b/i, ""));
+    return splitGroceryNames(text.replace(/^\s*(add|put|include)\b/i, "")).map((name) => ({ name }));
   }
 
   return [];
@@ -65,7 +79,7 @@ const extractGroceryItemFromAgentConfirmation = (text: string): { name: string; 
   for (const pattern of storePatterns) {
     const match = text.match(pattern);
     if (match?.[1] && match?.[2] && !/^grocery$/i.test(match[2].trim())) {
-      const store = match[2].trim().replace(/\s+(grocery|shopping)$/i, "").trim();
+      const store = cleanStoreName(match[2]);
       return splitGroceryNames(match[1]).map((name) => ({ name, store }));
     }
   }
