@@ -1,6 +1,6 @@
 import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Mic, MicOff, Loader2, MessageSquare, Send, X } from "lucide-react";
+import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -110,8 +110,6 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
   return Array.from(recentAdds).some(([recentKey, addedAt]) => recentKey.startsWith(namePrefix) && now - addedAt <= 20_000);
 };
 
-type TextSessionOptions = Parameters<ReturnType<typeof useConversation>["startSession"]>[0] & { textOnly?: boolean };
-
 type VoiceConnection = { signedUrl: string; createdAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
@@ -120,9 +118,6 @@ const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [textMode, setTextMode] = useState(false);
-  const [textInput, setTextInput] = useState("");
-  const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
   const [voiceReady, setVoiceReady] = useState(false);
   const [preparingVoice, setPreparingVoice] = useState(false);
   const householdIdRef = useRef<string | null>(null);
@@ -130,7 +125,6 @@ const VoiceAssistantInner = () => {
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
   const voiceConnectionPromiseRef = useRef<Promise<string> | null>(null);
-  const connectionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
 
