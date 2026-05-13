@@ -139,7 +139,7 @@ const VoiceAssistantInner = () => {
     const rows = items
       .map((item) => ({ ...item, name: cleanGroceryName(item.name) }))
       .filter((item) => item.name)
-      .filter((item) => now - (recentGroceryAddsRef.current.get(item.name.toLowerCase()) ?? 0) > 20_000)
+      .filter((item) => now - (recentGroceryAddsRef.current.get(`${item.name}:${item.store || ""}`.toLowerCase()) ?? 0) > 20_000)
       .map((item) => ({
         household_id: hid,
         name: item.name,
@@ -151,11 +151,11 @@ const VoiceAssistantInner = () => {
       }));
 
     if (rows.length === 0) return [];
-    rows.forEach((row) => recentGroceryAddsRef.current.set(row.name.toLowerCase(), now));
+    rows.forEach((row) => recentGroceryAddsRef.current.set(`${row.name}:${row.store || ""}`.toLowerCase(), now));
 
     const { error } = await supabase.from("grocery_items").insert(rows);
     if (error) {
-      rows.forEach((row) => recentGroceryAddsRef.current.delete(row.name.toLowerCase()));
+      rows.forEach((row) => recentGroceryAddsRef.current.delete(`${row.name}:${row.store || ""}`.toLowerCase()));
       throw error;
     }
 
@@ -251,6 +251,14 @@ const VoiceAssistantInner = () => {
               toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(error) });
             });
         }
+      } else if (text && (source === "user" || source === "user_transcript")) {
+        const spokenItems = extractGroceryItemsFromUserText(text, awaitingGroceryItemRef.current);
+        if (spokenItems.length > 0) {
+          awaitingGroceryItemRef.current = false;
+          void addGroceryItems(spokenItems).catch((error) => {
+            console.error("[Mai] user transcript grocery insert failed", error);
+          });
+        }
       }
     },
     onConnect: () => {
@@ -336,7 +344,7 @@ const VoiceAssistantInner = () => {
     if (textGroceryItems.length > 0) {
       awaitingGroceryItemRef.current = false;
       try {
-        const added = await addGroceryItems(textGroceryItems.map((name) => ({ name })));
+        const added = await addGroceryItems(textGroceryItems);
         if (added.length > 0) {
           setChatLog((l) => [...l, { from: "mai", text: `Added ${added.join(", ")} to your grocery list.` }]);
           toast({ title: "Added to grocery list", description: added.join(", ") });
