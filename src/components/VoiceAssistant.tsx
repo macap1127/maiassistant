@@ -209,17 +209,23 @@ const VoiceAssistantInner = () => {
   const sendText = useCallback(async () => {
     const t = textInput.trim();
     if (!t) return;
-    if (!isConnected) {
-      await startText();
-    }
     setChatLog((l) => [...l, { from: "you", text: t }]);
+    setTextInput("");
+    if ((conversation.status as string) !== "connected") {
+      await startText();
+      // wait briefly for connection to settle
+      for (let i = 0; i < 50; i++) {
+        if ((conversation.status as string) === "connected") break;
+        await new Promise((r) => setTimeout(r, 100));
+      }
+    }
     try {
       (conversation as any).sendUserMessage(t);
     } catch (e) {
       console.error("[Mai] sendUserMessage failed", e);
+      toast({ variant: "destructive", title: "Send failed", description: "Try again in a moment." });
     }
-    setTextInput("");
-  }, [textInput, isConnected, startText, conversation]);
+  }, [textInput, startText, conversation]);
 
   return (
     <div className="fixed bottom-[calc(var(--nav-height)+1rem)] right-4 z-40 flex flex-col items-end gap-2">
