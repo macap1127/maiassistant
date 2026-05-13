@@ -10,6 +10,7 @@ const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 const getStartErrorMessage = (err: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mai.";
+  if (err instanceof DOMException && err.name === "NotReadableError") return "Your microphone is busy in another app or tab.";
   return err instanceof Error ? err.message : "Please allow microphone access and try again.";
 };
 
@@ -313,13 +314,20 @@ const VoiceAssistantInner = () => {
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Microphone access is not available in this browser.");
+      }
+
+      const permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      permissionStream.getTracks().forEach((track) => track.stop());
+
       const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID, mode: "voice" },
+        body: { agentId: AGENT_ID },
       });
-      if (error || !data?.token) throw new Error(error?.message || "Failed to get voice token");
+      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
       await conversation.startSession({
-        conversationToken: data.token,
-        connectionType: "webrtc",
+        signedUrl: data.signedUrl,
+        connectionType: "websocket",
       });
     } catch (err) {
       console.error(err);
