@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Check, Trash2, Sparkles, ChevronDown, Trash } from "lucide-react";
+import { Plus, Check, Trash2, Sparkles, ChevronDown, Trash, Store as StoreIcon } from "lucide-react";
 import { useFamilyData, genId, type GroceryItem } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -102,18 +102,37 @@ const GroceryList = () => {
       groceryList: d.groceryList.filter((g) => g.id !== id),
     }));
 
+  const matchesStore = (g: GroceryItem) => {
+    if (storeFilter === null) return true;
+    if (storeFilter === "__none__") return !g.store;
+    return (g.store || "").toLowerCase() === storeFilter.toLowerCase();
+  };
+
   const clearCompleted = () => {
-    const count = data.groceryList.filter((g) => g.completed).length;
+    const targets = data.groceryList.filter((g) => g.completed && matchesStore(g));
+    const count = targets.length;
     if (!count) return;
+    const ids = new Set(targets.map((t) => t.id));
     update((d) => ({
       ...d,
-      groceryList: d.groceryList.filter((g) => !g.completed),
+      groceryList: d.groceryList.filter((g) => !ids.has(g.id)),
     }));
     toast.success(`Cleared ${count} item${count === 1 ? "" : "s"}`);
   };
 
-  const pending = data.groceryList.filter((g) => !g.completed);
-  const completed = data.groceryList.filter((g) => g.completed);
+  const pending = data.groceryList.filter((g) => !g.completed && matchesStore(g));
+  const completed = data.groceryList.filter((g) => g.completed && matchesStore(g));
+
+  const stores = useMemo(() => {
+    const set = new Set<string>();
+    for (const g of data.groceryList) if (g.store) set.add(g.store);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [data.groceryList]);
+
+  const hasUntagged = useMemo(
+    () => data.groceryList.some((g) => !g.store),
+    [data.groceryList]
+  );
 
   const grouped = useMemo(() => {
     const map = new Map<string, GroceryItem[]>();
