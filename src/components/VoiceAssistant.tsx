@@ -312,9 +312,12 @@ const VoiceAssistantInner = () => {
   const start = useCallback(async () => {
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
-    let micStream: MediaStream | null = null;
     try {
-      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Prompt for mic permission, then immediately release this probe stream
+      // so the ElevenLabs SDK can acquire its own without device contention.
+      const probe = await navigator.mediaDevices.getUserMedia({ audio: true });
+      probe.getTracks().forEach((t) => t.stop());
+
       const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
         body: { agentId: AGENT_ID },
       });
@@ -333,7 +336,6 @@ const VoiceAssistantInner = () => {
         description: message,
       });
     } finally {
-      micStream?.getTracks().forEach((track) => track.stop());
       setConnecting(false);
     }
   }, [conversation]);
