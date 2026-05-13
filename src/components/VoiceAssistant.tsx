@@ -362,6 +362,7 @@ const VoiceAssistantInner = () => {
       }
       setConnecting(false);
       setStatusMessage(null);
+      if (!userEndedSessionRef.current) void prepareVoiceConnection().catch((error) => console.error("[Mai] voice reconnect prepare failed", error));
       if (wasConnectedRef.current && !userEndedSessionRef.current) {
         toast({ variant: "destructive", title: "Mai disconnected", description: "Tap the microphone to reconnect." });
       } else if (userEndedSessionRef.current) {
@@ -589,13 +590,17 @@ const VoiceAssistantInner = () => {
           className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
             isConnected
               ? "bg-destructive text-destructive-foreground animate-pulse"
-              : "bg-primary text-primary-foreground hover:scale-105"
+              : voiceReady
+                ? "bg-primary text-primary-foreground hover:scale-105"
+                : "bg-secondary text-secondary-foreground hover:scale-105"
           }`}
         >
           {connecting ? (
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : isConnected ? (
             <MicOff className="w-6 h-6" />
+          ) : preparingVoice ? (
+            <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <Mic className="w-6 h-6" />
           )}
