@@ -151,6 +151,7 @@ export function useFamilyData() {
           notes: e.notes || undefined,
           addedBy: e.added_by,
           source: e.source || undefined,
+          assignedTo: e.assigned_to || undefined,
         })),
       });
       setLoading(false);
