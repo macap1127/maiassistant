@@ -313,11 +313,6 @@ const VoiceAssistantInner = () => {
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
-      // Prompt for mic permission, then immediately release this probe stream
-      // so the ElevenLabs SDK can acquire its own without device contention.
-      const probe = await navigator.mediaDevices.getUserMedia({ audio: true });
-      probe.getTracks().forEach((t) => t.stop());
-
       const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
         body: { agentId: AGENT_ID },
       });
