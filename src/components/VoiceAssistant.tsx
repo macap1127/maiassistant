@@ -56,15 +56,27 @@ const extractGroceryItemsFromUserText = (text: string, awaitingItem: boolean) =>
   return [];
 };
 
-const extractGroceryItemFromAgentConfirmation = (text: string) => {
-  const patterns = [
+const extractGroceryItemFromAgentConfirmation = (text: string): { name: string; store?: string }[] => {
+  // Try patterns that include a store name first
+  const storePatterns = [
+    /(?:adding|added)\s+(.+?)\s+to\s+(?:your|the)\s+(.+?)\s+(?:grocery\s+)?list/i,
+    /(.+?)\s+has\s+been\s+added\s+to\s+(?:your|the)\s+(.+?)\s+(?:grocery\s+)?list/i,
+  ];
+  for (const pattern of storePatterns) {
+    const match = text.match(pattern);
+    if (match?.[1] && match?.[2] && !/^grocery$/i.test(match[2].trim())) {
+      const store = match[2].trim().replace(/\s+(grocery|shopping)$/i, "").trim();
+      return splitGroceryNames(match[1]).map((name) => ({ name, store }));
+    }
+  }
+
+  const plainPatterns = [
     /(?:adding|added)\s+(.+?)\s+to\s+(?:your|the)\s+grocery\s+list/i,
     /(.+?)\s+has\s+been\s+added\s+to\s+(?:your|the)\s+grocery\s+list/i,
   ];
-
-  for (const pattern of patterns) {
+  for (const pattern of plainPatterns) {
     const match = text.match(pattern);
-    if (match?.[1]) return splitGroceryNames(match[1]);
+    if (match?.[1]) return splitGroceryNames(match[1]).map((name) => ({ name }));
   }
 
   return [];
@@ -214,7 +226,7 @@ const VoiceAssistantInner = () => {
 
         const confirmedItems = extractGroceryItemFromAgentConfirmation(text);
         if (confirmedItems.length > 0) {
-          void addGroceryItems(confirmedItems.map((name) => ({ name })))
+          void addGroceryItems(confirmedItems)
             .then((added) => {
               if (added.length > 0) {
                 toast({ title: "Added to grocery list", description: added.join(", ") });
