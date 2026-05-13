@@ -37,6 +37,7 @@ export interface CalendarEvent {
   notes?: string;
   addedBy: string;
   source?: string;
+  assignedTo?: string;
 }
 
 export interface FamilyData {
