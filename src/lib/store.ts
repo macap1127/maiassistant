@@ -65,6 +65,10 @@ export const genId = () => crypto.randomUUID();
 export function useFamilyData() {
   const { user } = useAuth();
   const [data, setData] = useState<FamilyData>(defaultData);
+  const dataRef = useRef<FamilyData>(defaultData);
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
   const [loading, setLoading] = useState(true);
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const householdIdRef = useRef<string | null>(null);
