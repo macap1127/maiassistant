@@ -11,6 +11,7 @@ const getStartErrorMessage = (err: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mai.";
   if (err instanceof DOMException && err.name === "NotReadableError") return "Your microphone is busy in another app or tab.";
+  if (typeof err === "string") return err;
   return err instanceof Error ? err.message : "Please allow microphone access and try again.";
 };
 
@@ -108,6 +109,10 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
 
 type TextSessionOptions = Parameters<ReturnType<typeof useConversation>["startSession"]>[0] & { textOnly?: boolean };
 
+type VoiceToken = { token: string; createdAt: number };
+
+const VOICE_TOKEN_MAX_AGE_MS = 8 * 60 * 1000;
+
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -115,9 +120,15 @@ const VoiceAssistantInner = () => {
   const [textMode, setTextMode] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
+  const [voiceReady, setVoiceReady] = useState(false);
+  const [preparingVoice, setPreparingVoice] = useState(false);
   const householdIdRef = useRef<string | null>(null);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
+  const voiceTokenRef = useRef<VoiceToken | null>(null);
+  const voiceTokenPromiseRef = useRef<Promise<string> | null>(null);
+  const userEndedSessionRef = useRef(false);
+  const wasConnectedRef = useRef(false);
 
   // Resolve current household once user is known
   useEffect(() => {
@@ -142,6 +153,34 @@ const VoiceAssistantInner = () => {
     if (!hid) throw new Error("No household found for current user.");
     return hid;
   };
+
+  const prepareVoiceToken = useCallback(async () => {
+    const cached = voiceTokenRef.current;
+    if (cached && Date.now() - cached.createdAt < VOICE_TOKEN_MAX_AGE_MS) return cached.token;
+    if (voiceTokenPromiseRef.current) return voiceTokenPromiseRef.current;
+
+    setVoiceReady(false);
+    setPreparingVoice(true);
+    const promise = supabase.functions
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
+      .then(({ data, error }) => {
+        if (error || !data?.token) throw new Error(error?.message || data?.error || "Failed to prepare Mai");
+        voiceTokenRef.current = { token: data.token, createdAt: Date.now() };
+        setVoiceReady(true);
+        return data.token as string;
+      })
+      .finally(() => {
+        voiceTokenPromiseRef.current = null;
+        setPreparingVoice(false);
+      });
+
+    voiceTokenPromiseRef.current = promise;
+    return promise;
+  }, []);
+
+  useEffect(() => {
+    void prepareVoiceToken().catch((error) => console.error("[Mai] voice token prepare failed", error));
+  }, [prepareVoiceToken]);
 
   const addGroceryItems = useCallback(async (items: { name: string; quantity?: string; category?: string; store?: string }[]) => {
     const hid = requireHousehold();
@@ -295,16 +334,25 @@ const VoiceAssistantInner = () => {
       }
     },
     onConnect: () => {
+      wasConnectedRef.current = true;
       setStatusMessage("Listening…");
       toast({ title: "Connected to Mai", description: "Start speaking…" });
     },
     onDisconnect: () => {
       setStatusMessage(null);
-      toast({ title: "Conversation ended" });
+      if (wasConnectedRef.current && !userEndedSessionRef.current) {
+        toast({ variant: "destructive", title: "Mai disconnected", description: "Tap the microphone to reconnect." });
+      } else if (userEndedSessionRef.current) {
+        toast({ title: "Conversation ended" });
+      }
+      wasConnectedRef.current = false;
+      userEndedSessionRef.current = false;
     },
     onError: (error) => {
       console.error("ElevenLabs error:", error);
-      toast({ variant: "destructive", title: "Connection error", description: "Please try again." });
+      const message = getStartErrorMessage(error);
+      setStatusMessage(message);
+      toast({ variant: "destructive", title: "Connection error", description: message });
     },
   });
 
@@ -314,23 +362,28 @@ const VoiceAssistantInner = () => {
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("Microphone access is not available in this browser.");
+      const cached = voiceTokenRef.current;
+      if (!cached || Date.now() - cached.createdAt >= VOICE_TOKEN_MAX_AGE_MS) {
+        setStatusMessage("Preparing Mai… tap the microphone again in a moment.");
+        await prepareVoiceToken();
+        toast({ title: "Mai is ready", description: "Tap the microphone again to start talking." });
+        return;
       }
 
-      const permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      permissionStream.getTracks().forEach((track) => track.stop());
-
-      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID },
-      });
-      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
-      await conversation.startSession({
-        signedUrl: data.signedUrl,
-        connectionType: "websocket",
+      const token = cached.token;
+      voiceTokenRef.current = null;
+      setVoiceReady(false);
+      userEndedSessionRef.current = false;
+      wasConnectedRef.current = false;
+      conversation.startSession({
+        conversationToken: token,
+        connectionType: "webrtc",
+        useWakeLock: false,
       });
     } catch (err) {
       console.error(err);
+      voiceTokenRef.current = null;
+      setVoiceReady(false);
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
       toast({
@@ -341,7 +394,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation]);
+  }, [conversation, prepareVoiceToken]);
 
   const startText = useCallback(async () => {
     setConnecting(true);
@@ -368,6 +421,7 @@ const VoiceAssistantInner = () => {
   }, [conversation]);
 
   const stop = useCallback(async () => {
+    userEndedSessionRef.current = true;
     await conversation.endSession();
     setChatLog([]);
   }, [conversation]);
@@ -486,13 +540,17 @@ const VoiceAssistantInner = () => {
           className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
             isConnected
               ? "bg-destructive text-destructive-foreground animate-pulse"
-              : "bg-primary text-primary-foreground hover:scale-105"
+              : voiceReady
+                ? "bg-primary text-primary-foreground hover:scale-105"
+                : "bg-secondary text-secondary-foreground hover:scale-105"
           }`}
         >
           {connecting ? (
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : isConnected ? (
             <MicOff className="w-6 h-6" />
+          ) : preparingVoice ? (
+            <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <Mic className="w-6 h-6" />
           )}
