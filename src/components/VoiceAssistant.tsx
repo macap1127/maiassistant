@@ -1,10 +1,11 @@
 import { useConversation, ConversationProvider } from "@elevenlabs/react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
-const SARAH_VOICE_ID = "EXAVITQu4vr4xnSDxMaL";
 
 const getStartErrorMessage = (err: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
@@ -13,10 +14,83 @@ const getStartErrorMessage = (err: unknown) => {
 };
 
 const VoiceAssistantInner = () => {
+  const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const householdIdRef = useRef<string | null>(null);
+
+  // Resolve current household once user is known
+  useEffect(() => {
+    if (!user) {
+      householdIdRef.current = null;
+      return;
+    }
+    (async () => {
+      const { data, error } = await supabase
+        .from("household_members")
+        .select("household_id")
+        .eq("user_id", user.id)
+        .limit(1);
+      if (!error && data && data.length > 0) {
+        householdIdRef.current = data[0].household_id;
+      }
+    })();
+  }, [user]);
+
+  const requireHousehold = () => {
+    const hid = householdIdRef.current;
+    if (!hid) throw new Error("No household found for current user.");
+    return hid;
+  };
 
   const conversation = useConversation({
+    clientTools: {
+      addGrocery: async (params: { name: string; quantity?: string; category?: string }) => {
+        const hid = requireHousehold();
+        const { error } = await supabase.from("grocery_items").insert({
+          household_id: hid,
+          name: params.name,
+          quantity: params.quantity ?? "",
+          category: params.category ?? "Other",
+          added_by: "Mai",
+          completed: false,
+        });
+        if (error) return `Failed to add: ${error.message}`;
+        return `Added ${params.name} to the grocery list.`;
+      },
+      addTask: async (params: { title: string; assignedTo?: string; dueDate?: string }) => {
+        const hid = requireHousehold();
+        const { error } = await supabase.from("tasks").insert({
+          household_id: hid,
+          title: params.title,
+          assigned_to: params.assignedTo ?? "",
+          due_date: params.dueDate || null,
+          completed: false,
+        });
+        if (error) return `Failed to add: ${error.message}`;
+        return `Added task: ${params.title}.`;
+      },
+      addEvent: async (params: {
+        title: string;
+        date: string;
+        time?: string;
+        location?: string;
+        notes?: string;
+      }) => {
+        const hid = requireHousehold();
+        const { error } = await supabase.from("events").insert({
+          household_id: hid,
+          title: params.title,
+          date: params.date,
+          time: params.time || null,
+          location: params.location || null,
+          notes: params.notes || null,
+          added_by: "Mai",
+        });
+        if (error) return `Failed to add: ${error.message}`;
+        return `Added event: ${params.title} on ${params.date}.`;
+      },
+    },
     onConnect: () => {
       setStatusMessage("Listening…");
       toast({ title: "Connected to Mai", description: "Start speaking…" });
@@ -39,7 +113,6 @@ const VoiceAssistantInner = () => {
     let micStream: MediaStream | null = null;
     try {
       micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const { supabase } = await import("@/integrations/supabase/client");
       const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
         body: { agentId: AGENT_ID },
       });
@@ -54,7 +127,7 @@ const VoiceAssistantInner = () => {
       setStatusMessage(message);
       toast({
         variant: "destructive",
-        title: "Couldn’t start Mai",
+        title: "Couldn't start Mai",
         description: message,
       });
     } finally {
