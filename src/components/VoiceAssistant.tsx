@@ -13,6 +13,16 @@ const getStartErrorMessage = (err: unknown) => {
   return err instanceof Error ? err.message : "Please allow microphone access and try again.";
 };
 
+const getErrorMessage = (err: unknown) => (err instanceof Error ? err.message : "unknown error");
+
+type MaiMessage = {
+  message?: string;
+  source?: string;
+  type?: string;
+  agent_response_event?: { agent_response?: string };
+  user_transcription_event?: { user_transcript?: string };
+};
+
 const cleanGroceryName = (value: string) =>
   value
     .replace(/[“”"']/g, "")
@@ -131,9 +141,9 @@ const VoiceAssistantInner = () => {
           const added = await addGroceryItems([params]);
           if (added.length === 0) return `${params.name} was already added.`;
           return `Added ${params.name} to the grocery list.`;
-        } catch (e: any) {
+        } catch (e: unknown) {
           console.error("[Mai] addGrocery threw", e);
-          return `Failed to add: ${e?.message || "unknown error"}`;
+          return `Failed to add: ${getErrorMessage(e)}`;
         }
       },
       addTask: async (params: { title: string; assignedTo?: string; dueDate?: string }) => {
@@ -152,9 +162,9 @@ const VoiceAssistantInner = () => {
             return `Failed to add: ${error.message}`;
           }
           return `Added task: ${params.title}.`;
-        } catch (e: any) {
+        } catch (e: unknown) {
           console.error("[Mai] addTask threw", e);
-          return `Failed to add: ${e?.message || "unknown error"}`;
+          return `Failed to add: ${getErrorMessage(e)}`;
         }
       },
       addEvent: async (params: {
@@ -181,13 +191,13 @@ const VoiceAssistantInner = () => {
             return `Failed to add: ${error.message}`;
           }
           return `Added event: ${params.title} on ${params.date}.`;
-        } catch (e: any) {
+        } catch (e: unknown) {
           console.error("[Mai] addEvent threw", e);
-          return `Failed to add: ${e?.message || "unknown error"}`;
+          return `Failed to add: ${getErrorMessage(e)}`;
         }
       },
     },
-    onMessage: (message: any) => {
+    onMessage: (message: MaiMessage) => {
       console.log("[Mai] message", message);
       const text =
         message?.message ||
@@ -208,7 +218,7 @@ const VoiceAssistantInner = () => {
             })
             .catch((error) => {
               console.error("[Mai] grocery fallback insert failed", error);
-              toast({ variant: "destructive", title: "Couldn't add grocery item", description: error.message });
+              toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(error) });
             });
         }
       }
