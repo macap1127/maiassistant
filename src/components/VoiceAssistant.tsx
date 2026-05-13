@@ -211,11 +211,11 @@ const VoiceAssistantInner = () => {
     if (!t) return;
     setChatLog((l) => [...l, { from: "you", text: t }]);
     setTextInput("");
-    if (conversation.status !== "connected") {
+    if ((conversation.status as string) !== "connected") {
       await startText();
       // wait briefly for connection to settle
       for (let i = 0; i < 50; i++) {
-        if (conversation.status === "connected") break;
+        if ((conversation.status as string) === "connected") break;
         await new Promise((r) => setTimeout(r, 100));
       }
     }
