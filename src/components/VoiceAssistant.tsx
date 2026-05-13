@@ -10,6 +10,7 @@ const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 const getStartErrorMessage = (err: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mai.";
+  if (err instanceof DOMException && err.name === "NotReadableError") return "Your microphone is busy in another app or tab.";
   return err instanceof Error ? err.message : "Please allow microphone access and try again.";
 };
 
