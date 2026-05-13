@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Plus, MapPin, Clock, Trash2, ChevronLeft, ChevronRight, Upload, Tag, FileUp, X } from "lucide-react";
+import { useState, useRef, useMemo } from "react";
+import { Plus, MapPin, Clock, Trash2, ChevronLeft, ChevronRight, Upload, Tag, FileUp, X, CheckSquare, Check } from "lucide-react";
 import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
 import { toast } from "sonner";
@@ -53,10 +53,24 @@ const CalendarPage = () => {
 
   const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
   const eventsForDate = data.events.filter((e) => e.date === selectedDateStr);
-  const datesWithEvents = new Set(data.events.map((e) => e.date));
+  const tasksForDate = useMemo(
+    () => data.tasks.filter((t) => t.dueDate && t.dueDate === selectedDateStr),
+    [data.tasks, selectedDateStr]
+  );
+  const datesWithEvents = useMemo(() => {
+    const s = new Set(data.events.map((e) => e.date));
+    data.tasks.forEach((t) => { if (t.dueDate) s.add(t.dueDate); });
+    return s;
+  }, [data.events, data.tasks]);
 
   // All unique sources for color mapping
   const allSources = [...new Set(data.events.map((e) => e.source).filter(Boolean))] as string[];
+
+  const toggleTask = (id: string) =>
+    update((d) => ({
+      ...d,
+      tasks: d.tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+    }));
 
   const addEvent = () => {
     const title = newEvent.title.trim();
@@ -315,7 +329,7 @@ const CalendarPage = () => {
         )}
 
         {/* Event list */}
-        {eventsForDate.length === 0 && !showForm && !showUpload && (
+        {eventsForDate.length === 0 && tasksForDate.length === 0 && !showForm && !showUpload && (
           <p className="text-sm text-muted-foreground text-center py-8">No events for this day</p>
         )}
         <div className="space-y-2">
@@ -364,6 +378,34 @@ const CalendarPage = () => {
                 </button>
               </div>
             ))}
+
+          {tasksForDate.map((task) => (
+            <div
+              key={task.id}
+              className={`bg-card rounded-xl p-3 border border-border flex items-center gap-3 ${task.completed ? "opacity-60" : ""}`}
+            >
+              <button
+                onClick={() => toggleTask(task.id)}
+                className={`w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0 transition-colors ${task.completed ? "bg-primary" : "hover:bg-primary/10"}`}
+                aria-label="Toggle task"
+              >
+                {task.completed && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
+              </button>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className={`text-sm font-medium truncate ${task.completed ? "line-through" : ""}`}>
+                    {task.title}
+                  </p>
+                  <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-primary/30 bg-primary/10 text-primary shrink-0 flex items-center gap-1">
+                    <CheckSquare className="w-2.5 h-2.5" /> Task
+                  </span>
+                </div>
+                {task.assignedTo && (
+                  <p className="text-xs text-muted-foreground mt-0.5">{task.assignedTo}</p>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
