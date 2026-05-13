@@ -176,10 +176,24 @@ const VoiceAssistantInner = () => {
       addGrocery: async (params: { name: string; quantity?: string; category?: string; store?: string }) => {
         console.log("[Mai] addGrocery called", params);
         try {
-          const added = await addGroceryItems([params]);
-          if (added.length === 0) return `${params.name} was already added.`;
+          // Reject vague referential phrases — agent should pass actual item names
+          const rawName = (params.name || "").trim();
+          if (/^(all of (those|them|these)|those|these|them|everything|the items?|the rest)$/i.test(rawName)) {
+            return `I need the actual item names — please list each grocery item individually.`;
+          }
+          // Split on commas / "and" so a single call with "eggs, milk and bread" becomes 3 items
+          const names = splitGroceryNames(rawName);
+          if (names.length === 0) return `I couldn't catch that item — please say it again.`;
+          const items = names.map((name) => ({
+            name,
+            quantity: names.length === 1 ? params.quantity : undefined,
+            category: params.category,
+            store: params.store,
+          }));
+          const added = await addGroceryItems(items);
+          if (added.length === 0) return `${names.join(", ")} ${names.length === 1 ? "was" : "were"} already added.`;
           const where = params.store ? ` (${params.store})` : "";
-          return `Added ${params.name}${where} to the grocery list.`;
+          return `Added ${added.join(", ")}${where} to the grocery list.`;
         } catch (e: unknown) {
           console.error("[Mai] addGrocery threw", e);
           return `Failed to add: ${getErrorMessage(e)}`;
