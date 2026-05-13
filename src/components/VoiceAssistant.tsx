@@ -127,6 +127,9 @@ const VoiceAssistantInner = () => {
   const voiceConnectionPromiseRef = useRef<Promise<string> | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
+  const sessionStartedAtRef = useRef<number | null>(null);
+  const lastStartTapAtRef = useRef<number | null>(null);
+  const lastErrorRef = useRef<unknown>(null);
 
   // Resolve current household once user is known
   useEffect(() => {
@@ -340,46 +343,96 @@ const VoiceAssistantInner = () => {
         }
       }
     },
-    onConnect: () => {
+    onConnect: (...args: unknown[]) => {
+      const connectedAt = Date.now();
+      sessionStartedAtRef.current = connectedAt;
+      console.log("[Mai] 🟢 onConnect fired", {
+        at: new Date(connectedAt).toISOString(),
+        msSinceStartTap: lastStartTapAtRef.current ? connectedAt - lastStartTapAtRef.current : null,
+        args,
+      });
       setConnecting(false);
       wasConnectedRef.current = true;
       setStatusMessage("Listening…");
       toast({ title: "Connected to Mai", description: "Start speaking…" });
     },
-    onDisconnect: () => {
+    onDisconnect: (...args: unknown[]) => {
+      const disconnectedAt = Date.now();
+      const lifetimeMs = sessionStartedAtRef.current ? disconnectedAt - sessionStartedAtRef.current : null;
+      console.warn("[Mai] 🔴 onDisconnect fired", {
+        at: new Date(disconnectedAt).toISOString(),
+        sessionLifetimeMs: lifetimeMs,
+        wasConnected: wasConnectedRef.current,
+        userEndedSession: userEndedSessionRef.current,
+        lastError: lastErrorRef.current,
+        rawArgs: args,
+      });
+      sessionStartedAtRef.current = null;
       setConnecting(false);
       setStatusMessage(null);
       if (!userEndedSessionRef.current) void prepareVoiceConnection().catch((error) => console.error("[Mai] voice reconnect prepare failed", error));
       if (wasConnectedRef.current && !userEndedSessionRef.current) {
-        toast({ variant: "destructive", title: "Mai disconnected", description: "Tap the microphone to reconnect." });
+        toast({
+          variant: "destructive",
+          title: "Mai disconnected",
+          description: lifetimeMs != null ? `Dropped after ${(lifetimeMs / 1000).toFixed(1)}s. Tap the mic to reconnect.` : "Tap the microphone to reconnect.",
+        });
       } else if (userEndedSessionRef.current) {
         toast({ title: "Conversation ended" });
       }
       wasConnectedRef.current = false;
       userEndedSessionRef.current = false;
     },
-    onError: (error) => {
-      console.error("ElevenLabs error:", error);
+    onError: (error: unknown, ...rest: unknown[]) => {
+      lastErrorRef.current = error;
+      console.error("[Mai] ❌ onError fired", {
+        at: new Date().toISOString(),
+        errorName: error instanceof Error ? error.name : typeof error,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : undefined,
+        rawError: error,
+        rest,
+      });
       setConnecting(false);
       const message = getStartErrorMessage(error);
       setStatusMessage(message);
       toast({ variant: "destructive", title: "Connection error", description: message });
+    },
+    onStatusChange: (status: unknown) => {
+      console.log("[Mai] ℹ️ onStatusChange", { at: new Date().toISOString(), status });
+    },
+    onModeChange: (mode: unknown) => {
+      console.log("[Mai] ℹ️ onModeChange", { at: new Date().toISOString(), mode });
     },
   });
 
   const isConnected = conversation.status === "connected";
 
   const start = useCallback(() => {
+    const tappedAt = Date.now();
+    lastStartTapAtRef.current = tappedAt;
+    lastErrorRef.current = null;
+    const cached = voiceConnectionRef.current;
+    console.log("[Mai] 🎙️ start() tapped", {
+      at: new Date(tappedAt).toISOString(),
+      hasCachedSignedUrl: !!cached,
+      cachedAgeMs: cached ? tappedAt - cached.createdAt : null,
+      conversationStatus: conversation.status,
+    });
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
-      const cached = voiceConnectionRef.current;
       if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
+        console.log("[Mai] start: no fresh signed URL, preparing…");
         setStatusMessage("Preparing Mai… tap the microphone again in a moment.");
         setConnecting(false);
         void prepareVoiceConnection()
-          .then(() => toast({ title: "Mai is ready", description: "Tap the microphone again to start talking." }))
+          .then(() => {
+            console.log("[Mai] start: prepare complete, awaiting next tap");
+            toast({ title: "Mai is ready", description: "Tap the microphone again to start talking." });
+          })
           .catch((error) => {
+            console.error("[Mai] start: prepare failed", error);
             const message = getStartErrorMessage(error);
             setStatusMessage(message);
             toast({ variant: "destructive", title: "Couldn't prepare Mai", description: message });
@@ -392,13 +445,17 @@ const VoiceAssistantInner = () => {
       setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
-      conversation.startSession({
+      console.log("[Mai] start: calling conversation.startSession()", { connectionType: "websocket" });
+      const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
       });
+      Promise.resolve(result)
+        .then((sessionId) => console.log("[Mai] startSession resolved", { sessionId, at: new Date().toISOString() }))
+        .catch((err) => console.error("[Mai] startSession rejected", err));
     } catch (err) {
-      console.error(err);
+      console.error("[Mai] start: synchronous throw", err);
       voiceConnectionRef.current = null;
       setVoiceReady(false);
       const message = getStartErrorMessage(err);
@@ -414,9 +471,19 @@ const VoiceAssistantInner = () => {
   }, [conversation, prepareVoiceConnection]);
 
   const stop = useCallback(async () => {
+    console.log("[Mai] 🛑 stop() called by user", { at: new Date().toISOString() });
     userEndedSessionRef.current = true;
     await conversation.endSession();
+    console.log("[Mai] stop: endSession resolved");
   }, [conversation]);
+
+  useEffect(() => {
+    console.log("[Mai] 🔄 conversation.status changed", {
+      at: new Date().toISOString(),
+      status: conversation.status,
+      isSpeaking: conversation.isSpeaking,
+    });
+  }, [conversation.status, conversation.isSpeaking]);
 
   return (
     <div className="fixed bottom-[calc(var(--nav-height)+1rem)] right-4 z-40 flex flex-col items-end gap-2">
