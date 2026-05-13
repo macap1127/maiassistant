@@ -385,33 +385,35 @@ const VoiceAssistantInner = () => {
 
   const isConnected = conversation.status === "connected";
 
-  const start = useCallback(async () => {
-    let permissionStream: MediaStream | null = null;
+  const start = useCallback(() => {
     if (connectionTimeoutRef.current) {
       clearTimeout(connectionTimeoutRef.current);
       connectionTimeoutRef.current = null;
     }
     setConnecting(true);
-    setStatusMessage("Requesting microphone…");
+    setStatusMessage("Connecting to Mai…");
     try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("This browser does not support microphone access.");
+      const cached = voiceConnectionRef.current;
+      if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
+        setStatusMessage("Preparing Mai… tap the microphone again in a moment.");
+        setConnecting(false);
+        void prepareVoiceConnection()
+          .then(() => toast({ title: "Mai is ready", description: "Tap the microphone again to start talking." }))
+          .catch((error) => {
+            const message = getStartErrorMessage(error);
+            setStatusMessage(message);
+            toast({ variant: "destructive", title: "Couldn't prepare Mai", description: message });
+          });
+        return;
       }
 
-      permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setStatusMessage("Connecting to Mai…");
-
-      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID },
-      });
-      if (error || !data?.signedUrl) throw new Error(error?.message || data?.error || "Failed to connect to Mai");
-
-      permissionStream.getTracks().forEach((track) => track.stop());
-      permissionStream = null;
+      const signedUrl = cached.signedUrl;
+      voiceConnectionRef.current = null;
+      setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
       conversation.startSession({
-        signedUrl: data.signedUrl,
+        signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
       });
@@ -425,7 +427,8 @@ const VoiceAssistantInner = () => {
       }, 10_000);
     } catch (err) {
       console.error(err);
-      permissionStream?.getTracks().forEach((track) => track.stop());
+      voiceConnectionRef.current = null;
+      setVoiceReady(false);
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
       toast({
@@ -436,7 +439,7 @@ const VoiceAssistantInner = () => {
     } finally {
       if (!connectionTimeoutRef.current) setConnecting(false);
     }
-  }, [conversation]);
+  }, [conversation, prepareVoiceConnection]);
 
   useEffect(() => () => {
     if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
