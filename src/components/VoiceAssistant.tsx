@@ -420,74 +420,13 @@ const VoiceAssistantInner = () => {
 
   return (
     <div className="fixed bottom-[calc(var(--nav-height)+1rem)] right-4 z-40 flex flex-col items-end gap-2">
-      {statusMessage && !textMode && (
+      {statusMessage && (
         <div className="max-w-64 rounded-md border border-border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-lg" role="status">
           {statusMessage}
         </div>
       )}
 
-      {textMode && (
-        <div className="w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover shadow-lg flex flex-col">
-          <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-            <div className="text-sm font-medium text-popover-foreground">Type to Mai</div>
-            <button
-              onClick={() => { setTextMode(false); if (isConnected) stop(); }}
-              aria-label="Close text chat"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="max-h-64 overflow-y-auto p-3 space-y-2 text-sm">
-            {chatLog.length === 0 ? (
-              <div className="text-muted-foreground">
-                Try: "add eggs and milk to the grocery list"
-              </div>
-            ) : (
-              chatLog.map((m, i) => (
-                <div key={i} className={m.from === "you" ? "text-right" : "text-left"}>
-                  <span className={`inline-block px-2 py-1 rounded ${m.from === "you" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
-                    {m.text}
-                  </span>
-                </div>
-              ))
-            )}
-            {statusMessage && (
-              <div className="text-xs text-muted-foreground">{statusMessage}</div>
-            )}
-          </div>
-          <form
-            onSubmit={(e) => { e.preventDefault(); sendText(); }}
-            className="flex items-center gap-2 p-2 border-t border-border"
-          >
-            <input
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              placeholder="Type a message…"
-              className="flex-1 bg-background border border-border rounded px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary"
-            />
-            <button
-              type="submit"
-              disabled={connecting || !textInput.trim()}
-              aria-label="Send"
-              className="flex items-center justify-center w-8 h-8 rounded bg-primary text-primary-foreground disabled:opacity-50"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
-        </div>
-      )}
-
       <div className="flex items-center gap-2">
-        {!textMode && (
-          <button
-            onClick={() => setTextMode(true)}
-            aria-label="Type to Mai"
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary text-secondary-foreground shadow-lg hover:scale-105"
-          >
-            <MessageSquare className="w-5 h-5" />
-          </button>
-        )}
         <button
           onClick={isConnected ? stop : start}
           disabled={connecting}
