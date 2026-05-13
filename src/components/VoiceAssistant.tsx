@@ -292,6 +292,22 @@ const VoiceAssistantInner = () => {
     if (!t) return;
     setChatLog((l) => [...l, { from: "you", text: t }]);
     setTextInput("");
+    const textGroceryItems = extractGroceryItemsFromUserText(t, awaitingGroceryItemRef.current);
+    if (textGroceryItems.length > 0) {
+      awaitingGroceryItemRef.current = false;
+      try {
+        const added = await addGroceryItems(textGroceryItems.map((name) => ({ name })));
+        if (added.length > 0) {
+          setChatLog((l) => [...l, { from: "mai", text: `Added ${added.join(", ")} to your grocery list.` }]);
+          toast({ title: "Added to grocery list", description: added.join(", ") });
+          return;
+        }
+      } catch (e: any) {
+        console.error("[Mai] text grocery add failed", e);
+        toast({ variant: "destructive", title: "Couldn't add grocery item", description: e?.message || "Please try again." });
+        return;
+      }
+    }
     if ((conversation.status as string) !== "connected") {
       await startText();
       // wait briefly for connection to settle
@@ -306,7 +322,7 @@ const VoiceAssistantInner = () => {
       console.error("[Mai] sendUserMessage failed", e);
       toast({ variant: "destructive", title: "Send failed", description: "Try again in a moment." });
     }
-  }, [textInput, startText, conversation]);
+  }, [textInput, addGroceryItems, startText, conversation]);
 
   return (
     <div className="fixed bottom-[calc(var(--nav-height)+1rem)] right-4 z-40 flex flex-col items-end gap-2">
