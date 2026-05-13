@@ -275,10 +275,10 @@ const CalendarPage = () => {
           <div className="bg-card rounded-2xl border border-border p-4 mb-3 space-y-3 animate-slide-up">
             <div className="flex items-center gap-2 mb-1">
               <FileUp className="w-4 h-4 text-primary" />
-              <p className="text-sm font-medium">Import Calendar File</p>
+              <p className="text-sm font-medium">Import Calendar</p>
             </div>
             <p className="text-xs text-muted-foreground">
-              Upload an .ics file from your kid's school, sports league, or any calendar source.
+              Upload an .ics file, a photo of a schedule/flyer, or a PDF. We'll pull out the events automatically.
             </p>
             <div className="relative">
               <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -292,7 +292,7 @@ const CalendarPage = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".ics"
+              accept=".ics,image/*,application/pdf,.pdf"
               onChange={handleFileUpload}
               className="hidden"
             />
@@ -308,7 +308,7 @@ const CalendarPage = () => {
               className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <Upload className="w-4 h-4" />
-              {importing ? "Importing…" : "Choose .ics File"}
+              {importing ? "Reading…" : "Choose file (.ics, image, PDF)"}
             </button>
             <button
               onClick={() => setShowUpload(false)}
