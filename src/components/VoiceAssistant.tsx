@@ -17,6 +17,9 @@ const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [textMode, setTextMode] = useState(false);
+  const [textInput, setTextInput] = useState("");
+  const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
   const householdIdRef = useRef<string | null>(null);
 
   // Resolve current household once user is known
