@@ -11,8 +11,11 @@ const getStartErrorMessage = (err: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mai.";
   if (err instanceof DOMException && err.name === "NotReadableError") return "Your microphone is busy in another app or tab.";
-  if (typeof err === "string") return err;
-  return err instanceof Error ? err.message : "Please allow microphone access and try again.";
+  const message = typeof err === "string" ? err : err instanceof Error ? err.message : "";
+  if (/requested device not found|notfounderror|no device/i.test(message)) return "No microphone was found on this device.";
+  if (/permission|notallowed/i.test(message)) return "Please allow microphone access to talk to Mai.";
+  if (/notreadable|busy|in use/i.test(message)) return "Your microphone is busy in another app or tab.";
+  return message || "Please allow microphone access and try again.";
 };
 
 const getErrorMessage = (err: unknown) => (err instanceof Error ? err.message : "unknown error");
@@ -109,6 +112,10 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
 
 type TextSessionOptions = Parameters<ReturnType<typeof useConversation>["startSession"]>[0] & { textOnly?: boolean };
 
+type VoiceConnection = { signedUrl: string; createdAt: number };
+
+const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
+
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -116,9 +123,13 @@ const VoiceAssistantInner = () => {
   const [textMode, setTextMode] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
+  const [voiceReady, setVoiceReady] = useState(false);
+  const [preparingVoice, setPreparingVoice] = useState(false);
   const householdIdRef = useRef<string | null>(null);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
+  const voiceConnectionRef = useRef<VoiceConnection | null>(null);
+  const voiceConnectionPromiseRef = useRef<Promise<string> | null>(null);
   const connectionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
@@ -146,6 +157,45 @@ const VoiceAssistantInner = () => {
     if (!hid) throw new Error("No household found for current user.");
     return hid;
   };
+
+  const prepareVoiceConnection = useCallback(async () => {
+    const cached = voiceConnectionRef.current;
+    if (cached && Date.now() - cached.createdAt < VOICE_CONNECTION_MAX_AGE_MS) {
+      setVoiceReady(true);
+      return cached.signedUrl;
+    }
+    if (voiceConnectionPromiseRef.current) return voiceConnectionPromiseRef.current;
+
+    setVoiceReady(false);
+    setPreparingVoice(true);
+    const promise = supabase.functions
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID } })
+      .then(({ data, error }) => {
+        if (error || !data?.signedUrl) throw new Error(error?.message || data?.error || "Failed to prepare Mai");
+        voiceConnectionRef.current = { signedUrl: data.signedUrl as string, createdAt: Date.now() };
+        setVoiceReady(true);
+        return data.signedUrl as string;
+      })
+      .catch((error) => {
+        voiceConnectionRef.current = null;
+        setVoiceReady(false);
+        throw error;
+      })
+      .finally(() => {
+        voiceConnectionPromiseRef.current = null;
+        setPreparingVoice(false);
+      });
+
+    voiceConnectionPromiseRef.current = promise;
+    return promise;
+  }, []);
+
+  useEffect(() => {
+    void prepareVoiceConnection().catch((error) => {
+      console.error("[Mai] voice connection prepare failed", error);
+      setStatusMessage("Tap the microphone to prepare Mai.");
+    });
+  }, [prepareVoiceConnection]);
 
   const addGroceryItems = useCallback(async (items: { name: string; quantity?: string; category?: string; store?: string }[]) => {
     const hid = requireHousehold();
@@ -315,6 +365,7 @@ const VoiceAssistantInner = () => {
       }
       setConnecting(false);
       setStatusMessage(null);
+      if (!userEndedSessionRef.current) void prepareVoiceConnection().catch((error) => console.error("[Mai] voice reconnect prepare failed", error));
       if (wasConnectedRef.current && !userEndedSessionRef.current) {
         toast({ variant: "destructive", title: "Mai disconnected", description: "Tap the microphone to reconnect." });
       } else if (userEndedSessionRef.current) {
@@ -338,33 +389,35 @@ const VoiceAssistantInner = () => {
 
   const isConnected = conversation.status === "connected";
 
-  const start = useCallback(async () => {
-    let permissionStream: MediaStream | null = null;
+  const start = useCallback(() => {
     if (connectionTimeoutRef.current) {
       clearTimeout(connectionTimeoutRef.current);
       connectionTimeoutRef.current = null;
     }
     setConnecting(true);
-    setStatusMessage("Requesting microphone…");
+    setStatusMessage("Connecting to Mai…");
     try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("This browser does not support microphone access.");
+      const cached = voiceConnectionRef.current;
+      if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
+        setStatusMessage("Preparing Mai… tap the microphone again in a moment.");
+        setConnecting(false);
+        void prepareVoiceConnection()
+          .then(() => toast({ title: "Mai is ready", description: "Tap the microphone again to start talking." }))
+          .catch((error) => {
+            const message = getStartErrorMessage(error);
+            setStatusMessage(message);
+            toast({ variant: "destructive", title: "Couldn't prepare Mai", description: message });
+          });
+        return;
       }
 
-      permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setStatusMessage("Connecting to Mai…");
-
-      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID },
-      });
-      if (error || !data?.signedUrl) throw new Error(error?.message || data?.error || "Failed to connect to Mai");
-
-      permissionStream.getTracks().forEach((track) => track.stop());
-      permissionStream = null;
+      const signedUrl = cached.signedUrl;
+      voiceConnectionRef.current = null;
+      setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
       conversation.startSession({
-        signedUrl: data.signedUrl,
+        signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
       });
@@ -378,7 +431,8 @@ const VoiceAssistantInner = () => {
       }, 10_000);
     } catch (err) {
       console.error(err);
-      permissionStream?.getTracks().forEach((track) => track.stop());
+      voiceConnectionRef.current = null;
+      setVoiceReady(false);
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
       toast({
@@ -389,7 +443,7 @@ const VoiceAssistantInner = () => {
     } finally {
       if (!connectionTimeoutRef.current) setConnecting(false);
     }
-  }, [conversation]);
+  }, [conversation, prepareVoiceConnection]);
 
   useEffect(() => () => {
     if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
@@ -539,13 +593,17 @@ const VoiceAssistantInner = () => {
           className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
             isConnected
               ? "bg-destructive text-destructive-foreground animate-pulse"
-              : "bg-primary text-primary-foreground hover:scale-105"
+              : voiceReady
+                ? "bg-primary text-primary-foreground hover:scale-105"
+                : "bg-secondary text-secondary-foreground hover:scale-105"
           }`}
         >
           {connecting ? (
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : isConnected ? (
             <MicOff className="w-6 h-6" />
+          ) : preparingVoice ? (
+            <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <Mic className="w-6 h-6" />
           )}
