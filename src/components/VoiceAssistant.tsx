@@ -314,13 +314,20 @@ const VoiceAssistantInner = () => {
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Microphone access is not available in this browser.");
+      }
+
+      const permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      permissionStream.getTracks().forEach((track) => track.stop());
+
       const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID, mode: "voice" },
+        body: { agentId: AGENT_ID },
       });
-      if (error || !data?.token) throw new Error(error?.message || "Failed to get voice token");
+      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
       await conversation.startSession({
-        conversationToken: data.token,
-        connectionType: "webrtc",
+        signedUrl: data.signedUrl,
+        connectionType: "websocket",
       });
     } catch (err) {
       console.error(err);
