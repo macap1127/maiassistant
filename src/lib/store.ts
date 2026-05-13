@@ -187,10 +187,11 @@ export function useFamilyData() {
       const hid = householdIdRef.current;
       if (!hid) return;
 
-      const prev = data;
+      const prev = dataRef.current;
       const next = updater(prev);
 
       // Optimistic local update
+      dataRef.current = next;
       setData(next);
 
       try {
