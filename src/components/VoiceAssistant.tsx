@@ -107,7 +107,7 @@ const VoiceAssistantInner = () => {
     return hid;
   };
 
-  const addGroceryItems = useCallback(async (items: { name: string; quantity?: string; category?: string }[]) => {
+  const addGroceryItems = useCallback(async (items: { name: string; quantity?: string; category?: string; store?: string }[]) => {
     const hid = requireHousehold();
     const now = Date.now();
     const rows = items
@@ -119,6 +119,7 @@ const VoiceAssistantInner = () => {
         name: item.name,
         quantity: item.quantity ?? "",
         category: item.category ?? "Other",
+        store: item.store?.trim() || null,
         added_by: "Mai",
         completed: false,
       }));
@@ -137,12 +138,13 @@ const VoiceAssistantInner = () => {
 
   const conversation = useConversation({
     clientTools: {
-      addGrocery: async (params: { name: string; quantity?: string; category?: string }) => {
+      addGrocery: async (params: { name: string; quantity?: string; category?: string; store?: string }) => {
         console.log("[Mai] addGrocery called", params);
         try {
           const added = await addGroceryItems([params]);
           if (added.length === 0) return `${params.name} was already added.`;
-          return `Added ${params.name} to the grocery list.`;
+          const where = params.store ? ` (${params.store})` : "";
+          return `Added ${params.name}${where} to the grocery list.`;
         } catch (e: unknown) {
           console.error("[Mai] addGrocery threw", e);
           return `Failed to add: ${getErrorMessage(e)}`;

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Check, Trash2, Sparkles, ChevronDown, Trash } from "lucide-react";
+import { Plus, Check, Trash2, Sparkles, ChevronDown, Trash, Store as StoreIcon } from "lucide-react";
 import { useFamilyData, genId, type GroceryItem } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -32,6 +32,8 @@ const GroceryList = () => {
   const { data, update } = useFamilyData();
   const [newItem, setNewItem] = useState("");
   const [newQty, setNewQty] = useState("");
+  const [newStore, setNewStore] = useState("");
+  const [storeFilter, setStoreFilter] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [collapsedDone, setCollapsedDone] = useState(true);
 
@@ -40,8 +42,8 @@ const GroceryList = () => {
     if (!name || adding) return;
     setAdding(true);
 
-    // Optimistic add with placeholder category
     const id = genId();
+    const store = newStore.trim() || undefined;
     update((d) => ({
       ...d,
       groceryList: [
@@ -53,13 +55,14 @@ const GroceryList = () => {
           addedBy: "You",
           completed: false,
           category: "Other",
+          store,
         },
       ],
     }));
     setNewItem("");
     setNewQty("");
+    // keep store sticky so the user can add several items for the same store
 
-    // Categorize via edge function, then patch the item
     try {
       const { data: result, error } = await supabase.functions.invoke(
         "categorize-grocery",
@@ -80,7 +83,6 @@ const GroceryList = () => {
       }));
     } catch (e: any) {
       console.error("categorize failed", e);
-      // silent — item still added under "Other"
     } finally {
       setAdding(false);
     }
@@ -100,18 +102,37 @@ const GroceryList = () => {
       groceryList: d.groceryList.filter((g) => g.id !== id),
     }));
 
+  const matchesStore = (g: GroceryItem) => {
+    if (storeFilter === null) return true;
+    if (storeFilter === "__none__") return !g.store;
+    return (g.store || "").toLowerCase() === storeFilter.toLowerCase();
+  };
+
   const clearCompleted = () => {
-    const count = data.groceryList.filter((g) => g.completed).length;
+    const targets = data.groceryList.filter((g) => g.completed && matchesStore(g));
+    const count = targets.length;
     if (!count) return;
+    const ids = new Set(targets.map((t) => t.id));
     update((d) => ({
       ...d,
-      groceryList: d.groceryList.filter((g) => !g.completed),
+      groceryList: d.groceryList.filter((g) => !ids.has(g.id)),
     }));
     toast.success(`Cleared ${count} item${count === 1 ? "" : "s"}`);
   };
 
-  const pending = data.groceryList.filter((g) => !g.completed);
-  const completed = data.groceryList.filter((g) => g.completed);
+  const pending = data.groceryList.filter((g) => !g.completed && matchesStore(g));
+  const completed = data.groceryList.filter((g) => g.completed && matchesStore(g));
+
+  const stores = useMemo(() => {
+    const set = new Set<string>();
+    for (const g of data.groceryList) if (g.store) set.add(g.store);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [data.groceryList]);
+
+  const hasUntagged = useMemo(
+    () => data.groceryList.some((g) => !g.store),
+    [data.groceryList]
+  );
 
   const grouped = useMemo(() => {
     const map = new Map<string, GroceryItem[]>();
@@ -147,7 +168,7 @@ const GroceryList = () => {
       </p>
 
       {/* Add input */}
-      <div className="bg-card border border-border rounded-2xl p-2 mb-6 animate-slide-up">
+      <div className="bg-card border border-border rounded-2xl p-2 mb-4 animate-slide-up">
         <div className="flex gap-2">
           <input
             value={newItem}
@@ -171,6 +192,30 @@ const GroceryList = () => {
             <Plus className="w-5 h-5" />
           </button>
         </div>
+        <div className="flex items-center gap-2 px-3 pt-1.5 pb-1 border-t border-border mt-1">
+          <StoreIcon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+          <input
+            list="store-suggestions"
+            value={newStore}
+            onChange={(e) => setNewStore(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addItem()}
+            placeholder="Store (optional, e.g. Costco)"
+            className="flex-1 bg-transparent text-xs placeholder:text-muted-foreground focus:outline-none py-1"
+          />
+          {newStore && (
+            <button
+              onClick={() => setNewStore("")}
+              className="text-[10px] text-muted-foreground hover:text-foreground"
+            >
+              clear
+            </button>
+          )}
+          <datalist id="store-suggestions">
+            {stores.map((s) => (
+              <option key={s} value={s} />
+            ))}
+          </datalist>
+        </div>
         <div className="flex items-center gap-1.5 px-3 pt-1 pb-1">
           <Sparkles className="w-3 h-3 text-primary" />
           <p className="text-[10px] text-muted-foreground">
@@ -178,6 +223,47 @@ const GroceryList = () => {
           </p>
         </div>
       </div>
+
+      {/* Store filter chips */}
+      {(stores.length > 0 || hasUntagged) && (
+        <div className="flex gap-1.5 overflow-x-auto pb-2 mb-4 -mx-1 px-1 animate-fade-in">
+          <button
+            onClick={() => setStoreFilter(null)}
+            className={`shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+              storeFilter === null
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-card text-foreground border-border hover:bg-secondary"
+            }`}
+          >
+            All stores
+          </button>
+          {stores.map((s) => (
+            <button
+              key={s}
+              onClick={() => setStoreFilter(s)}
+              className={`shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                storeFilter === s
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-foreground border-border hover:bg-secondary"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+          {hasUntagged && (
+            <button
+              onClick={() => setStoreFilter("__none__")}
+              className={`shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                storeFilter === "__none__"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border hover:bg-secondary"
+              }`}
+            >
+              No store
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Empty state */}
       {pending.length === 0 && completed.length === 0 && (
@@ -219,10 +305,16 @@ const GroceryList = () => {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       {item.quantity && (
                         <span className="text-xs text-muted-foreground">
                           {item.quantity}
+                        </span>
+                      )}
+                      {item.store && (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                          <StoreIcon className="w-2.5 h-2.5" />
+                          {item.store}
                         </span>
                       )}
                       {item.addedBy && (
