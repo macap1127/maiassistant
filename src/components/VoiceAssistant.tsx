@@ -340,30 +340,66 @@ const VoiceAssistantInner = () => {
         }
       }
     },
-    onConnect: () => {
+    onConnect: (...args: unknown[]) => {
+      const connectedAt = Date.now();
+      sessionStartedAtRef.current = connectedAt;
+      console.log("[Mai] 🟢 onConnect fired", {
+        at: new Date(connectedAt).toISOString(),
+        msSinceStartTap: lastStartTapAtRef.current ? connectedAt - lastStartTapAtRef.current : null,
+        args,
+      });
       setConnecting(false);
       wasConnectedRef.current = true;
       setStatusMessage("Listening…");
       toast({ title: "Connected to Mai", description: "Start speaking…" });
     },
-    onDisconnect: () => {
+    onDisconnect: (...args: unknown[]) => {
+      const disconnectedAt = Date.now();
+      const lifetimeMs = sessionStartedAtRef.current ? disconnectedAt - sessionStartedAtRef.current : null;
+      console.warn("[Mai] 🔴 onDisconnect fired", {
+        at: new Date(disconnectedAt).toISOString(),
+        sessionLifetimeMs: lifetimeMs,
+        wasConnected: wasConnectedRef.current,
+        userEndedSession: userEndedSessionRef.current,
+        lastError: lastErrorRef.current,
+        rawArgs: args,
+      });
+      sessionStartedAtRef.current = null;
       setConnecting(false);
       setStatusMessage(null);
       if (!userEndedSessionRef.current) void prepareVoiceConnection().catch((error) => console.error("[Mai] voice reconnect prepare failed", error));
       if (wasConnectedRef.current && !userEndedSessionRef.current) {
-        toast({ variant: "destructive", title: "Mai disconnected", description: "Tap the microphone to reconnect." });
+        toast({
+          variant: "destructive",
+          title: "Mai disconnected",
+          description: lifetimeMs != null ? `Dropped after ${(lifetimeMs / 1000).toFixed(1)}s. Tap the mic to reconnect.` : "Tap the microphone to reconnect.",
+        });
       } else if (userEndedSessionRef.current) {
         toast({ title: "Conversation ended" });
       }
       wasConnectedRef.current = false;
       userEndedSessionRef.current = false;
     },
-    onError: (error) => {
-      console.error("ElevenLabs error:", error);
+    onError: (error: unknown, ...rest: unknown[]) => {
+      lastErrorRef.current = error;
+      console.error("[Mai] ❌ onError fired", {
+        at: new Date().toISOString(),
+        errorName: error instanceof Error ? error.name : typeof error,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : undefined,
+        rawError: error,
+        rest,
+      });
       setConnecting(false);
       const message = getStartErrorMessage(error);
       setStatusMessage(message);
       toast({ variant: "destructive", title: "Connection error", description: message });
+    },
+    onStatusChange: (status: unknown) => {
+      console.log("[Mai] ℹ️ onStatusChange", { at: new Date().toISOString(), status });
+    },
+    onModeChange: (mode: unknown) => {
+      console.log("[Mai] ℹ️ onModeChange", { at: new Date().toISOString(), mode });
     },
   });
 
