@@ -90,11 +90,12 @@ const CalendarPage = () => {
           time: newEvent.time || undefined,
           location: newEvent.location.trim() || undefined,
           notes: newEvent.notes.trim() || undefined,
+          assignedTo: newEvent.assignedTo || undefined,
           addedBy: "You",
         },
       ],
     }));
-    setNewEvent({ title: "", time: "", location: "", notes: "" });
+    setNewEvent({ title: "", time: "", location: "", notes: "", assignedTo: "" });
     setShowForm(false);
   };
 
