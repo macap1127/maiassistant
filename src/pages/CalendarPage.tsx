@@ -100,6 +100,39 @@ const CalendarPage = () => {
   const removeEvent = (id: string) =>
     update((d) => ({ ...d, events: d.events.filter((e) => e.id !== id) }));
 
+  const startEdit = (event: CalendarEvent) => {
+    setEditingEventId(event.id);
+    setEditDraft({
+      title: event.title,
+      time: event.time || "",
+      location: event.location || "",
+      notes: event.notes || "",
+    });
+  };
+
+  const saveEdit = () => {
+    if (!editingEventId) return;
+    const title = editDraft.title.trim();
+    if (!title) return;
+    update((d) => ({
+      ...d,
+      events: d.events.map((e) =>
+        e.id === editingEventId
+          ? {
+              ...e,
+              title,
+              time: editDraft.time || undefined,
+              location: editDraft.location.trim() || undefined,
+              notes: editDraft.notes.trim() || undefined,
+            }
+          : e
+      ),
+    }));
+    setEditingEventId(null);
+  };
+
+  const cancelEdit = () => setEditingEventId(null);
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
