@@ -549,6 +549,8 @@ const VoiceAssistantInner = () => {
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : isConnected ? (
             <MicOff className="w-6 h-6" />
+          ) : preparingVoice ? (
+            <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <Mic className="w-6 h-6" />
           )}
