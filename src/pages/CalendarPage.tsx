@@ -420,40 +420,97 @@ const CalendarPage = () => {
               >
                 <div className="w-1 self-stretch rounded-full bg-primary shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium">{event.title}</p>
-                    {event.source && (
-                      <span
-                        className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full border shrink-0 ${getSourceColor(event.source, allSources)}`}
-                      >
-                        {event.source}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
-                    {event.time && (
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {event.time}
-                      </span>
-                    )}
-                    {event.location && (
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {event.location}
-                      </span>
-                    )}
-                  </div>
-                  {event.notes && (
-                    <p className="text-xs text-muted-foreground mt-1">{event.notes}</p>
+                  {editingEventId === event.id ? (
+                    <div className="space-y-2">
+                      <input
+                        value={editDraft.title}
+                        onChange={(e) => setEditDraft((d) => ({ ...d, title: e.target.value }))}
+                        placeholder="Event title"
+                        className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="time"
+                          value={editDraft.time}
+                          onChange={(e) => setEditDraft((d) => ({ ...d, time: e.target.value }))}
+                          className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <input
+                          value={editDraft.location}
+                          onChange={(e) => setEditDraft((d) => ({ ...d, location: e.target.value }))}
+                          placeholder="Location"
+                          className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                      </div>
+                      <input
+                        value={editDraft.notes}
+                        onChange={(e) => setEditDraft((d) => ({ ...d, notes: e.target.value }))}
+                        placeholder="Notes"
+                        className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={saveEdit}
+                          className="flex-1 bg-primary text-primary-foreground rounded-xl py-2 text-sm font-medium hover:opacity-90 transition-opacity"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          className="flex-1 bg-secondary text-secondary-foreground rounded-xl py-2 text-sm font-medium hover:bg-secondary/80 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium">{event.title}</p>
+                        {event.source && (
+                          <span
+                            className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full border shrink-0 ${getSourceColor(event.source, allSources)}`}
+                          >
+                            {event.source}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
+                        {event.time && (
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {event.time}
+                          </span>
+                        )}
+                        {event.location && (
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {event.location}
+                          </span>
+                        )}
+                      </div>
+                      {event.notes && (
+                        <p className="text-xs text-muted-foreground mt-1">{event.notes}</p>
+                      )}
+                    </>
                   )}
                 </div>
-                <button
-                  onClick={() => removeEvent(event.id)}
-                  className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {editingEventId !== event.id && (
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => startEdit(event)}
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => removeEvent(event.id)}
+                      className="text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
 
