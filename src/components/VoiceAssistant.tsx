@@ -11,8 +11,11 @@ const getStartErrorMessage = (err: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mai.";
   if (err instanceof DOMException && err.name === "NotReadableError") return "Your microphone is busy in another app or tab.";
-  if (typeof err === "string") return err;
-  return err instanceof Error ? err.message : "Please allow microphone access and try again.";
+  const message = typeof err === "string" ? err : err instanceof Error ? err.message : "";
+  if (/requested device not found|notfounderror|no device/i.test(message)) return "No microphone was found on this device.";
+  if (/permission|notallowed/i.test(message)) return "Please allow microphone access to talk to Mai.";
+  if (/notreadable|busy|in use/i.test(message)) return "Your microphone is busy in another app or tab.";
+  return message || "Please allow microphone access and try again.";
 };
 
 const getErrorMessage = (err: unknown) => (err instanceof Error ? err.message : "unknown error");
