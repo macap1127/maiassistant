@@ -53,10 +53,24 @@ const CalendarPage = () => {
 
   const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
   const eventsForDate = data.events.filter((e) => e.date === selectedDateStr);
-  const datesWithEvents = new Set(data.events.map((e) => e.date));
+  const tasksForDate = useMemo(
+    () => data.tasks.filter((t) => t.dueDate && t.dueDate === selectedDateStr),
+    [data.tasks, selectedDateStr]
+  );
+  const datesWithEvents = useMemo(() => {
+    const s = new Set(data.events.map((e) => e.date));
+    data.tasks.forEach((t) => { if (t.dueDate) s.add(t.dueDate); });
+    return s;
+  }, [data.events, data.tasks]);
 
   // All unique sources for color mapping
   const allSources = [...new Set(data.events.map((e) => e.source).filter(Boolean))] as string[];
+
+  const toggleTask = (id: string) =>
+    update((d) => ({
+      ...d,
+      tasks: d.tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+    }));
 
   const addEvent = () => {
     const title = newEvent.title.trim();
