@@ -307,7 +307,6 @@ const VoiceAssistantInner = () => {
         message?.user_transcription_event?.user_transcript;
       const source = message?.source || message?.type;
       if (text && (source === "ai" || source === "agent_response")) {
-        setChatLog((l) => [...l, { from: "mai", text }]);
         awaitingGroceryItemRef.current = /\bgrocery list\b/i.test(text) && /\b(quantity|specific|include|just|what would|which item)\b/i.test(text);
 
         const confirmedItems = extractGroceryItemFromAgentConfirmation(text);
@@ -324,7 +323,6 @@ const VoiceAssistantInner = () => {
             });
         }
       } else if (text && (source === "user" || source === "user_transcript")) {
-        setChatLog((l) => [...l, { from: "you", text }]);
         const spokenItems = extractGroceryItemsFromUserText(text, awaitingGroceryItemRef.current);
         console.log("[Mai] user transcript parsed grocery items", { text, spokenItems });
         if (spokenItems.length > 0) {
@@ -343,20 +341,12 @@ const VoiceAssistantInner = () => {
       }
     },
     onConnect: () => {
-      if (connectionTimeoutRef.current) {
-        clearTimeout(connectionTimeoutRef.current);
-        connectionTimeoutRef.current = null;
-      }
       setConnecting(false);
       wasConnectedRef.current = true;
       setStatusMessage("Listening…");
       toast({ title: "Connected to Mai", description: "Start speaking…" });
     },
     onDisconnect: () => {
-      if (connectionTimeoutRef.current) {
-        clearTimeout(connectionTimeoutRef.current);
-        connectionTimeoutRef.current = null;
-      }
       setConnecting(false);
       setStatusMessage(null);
       if (!userEndedSessionRef.current) void prepareVoiceConnection().catch((error) => console.error("[Mai] voice reconnect prepare failed", error));
@@ -370,10 +360,6 @@ const VoiceAssistantInner = () => {
     },
     onError: (error) => {
       console.error("ElevenLabs error:", error);
-      if (connectionTimeoutRef.current) {
-        clearTimeout(connectionTimeoutRef.current);
-        connectionTimeoutRef.current = null;
-      }
       setConnecting(false);
       const message = getStartErrorMessage(error);
       setStatusMessage(message);
