@@ -261,12 +261,21 @@ const VoiceAssistantInner = () => {
             });
         }
       } else if (text && (source === "user" || source === "user_transcript")) {
+        setChatLog((l) => [...l, { from: "you", text }]);
         const spokenItems = extractGroceryItemsFromUserText(text, awaitingGroceryItemRef.current);
+        console.log("[Mai] user transcript parsed grocery items", { text, spokenItems });
         if (spokenItems.length > 0) {
           awaitingGroceryItemRef.current = false;
-          void addGroceryItems(spokenItems).catch((error) => {
-            console.error("[Mai] user transcript grocery insert failed", error);
-          });
+          void addGroceryItems(spokenItems)
+            .then((added) => {
+              if (added.length > 0) {
+                toast({ title: "Added to grocery list", description: added.join(", ") });
+              }
+            })
+            .catch((error) => {
+              console.error("[Mai] user transcript grocery insert failed", error);
+              toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(error) });
+            });
         }
       }
     },
