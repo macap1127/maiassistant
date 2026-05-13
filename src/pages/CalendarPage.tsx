@@ -41,11 +41,12 @@ const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
-  const [newEvent, setNewEvent] = useState({ title: "", time: "", location: "", notes: "" });
+  const [newEvent, setNewEvent] = useState({ title: "", time: "", location: "", notes: "", assignedTo: "" });
   const [uploadSource, setUploadSource] = useState("");
+  const [uploadAssignedTo, setUploadAssignedTo] = useState("");
   const [importing, setImporting] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState({ title: "", time: "", location: "", notes: "" });
+  const [editDraft, setEditDraft] = useState({ title: "", time: "", location: "", notes: "", assignedTo: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
@@ -89,11 +90,12 @@ const CalendarPage = () => {
           time: newEvent.time || undefined,
           location: newEvent.location.trim() || undefined,
           notes: newEvent.notes.trim() || undefined,
+          assignedTo: newEvent.assignedTo || undefined,
           addedBy: "You",
         },
       ],
     }));
-    setNewEvent({ title: "", time: "", location: "", notes: "" });
+    setNewEvent({ title: "", time: "", location: "", notes: "", assignedTo: "" });
     setShowForm(false);
   };
 
@@ -107,6 +109,7 @@ const CalendarPage = () => {
       time: event.time || "",
       location: event.location || "",
       notes: event.notes || "",
+      assignedTo: event.assignedTo || "",
     });
   };
 
@@ -124,6 +127,7 @@ const CalendarPage = () => {
               time: editDraft.time || undefined,
               location: editDraft.location.trim() || undefined,
               notes: editDraft.notes.trim() || undefined,
+              assignedTo: editDraft.assignedTo || undefined,
             }
           : e
       ),
@@ -154,10 +158,11 @@ const CalendarPage = () => {
     }
 
     setImporting(true);
+    const assignedTo = uploadAssignedTo || undefined;
     try {
       if (isIcs) {
         const text = await readFileAsText(file);
-        const parsed = parseIcsFile(text, source);
+        const parsed = parseIcsFile(text, source).map((ev) => ({ ...ev, assignedTo }));
         if (parsed.length === 0) {
           toast.error("No events found in the file");
           return;
@@ -200,6 +205,7 @@ const CalendarPage = () => {
               notes: ev.notes || undefined,
               addedBy: "You",
               source: ev.source || source,
+              assignedTo,
             })),
           ],
         }));
@@ -207,6 +213,7 @@ const CalendarPage = () => {
       }
       setShowUpload(false);
       setUploadSource("");
+      setUploadAssignedTo("");
     } catch (err) {
       console.error(err);
       toast.error("Failed to import events from that file");
@@ -324,6 +331,18 @@ const CalendarPage = () => {
                 className="w-full bg-background border border-border rounded-xl pl-9 pr-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
+            {data.members.length > 0 && (
+              <select
+                value={uploadAssignedTo}
+                onChange={(e) => setUploadAssignedTo(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">Assign to family member (optional)</option>
+                {data.members.map((m) => (
+                  <option key={m.id} value={m.name}>{m.name}</option>
+                ))}
+              </select>
+            )}
             <input
               ref={fileInputRef}
               type="file"
@@ -383,6 +402,18 @@ const CalendarPage = () => {
               placeholder="Notes (optional)"
               className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
+            {data.members.length > 0 && (
+              <select
+                value={newEvent.assignedTo}
+                onChange={(e) => setNewEvent((p) => ({ ...p, assignedTo: e.target.value }))}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">Assign to family member (optional)</option>
+                {data.members.map((m) => (
+                  <option key={m.id} value={m.name}>{m.name}</option>
+                ))}
+              </select>
+            )}
             <button
               onClick={addEvent}
               className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
@@ -448,6 +479,18 @@ const CalendarPage = () => {
                         placeholder="Notes"
                         className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                       />
+                      {data.members.length > 0 && (
+                        <select
+                          value={editDraft.assignedTo}
+                          onChange={(e) => setEditDraft((d) => ({ ...d, assignedTo: e.target.value }))}
+                          className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        >
+                          <option value="">Assign to family member (optional)</option>
+                          {data.members.map((m) => (
+                            <option key={m.id} value={m.name}>{m.name}</option>
+                          ))}
+                        </select>
+                      )}
                       <div className="flex gap-2">
                         <button
                           onClick={saveEdit}
@@ -486,6 +529,11 @@ const CalendarPage = () => {
                           <span className="text-xs text-muted-foreground flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             {event.location}
+                          </span>
+                        )}
+                        {event.assignedTo && (
+                          <span className="text-xs text-primary font-medium">
+                            • {event.assignedTo}
                           </span>
                         )}
                       </div>

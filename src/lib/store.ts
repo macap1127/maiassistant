@@ -37,6 +37,7 @@ export interface CalendarEvent {
   notes?: string;
   addedBy: string;
   source?: string;
+  assignedTo?: string;
 }
 
 export interface FamilyData {
@@ -150,6 +151,7 @@ export function useFamilyData() {
           notes: e.notes || undefined,
           addedBy: e.added_by,
           source: e.source || undefined,
+          assignedTo: e.assigned_to || undefined,
         })),
       });
       setLoading(false);
@@ -256,6 +258,7 @@ export function useFamilyData() {
             notes: e.notes || null,
             added_by: e.addedBy,
             source: e.source || null,
+            assigned_to: e.assignedTo || "",
           }),
           (e) => ({
             title: e.title,
@@ -265,6 +268,7 @@ export function useFamilyData() {
             notes: e.notes || null,
             added_by: e.addedBy,
             source: e.source || null,
+            assigned_to: e.assignedTo || "",
           }),
           "events"
         );
