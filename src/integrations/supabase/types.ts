@@ -17,6 +17,7 @@ export type Database = {
       events: {
         Row: {
           added_by: string
+          assigned_to: string
           created_at: string
           date: string
           household_id: string
@@ -30,6 +31,7 @@ export type Database = {
         }
         Insert: {
           added_by?: string
+          assigned_to?: string
           created_at?: string
           date: string
           household_id: string
@@ -43,6 +45,7 @@ export type Database = {
         }
         Update: {
           added_by?: string
+          assigned_to?: string
           created_at?: string
           date?: string
           household_id?: string

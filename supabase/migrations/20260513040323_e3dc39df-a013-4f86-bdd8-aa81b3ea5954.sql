@@ -1,0 +1,1 @@
+ALTER TABLE public.events ADD COLUMN assigned_to text NOT NULL DEFAULT '';
