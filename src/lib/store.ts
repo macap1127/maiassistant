@@ -258,6 +258,7 @@ export function useFamilyData() {
             notes: e.notes || null,
             added_by: e.addedBy,
             source: e.source || null,
+            assigned_to: e.assignedTo || "",
           }),
           (e) => ({
             title: e.title,
@@ -267,6 +268,7 @@ export function useFamilyData() {
             notes: e.notes || null,
             added_by: e.addedBy,
             source: e.source || null,
+            assigned_to: e.assignedTo || "",
           }),
           "events"
         );
