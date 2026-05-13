@@ -314,12 +314,12 @@ const VoiceAssistantInner = () => {
     setStatusMessage("Connecting to Mai…");
     try {
       const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID },
+        body: { agentId: AGENT_ID, mode: "voice" },
       });
-      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
+      if (error || !data?.token) throw new Error(error?.message || "Failed to get voice token");
       await conversation.startSession({
-        signedUrl: data.signedUrl,
-        connectionType: "websocket",
+        conversationToken: data.token,
+        connectionType: "webrtc",
       });
     } catch (err) {
       console.error(err);
