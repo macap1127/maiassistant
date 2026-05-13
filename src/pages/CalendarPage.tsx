@@ -402,6 +402,18 @@ const CalendarPage = () => {
               placeholder="Notes (optional)"
               className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
+            {data.members.length > 0 && (
+              <select
+                value={newEvent.assignedTo}
+                onChange={(e) => setNewEvent((p) => ({ ...p, assignedTo: e.target.value }))}
+                className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="">Assign to family member (optional)</option>
+                {data.members.map((m) => (
+                  <option key={m.id} value={m.name}>{m.name}</option>
+                ))}
+              </select>
+            )}
             <button
               onClick={addEvent}
               className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
