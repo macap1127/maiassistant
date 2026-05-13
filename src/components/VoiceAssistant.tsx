@@ -109,10 +109,6 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
 
 type TextSessionOptions = Parameters<ReturnType<typeof useConversation>["startSession"]>[0] & { textOnly?: boolean };
 
-type VoiceToken = { token: string; createdAt: number };
-
-const VOICE_TOKEN_MAX_AGE_MS = 8 * 60 * 1000;
-
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -120,13 +116,10 @@ const VoiceAssistantInner = () => {
   const [textMode, setTextMode] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
-  const [voiceReady, setVoiceReady] = useState(false);
-  const [preparingVoice, setPreparingVoice] = useState(false);
   const householdIdRef = useRef<string | null>(null);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
-  const voiceTokenRef = useRef<VoiceToken | null>(null);
-  const voiceTokenPromiseRef = useRef<Promise<string> | null>(null);
+  const connectionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
 
@@ -153,34 +146,6 @@ const VoiceAssistantInner = () => {
     if (!hid) throw new Error("No household found for current user.");
     return hid;
   };
-
-  const prepareVoiceToken = useCallback(async () => {
-    const cached = voiceTokenRef.current;
-    if (cached && Date.now() - cached.createdAt < VOICE_TOKEN_MAX_AGE_MS) return cached.token;
-    if (voiceTokenPromiseRef.current) return voiceTokenPromiseRef.current;
-
-    setVoiceReady(false);
-    setPreparingVoice(true);
-    const promise = supabase.functions
-      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
-      .then(({ data, error }) => {
-        if (error || !data?.token) throw new Error(error?.message || data?.error || "Failed to prepare Mai");
-        voiceTokenRef.current = { token: data.token, createdAt: Date.now() };
-        setVoiceReady(true);
-        return data.token as string;
-      })
-      .finally(() => {
-        voiceTokenPromiseRef.current = null;
-        setPreparingVoice(false);
-      });
-
-    voiceTokenPromiseRef.current = promise;
-    return promise;
-  }, []);
-
-  useEffect(() => {
-    void prepareVoiceToken().catch((error) => console.error("[Mai] voice token prepare failed", error));
-  }, [prepareVoiceToken]);
 
   const addGroceryItems = useCallback(async (items: { name: string; quantity?: string; category?: string; store?: string }[]) => {
     const hid = requireHousehold();
@@ -334,11 +299,21 @@ const VoiceAssistantInner = () => {
       }
     },
     onConnect: () => {
+      if (connectionTimeoutRef.current) {
+        clearTimeout(connectionTimeoutRef.current);
+        connectionTimeoutRef.current = null;
+      }
+      setConnecting(false);
       wasConnectedRef.current = true;
       setStatusMessage("Listening…");
       toast({ title: "Connected to Mai", description: "Start speaking…" });
     },
     onDisconnect: () => {
+      if (connectionTimeoutRef.current) {
+        clearTimeout(connectionTimeoutRef.current);
+        connectionTimeoutRef.current = null;
+      }
+      setConnecting(false);
       setStatusMessage(null);
       if (wasConnectedRef.current && !userEndedSessionRef.current) {
         toast({ variant: "destructive", title: "Mai disconnected", description: "Tap the microphone to reconnect." });
@@ -350,6 +325,11 @@ const VoiceAssistantInner = () => {
     },
     onError: (error) => {
       console.error("ElevenLabs error:", error);
+      if (connectionTimeoutRef.current) {
+        clearTimeout(connectionTimeoutRef.current);
+        connectionTimeoutRef.current = null;
+      }
+      setConnecting(false);
       const message = getStartErrorMessage(error);
       setStatusMessage(message);
       toast({ variant: "destructive", title: "Connection error", description: message });
@@ -359,31 +339,46 @@ const VoiceAssistantInner = () => {
   const isConnected = conversation.status === "connected";
 
   const start = useCallback(async () => {
+    let permissionStream: MediaStream | null = null;
+    if (connectionTimeoutRef.current) {
+      clearTimeout(connectionTimeoutRef.current);
+      connectionTimeoutRef.current = null;
+    }
     setConnecting(true);
-    setStatusMessage("Connecting to Mai…");
+    setStatusMessage("Requesting microphone…");
     try {
-      const cached = voiceTokenRef.current;
-      if (!cached || Date.now() - cached.createdAt >= VOICE_TOKEN_MAX_AGE_MS) {
-        setStatusMessage("Preparing Mai… tap the microphone again in a moment.");
-        await prepareVoiceToken();
-        toast({ title: "Mai is ready", description: "Tap the microphone again to start talking." });
-        return;
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("This browser does not support microphone access.");
       }
 
-      const token = cached.token;
-      voiceTokenRef.current = null;
-      setVoiceReady(false);
+      permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setStatusMessage("Connecting to Mai…");
+
+      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
+        body: { agentId: AGENT_ID },
+      });
+      if (error || !data?.signedUrl) throw new Error(error?.message || data?.error || "Failed to connect to Mai");
+
+      permissionStream.getTracks().forEach((track) => track.stop());
+      permissionStream = null;
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
       conversation.startSession({
-        conversationToken: token,
-        connectionType: "webrtc",
+        signedUrl: data.signedUrl,
+        connectionType: "websocket",
         useWakeLock: false,
       });
+      connectionTimeoutRef.current = setTimeout(() => {
+        if (conversation.status !== "connected") {
+          void conversation.endSession();
+          connectionTimeoutRef.current = null;
+          setConnecting(false);
+          setStatusMessage("Connection timed out. Tap the microphone to try again.");
+        }
+      }, 10_000);
     } catch (err) {
       console.error(err);
-      voiceTokenRef.current = null;
-      setVoiceReady(false);
+      permissionStream?.getTracks().forEach((track) => track.stop());
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
       toast({
@@ -392,9 +387,13 @@ const VoiceAssistantInner = () => {
         description: message,
       });
     } finally {
-      setConnecting(false);
+      if (!connectionTimeoutRef.current) setConnecting(false);
     }
-  }, [conversation, prepareVoiceToken]);
+  }, [conversation]);
+
+  useEffect(() => () => {
+    if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+  }, []);
 
   const startText = useCallback(async () => {
     setConnecting(true);
@@ -540,17 +539,13 @@ const VoiceAssistantInner = () => {
           className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
             isConnected
               ? "bg-destructive text-destructive-foreground animate-pulse"
-              : voiceReady
-                ? "bg-primary text-primary-foreground hover:scale-105"
-                : "bg-secondary text-secondary-foreground hover:scale-105"
+              : "bg-primary text-primary-foreground hover:scale-105"
           }`}
         >
           {connecting ? (
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : isConnected ? (
             <MicOff className="w-6 h-6" />
-          ) : preparingVoice ? (
-            <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <Mic className="w-6 h-6" />
           )}
