@@ -123,6 +123,14 @@ const VoiceAssistantInner = () => {
     },
     onMessage: (message: any) => {
       console.log("[Mai] message", message);
+      const text =
+        message?.message ||
+        message?.agent_response_event?.agent_response ||
+        message?.user_transcription_event?.user_transcript;
+      const source = message?.source || message?.type;
+      if (text && (source === "ai" || source === "agent_response")) {
+        setChatLog((l) => [...l, { from: "mai", text }]);
+      }
     },
     onConnect: () => {
       setStatusMessage("Listening…");
