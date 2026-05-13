@@ -109,6 +109,10 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
 
 type TextSessionOptions = Parameters<ReturnType<typeof useConversation>["startSession"]>[0] & { textOnly?: boolean };
 
+type VoiceConnection = { signedUrl: string; createdAt: number };
+
+const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
+
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -116,9 +120,13 @@ const VoiceAssistantInner = () => {
   const [textMode, setTextMode] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
+  const [voiceReady, setVoiceReady] = useState(false);
+  const [preparingVoice, setPreparingVoice] = useState(false);
   const householdIdRef = useRef<string | null>(null);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
+  const voiceConnectionRef = useRef<VoiceConnection | null>(null);
+  const voiceConnectionPromiseRef = useRef<Promise<string> | null>(null);
   const connectionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
@@ -146,6 +154,45 @@ const VoiceAssistantInner = () => {
     if (!hid) throw new Error("No household found for current user.");
     return hid;
   };
+
+  const prepareVoiceConnection = useCallback(async () => {
+    const cached = voiceConnectionRef.current;
+    if (cached && Date.now() - cached.createdAt < VOICE_CONNECTION_MAX_AGE_MS) {
+      setVoiceReady(true);
+      return cached.signedUrl;
+    }
+    if (voiceConnectionPromiseRef.current) return voiceConnectionPromiseRef.current;
+
+    setVoiceReady(false);
+    setPreparingVoice(true);
+    const promise = supabase.functions
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID } })
+      .then(({ data, error }) => {
+        if (error || !data?.signedUrl) throw new Error(error?.message || data?.error || "Failed to prepare Mai");
+        voiceConnectionRef.current = { signedUrl: data.signedUrl as string, createdAt: Date.now() };
+        setVoiceReady(true);
+        return data.signedUrl as string;
+      })
+      .catch((error) => {
+        voiceConnectionRef.current = null;
+        setVoiceReady(false);
+        throw error;
+      })
+      .finally(() => {
+        voiceConnectionPromiseRef.current = null;
+        setPreparingVoice(false);
+      });
+
+    voiceConnectionPromiseRef.current = promise;
+    return promise;
+  }, []);
+
+  useEffect(() => {
+    void prepareVoiceConnection().catch((error) => {
+      console.error("[Mai] voice connection prepare failed", error);
+      setStatusMessage("Tap the microphone to prepare Mai.");
+    });
+  }, [prepareVoiceConnection]);
 
   const addGroceryItems = useCallback(async (items: { name: string; quantity?: string; category?: string; store?: string }[]) => {
     const hid = requireHousehold();
