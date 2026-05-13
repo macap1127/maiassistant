@@ -356,7 +356,15 @@ const VoiceAssistantInner = () => {
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
-      const token = await prepareVoiceToken();
+      const cached = voiceTokenRef.current;
+      if (!cached || Date.now() - cached.createdAt >= VOICE_TOKEN_MAX_AGE_MS) {
+        setStatusMessage("Preparing Mai… tap the microphone again in a moment.");
+        await prepareVoiceToken();
+        toast({ title: "Mai is ready", description: "Tap the microphone again to start talking." });
+        return;
+      }
+
+      const token = cached.token;
       voiceTokenRef.current = null;
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
