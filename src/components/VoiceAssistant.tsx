@@ -328,16 +328,25 @@ const VoiceAssistantInner = () => {
       }
     },
     onConnect: () => {
+      wasConnectedRef.current = true;
       setStatusMessage("Listening…");
       toast({ title: "Connected to Mai", description: "Start speaking…" });
     },
     onDisconnect: () => {
       setStatusMessage(null);
-      toast({ title: "Conversation ended" });
+      if (wasConnectedRef.current && !userEndedSessionRef.current) {
+        toast({ variant: "destructive", title: "Mai disconnected", description: "Tap the microphone to reconnect." });
+      } else if (userEndedSessionRef.current) {
+        toast({ title: "Conversation ended" });
+      }
+      wasConnectedRef.current = false;
+      userEndedSessionRef.current = false;
     },
     onError: (error) => {
       console.error("ElevenLabs error:", error);
-      toast({ variant: "destructive", title: "Connection error", description: "Please try again." });
+      const message = getStartErrorMessage(error);
+      setStatusMessage(message);
+      toast({ variant: "destructive", title: "Connection error", description: message });
     },
   });
 
@@ -347,23 +356,18 @@ const VoiceAssistantInner = () => {
     setConnecting(true);
     setStatusMessage("Connecting to Mai…");
     try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("Microphone access is not available in this browser.");
-      }
-
-      const permissionStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      permissionStream.getTracks().forEach((track) => track.stop());
-
-      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
-        body: { agentId: AGENT_ID },
-      });
-      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
-      await conversation.startSession({
-        signedUrl: data.signedUrl,
-        connectionType: "websocket",
+      const token = await prepareVoiceToken();
+      voiceTokenRef.current = null;
+      userEndedSessionRef.current = false;
+      wasConnectedRef.current = false;
+      conversation.startSession({
+        conversationToken: token,
+        connectionType: "webrtc",
+        useWakeLock: true,
       });
     } catch (err) {
       console.error(err);
+      voiceTokenRef.current = null;
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
       toast({
@@ -374,7 +378,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation]);
+  }, [conversation, prepareVoiceToken]);
 
   const startText = useCallback(async () => {
     setConnecting(true);
@@ -401,6 +405,7 @@ const VoiceAssistantInner = () => {
   }, [conversation]);
 
   const stop = useCallback(async () => {
+    userEndedSessionRef.current = true;
     await conversation.endSession();
     setChatLog([]);
   }, [conversation]);
