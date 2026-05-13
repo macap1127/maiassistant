@@ -107,31 +107,73 @@ const CalendarPage = () => {
       return;
     }
 
-    if (!file.name.toLowerCase().endsWith(".ics")) {
-      toast.error("Please upload an .ics calendar file");
+    const lower = file.name.toLowerCase();
+    const isIcs = lower.endsWith(".ics");
+    const isImage = file.type.startsWith("image/");
+    const isPdf = file.type === "application/pdf" || lower.endsWith(".pdf");
+
+    if (!isIcs && !isImage && !isPdf) {
+      toast.error("Upload a .ics file, image, or PDF");
       return;
     }
 
     setImporting(true);
     try {
-      const text = await readFileAsText(file);
-      const parsed = parseIcsFile(text, source);
+      if (isIcs) {
+        const text = await readFileAsText(file);
+        const parsed = parseIcsFile(text, source);
+        if (parsed.length === 0) {
+          toast.error("No events found in the file");
+          return;
+        }
+        update((d) => ({ ...d, events: [...d.events, ...parsed] }));
+        toast.success(`Imported ${parsed.length} event${parsed.length > 1 ? "s" : ""} from "${source}"`);
+      } else {
+        // Image or PDF → AI extraction
+        const dataUrl: string = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(file);
+        });
 
-      if (parsed.length === 0) {
-        toast.error("No events found in the file");
-        return;
+        const { data: result, error } = await supabase.functions.invoke("extract-events", {
+          body: { imageDataUrl: dataUrl, source },
+        });
+        if (error) throw error;
+
+        const extracted = (result?.events || []) as Array<{
+          title: string; date: string; time?: string | null;
+          location?: string | null; notes?: string | null; source?: string;
+        }>;
+        if (extracted.length === 0) {
+          toast.error("No events found in that file");
+          return;
+        }
+
+        update((d) => ({
+          ...d,
+          events: [
+            ...d.events,
+            ...extracted.map((ev) => ({
+              id: genId(),
+              title: ev.title,
+              date: ev.date,
+              time: ev.time || undefined,
+              location: ev.location || undefined,
+              notes: ev.notes || undefined,
+              addedBy: "You",
+              source: ev.source || source,
+            })),
+          ],
+        }));
+        toast.success(`Imported ${extracted.length} event${extracted.length > 1 ? "s" : ""} from "${source}"`);
       }
-
-      update((d) => ({
-        ...d,
-        events: [...d.events, ...parsed],
-      }));
-
-      toast.success(`Imported ${parsed.length} event${parsed.length > 1 ? "s" : ""} from "${source}"`);
       setShowUpload(false);
       setUploadSource("");
-    } catch {
-      toast.error("Failed to parse the calendar file");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to import events from that file");
     } finally {
       setImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
