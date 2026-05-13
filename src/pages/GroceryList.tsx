@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Plus, Check, Trash2, Sparkles, ChevronDown } from "lucide-react";
+import { Plus, Check, Trash2, Sparkles, ChevronDown, Trash } from "lucide-react";
 import { useFamilyData, genId, type GroceryItem } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -129,14 +129,15 @@ const GroceryList = () => {
 
   return (
     <div className="page-container">
-      <div className="flex items-baseline justify-between mb-1 animate-fade-in">
+      <div className="flex items-center justify-between mb-1 animate-fade-in gap-3">
         <h1 className="text-2xl font-serif font-semibold">Grocery List</h1>
         {completed.length > 0 && (
           <button
             onClick={clearCompleted}
-            className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors px-3 py-1.5 rounded-full border border-destructive/20"
           >
-            Clear done
+            <Trash className="w-3.5 h-3.5" />
+            Remove purchased ({completed.length})
           </button>
         )}
       </div>
