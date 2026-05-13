@@ -13,6 +13,53 @@ const getStartErrorMessage = (err: unknown) => {
   return err instanceof Error ? err.message : "Please allow microphone access and try again.";
 };
 
+const cleanGroceryName = (value: string) =>
+  value
+    .replace(/[“”"']/g, "")
+    .replace(/\b(to|the|my|our|grocery|groceries|shopping|list|please)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .replace(/^[\s,.;:!?-]+|[\s,.;:!?-]+$/g, "")
+    .trim();
+
+const splitGroceryNames = (value: string) =>
+  value
+    .replace(/\s+and\s+/gi, ",")
+    .split(",")
+    .map(cleanGroceryName)
+    .filter((name) => name.length > 0 && name.length < 80);
+
+const extractGroceryItemsFromUserText = (text: string, awaitingItem: boolean) => {
+  const lower = text.toLowerCase();
+  const isGroceryCommand = /\b(grocery|groceries|shopping list)\b/.test(lower);
+  const isAddCommand = /^\s*(add|put|include)\b/i.test(text);
+  const mentionsOtherArea = /\b(task|chore|calendar|event|appointment|reminder)\b/.test(lower);
+
+  if (isGroceryCommand && isAddCommand) {
+    const afterAdd = text.replace(/^\s*(add|put|include)\b/i, "").split(/\b(?:to|on|in)\b\s+(?:my\s+|our\s+)?(?:grocery|groceries|shopping list)/i)[0];
+    return splitGroceryNames(afterAdd);
+  }
+
+  if (awaitingItem || (isAddCommand && !mentionsOtherArea)) {
+    return splitGroceryNames(text.replace(/^\s*(add|put|include)\b/i, ""));
+  }
+
+  return [];
+};
+
+const extractGroceryItemFromAgentConfirmation = (text: string) => {
+  const patterns = [
+    /(?:adding|added)\s+(.+?)\s+to\s+(?:your|the)\s+grocery\s+list/i,
+    /(.+?)\s+has\s+been\s+added\s+to\s+(?:your|the)\s+grocery\s+list/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match?.[1]) return splitGroceryNames(match[1]);
+  }
+
+  return [];
+};
+
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -21,6 +68,8 @@ const VoiceAssistantInner = () => {
   const [textInput, setTextInput] = useState("");
   const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
   const householdIdRef = useRef<string | null>(null);
+  const awaitingGroceryItemRef = useRef(false);
+  const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
 
   // Resolve current household once user is known
   useEffect(() => {
@@ -46,24 +95,41 @@ const VoiceAssistantInner = () => {
     return hid;
   };
 
+  const addGroceryItems = useCallback(async (items: { name: string; quantity?: string; category?: string }[]) => {
+    const hid = requireHousehold();
+    const now = Date.now();
+    const rows = items
+      .map((item) => ({ ...item, name: cleanGroceryName(item.name) }))
+      .filter((item) => item.name)
+      .filter((item) => now - (recentGroceryAddsRef.current.get(item.name.toLowerCase()) ?? 0) > 20_000)
+      .map((item) => ({
+        household_id: hid,
+        name: item.name,
+        quantity: item.quantity ?? "",
+        category: item.category ?? "Other",
+        added_by: "Mai",
+        completed: false,
+      }));
+
+    if (rows.length === 0) return [];
+    rows.forEach((row) => recentGroceryAddsRef.current.set(row.name.toLowerCase(), now));
+
+    const { error } = await supabase.from("grocery_items").insert(rows);
+    if (error) {
+      rows.forEach((row) => recentGroceryAddsRef.current.delete(row.name.toLowerCase()));
+      throw error;
+    }
+
+    return rows.map((row) => row.name);
+  }, []);
+
   const conversation = useConversation({
     clientTools: {
       addGrocery: async (params: { name: string; quantity?: string; category?: string }) => {
         console.log("[Mai] addGrocery called", params);
         try {
-          const hid = requireHousehold();
-          const { error } = await supabase.from("grocery_items").insert({
-            household_id: hid,
-            name: params.name,
-            quantity: params.quantity ?? "",
-            category: params.category ?? "Other",
-            added_by: "Mai",
-            completed: false,
-          });
-          if (error) {
-            console.error("[Mai] addGrocery insert error", error);
-            return `Failed to add: ${error.message}`;
-          }
+          const added = await addGroceryItems([params]);
+          if (added.length === 0) return `${params.name} was already added.`;
           return `Added ${params.name} to the grocery list.`;
         } catch (e: any) {
           console.error("[Mai] addGrocery threw", e);
@@ -130,6 +196,21 @@ const VoiceAssistantInner = () => {
       const source = message?.source || message?.type;
       if (text && (source === "ai" || source === "agent_response")) {
         setChatLog((l) => [...l, { from: "mai", text }]);
+        awaitingGroceryItemRef.current = /\bgrocery list\b/i.test(text) && /\b(quantity|specific|include|just|what would|which item)\b/i.test(text);
+
+        const confirmedItems = extractGroceryItemFromAgentConfirmation(text);
+        if (confirmedItems.length > 0) {
+          void addGroceryItems(confirmedItems.map((name) => ({ name })))
+            .then((added) => {
+              if (added.length > 0) {
+                toast({ title: "Added to grocery list", description: added.join(", ") });
+              }
+            })
+            .catch((error) => {
+              console.error("[Mai] grocery fallback insert failed", error);
+              toast({ variant: "destructive", title: "Couldn't add grocery item", description: error.message });
+            });
+        }
       }
     },
     onConnect: () => {
