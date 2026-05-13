@@ -281,7 +281,7 @@ export function useFamilyData() {
         console.error("update sync error", err);
       }
     },
-    [data]
+    []
   );
 
   return { data, update, loading, connected: !!householdId };
