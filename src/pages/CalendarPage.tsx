@@ -479,6 +479,18 @@ const CalendarPage = () => {
                         placeholder="Notes"
                         className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                       />
+                      {data.members.length > 0 && (
+                        <select
+                          value={editDraft.assignedTo}
+                          onChange={(e) => setEditDraft((d) => ({ ...d, assignedTo: e.target.value }))}
+                          className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        >
+                          <option value="">Assign to family member (optional)</option>
+                          {data.members.map((m) => (
+                            <option key={m.id} value={m.name}>{m.name}</option>
+                          ))}
+                        </select>
+                      )}
                       <div className="flex gap-2">
                         <button
                           onClick={saveEdit}
