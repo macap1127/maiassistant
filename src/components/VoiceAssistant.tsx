@@ -226,7 +226,7 @@ const VoiceAssistantInner = () => {
 
         const confirmedItems = extractGroceryItemFromAgentConfirmation(text);
         if (confirmedItems.length > 0) {
-          void addGroceryItems(confirmedItems.map((name) => ({ name })))
+          void addGroceryItems(confirmedItems)
             .then((added) => {
               if (added.length > 0) {
                 toast({ title: "Added to grocery list", description: added.join(", ") });
