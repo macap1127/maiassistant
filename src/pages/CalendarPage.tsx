@@ -109,6 +109,7 @@ const CalendarPage = () => {
       time: event.time || "",
       location: event.location || "",
       notes: event.notes || "",
+      assignedTo: event.assignedTo || "",
     });
   };
 
@@ -126,6 +127,7 @@ const CalendarPage = () => {
               time: editDraft.time || undefined,
               location: editDraft.location.trim() || undefined,
               notes: editDraft.notes.trim() || undefined,
+              assignedTo: editDraft.assignedTo || undefined,
             }
           : e
       ),
