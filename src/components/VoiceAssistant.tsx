@@ -369,6 +369,7 @@ const VoiceAssistantInner = () => {
 
       const token = cached.token;
       voiceTokenRef.current = null;
+      setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
       conversation.startSession({
@@ -379,6 +380,7 @@ const VoiceAssistantInner = () => {
     } catch (err) {
       console.error(err);
       voiceTokenRef.current = null;
+      setVoiceReady(false);
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
       toast({
