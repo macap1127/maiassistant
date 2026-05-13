@@ -10,8 +10,29 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get("ELEVENLABS_API_KEY");
     if (!apiKey) throw new Error("ELEVENLABS_API_KEY not configured");
 
-    const { agentId } = await req.json();
+    const { agentId, mode } = await req.json();
     if (!agentId) throw new Error("agentId required");
+
+    if (mode === "voice") {
+      const tokenRes = await fetch(
+        `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${agentId}`,
+        { headers: { "xi-api-key": apiKey } }
+      );
+
+      if (!tokenRes.ok) {
+        const text = await tokenRes.text();
+        console.error("ElevenLabs token error:", tokenRes.status, text);
+        return new Response(JSON.stringify({ error: text }), {
+          status: tokenRes.status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const tokenData = await tokenRes.json();
+      return new Response(JSON.stringify({ token: tokenData.token }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const res = await fetch(
       `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${agentId}`,
