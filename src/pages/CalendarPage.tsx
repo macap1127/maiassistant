@@ -41,11 +41,12 @@ const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
-  const [newEvent, setNewEvent] = useState({ title: "", time: "", location: "", notes: "" });
+  const [newEvent, setNewEvent] = useState({ title: "", time: "", location: "", notes: "", assignedTo: "" });
   const [uploadSource, setUploadSource] = useState("");
+  const [uploadAssignedTo, setUploadAssignedTo] = useState("");
   const [importing, setImporting] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState({ title: "", time: "", location: "", notes: "" });
+  const [editDraft, setEditDraft] = useState({ title: "", time: "", location: "", notes: "", assignedTo: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
