@@ -158,10 +158,11 @@ const CalendarPage = () => {
     }
 
     setImporting(true);
+    const assignedTo = uploadAssignedTo || undefined;
     try {
       if (isIcs) {
         const text = await readFileAsText(file);
-        const parsed = parseIcsFile(text, source);
+        const parsed = parseIcsFile(text, source).map((ev) => ({ ...ev, assignedTo }));
         if (parsed.length === 0) {
           toast.error("No events found in the file");
           return;
@@ -204,6 +205,7 @@ const CalendarPage = () => {
               notes: ev.notes || undefined,
               addedBy: "You",
               source: ev.source || source,
+              assignedTo,
             })),
           ],
         }));
@@ -211,6 +213,7 @@ const CalendarPage = () => {
       }
       setShowUpload(false);
       setUploadSource("");
+      setUploadAssignedTo("");
     } catch (err) {
       console.error(err);
       toast.error("Failed to import events from that file");
