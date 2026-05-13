@@ -70,6 +70,8 @@ const extractGroceryItemFromAgentConfirmation = (text: string) => {
   return [];
 };
 
+type TextSessionOptions = Parameters<ReturnType<typeof useConversation>["startSession"]>[0] & { textOnly?: boolean };
+
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -280,7 +282,7 @@ const VoiceAssistantInner = () => {
         signedUrl: data.signedUrl,
         connectionType: "websocket",
         textOnly: true,
-      } as any);
+      } as TextSessionOptions);
       setStatusMessage("Type a message to Mai");
     } catch (err) {
       console.error(err);
@@ -312,9 +314,9 @@ const VoiceAssistantInner = () => {
           toast({ title: "Added to grocery list", description: added.join(", ") });
           return;
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error("[Mai] text grocery add failed", e);
-        toast({ variant: "destructive", title: "Couldn't add grocery item", description: e?.message || "Please try again." });
+        toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(e) });
         return;
       }
     }
@@ -327,7 +329,7 @@ const VoiceAssistantInner = () => {
       }
     }
     try {
-      (conversation as any).sendUserMessage(t);
+      conversation.sendUserMessage(t);
     } catch (e) {
       console.error("[Mai] sendUserMessage failed", e);
       toast({ variant: "destructive", title: "Send failed", description: "Try again in a moment." });
