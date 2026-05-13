@@ -340,6 +340,10 @@ const VoiceAssistantInner = () => {
 
   const start = useCallback(async () => {
     let permissionStream: MediaStream | null = null;
+    if (connectionTimeoutRef.current) {
+      clearTimeout(connectionTimeoutRef.current);
+      connectionTimeoutRef.current = null;
+    }
     setConnecting(true);
     setStatusMessage("Requesting microphone…");
     try {
@@ -366,8 +370,10 @@ const VoiceAssistantInner = () => {
       });
       connectionTimeoutRef.current = setTimeout(() => {
         if (conversation.status !== "connected") {
+          void conversation.endSession();
+          connectionTimeoutRef.current = null;
           setConnecting(false);
-          setStatusMessage("Still connecting… if this stays here, tap again to retry.");
+          setStatusMessage("Connection timed out. Tap the microphone to try again.");
         }
       }, 10_000);
     } catch (err) {
@@ -384,6 +390,10 @@ const VoiceAssistantInner = () => {
       if (!connectionTimeoutRef.current) setConnecting(false);
     }
   }, [conversation]);
+
+  useEffect(() => () => {
+    if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+  }, []);
 
   const startText = useCallback(async () => {
     setConnecting(true);
