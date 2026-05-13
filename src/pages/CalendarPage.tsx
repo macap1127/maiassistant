@@ -2,6 +2,7 @@ import { useState, useRef, useMemo } from "react";
 import { Plus, MapPin, Clock, Trash2, ChevronLeft, ChevronRight, Upload, Tag, FileUp, X, CheckSquare, Check } from "lucide-react";
 import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   format,
