@@ -1,6 +1,6 @@
 import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Mic, MicOff, Loader2 } from "lucide-react";
+import { Mic, MicOff, Loader2, MessageSquare, Send, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -17,6 +17,9 @@ const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [textMode, setTextMode] = useState(false);
+  const [textInput, setTextInput] = useState("");
+  const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
   const householdIdRef = useRef<string | null>(null);
 
   // Resolve current household once user is known
@@ -120,6 +123,14 @@ const VoiceAssistantInner = () => {
     },
     onMessage: (message: any) => {
       console.log("[Mai] message", message);
+      const text =
+        message?.message ||
+        message?.agent_response_event?.agent_response ||
+        message?.user_transcription_event?.user_transcript;
+      const source = message?.source || message?.type;
+      if (text && (source === "ai" || source === "agent_response")) {
+        setChatLog((l) => [...l, { from: "mai", text }]);
+      }
     },
     onConnect: () => {
       setStatusMessage("Listening…");
@@ -166,35 +177,139 @@ const VoiceAssistantInner = () => {
     }
   }, [conversation]);
 
+  const startText = useCallback(async () => {
+    setConnecting(true);
+    setStatusMessage("Connecting to Mai…");
+    try {
+      const { data, error } = await supabase.functions.invoke("elevenlabs-token", {
+        body: { agentId: AGENT_ID },
+      });
+      if (error || !data?.signedUrl) throw new Error(error?.message || "Failed to get signed URL");
+      await conversation.startSession({
+        signedUrl: data.signedUrl,
+        connectionType: "websocket",
+        textOnly: true,
+      } as any);
+      setStatusMessage("Type a message to Mai");
+    } catch (err) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : "Failed to connect";
+      setStatusMessage(message);
+      toast({ variant: "destructive", title: "Couldn't start Mai", description: message });
+    } finally {
+      setConnecting(false);
+    }
+  }, [conversation]);
+
   const stop = useCallback(async () => {
     await conversation.endSession();
+    setChatLog([]);
   }, [conversation]);
+
+  const sendText = useCallback(async () => {
+    const t = textInput.trim();
+    if (!t) return;
+    if (!isConnected) {
+      await startText();
+    }
+    setChatLog((l) => [...l, { from: "you", text: t }]);
+    try {
+      (conversation as any).sendUserMessage(t);
+    } catch (e) {
+      console.error("[Mai] sendUserMessage failed", e);
+    }
+    setTextInput("");
+  }, [textInput, isConnected, startText, conversation]);
 
   return (
     <div className="fixed bottom-[calc(var(--nav-height)+1rem)] right-4 z-40 flex flex-col items-end gap-2">
-      {statusMessage && (
+      {statusMessage && !textMode && (
         <div className="max-w-64 rounded-md border border-border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-lg" role="status">
           {statusMessage}
         </div>
       )}
-      <button
-        onClick={isConnected ? stop : start}
-        disabled={connecting}
-        aria-label={isConnected ? "End conversation with Mai" : "Talk to Mai"}
-        className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
-          isConnected
-            ? "bg-destructive text-destructive-foreground animate-pulse"
-            : "bg-primary text-primary-foreground hover:scale-105"
-        }`}
-      >
-        {connecting ? (
-          <Loader2 className="w-6 h-6 animate-spin" />
-        ) : isConnected ? (
-          <MicOff className="w-6 h-6" />
-        ) : (
-          <Mic className="w-6 h-6" />
+
+      {textMode && (
+        <div className="w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-border bg-popover shadow-lg flex flex-col">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+            <div className="text-sm font-medium text-popover-foreground">Type to Mai</div>
+            <button
+              onClick={() => { setTextMode(false); if (isConnected) stop(); }}
+              aria-label="Close text chat"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="max-h-64 overflow-y-auto p-3 space-y-2 text-sm">
+            {chatLog.length === 0 ? (
+              <div className="text-muted-foreground">
+                Try: "add eggs and milk to the grocery list"
+              </div>
+            ) : (
+              chatLog.map((m, i) => (
+                <div key={i} className={m.from === "you" ? "text-right" : "text-left"}>
+                  <span className={`inline-block px-2 py-1 rounded ${m.from === "you" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
+                    {m.text}
+                  </span>
+                </div>
+              ))
+            )}
+            {statusMessage && (
+              <div className="text-xs text-muted-foreground">{statusMessage}</div>
+            )}
+          </div>
+          <form
+            onSubmit={(e) => { e.preventDefault(); sendText(); }}
+            className="flex items-center gap-2 p-2 border-t border-border"
+          >
+            <input
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              placeholder="Type a message…"
+              className="flex-1 bg-background border border-border rounded px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+            <button
+              type="submit"
+              disabled={connecting || !textInput.trim()}
+              aria-label="Send"
+              className="flex items-center justify-center w-8 h-8 rounded bg-primary text-primary-foreground disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </form>
+        </div>
+      )}
+
+      <div className="flex items-center gap-2">
+        {!textMode && (
+          <button
+            onClick={() => setTextMode(true)}
+            aria-label="Type to Mai"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary text-secondary-foreground shadow-lg hover:scale-105"
+          >
+            <MessageSquare className="w-5 h-5" />
+          </button>
         )}
-      </button>
+        <button
+          onClick={isConnected ? stop : start}
+          disabled={connecting}
+          aria-label={isConnected ? "End conversation with Mai" : "Talk to Mai"}
+          className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
+            isConnected
+              ? "bg-destructive text-destructive-foreground animate-pulse"
+              : "bg-primary text-primary-foreground hover:scale-105"
+          }`}
+        >
+          {connecting ? (
+            <Loader2 className="w-6 h-6 animate-spin" />
+          ) : isConnected ? (
+            <MicOff className="w-6 h-6" />
+          ) : (
+            <Mic className="w-6 h-6" />
+          )}
+        </button>
+      </div>
     </div>
   );
 };
