@@ -120,6 +120,7 @@ const VoiceAssistantInner = () => {
   const [textMode, setTextMode] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [chatLog, setChatLog] = useState<{ from: "you" | "mai"; text: string }[]>([]);
+  const [voiceReady, setVoiceReady] = useState(false);
   const householdIdRef = useRef<string | null>(null);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
@@ -157,11 +158,13 @@ const VoiceAssistantInner = () => {
     if (cached && Date.now() - cached.createdAt < VOICE_TOKEN_MAX_AGE_MS) return cached.token;
     if (voiceTokenPromiseRef.current) return voiceTokenPromiseRef.current;
 
+    setVoiceReady(false);
     const promise = supabase.functions
       .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
       .then(({ data, error }) => {
         if (error || !data?.token) throw new Error(error?.message || data?.error || "Failed to prepare Mai");
         voiceTokenRef.current = { token: data.token, createdAt: Date.now() };
+        setVoiceReady(true);
         return data.token as string;
       })
       .finally(() => {
