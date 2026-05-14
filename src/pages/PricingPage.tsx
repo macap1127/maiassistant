@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, Crown, Zap, Sparkles, X, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { useHousehold, TIER_INFO, type Tier } from "@/lib/useHousehold";
+import { useHousehold, type Tier } from "@/lib/useHousehold";
 import { StripeEmbeddedCheckout, PaymentTestModeBanner } from "@/components/StripeEmbeddedCheckout";
 
 const PRICE_IDS: Record<Tier, string> = {
