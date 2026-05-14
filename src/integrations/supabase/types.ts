@@ -236,8 +236,10 @@ export type Database = {
       }
       households: {
         Row: {
+          access_locked: boolean
+          cancel_at_period_end: boolean
           created_at: string
-          current_period_end: string
+          current_period_end: string | null
           current_period_start: string
           id: string
           name: string
@@ -247,13 +249,16 @@ export type Database = {
           stripe_subscription_id: string | null
           subscription_status: string
           subscription_tier: string
+          trial_ends_at: string | null
           updated_at: string
           voice_seconds_limit: number
           voice_seconds_used: number
         }
         Insert: {
+          access_locked?: boolean
+          cancel_at_period_end?: boolean
           created_at?: string
-          current_period_end?: string
+          current_period_end?: string | null
           current_period_start?: string
           id?: string
           name?: string
@@ -263,13 +268,16 @@ export type Database = {
           stripe_subscription_id?: string | null
           subscription_status?: string
           subscription_tier?: string
+          trial_ends_at?: string | null
           updated_at?: string
           voice_seconds_limit?: number
           voice_seconds_used?: number
         }
         Update: {
+          access_locked?: boolean
+          cancel_at_period_end?: boolean
           created_at?: string
-          current_period_end?: string
+          current_period_end?: string | null
           current_period_start?: string
           id?: string
           name?: string
@@ -279,6 +287,7 @@ export type Database = {
           stripe_subscription_id?: string | null
           subscription_status?: string
           subscription_tier?: string
+          trial_ends_at?: string | null
           updated_at?: string
           voice_seconds_limit?: number
           voice_seconds_used?: number
@@ -372,6 +381,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      household_has_access: {
+        Args: { _household_id: string }
+        Returns: boolean
+      }
+      increment_voice_usage: {
+        Args: { _household_id: string; _seconds: number }
+        Returns: number
+      }
       is_household_member: {
         Args: { _household_id: string; _user_id: string }
         Returns: boolean
@@ -381,6 +398,10 @@ export type Database = {
         Returns: boolean
       }
       tier_member_limit: { Args: { _tier: string }; Returns: number }
+      voice_seconds_remaining: {
+        Args: { _household_id: string }
+        Returns: number
+      }
     }
     Enums: {
       household_role: "owner" | "member"
