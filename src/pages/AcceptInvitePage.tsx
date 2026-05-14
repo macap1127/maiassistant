@@ -30,10 +30,11 @@ const AcceptInvitePage = () => {
       } else if (new Date(data.expires_at) < new Date()) {
         setError("This invite has expired.");
       } else {
+        const joined = data.households as { name?: string } | { name?: string }[] | null;
+        const hname = Array.isArray(joined) ? joined[0]?.name : joined?.name;
         setInvite({
           household_id: data.household_id,
-          // @ts-expect-error joined relation
-          household_name: data.households?.name ?? "a family",
+          household_name: hname ?? "a family",
           expires_at: data.expires_at,
         });
       }
