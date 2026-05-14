@@ -4,6 +4,15 @@ import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+
+type PendingEvent = {
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  notes: string;
+};
 import {
   format,
   startOfMonth,
