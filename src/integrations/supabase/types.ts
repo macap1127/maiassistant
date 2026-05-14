@@ -155,6 +155,53 @@ export type Database = {
           },
         ]
       }
+      household_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string
+          email: string | null
+          expires_at: string
+          household_id: string
+          id: string
+          invite_code: string
+          invited_by: string
+          phone: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          household_id: string
+          id?: string
+          invite_code?: string
+          invited_by: string
+          phone?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          household_id?: string
+          id?: string
+          invite_code?: string
+          invited_by?: string
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_invites_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       household_members: {
         Row: {
           created_at: string
@@ -190,27 +237,51 @@ export type Database = {
       households: {
         Row: {
           created_at: string
+          current_period_end: string
+          current_period_start: string
           id: string
           name: string
           owner_user_id: string
           primary_phone: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_status: string
+          subscription_tier: string
           updated_at: string
+          voice_seconds_limit: number
+          voice_seconds_used: number
         }
         Insert: {
           created_at?: string
+          current_period_end?: string
+          current_period_start?: string
           id?: string
           name?: string
           owner_user_id: string
           primary_phone: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string
+          subscription_tier?: string
           updated_at?: string
+          voice_seconds_limit?: number
+          voice_seconds_used?: number
         }
         Update: {
           created_at?: string
+          current_period_end?: string
+          current_period_start?: string
           id?: string
           name?: string
           owner_user_id?: string
           primary_phone?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string
+          subscription_tier?: string
           updated_at?: string
+          voice_seconds_limit?: number
+          voice_seconds_used?: number
         }
         Relationships: []
       }
@@ -255,6 +326,47 @@ export type Database = {
           },
         ]
       }
+      voice_usage_log: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          ended_at: string
+          household_id: string
+          id: string
+          seconds: number
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          ended_at?: string
+          household_id: string
+          id?: string
+          seconds: number
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          ended_at?: string
+          household_id?: string
+          id?: string
+          seconds?: number
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_usage_log_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -268,6 +380,7 @@ export type Database = {
         Args: { _household_id: string; _user_id: string }
         Returns: boolean
       }
+      tier_member_limit: { Args: { _tier: string }; Returns: number }
     }
     Enums: {
       household_role: "owner" | "member"

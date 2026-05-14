@@ -120,6 +120,7 @@ const VoiceAssistantInner = () => {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
   const [preparingVoice, setPreparingVoice] = useState(false);
+  const [quota, setQuota] = useState<{ used: number; limit: number; tier: string } | null>(null);
   const householdIdRef = useRef<string | null>(null);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
@@ -131,10 +132,22 @@ const VoiceAssistantInner = () => {
   const lastStartTapAtRef = useRef<number | null>(null);
   const lastErrorRef = useRef<unknown>(null);
 
+  const refreshQuota = useCallback(async () => {
+    const hid = householdIdRef.current;
+    if (!hid) return;
+    const { data } = await supabase
+      .from("households")
+      .select("voice_seconds_used, voice_seconds_limit, subscription_tier")
+      .eq("id", hid)
+      .maybeSingle();
+    if (data) setQuota({ used: data.voice_seconds_used, limit: data.voice_seconds_limit, tier: data.subscription_tier });
+  }, []);
+
   // Resolve current household once user is known
   useEffect(() => {
     if (!user) {
       householdIdRef.current = null;
+      setQuota(null);
       return;
     }
     (async () => {
@@ -145,9 +158,10 @@ const VoiceAssistantInner = () => {
         .limit(1);
       if (!error && data && data.length > 0) {
         householdIdRef.current = data[0].household_id;
+        void refreshQuota();
       }
     })();
-  }, [user]);
+  }, [user, refreshQuota]);
 
   const requireHousehold = () => {
     const hid = householdIdRef.current;
@@ -371,6 +385,26 @@ const VoiceAssistantInner = () => {
         lastError: lastErrorRef.current,
         rawArgs: args,
       });
+      // Log voice usage
+      if (lifetimeMs && lifetimeMs > 1000 && householdIdRef.current && user) {
+        const seconds = Math.ceil(lifetimeMs / 1000);
+        void supabase.from("voice_usage_log").insert({
+          household_id: householdIdRef.current,
+          user_id: user.id,
+          seconds,
+          started_at: new Date(sessionStartedAtRef.current!).toISOString(),
+          ended_at: new Date(disconnectedAt).toISOString(),
+        }).then(() => {
+          // optimistic local quota update
+          setQuota((q) => q ? { ...q, used: q.used + seconds } : q);
+          // also bump server counter (no atomic increment in supabase-js, so refetch+update)
+          void supabase.from("households").select("voice_seconds_used").eq("id", householdIdRef.current!).maybeSingle().then(({ data }) => {
+            if (data) {
+              void supabase.from("households").update({ voice_seconds_used: (data.voice_seconds_used ?? 0) + seconds }).eq("id", householdIdRef.current!);
+            }
+          });
+        });
+      }
       sessionStartedAtRef.current = null;
       setConnecting(false);
       setStatusMessage(null);
@@ -416,6 +450,13 @@ const VoiceAssistantInner = () => {
     const tappedAt = Date.now();
     lastStartTapAtRef.current = tappedAt;
     lastErrorRef.current = null;
+    // Quota gate
+    if (quota && quota.used >= quota.limit) {
+      const msg = "You've used all your voice minutes for this period. Upgrade your plan to keep talking to Mai.";
+      setStatusMessage(msg);
+      toast({ variant: "destructive", title: "Voice limit reached", description: msg });
+      return;
+    }
     const cached = voiceConnectionRef.current;
     console.log("[Mai] 🎙️ start() tapped", {
       at: new Date(tappedAt).toISOString(),
@@ -472,7 +513,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation, prepareVoiceConnection]);
+  }, [conversation, prepareVoiceConnection, quota]);
 
   const stop = useCallback(async () => {
     console.log("[Mai] 🛑 stop() called by user", { at: new Date().toISOString() });
@@ -494,6 +535,11 @@ const VoiceAssistantInner = () => {
       {statusMessage && (
         <div className="max-w-64 rounded-md border border-border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-lg" role="status">
           {statusMessage}
+        </div>
+      )}
+      {quota && (
+        <div className="text-[10px] text-muted-foreground bg-card/80 backdrop-blur border border-border rounded-full px-2 py-0.5">
+          {Math.floor(quota.used / 60)}/{Math.floor(quota.limit / 60)} min
         </div>
       )}
 

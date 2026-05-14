@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import maiLogo from "@/assets/mai-logo.png";
@@ -9,6 +9,16 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("invite");
+    if (code) {
+      setInviteCode(code.toUpperCase());
+      setMode("signup");
+    }
+  }, []);
 
   const submit = async () => {
     if (!email || password.length < 6) {
@@ -22,16 +32,24 @@ const AuthPage = () => {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/` },
+          options: { emailRedirectTo: inviteCode ? `${window.location.origin}/invite/${inviteCode}` : `${window.location.origin}/` },
         });
         if (error) throw error;
-        if (data.user) await ensureHousehold(data.user.id);
+        if (data.user && !inviteCode) await ensureHousehold(data.user.id);
+        if (data.user && inviteCode) {
+          window.location.href = `/invite/${inviteCode}`;
+          return;
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
+        if (inviteCode) {
+          window.location.href = `/invite/${inviteCode}`;
+          return;
+        }
       }
     } catch (err: any) {
       console.error("Auth error:", err);
