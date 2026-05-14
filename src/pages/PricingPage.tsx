@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useHousehold, type Tier } from "@/lib/useHousehold";
 import { StripeEmbeddedCheckout, PaymentTestModeBanner } from "@/components/StripeEmbeddedCheckout";
+import { supabase } from "@/integrations/supabase/client";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { toast } from "@/hooks/use-toast";
 
 const PRICE_IDS: Record<Tier, string> = {
   basic: "mai_basic_monthly",
@@ -52,14 +55,33 @@ const PricingPage = () => {
   const { user } = useAuth();
   const { household } = useHousehold();
   const [checkoutTier, setCheckoutTier] = useState<Tier | null>(null);
+  const [loadingPortal, setLoadingPortal] = useState(false);
 
-  const handlePick = (tier: Tier) => {
+  const hasActiveSub =
+    !!household?.stripeSubscriptionId &&
+    ["active", "trialing", "past_due"].includes(household.subscriptionStatus);
+
+  const handlePick = async (tier: Tier) => {
     if (!user) {
       navigate("/auth");
       return;
     }
     if (household && !household.isOwner) {
-      alert("Only the household owner can change the plan.");
+      toast({ variant: "destructive", title: "Owner only", description: "Only the household owner can change the plan." });
+      return;
+    }
+    // Existing subscriber → route through Stripe portal (handles upgrade/downgrade with proration)
+    if (hasActiveSub) {
+      setLoadingPortal(true);
+      const { data, error } = await supabase.functions.invoke("create-portal-session", {
+        body: { environment: getStripeEnvironment(), returnUrl: window.location.href },
+      });
+      setLoadingPortal(false);
+      if (error || !data?.url) {
+        toast({ variant: "destructive", title: "Couldn't open billing portal", description: error?.message || data?.error || "Try again." });
+        return;
+      }
+      window.open(data.url, "_blank");
       return;
     }
     setCheckoutTier(tier);

@@ -143,6 +143,17 @@ const VoiceAssistantInner = () => {
     if (data) setQuota({ used: data.voice_seconds_used, limit: data.voice_seconds_limit, tier: data.subscription_tier });
   }, []);
 
+  // Server-side entitlement check
+  const checkAccess = useCallback(async (): Promise<{ ok: boolean; reason?: string }> => {
+    const hid = householdIdRef.current;
+    if (!hid) return { ok: false, reason: "No household" };
+    const { data: hasAccess } = await supabase.rpc("household_has_access", { _household_id: hid });
+    if (!hasAccess) return { ok: false, reason: "Your subscription has ended or your trial is over. Choose a plan to keep using Mai." };
+    const { data: remaining } = await supabase.rpc("voice_seconds_remaining", { _household_id: hid });
+    if ((remaining ?? 0) <= 0) return { ok: false, reason: "You've used all your voice minutes for this period. Upgrade to keep talking to Mai." };
+    return { ok: true };
+  }, []);
+
   // Resolve current household once user is known
   useEffect(() => {
     if (!user) {
@@ -385,24 +396,19 @@ const VoiceAssistantInner = () => {
         lastError: lastErrorRef.current,
         rawArgs: args,
       });
-      // Log voice usage
+      // Log voice usage (atomic increment via RPC)
       if (lifetimeMs && lifetimeMs > 1000 && householdIdRef.current && user) {
         const seconds = Math.ceil(lifetimeMs / 1000);
+        const hid = householdIdRef.current;
         void supabase.from("voice_usage_log").insert({
-          household_id: householdIdRef.current,
+          household_id: hid,
           user_id: user.id,
           seconds,
           started_at: new Date(sessionStartedAtRef.current!).toISOString(),
           ended_at: new Date(disconnectedAt).toISOString(),
         }).then(() => {
-          // optimistic local quota update
           setQuota((q) => q ? { ...q, used: q.used + seconds } : q);
-          // also bump server counter (no atomic increment in supabase-js, so refetch+update)
-          void supabase.from("households").select("voice_seconds_used").eq("id", householdIdRef.current!).maybeSingle().then(({ data }) => {
-            if (data) {
-              void supabase.from("households").update({ voice_seconds_used: (data.voice_seconds_used ?? 0) + seconds }).eq("id", householdIdRef.current!);
-            }
-          });
+          void supabase.rpc("increment_voice_usage", { _household_id: hid, _seconds: seconds });
         });
       }
       sessionStartedAtRef.current = null;
@@ -446,17 +452,20 @@ const VoiceAssistantInner = () => {
 
   const isConnected = conversation.status === "connected";
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     const tappedAt = Date.now();
     lastStartTapAtRef.current = tappedAt;
     lastErrorRef.current = null;
-    // Quota gate
-    if (quota && quota.used >= quota.limit) {
-      const msg = "You've used all your voice minutes for this period. Upgrade your plan to keep talking to Mai.";
+
+    // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota)
+    const access = await checkAccess();
+    if (!access.ok) {
+      const msg = access.reason || "You don't have access to voice right now.";
       setStatusMessage(msg);
-      toast({ variant: "destructive", title: "Voice limit reached", description: msg });
+      toast({ variant: "destructive", title: "Voice unavailable", description: msg });
       return;
     }
+
     const cached = voiceConnectionRef.current;
     console.log("[Mai] 🎙️ start() tapped", {
       at: new Date(tappedAt).toISOString(),
@@ -513,7 +522,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation, prepareVoiceConnection, quota]);
+  }, [conversation, prepareVoiceConnection, checkAccess]);
 
   const stop = useCallback(async () => {
     console.log("[Mai] 🛑 stop() called by user", { at: new Date().toISOString() });

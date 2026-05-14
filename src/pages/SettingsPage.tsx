@@ -1,20 +1,50 @@
 import { useFamilyData } from "@/lib/store";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import maiLogo from "@/assets/mai-logo.png";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { CreditCard, ExternalLink, Loader2, AlertTriangle } from "lucide-react";
+import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+
+const STATUS_LABELS: Record<string, string> = {
+  active: "Active",
+  trialing: "Trial",
+  past_due: "Payment failed",
+  canceled: "Canceled",
+  incomplete: "Incomplete",
+  incomplete_expired: "Expired",
+  unpaid: "Unpaid",
+  paused: "Paused",
+};
 
 const SettingsPage = () => {
   const { data, update } = useFamilyData();
-  const { household } = useHousehold();
+  const { household, refresh } = useHousehold();
   const [familyName, setFamilyName] = useState(data.familyName);
   const [saved, setSaved] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle return from Stripe Checkout
+  useEffect(() => {
+    if (searchParams.get("checkout") !== "success") return;
+    toast({ title: "Payment received", description: "Updating your plan…" });
+    // Webhook may take a moment — poll a few times.
+    let tries = 0;
+    const interval = setInterval(async () => {
+      tries++;
+      await refresh();
+      if (tries >= 6) clearInterval(interval);
+    }, 1500);
+    setSearchParams((p) => {
+      p.delete("checkout");
+      return p;
+    }, { replace: true });
+    return () => clearInterval(interval);
+  }, [searchParams, setSearchParams, refresh]);
 
   const save = () => {
     update((d) => ({ ...d, familyName: familyName.trim() || d.familyName }));
@@ -24,22 +54,27 @@ const SettingsPage = () => {
 
   const openPortal = async () => {
     setLoadingPortal(true);
-    const { data, error } = await supabase.functions.invoke("create-portal-session", {
+    const { data: pdata, error } = await supabase.functions.invoke("create-portal-session", {
       body: { environment: getStripeEnvironment(), returnUrl: window.location.href },
     });
     setLoadingPortal(false);
-    if (error || !data?.url) {
-      toast({ variant: "destructive", title: "Couldn't open billing portal", description: error?.message || data?.error || "Try again." });
+    if (error || !pdata?.url) {
+      toast({ variant: "destructive", title: "Couldn't open billing portal", description: error?.message || pdata?.error || "Try again." });
       return;
     }
-    window.open(data.url, "_blank");
+    window.open(pdata.url, "_blank");
   };
 
   const tier = household ? TIER_INFO[household.subscriptionTier] : null;
   const usedMin = household ? Math.floor(household.voiceSecondsUsed / 60) : 0;
   const totalMin = household ? Math.floor(household.voiceSecondsLimit / 60) : 0;
-  const renewDate = household?.currentPeriodEnd ? new Date(household.currentPeriodEnd).toLocaleDateString() : "—";
-  const isPastDue = household?.subscriptionStatus === "past_due" || household?.subscriptionStatus === "canceled";
+  const renewDate = household?.currentPeriodEnd ? new Date(household.currentPeriodEnd).toLocaleDateString() : null;
+  const isPastDue = household?.subscriptionStatus === "past_due";
+  const isCanceledScheduled = household?.cancelAtPeriodEnd && household?.subscriptionStatus !== "canceled";
+  const isLocked = household?.accessLocked;
+  const hasActiveSub =
+    !!household?.stripeSubscriptionId &&
+    ["active", "trialing", "past_due"].includes(household.subscriptionStatus);
 
   return (
     <div className="page-container">
@@ -58,25 +93,57 @@ const SettingsPage = () => {
               <CreditCard className="w-4 h-4 text-primary" />
               <h2 className="font-medium text-sm">Billing</h2>
               <span className="ml-auto text-[10px] uppercase tracking-wider text-muted-foreground">
-                {household.subscriptionStatus}
+                {STATUS_LABELS[household.subscriptionStatus] ?? household.subscriptionStatus}
               </span>
             </div>
 
-            {isPastDue && (
-              <div className="flex items-start gap-2 bg-destructive/10 text-destructive-foreground border border-destructive/20 rounded-xl p-3 mb-3 text-xs">
+            {isLocked && (
+              <div className="flex items-start gap-2 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl p-3 mb-3 text-xs">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Your subscription needs attention. Update billing to keep Mai active.</span>
+                <span>Your subscription has ended. Pick a plan to keep using Mai.</span>
+              </div>
+            )}
+
+            {!isLocked && household.isInTrial && (
+              <div className="flex items-start gap-2 bg-primary/10 text-foreground border border-primary/20 rounded-xl p-3 mb-3 text-xs">
+                <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
+                <span>
+                  You're on a free trial — {household.trialDaysLeft ?? 0} day{household.trialDaysLeft === 1 ? "" : "s"} left.
+                  Subscribe anytime to keep your access.
+                </span>
+              </div>
+            )}
+
+            {isPastDue && (
+              <div className="flex items-start gap-2 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl p-3 mb-3 text-xs">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>Last payment failed. Update billing to keep Mai active.</span>
+              </div>
+            )}
+
+            {isCanceledScheduled && renewDate && (
+              <div className="flex items-start gap-2 bg-warning/10 border border-warning/20 rounded-xl p-3 mb-3 text-xs">
+                <Clock className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>Scheduled to cancel on {renewDate}. You'll keep access until then.</span>
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-2 text-sm mb-3">
               <div>
                 <p className="text-[10px] uppercase text-muted-foreground">Plan</p>
-                <p className="font-medium">{tier.label} · ${tier.price}/mo</p>
+                <p className="font-medium">
+                  {household.isInTrial ? `Trial of ${tier.label}` : isLocked ? "No active plan" : `${tier.label} · $${tier.price}/mo`}
+                </p>
               </div>
               <div>
-                <p className="text-[10px] uppercase text-muted-foreground">Renews</p>
-                <p className="font-medium">{renewDate}</p>
+                <p className="text-[10px] uppercase text-muted-foreground">
+                  {isCanceledScheduled ? "Ends" : household.isInTrial ? "Trial ends" : "Renews"}
+                </p>
+                <p className="font-medium">
+                  {household.isInTrial && household.trialEndsAt
+                    ? new Date(household.trialEndsAt).toLocaleDateString()
+                    : renewDate ?? "—"}
+                </p>
               </div>
               <div className="col-span-2">
                 <p className="text-[10px] uppercase text-muted-foreground mb-1">Voice usage</p>
@@ -92,10 +159,12 @@ const SettingsPage = () => {
 
             <div className="flex gap-2">
               <button
-                onClick={() => navigate("/pricing")}
-                className="flex-1 bg-primary text-primary-foreground rounded-xl py-2 text-xs font-medium hover:opacity-90"
+                onClick={() => (hasActiveSub && household.isOwner ? openPortal() : navigate("/pricing"))}
+                disabled={loadingPortal}
+                className="flex-1 bg-primary text-primary-foreground rounded-xl py-2 text-xs font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"
               >
-                Change plan
+                {loadingPortal && <Loader2 className="w-3 h-3 animate-spin" />}
+                {hasActiveSub ? "Change plan" : isLocked ? "Choose a plan" : "Subscribe"}
               </button>
               {household.isOwner && household.stripeCustomerId && (
                 <button

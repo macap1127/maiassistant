@@ -44,10 +44,21 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token ?? "");
     if (authError || !user) throw new Error("Unauthorized");
 
-    // Find user's household
     const { data: mem } = await supabase.from("household_members").select("household_id").eq("user_id", user.id).maybeSingle();
     if (!mem) throw new Error("No household");
     const householdId = mem.household_id;
+
+    // Block creating a *second* subscription. Plan changes must go through the portal.
+    const { data: h } = await supabase
+      .from("households")
+      .select("stripe_subscription_id, subscription_status, owner_user_id")
+      .eq("id", householdId)
+      .maybeSingle();
+    if (!h) throw new Error("Household not found");
+    if (h.owner_user_id !== user.id) throw new Error("Only the owner can subscribe");
+    if (h.stripe_subscription_id && ["active", "trialing", "past_due"].includes(h.subscription_status)) {
+      throw new Error("You already have an active subscription. Use 'Manage billing' to change plans.");
+    }
 
     const stripe = createStripeClient(environment as StripeEnv);
     const prices = await stripe.prices.list({ lookup_keys: [priceId] });
@@ -62,7 +73,8 @@ Deno.serve(async (req) => {
       ui_mode: "embedded_page",
       return_url: returnUrl,
       customer: customerId,
-      metadata: { userId: user.id, householdId },
+      managed_payments: { enabled: true },
+      metadata: { userId: user.id, householdId, managed_payments: "true" },
       subscription_data: { metadata: { userId: user.id, householdId } },
     });
 
