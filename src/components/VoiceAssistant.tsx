@@ -385,6 +385,26 @@ const VoiceAssistantInner = () => {
         lastError: lastErrorRef.current,
         rawArgs: args,
       });
+      // Log voice usage
+      if (lifetimeMs && lifetimeMs > 1000 && householdIdRef.current && user) {
+        const seconds = Math.ceil(lifetimeMs / 1000);
+        void supabase.from("voice_usage_log").insert({
+          household_id: householdIdRef.current,
+          user_id: user.id,
+          seconds,
+          started_at: new Date(sessionStartedAtRef.current!).toISOString(),
+          ended_at: new Date(disconnectedAt).toISOString(),
+        }).then(() => {
+          // optimistic local quota update
+          setQuota((q) => q ? { ...q, used: q.used + seconds } : q);
+          // also bump server counter (no atomic increment in supabase-js, so refetch+update)
+          void supabase.from("households").select("voice_seconds_used").eq("id", householdIdRef.current!).maybeSingle().then(({ data }) => {
+            if (data) {
+              void supabase.from("households").update({ voice_seconds_used: (data.voice_seconds_used ?? 0) + seconds }).eq("id", householdIdRef.current!);
+            }
+          });
+        });
+      }
       sessionStartedAtRef.current = null;
       setConnecting(false);
       setStatusMessage(null);
