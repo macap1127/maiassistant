@@ -513,7 +513,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation, prepareVoiceConnection]);
+  }, [conversation, prepareVoiceConnection, quota]);
 
   const stop = useCallback(async () => {
     console.log("[Mai] 🛑 stop() called by user", { at: new Date().toISOString() });
