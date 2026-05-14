@@ -148,6 +148,41 @@ const CalendarPage = () => {
 
   const cancelEdit = () => setEditingEventId(null);
 
+  const updatePending = (idx: number, patch: Partial<PendingEvent>) =>
+    setPendingEvents((list) => list?.map((e, i) => (i === idx ? { ...e, ...patch } : e)) ?? null);
+
+  const removePending = (idx: number) =>
+    setPendingEvents((list) => list?.filter((_, i) => i !== idx) ?? null);
+
+  const confirmPending = () => {
+    if (!pendingEvents) return;
+    const valid = pendingEvents.filter((e) => e.title.trim() && /^\d{4}-\d{2}-\d{2}$/.test(e.date));
+    if (valid.length === 0) {
+      toast.error("Each event needs a title and date");
+      return;
+    }
+    const { source, assignedTo } = pendingMeta;
+    update((d) => ({
+      ...d,
+      events: [
+        ...d.events,
+        ...valid.map((ev) => ({
+          id: genId(),
+          title: ev.title.trim(),
+          date: ev.date,
+          time: ev.time || undefined,
+          location: ev.location.trim() || undefined,
+          notes: ev.notes.trim() || undefined,
+          addedBy: "You",
+          source,
+          assignedTo,
+        })),
+      ],
+    }));
+    toast.success(`Added ${valid.length} event${valid.length > 1 ? "s" : ""}`);
+    setPendingEvents(null);
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
