@@ -450,6 +450,13 @@ const VoiceAssistantInner = () => {
     const tappedAt = Date.now();
     lastStartTapAtRef.current = tappedAt;
     lastErrorRef.current = null;
+    // Quota gate
+    if (quota && quota.used >= quota.limit) {
+      const msg = "You've used all your voice minutes for this period. Upgrade your plan to keep talking to Mai.";
+      setStatusMessage(msg);
+      toast({ variant: "destructive", title: "Voice limit reached", description: msg });
+      return;
+    }
     const cached = voiceConnectionRef.current;
     console.log("[Mai] 🎙️ start() tapped", {
       at: new Date(tappedAt).toISOString(),
