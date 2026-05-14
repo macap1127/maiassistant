@@ -203,24 +203,17 @@ const CalendarPage = () => {
           return;
         }
 
-        update((d) => ({
-          ...d,
-          events: [
-            ...d.events,
-            ...extracted.map((ev) => ({
-              id: genId(),
-              title: ev.title,
-              date: ev.date,
-              time: ev.time || undefined,
-              location: ev.location || undefined,
-              notes: ev.notes || undefined,
-              addedBy: "You",
-              source: ev.source || source,
-              assignedTo,
-            })),
-          ],
-        }));
-        toast.success(`Imported ${extracted.length} event${extracted.length > 1 ? "s" : ""} from "${source}"`);
+        // Stage for user confirmation instead of inserting directly
+        setPendingEvents(
+          extracted.map((ev) => ({
+            title: ev.title || "",
+            date: ev.date || "",
+            time: ev.time || "",
+            location: ev.location || "",
+            notes: ev.notes || "",
+          }))
+        );
+        setPendingMeta({ source, assignedTo });
       }
       setShowUpload(false);
       setUploadSource("");
