@@ -640,6 +640,84 @@ const CalendarPage = () => {
           Upload .ics files from schools, sports leagues, or any calendar app. Events are tagged by source so you always know where they came from.
         </p>
       </div>
+
+      {/* Confirm scanned events */}
+      <Dialog open={!!pendingEvents} onOpenChange={(o) => { if (!o) setPendingEvents(null); }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Review {pendingEvents?.length ?? 0} event{(pendingEvents?.length ?? 0) === 1 ? "" : "s"}</DialogTitle>
+            <DialogDescription>
+              Edit anything that looks off, then confirm to add to your calendar
+              {pendingMeta.source ? ` under "${pendingMeta.source}"` : ""}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            {pendingEvents?.map((ev, idx) => (
+              <div key={idx} className="border border-border rounded-xl p-3 space-y-2 bg-card">
+                <div className="flex items-start gap-2">
+                  <input
+                    value={ev.title}
+                    onChange={(e) => updatePending(idx, { title: e.target.value })}
+                    placeholder="Title"
+                    className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <button
+                    onClick={() => removePending(idx)}
+                    className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                    aria-label="Remove"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={ev.date}
+                    onChange={(e) => updatePending(idx, { date: e.target.value })}
+                    className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <input
+                    type="time"
+                    value={ev.time}
+                    onChange={(e) => updatePending(idx, { time: e.target.value })}
+                    className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <input
+                  value={ev.location}
+                  onChange={(e) => updatePending(idx, { location: e.target.value })}
+                  placeholder="Location (optional)"
+                  className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <input
+                  value={ev.notes}
+                  onChange={(e) => updatePending(idx, { notes: e.target.value })}
+                  placeholder="Notes (optional)"
+                  className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            ))}
+            {pendingEvents?.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">No events to add.</p>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <button
+              onClick={() => setPendingEvents(null)}
+              className="px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmPending}
+              disabled={!pendingEvents?.length}
+              className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              Add to calendar
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
