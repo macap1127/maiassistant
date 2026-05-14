@@ -4,6 +4,15 @@ import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+
+type PendingEvent = {
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  notes: string;
+};
 import {
   format,
   startOfMonth,
@@ -47,6 +56,8 @@ const CalendarPage = () => {
   const [importing, setImporting] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState({ title: "", time: "", location: "", notes: "", assignedTo: "" });
+  const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(null);
+  const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
@@ -137,6 +148,41 @@ const CalendarPage = () => {
 
   const cancelEdit = () => setEditingEventId(null);
 
+  const updatePending = (idx: number, patch: Partial<PendingEvent>) =>
+    setPendingEvents((list) => list?.map((e, i) => (i === idx ? { ...e, ...patch } : e)) ?? null);
+
+  const removePending = (idx: number) =>
+    setPendingEvents((list) => list?.filter((_, i) => i !== idx) ?? null);
+
+  const confirmPending = () => {
+    if (!pendingEvents) return;
+    const valid = pendingEvents.filter((e) => e.title.trim() && /^\d{4}-\d{2}-\d{2}$/.test(e.date));
+    if (valid.length === 0) {
+      toast.error("Each event needs a title and date");
+      return;
+    }
+    const { source, assignedTo } = pendingMeta;
+    update((d) => ({
+      ...d,
+      events: [
+        ...d.events,
+        ...valid.map((ev) => ({
+          id: genId(),
+          title: ev.title.trim(),
+          date: ev.date,
+          time: ev.time || undefined,
+          location: ev.location.trim() || undefined,
+          notes: ev.notes.trim() || undefined,
+          addedBy: "You",
+          source,
+          assignedTo,
+        })),
+      ],
+    }));
+    toast.success(`Added ${valid.length} event${valid.length > 1 ? "s" : ""}`);
+    setPendingEvents(null);
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -192,24 +238,17 @@ const CalendarPage = () => {
           return;
         }
 
-        update((d) => ({
-          ...d,
-          events: [
-            ...d.events,
-            ...extracted.map((ev) => ({
-              id: genId(),
-              title: ev.title,
-              date: ev.date,
-              time: ev.time || undefined,
-              location: ev.location || undefined,
-              notes: ev.notes || undefined,
-              addedBy: "You",
-              source: ev.source || source,
-              assignedTo,
-            })),
-          ],
-        }));
-        toast.success(`Imported ${extracted.length} event${extracted.length > 1 ? "s" : ""} from "${source}"`);
+        // Stage for user confirmation instead of inserting directly
+        setPendingEvents(
+          extracted.map((ev) => ({
+            title: ev.title || "",
+            date: ev.date || "",
+            time: ev.time || "",
+            location: ev.location || "",
+            notes: ev.notes || "",
+          }))
+        );
+        setPendingMeta({ source, assignedTo });
       }
       setShowUpload(false);
       setUploadSource("");
@@ -601,6 +640,84 @@ const CalendarPage = () => {
           Upload .ics files from schools, sports leagues, or any calendar app. Events are tagged by source so you always know where they came from.
         </p>
       </div>
+
+      {/* Confirm scanned events */}
+      <Dialog open={!!pendingEvents} onOpenChange={(o) => { if (!o) setPendingEvents(null); }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Review {pendingEvents?.length ?? 0} event{(pendingEvents?.length ?? 0) === 1 ? "" : "s"}</DialogTitle>
+            <DialogDescription>
+              Edit anything that looks off, then confirm to add to your calendar
+              {pendingMeta.source ? ` under "${pendingMeta.source}"` : ""}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            {pendingEvents?.map((ev, idx) => (
+              <div key={idx} className="border border-border rounded-xl p-3 space-y-2 bg-card">
+                <div className="flex items-start gap-2">
+                  <input
+                    value={ev.title}
+                    onChange={(e) => updatePending(idx, { title: e.target.value })}
+                    placeholder="Title"
+                    className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <button
+                    onClick={() => removePending(idx)}
+                    className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                    aria-label="Remove"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={ev.date}
+                    onChange={(e) => updatePending(idx, { date: e.target.value })}
+                    className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <input
+                    type="time"
+                    value={ev.time}
+                    onChange={(e) => updatePending(idx, { time: e.target.value })}
+                    className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <input
+                  value={ev.location}
+                  onChange={(e) => updatePending(idx, { location: e.target.value })}
+                  placeholder="Location (optional)"
+                  className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <input
+                  value={ev.notes}
+                  onChange={(e) => updatePending(idx, { notes: e.target.value })}
+                  placeholder="Notes (optional)"
+                  className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            ))}
+            {pendingEvents?.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-4">No events to add.</p>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <button
+              onClick={() => setPendingEvents(null)}
+              className="px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmPending}
+              disabled={!pendingEvents?.length}
+              className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              Add to calendar
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -302,6 +302,7 @@ export type Database = {
           due_date: string | null
           household_id: string
           id: string
+          time: string | null
           title: string
           updated_at: string
         }
@@ -312,6 +313,7 @@ export type Database = {
           due_date?: string | null
           household_id: string
           id?: string
+          time?: string | null
           title: string
           updated_at?: string
         }
@@ -322,6 +324,7 @@ export type Database = {
           due_date?: string | null
           household_id?: string
           id?: string
+          time?: string | null
           title?: string
           updated_at?: string
         }

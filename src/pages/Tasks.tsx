@@ -10,6 +10,7 @@ const Tasks = () => {
   const { data, update } = useFamilyData();
   const [newTitle, setNewTitle] = useState("");
   const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
   const [newAssignee, setNewAssignee] = useState("");
   const [filter, setFilter] = useState<FilterMode>("all");
   const [collapsedDone, setCollapsedDone] = useState(true);
@@ -28,12 +29,14 @@ const Tasks = () => {
           title,
           assignedTo: newAssignee || "You",
           dueDate: newDate || "",
+          time: newTime || undefined,
           completed: false,
         },
       ],
     }));
     setNewTitle("");
     setNewDate("");
+    setNewTime("");
     setNewAssignee("");
   };
 
@@ -133,6 +136,12 @@ const Tasks = () => {
               className="flex-1 bg-transparent text-xs focus:outline-none"
             />
           </div>
+          <input
+            type="time"
+            value={newTime}
+            onChange={(e) => setNewTime(e.target.value)}
+            className="bg-background border border-border rounded-xl px-2 py-1.5 text-xs focus:outline-none"
+          />
           <select
             value={newAssignee}
             onChange={(e) => setNewAssignee(e.target.value)}
@@ -231,7 +240,7 @@ const Tasks = () => {
                                 : "text-muted-foreground"
                           }`}
                         >
-                          · {formatDueLabel(task.dueDate)}
+                          · {formatDueLabel(task.dueDate)}{task.time ? ` · ${task.time}` : ""}
                         </span>
                       </div>
                     </div>
