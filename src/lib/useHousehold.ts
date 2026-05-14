@@ -18,11 +18,35 @@ export interface HouseholdState {
   subscriptionStatus: string;
   voiceSecondsUsed: number;
   voiceSecondsLimit: number;
-  currentPeriodEnd: string;
+  currentPeriodEnd: string | null;
+  trialEndsAt: string | null;
+  cancelAtPeriodEnd: boolean;
+  accessLocked: boolean;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
   isOwner: boolean;
   memberCount: number;
+  // Derived:
+  hasAccess: boolean;          // can use paid features right now
+  isInTrial: boolean;          // free trial window, no Stripe sub yet
+  trialDaysLeft: number | null;
+}
+
+function deriveAccess(h: any): { hasAccess: boolean; isInTrial: boolean; trialDaysLeft: number | null } {
+  const now = Date.now();
+  const periodEnd = h.current_period_end ? new Date(h.current_period_end).getTime() : null;
+  const trialEnd = h.trial_ends_at ? new Date(h.trial_ends_at).getTime() : null;
+
+  const inTrial = !h.stripe_subscription_id && !!trialEnd && trialEnd > now;
+  const trialDaysLeft = inTrial && trialEnd ? Math.max(0, Math.ceil((trialEnd - now) / 86400000)) : null;
+
+  let hasAccess = false;
+  if (!h.access_locked) {
+    if (["active", "trialing", "past_due"].includes(h.subscription_status) && (!periodEnd || periodEnd > now)) hasAccess = true;
+    else if (h.subscription_status === "canceled" && periodEnd && periodEnd > now) hasAccess = true;
+    else if (inTrial) hasAccess = true;
+  }
+  return { hasAccess, isInTrial: inTrial, trialDaysLeft };
 }
 
 export const useHousehold = () => {
@@ -57,6 +81,7 @@ export const useHousehold = () => {
       .select("*", { count: "exact", head: true })
       .eq("household_id", memRow.household_id);
     if (h) {
+      const derived = deriveAccess(h);
       setHousehold({
         id: h.id,
         name: h.name,
@@ -66,10 +91,14 @@ export const useHousehold = () => {
         voiceSecondsUsed: h.voice_seconds_used ?? 0,
         voiceSecondsLimit: h.voice_seconds_limit ?? 1800,
         currentPeriodEnd: h.current_period_end,
+        trialEndsAt: (h as any).trial_ends_at ?? null,
+        cancelAtPeriodEnd: (h as any).cancel_at_period_end ?? false,
+        accessLocked: (h as any).access_locked ?? false,
         stripeCustomerId: h.stripe_customer_id,
         stripeSubscriptionId: h.stripe_subscription_id,
         isOwner: h.owner_user_id === user.id,
         memberCount: count ?? 1,
+        ...derived,
       });
     }
     setLoading(false);
@@ -78,6 +107,22 @@ export const useHousehold = () => {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  // Realtime: refetch on any household row change
+  useEffect(() => {
+    if (!household?.id) return;
+    const channel = supabase
+      .channel(`household-${household.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "households", filter: `id=eq.${household.id}` },
+        () => void refresh(),
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [household?.id, refresh]);
 
   return { household, loading, refresh };
 };
