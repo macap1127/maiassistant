@@ -25,6 +25,7 @@ export interface Task {
   title: string;
   assignedTo: string;
   dueDate: string;
+  time?: string;
   completed: boolean;
 }
 
@@ -144,6 +145,7 @@ export function useFamilyData() {
           title: t.title,
           assignedTo: t.assigned_to,
           dueDate: t.due_date || "",
+          time: t.time || undefined,
           completed: t.completed,
         })),
         events: (events.data || []).map((e: any) => ({
@@ -245,9 +247,10 @@ export function useFamilyData() {
             title: t.title,
             assigned_to: t.assignedTo,
             due_date: t.dueDate || null,
+            time: t.time || null,
             completed: t.completed,
           }),
-          (t) => ({ title: t.title, assigned_to: t.assignedTo, due_date: t.dueDate || null, completed: t.completed }),
+          (t) => ({ title: t.title, assigned_to: t.assignedTo, due_date: t.dueDate || null, time: t.time || null, completed: t.completed }),
           "tasks"
         );
 
