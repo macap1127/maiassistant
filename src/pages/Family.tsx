@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus, Phone, X, Pencil, Crown, Check } from "lucide-react";
 import { useFamilyData, genId, type FamilyMember } from "@/lib/store";
+import HouseholdLogins from "@/components/HouseholdLogins";
 
 const AVATAR_CHOICES = [
   "👤", "🧑", "👩", "👨", "👧", "👦", "👶", "👵", "👴",
@@ -108,7 +109,8 @@ const Family = () => {
         </button>
       </div>
 
-      {/* Add form */}
+      <HouseholdLogins />
+
       {showAdd && (
         <MemberForm
           form={form}
