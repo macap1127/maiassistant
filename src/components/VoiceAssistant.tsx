@@ -120,6 +120,7 @@ const VoiceAssistantInner = () => {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
   const [preparingVoice, setPreparingVoice] = useState(false);
+  const [quota, setQuota] = useState<{ used: number; limit: number; tier: string } | null>(null);
   const householdIdRef = useRef<string | null>(null);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
@@ -131,10 +132,22 @@ const VoiceAssistantInner = () => {
   const lastStartTapAtRef = useRef<number | null>(null);
   const lastErrorRef = useRef<unknown>(null);
 
+  const refreshQuota = useCallback(async () => {
+    const hid = householdIdRef.current;
+    if (!hid) return;
+    const { data } = await supabase
+      .from("households")
+      .select("voice_seconds_used, voice_seconds_limit, subscription_tier")
+      .eq("id", hid)
+      .maybeSingle();
+    if (data) setQuota({ used: data.voice_seconds_used, limit: data.voice_seconds_limit, tier: data.subscription_tier });
+  }, []);
+
   // Resolve current household once user is known
   useEffect(() => {
     if (!user) {
       householdIdRef.current = null;
+      setQuota(null);
       return;
     }
     (async () => {
@@ -145,9 +158,10 @@ const VoiceAssistantInner = () => {
         .limit(1);
       if (!error && data && data.length > 0) {
         householdIdRef.current = data[0].household_id;
+        void refreshQuota();
       }
     })();
-  }, [user]);
+  }, [user, refreshQuota]);
 
   const requireHousehold = () => {
     const hid = householdIdRef.current;
