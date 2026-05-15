@@ -10,7 +10,7 @@ import { VoiceAssistant } from "@/components/VoiceAssistant";
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
   { path: "/grocery", icon: ShoppingCart, label: "Grocery" },
-  { path: "/tasks", icon: CheckSquare, label: "Tasks" },
+  { path: "/tasks", icon: CheckSquare, label: "To Do" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
   { path: "/receipts", icon: Receipt, label: "Receipts" },
   { path: "/family", icon: Users, label: "Family" },
@@ -19,7 +19,7 @@ const navItems = [
 const menuItems = [
   { path: "/", icon: Home, label: "Home" },
   { path: "/grocery", icon: ShoppingCart, label: "Grocery List" },
-  { path: "/tasks", icon: CheckSquare, label: "Tasks" },
+  { path: "/tasks", icon: CheckSquare, label: "To Do List" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
   { path: "/receipts", icon: Receipt, label: "Receipts" },
   { path: "/family", icon: Users, label: "Family" },
