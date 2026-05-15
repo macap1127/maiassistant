@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard } from "lucide-react";
+import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import AuthPage from "@/pages/AuthPage";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -20,6 +20,7 @@ const menuItems = [
   { path: "/grocery", icon: ShoppingCart, label: "Grocery List" },
   { path: "/tasks", icon: CheckSquare, label: "Tasks" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
+  { path: "/receipts", icon: Receipt, label: "Receipts" },
   { path: "/family", icon: Users, label: "Family" },
   { path: "/settings", icon: Settings, label: "Settings" },
   { path: "/pricing", icon: CreditCard, label: "Pricing" },
