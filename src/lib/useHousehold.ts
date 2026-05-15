@@ -112,7 +112,7 @@ export const useHousehold = () => {
   useEffect(() => {
     if (!household?.id) return;
     const channel = supabase
-      .channel(`household-${household.id}`)
+      .channel(`household-billing-${household.id}`)
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "households", filter: `id=eq.${household.id}` },
