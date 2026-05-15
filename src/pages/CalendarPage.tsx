@@ -5,6 +5,7 @@ import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { formatTime12h } from "@/lib/date";
 
 type PendingEvent = {
   title: string;
@@ -561,7 +562,7 @@ const CalendarPage = () => {
                         {event.time && (
                           <span className="text-xs text-muted-foreground flex items-center gap-1">
                             <Clock className="w-3 h-3" />
-                            {event.time}
+                            {formatTime12h(event.time)}
                           </span>
                         )}
                         {event.location && (

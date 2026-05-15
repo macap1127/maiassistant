@@ -46,3 +46,16 @@ export function formatDueLabel(due: string): string {
     day: "numeric",
   });
 }
+
+// Format an "HH:MM" 24-hour time string to 12-hour with AM/PM (e.g. "14:30" -> "2:30 PM").
+export function formatTime12h(time?: string | null): string {
+  if (!time) return "";
+  const m = /^(\d{1,2}):(\d{2})/.exec(time);
+  if (!m) return time;
+  let h = Number(m[1]);
+  const mins = m[2];
+  const period = h >= 12 ? "PM" : "AM";
+  h = h % 12;
+  if (h === 0) h = 12;
+  return `${h}:${mins} ${period}`;
+}
