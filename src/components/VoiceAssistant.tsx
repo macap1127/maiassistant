@@ -562,6 +562,16 @@ const VoiceAssistantInner = () => {
     lastStartTapAtRef.current = tappedAt;
     lastErrorRef.current = null;
 
+    // Unlock browser audio output inside the same user gesture so the first utterance isn't clipped
+    try {
+      const silentAudio = new Audio(
+        "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA=="
+      );
+      void silentAudio.play().catch(() => {});
+    } catch {
+      // ignore
+    }
+
     // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota)
     const access = await checkAccess();
     if (!access.ok) {
@@ -608,12 +618,18 @@ const VoiceAssistantInner = () => {
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
+      const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
+        overrides: {
+          agent: {
+            firstMessage: `Hey ${userName === "there" ? "there" : userName}! What's on your mind?`,
+          },
+        },
         dynamicVariables: {
-          user_name: userNameRef.current || "there",
+          user_name: userName,
           family_members: familySummary || "no family members added yet",
         },
       });
