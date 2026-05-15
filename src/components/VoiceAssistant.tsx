@@ -122,6 +122,8 @@ const VoiceAssistantInner = () => {
   const [preparingVoice, setPreparingVoice] = useState(false);
   const [quota, setQuota] = useState<{ used: number; limit: number; tier: string } | null>(null);
   const householdIdRef = useRef<string | null>(null);
+  const userNameRef = useRef<string>("");
+  const familyMembersRef = useRef<{ name: string; role: string }[]>([]);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
@@ -158,9 +160,15 @@ const VoiceAssistantInner = () => {
   useEffect(() => {
     if (!user) {
       householdIdRef.current = null;
+      userNameRef.current = "";
+      familyMembersRef.current = [];
       setQuota(null);
       return;
     }
+    const meta = (user.user_metadata || {}) as Record<string, unknown>;
+    const metaName = (meta.full_name || meta.name || meta.first_name) as string | undefined;
+    userNameRef.current = (metaName || user.email?.split("@")[0] || "").trim();
+
     (async () => {
       const { data, error } = await supabase
         .from("household_members")
@@ -168,8 +176,14 @@ const VoiceAssistantInner = () => {
         .eq("user_id", user.id)
         .limit(1);
       if (!error && data && data.length > 0) {
-        householdIdRef.current = data[0].household_id;
+        const hid = data[0].household_id;
+        householdIdRef.current = hid;
         void refreshQuota();
+        const { data: fam } = await supabase
+          .from("family_members")
+          .select("name, role")
+          .eq("household_id", hid);
+        if (fam) familyMembersRef.current = fam.filter((f: any) => f?.name);
       }
     })();
   }, [user, refreshQuota]);
@@ -587,10 +601,17 @@ const VoiceAssistantInner = () => {
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
       console.log("[Mai] start: calling conversation.startSession()", { connectionType: "websocket" });
+      const familySummary = familyMembersRef.current
+        .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
+        .join(", ");
       const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
+        dynamicVariables: {
+          user_name: userNameRef.current || "there",
+          family_members: familySummary || "no family members added yet",
+        },
       });
       Promise.resolve(result)
         .then((sessionId) => console.log("[Mai] startSession resolved", { sessionId, at: new Date().toISOString() }))
