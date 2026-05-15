@@ -107,11 +107,14 @@ const Dashboard = () => {
   return (
     <div className="page-container">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6 animate-fade-in">
-        <img src={maiLogo} alt="Mai" className="w-12 h-12 rounded-2xl shadow-sm" />
+      <div className="flex items-center gap-3 mb-6 mt-2 animate-fade-in">
+        <div className="relative">
+          <img src={maiLogo} alt="Mai" className="w-14 h-14 rounded-2xl relative z-10" />
+          <div className="absolute inset-0 rounded-2xl blur-xl bg-gradient-brand opacity-70" />
+        </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-muted-foreground">{greetingFor()} 👋</p>
-          <h1 className="text-2xl font-semibold tracking-tight truncate">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-mono-tech">{greetingFor()}</p>
+          <h1 className="text-2xl font-display font-semibold tracking-tight truncate text-gradient">
             {data.familyName}
           </h1>
         </div>
