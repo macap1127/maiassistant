@@ -24,6 +24,20 @@ const greetingFor = () => {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { data, loading } = useFamilyData();
+  const { user } = useAuth();
+
+  const displayName = (() => {
+    const meta: any = user?.user_metadata || {};
+    const raw =
+      meta.full_name ||
+      meta.name ||
+      meta.first_name ||
+      (user?.email ? user.email.split("@")[0] : "") ||
+      data.members[0]?.name ||
+      "friend";
+    const first = String(raw).split(/[\s._-]+/)[0];
+    return first.charAt(0).toUpperCase() + first.slice(1);
+  })();
 
   const today = todayISO();
 
