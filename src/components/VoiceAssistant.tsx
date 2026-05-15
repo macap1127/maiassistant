@@ -618,12 +618,18 @@ const VoiceAssistantInner = () => {
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
+      const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
+        overrides: {
+          agent: {
+            firstMessage: `Hey ${userName === "there" ? "there" : userName}! What's on your mind?`,
+          },
+        },
         dynamicVariables: {
-          user_name: userNameRef.current || "there",
+          user_name: userName,
           family_members: familySummary || "no family members added yet",
         },
       });
