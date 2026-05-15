@@ -36,8 +36,8 @@ const Dashboard = () => {
   const [loggedInMemberName, setLoggedInMemberName] = useState("");
 
   const directMemberName = useMemo(() => {
-    const meta: any = user?.user_metadata || {};
-    const userPhone = digitsOnly(user?.phone || meta.phone || meta.phone_number);
+    const meta = (user?.user_metadata || {}) as Record<string, unknown>;
+    const userPhone = digitsOnly(user?.phone || meta.phone as string | undefined || meta.phone_number as string | undefined);
     const emailHandle = String(user?.email || "").split("@")[0].toLowerCase();
     const emailParts = emailHandle.split(/[._-]+/).filter(Boolean);
 
