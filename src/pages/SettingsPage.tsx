@@ -5,8 +5,9 @@ import maiLogo from "@/assets/mai-logo.png";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles } from "lucide-react";
+import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { SmsReminderCard } from "@/components/SmsReminderCard";
 
 const STATUS_LABELS: Record<string, string> = {
   active: "Active",
@@ -190,6 +191,8 @@ const SettingsPage = () => {
             className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm mt-2 focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
+
+        {household && <SmsReminderCard household={household} />}
 
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "80ms" }}>
           <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
