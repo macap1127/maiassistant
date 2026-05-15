@@ -562,6 +562,16 @@ const VoiceAssistantInner = () => {
     lastStartTapAtRef.current = tappedAt;
     lastErrorRef.current = null;
 
+    // Unlock browser audio output inside the same user gesture so the first utterance isn't clipped
+    try {
+      const silentAudio = new Audio(
+        "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA=="
+      );
+      void silentAudio.play().catch(() => {});
+    } catch {
+      // ignore
+    }
+
     // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota)
     const access = await checkAccess();
     if (!access.ok) {
