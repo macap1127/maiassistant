@@ -26,18 +26,18 @@ const Dashboard = () => {
   const { data, loading } = useFamilyData();
   const { user } = useAuth();
 
-  const displayName = (() => {
+  const displayName = useMemo(() => {
     const meta: any = user?.user_metadata || {};
-    const raw =
-      meta.full_name ||
-      meta.name ||
+    let raw =
       meta.first_name ||
+      meta.name ||
+      meta.full_name ||
+      (data.members[0]?.name) ||
       (user?.email ? user.email.split("@")[0] : "") ||
-      data.members[0]?.name ||
       "friend";
     const first = String(raw).split(/[\s._-]+/)[0];
     return first.charAt(0).toUpperCase() + first.slice(1);
-  })();
+  }, [user, data.members]);
 
   const today = todayISO();
 
