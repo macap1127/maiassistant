@@ -294,6 +294,87 @@ export type Database = {
         }
         Relationships: []
       }
+      receipts: {
+        Row: {
+          added_by: string
+          created_at: string
+          currency: string
+          household_id: string
+          id: string
+          image_path: string
+          items_summary: string | null
+          notes: string | null
+          purchase_date: string | null
+          store: string
+          total: number | null
+          updated_at: string
+        }
+        Insert: {
+          added_by?: string
+          created_at?: string
+          currency?: string
+          household_id: string
+          id?: string
+          image_path: string
+          items_summary?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          store?: string
+          total?: number | null
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          currency?: string
+          household_id?: string
+          id?: string
+          image_path?: string
+          items_summary?: string | null
+          notes?: string | null
+          purchase_date?: string | null
+          store?: string
+          total?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sms_reminder_prefs: {
+        Row: {
+          created_at: string
+          household_id: string
+          last_sent_date: string | null
+          opted_in: boolean
+          phone: string
+          send_time: string
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          household_id: string
+          last_sent_date?: string | null
+          opted_in?: boolean
+          phone?: string
+          send_time?: string
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          household_id?: string
+          last_sent_date?: string | null
+          opted_in?: boolean
+          phone?: string
+          send_time?: string
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_to: string
