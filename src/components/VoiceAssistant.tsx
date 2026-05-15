@@ -567,7 +567,10 @@ const VoiceAssistantInner = () => {
     lastStartTapAtRef.current = tappedAt;
     lastErrorRef.current = null;
 
-    // Unlock browser audio output inside the same user gesture so the first utterance isn't clipped
+    // Unlock browser audio output inside the same user gesture so Mai's first words aren't clipped.
+    // The ElevenLabs SDK plays via Web Audio API, so we must create AND resume an AudioContext
+    // synchronously inside the gesture (iOS Safari requirement), then play a brief silent buffer
+    // through it to fully prime the output graph before the agent's first audio chunks arrive.
     try {
       const silentAudio = new Audio(
         "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA=="
@@ -575,6 +578,23 @@ const VoiceAssistantInner = () => {
       void silentAudio.play().catch(() => {});
     } catch {
       // ignore
+    }
+    try {
+      const Ctx: typeof AudioContext | undefined =
+        (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext }).AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (Ctx) {
+        const ctx = new Ctx();
+        if (ctx.state === "suspended") void ctx.resume().catch(() => {});
+        // Play a short silent buffer to fully warm up the output pipeline
+        const buffer = ctx.createBuffer(1, Math.max(1, Math.floor(ctx.sampleRate * 0.05)), ctx.sampleRate);
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start(0);
+      }
+    } catch {
+      // ignore – best effort
     }
 
     // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota)
