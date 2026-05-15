@@ -50,16 +50,19 @@ const AppLayout = () => {
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 py-2 pointer-events-none">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <button className="pointer-events-auto flex items-center justify-center w-9 h-9 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground transition-colors">
+            <button className="pointer-events-auto flex items-center justify-center w-10 h-10 rounded-xl glass-strong text-foreground/80 hover:text-foreground hover:ring-glow transition-all">
               <Menu className="w-4.5 h-4.5" />
             </button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 p-0">
+          <SheetContent side="left" className="w-72 p-0 glass-strong border-r border-border">
             <div className="flex items-center gap-3 p-5 border-b border-border">
-              <img src={maiLogo} alt="Mai" className="w-10 h-10 rounded-xl" />
+              <div className="relative">
+                <img src={maiLogo} alt="Mai" className="w-11 h-11 rounded-xl relative z-10" />
+                <div className="absolute inset-0 rounded-xl blur-lg bg-gradient-brand opacity-60" />
+              </div>
               <div>
-                <p className="font-serif font-semibold text-sm">Mai</p>
-                <p className="text-xs text-muted-foreground">Family Assistant</p>
+                <p className="font-display font-semibold text-base text-gradient">MAI</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">AI Assistant</p>
               </div>
             </div>
             <nav className="p-3 space-y-1">
@@ -97,7 +100,7 @@ const AppLayout = () => {
       <Outlet />
       <VoiceAssistant />
 
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border">
+      <nav className="fixed bottom-3 left-3 right-3 z-50 glass-strong rounded-2xl ring-glow">
         <div className="max-w-lg mx-auto flex items-center justify-around h-[var(--nav-height)] px-2">
           {navItems.map(({ path, icon: Icon, label }) => {
             const active = location.pathname === path;
@@ -105,14 +108,17 @@ const AppLayout = () => {
               <button
                 key={path}
                 onClick={() => navigate(path)}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors ${
+                className={`relative flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
                   active
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
+                {active && (
+                  <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gradient-brand shadow-[0_0_12px_hsl(var(--primary))]" />
+                )}
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 1.8} />
-                <span className="text-[11px] font-medium">{label}</span>
+                <span className="text-[10px] uppercase tracking-wider font-medium">{label}</span>
               </button>
             );
           })}
