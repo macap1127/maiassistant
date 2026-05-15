@@ -13,7 +13,6 @@ const navItems = [
   { path: "/tasks", icon: CheckSquare, label: "To Do" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
   { path: "/receipts", icon: Receipt, label: "Receipts" },
-  { path: "/family", icon: Users, label: "Family" },
 ];
 
 const menuItems = [
