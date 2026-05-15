@@ -1,5 +1,11 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt, Sparkles } from "lucide-react";
+import { useAuth } from "@/lib/auth";
+import AuthPage from "@/pages/AuthPage";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
+import maiLogo from "@/assets/mai-logo.png";
+import { VoiceAssistant } from "@/components/VoiceAssistant";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
@@ -55,57 +61,73 @@ const AppLayout = () => {
     return <AuthPage />;
   }
 
+  const pageTitle = titleFor(location.pathname);
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-3 py-2 pointer-events-none">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <button className="pointer-events-auto flex items-center justify-center w-10 h-10 rounded-xl glass-strong text-foreground/80 hover:text-foreground hover:ring-glow transition-all">
-              <Menu className="w-4.5 h-4.5" />
-            </button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-72 p-0 glass-strong border-r border-border">
-            <div className="flex items-center gap-3 p-5 border-b border-border">
-              <div className="relative">
-                <img src={maiLogo} alt="Mai" className="w-11 h-11 rounded-xl relative z-10" />
-                <div className="absolute inset-0 rounded-xl blur-lg bg-gradient-brand opacity-60" />
-              </div>
-              <div>
-                <p className="font-display font-semibold text-base text-gradient">MAI</p>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">AI Assistant</p>
-              </div>
-            </div>
-            <nav className="p-3 space-y-1">
-              {menuItems.map(({ path, icon: Icon, label }) => {
-                const active = location.pathname === path;
-                return (
-                  <button
-                    key={path}
-                    onClick={() => { navigate(path); setOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                      active
-                        ? "bg-primary/10 text-primary font-medium"
-                        : "text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Icon className="w-4.5 h-4.5" strokeWidth={active ? 2.5 : 1.8} />
-                    {label}
-                  </button>
-                );
-              })}
-            </nav>
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-              <button
-                onClick={() => { logout(); setOpen(false); }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-              >
-                <LogOut className="w-4.5 h-4.5" />
-                Sign out
+      {/* Top header bar */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-14 glass-strong border-b border-border">
+        <div className="max-w-lg mx-auto h-full flex items-center justify-between px-3">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <button className="flex items-center justify-center w-10 h-10 rounded-xl text-foreground/80 hover:text-foreground hover:bg-muted transition-all">
+                <Menu className="w-5 h-5" />
               </button>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 p-0 glass-strong border-r border-border">
+              <div className="flex items-center gap-3 p-5 border-b border-border">
+                <div className="relative">
+                  <img src={maiLogo} alt="Mai" className="w-11 h-11 rounded-xl relative z-10" />
+                  <div className="absolute inset-0 rounded-xl blur-lg bg-gradient-brand opacity-60" />
+                </div>
+                <div>
+                  <p className="font-display font-semibold text-base text-gradient">MAI</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">AI Assistant</p>
+                </div>
+              </div>
+              <nav className="p-3 space-y-1">
+                {menuItems.map(({ path, icon: Icon, label }) => {
+                  const active = location.pathname === path;
+                  return (
+                    <button
+                      key={path}
+                      onClick={() => { navigate(path); setOpen(false); }}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                        active
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-foreground hover:bg-muted"
+                      }`}
+                    >
+                      <Icon className="w-4.5 h-4.5" strokeWidth={active ? 2.5 : 1.8} />
+                      {label}
+                    </button>
+                  );
+                })}
+              </nav>
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
+                <button
+                  onClick={() => { logout(); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="w-4.5 h-4.5" />
+                  Sign out
+                </button>
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* Centered page title */}
+          <h1 className="absolute left-1/2 -translate-x-1/2 text-sm font-display font-semibold tracking-wide text-gradient pointer-events-none">
+            {pageTitle}
+          </h1>
+
+          {/* Logo on the right */}
+          <button onClick={() => navigate("/")} className="relative w-9 h-9 shrink-0">
+            <img src={maiLogo} alt="MAI" className="w-9 h-9 rounded-lg relative z-10" />
+            <div className="absolute inset-0 rounded-lg blur-md bg-gradient-brand opacity-50" />
+          </button>
+        </div>
+      </header>
 
       <Outlet />
       <VoiceAssistant />
