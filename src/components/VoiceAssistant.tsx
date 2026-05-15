@@ -290,24 +290,28 @@ const VoiceAssistantInner = () => {
           return `Failed to add: ${getErrorMessage(e)}`;
         }
       },
-      addTask: async (params: { title: string; assignedTo?: string; dueDate?: string }) => {
+      addTask: async (params: { title: string; assignedTo?: string; dueDate?: string; date?: string; time?: string }) => {
         console.log("[Mai] addTask called", params);
         try {
+          // To-do items have no date/time. If a date or time is given, route to calendar instead.
+          if (params.dueDate || params.date || params.time) {
+            return `That sounds like a calendar event since it has a date or time. Want me to add "${params.title}" to the calendar instead?`;
+          }
           const hid = requireHousehold();
           const { error } = await supabase.from("tasks").insert({
             household_id: hid,
             title: params.title,
             assigned_to: params.assignedTo ?? "",
-            due_date: params.dueDate || null,
+            due_date: null,
             completed: false,
           });
           if (error) {
             console.error("[Mai] addTask insert error", error);
-            toast({ variant: "destructive", title: "Couldn't add task", description: error.message });
+            toast({ variant: "destructive", title: "Couldn't add to-do", description: error.message });
             return `Failed to add: ${error.message}`;
           }
-          toast({ title: "Task added", description: params.title });
-          return `Added task: ${params.title}.`;
+          toast({ title: "Added to To Do List", description: params.title });
+          return `Added to your to-do list: ${params.title}.`;
         } catch (e: unknown) {
           console.error("[Mai] addTask threw", e);
           return `Failed to add: ${getErrorMessage(e)}`;

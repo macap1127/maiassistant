@@ -83,7 +83,7 @@ const Dashboard = () => {
     },
     {
       icon: CheckSquare,
-      label: "Tasks",
+      label: "To Do",
       count: pendingTasks,
       sub: "pending",
       path: "/tasks",
@@ -144,7 +144,7 @@ const Dashboard = () => {
           <div className="space-y-3">
             {weekTotalTasks > 0 && (
               <ProgressRow
-                label="Tasks"
+                label="To Do"
                 done={weekDoneTasks}
                 total={weekTotalTasks}
                 value={taskProgress}
@@ -173,7 +173,7 @@ const Dashboard = () => {
             onClick={() => navigate("/tasks")}
             className="text-xs text-primary hover:underline flex items-center gap-1"
           >
-            <Plus className="w-3 h-3" /> Add task
+            <Plus className="w-3 h-3" /> Add to-do
           </button>
         </div>
 
