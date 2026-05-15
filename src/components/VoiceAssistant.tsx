@@ -122,6 +122,8 @@ const VoiceAssistantInner = () => {
   const [preparingVoice, setPreparingVoice] = useState(false);
   const [quota, setQuota] = useState<{ used: number; limit: number; tier: string } | null>(null);
   const householdIdRef = useRef<string | null>(null);
+  const userNameRef = useRef<string>("");
+  const familyMembersRef = useRef<{ name: string; role: string }[]>([]);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
