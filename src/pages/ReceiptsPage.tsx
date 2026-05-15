@@ -232,7 +232,8 @@ async function compressImage(file: File): Promise<{ blob: Blob; dataUrl: string 
 }
 
 function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; onClose: () => void; householdId: string; addedBy: string }) {
-  const fileInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
+  const libraryInput = useRef<HTMLInputElement>(null);
   const [stage, setStage] = useState<"pick" | "review">("pick");
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
