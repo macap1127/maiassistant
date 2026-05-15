@@ -601,10 +601,17 @@ const VoiceAssistantInner = () => {
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
       console.log("[Mai] start: calling conversation.startSession()", { connectionType: "websocket" });
+      const familySummary = familyMembersRef.current
+        .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
+        .join(", ");
       const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
+        dynamicVariables: {
+          user_name: userNameRef.current || "there",
+          family_members: familySummary || "no family members added yet",
+        },
       });
       Promise.resolve(result)
         .then((sessionId) => console.log("[Mai] startSession resolved", { sessionId, at: new Date().toISOString() }))
