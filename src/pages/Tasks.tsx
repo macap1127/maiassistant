@@ -231,17 +231,19 @@ const Tasks = () => {
                             {task.assignedTo}
                           </span>
                         </span>
-                        <span
-                          className={`text-xs ${
-                            key === "overdue"
-                              ? "text-destructive"
-                              : key === "today"
-                                ? "text-primary"
-                                : "text-muted-foreground"
-                          }`}
-                        >
-                          · {formatDueLabel(task.dueDate)}{task.time ? ` · ${task.time}` : ""}
-                        </span>
+                        {key !== "none" && (
+                          <span
+                            className={`text-xs ${
+                              key === "overdue"
+                                ? "text-destructive"
+                                : key === "today"
+                                  ? "text-primary"
+                                  : "text-muted-foreground"
+                            }`}
+                          >
+                            · {formatDueLabel(task.dueDate)}{task.time ? ` · ${task.time}` : ""}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <button
