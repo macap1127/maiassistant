@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useFamilyData } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
 import { todayISO, bucketForDate, formatDueLabel } from "@/lib/date";
 import maiLogo from "@/assets/mai-logo.png";
 
@@ -23,6 +24,20 @@ const greetingFor = () => {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { data, loading } = useFamilyData();
+  const { user } = useAuth();
+
+  const displayName = (() => {
+    const meta: any = user?.user_metadata || {};
+    const raw =
+      meta.full_name ||
+      meta.name ||
+      meta.first_name ||
+      (user?.email ? user.email.split("@")[0] : "") ||
+      data.members[0]?.name ||
+      "friend";
+    const first = String(raw).split(/[\s._-]+/)[0];
+    return first.charAt(0).toUpperCase() + first.slice(1);
+  })();
 
   const today = todayISO();
 
@@ -115,11 +130,11 @@ const Dashboard = () => {
         <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
           {greetingFor()}
         </p>
-        <h1 className="text-4xl font-display font-bold tracking-tight text-gradient mt-1">
-          MAI
+        <h1 className="text-3xl font-display font-bold tracking-tight mt-1">
+          Welcome back, <span className="text-gradient">{displayName}</span>
         </h1>
-        <p className="text-sm text-muted-foreground mt-2 max-w-xs">
-          Welcome back to <span className="text-foreground font-medium">{data.familyName}</span> — your AI-powered family command center.
+        <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
+          This is <span className="text-foreground font-semibold">MAI</span> — your AI co-pilot for everything {data.familyName}. Ready when you are. ✨
         </p>
       </div>
 
