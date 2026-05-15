@@ -106,18 +106,21 @@ const Dashboard = () => {
 
   return (
     <div className="page-container">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6 mt-2 animate-fade-in">
-        <div className="relative">
-          <img src={maiLogo} alt="Mai" className="w-14 h-14 rounded-2xl relative z-10" />
-          <div className="absolute inset-0 rounded-2xl blur-xl bg-gradient-brand opacity-70" />
+      {/* Landing hero */}
+      <div className="flex flex-col items-center text-center mb-8 mt-2 animate-fade-in">
+        <div className="relative mb-4">
+          <img src={maiLogo} alt="MAI" className="w-28 h-28 rounded-3xl relative z-10" />
+          <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-mono-tech">{greetingFor()}</p>
-          <h1 className="text-2xl font-display font-semibold tracking-tight truncate text-gradient">
-            {data.familyName}
-          </h1>
-        </div>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
+          {greetingFor()}
+        </p>
+        <h1 className="text-4xl font-display font-bold tracking-tight text-gradient mt-1">
+          MAI
+        </h1>
+        <p className="text-sm text-muted-foreground mt-2 max-w-xs">
+          Welcome back to <span className="text-foreground font-medium">{data.familyName}</span> — your AI-powered family command center.
+        </p>
       </div>
 
       {/* Quick cards */}
