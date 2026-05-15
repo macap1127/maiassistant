@@ -73,7 +73,7 @@ const Tasks = () => {
     { key: "overdue", label: "Overdue", tone: "text-destructive" },
     { key: "today", label: "Today", tone: "text-primary" },
     { key: "upcoming", label: "Upcoming", tone: "text-foreground" },
-    { key: "none", label: "No date", tone: "text-muted-foreground" },
+    { key: "none", label: "To-do", tone: "text-muted-foreground" },
   ];
 
   const grouped = useMemo(() => {
@@ -231,17 +231,19 @@ const Tasks = () => {
                             {task.assignedTo}
                           </span>
                         </span>
-                        <span
-                          className={`text-xs ${
-                            key === "overdue"
-                              ? "text-destructive"
-                              : key === "today"
-                                ? "text-primary"
-                                : "text-muted-foreground"
-                          }`}
-                        >
-                          · {formatDueLabel(task.dueDate)}{task.time ? ` · ${task.time}` : ""}
-                        </span>
+                        {key !== "none" && (
+                          <span
+                            className={`text-xs ${
+                              key === "overdue"
+                                ? "text-destructive"
+                                : key === "today"
+                                  ? "text-primary"
+                                  : "text-muted-foreground"
+                            }`}
+                          >
+                            · {formatDueLabel(task.dueDate)}{task.time ? ` · ${task.time}` : ""}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <button
