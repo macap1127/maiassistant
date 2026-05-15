@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Receipt, Plus, X, Loader2, Camera, Trash2, Calendar as CalIcon, Store, DollarSign, Sparkles } from "lucide-react";
+import { Receipt, Plus, X, Loader2, Camera, Trash2, Calendar as CalIcon, Store, DollarSign, Sparkles, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
@@ -232,7 +232,8 @@ async function compressImage(file: File): Promise<{ blob: Blob; dataUrl: string 
 }
 
 function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; onClose: () => void; householdId: string; addedBy: string }) {
-  const fileInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
+  const libraryInput = useRef<HTMLInputElement>(null);
   const [stage, setStage] = useState<"pick" | "review">("pick");
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -316,21 +317,36 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
         {stage === "pick" && (
           <div className="space-y-3">
             <input
-              ref={fileInput}
+              ref={cameraInput}
               type="file"
               accept="image/*"
               capture="environment"
               className="hidden"
               onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleFile(f); }}
             />
-            <button
-              onClick={() => fileInput.current?.click()}
-              className="w-full flex flex-col items-center justify-center gap-2 bg-primary text-primary-foreground rounded-2xl py-10 hover:opacity-90"
-            >
-              <Camera className="w-8 h-8" />
-              <span className="text-sm font-medium">Take a photo</span>
-              <span className="text-[11px] opacity-80">or pick from gallery</span>
-            </button>
+            <input
+              ref={libraryInput}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleFile(f); }}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => cameraInput.current?.click()}
+                className="flex flex-col items-center justify-center gap-2 bg-primary text-primary-foreground rounded-2xl py-8 hover:opacity-90"
+              >
+                <Camera className="w-7 h-7" />
+                <span className="text-sm font-medium">Take photo</span>
+              </button>
+              <button
+                onClick={() => libraryInput.current?.click()}
+                className="flex flex-col items-center justify-center gap-2 bg-secondary text-secondary-foreground rounded-2xl py-8 hover:opacity-90 border border-border"
+              >
+                <ImageIcon className="w-7 h-7" />
+                <span className="text-sm font-medium">From library</span>
+              </button>
+            </div>
             <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1">
               <Sparkles className="w-3 h-3" /> AI will fill in store, date, and total — you confirm.
             </p>

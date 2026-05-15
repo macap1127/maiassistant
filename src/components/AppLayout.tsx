@@ -12,6 +12,7 @@ const navItems = [
   { path: "/grocery", icon: ShoppingCart, label: "Grocery" },
   { path: "/tasks", icon: CheckSquare, label: "Tasks" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
+  { path: "/receipts", icon: Receipt, label: "Receipts" },
   { path: "/family", icon: Users, label: "Family" },
 ];
 
