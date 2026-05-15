@@ -28,16 +28,16 @@ const Dashboard = () => {
 
   const displayName = useMemo(() => {
     const meta: any = user?.user_metadata || {};
-    let raw =
+    const raw =
       meta.first_name ||
-      meta.name ||
       meta.full_name ||
-      (data.members[0]?.name) ||
+      meta.name ||
+      meta.display_name ||
       (user?.email ? user.email.split("@")[0] : "") ||
       "friend";
     const first = String(raw).split(/[\s._-]+/)[0];
     return first.charAt(0).toUpperCase() + first.slice(1);
-  }, [user, data.members]);
+  }, [user]);
 
   const today = todayISO();
 
