@@ -623,11 +623,6 @@ const VoiceAssistantInner = () => {
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
-        overrides: {
-          agent: {
-            firstMessage: `Hey ${userName === "there" ? "there" : userName}! What's on your mind?`,
-          },
-        },
         dynamicVariables: {
           user_name: userName,
           family_members: familySummary || "no family members added yet",
