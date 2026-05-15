@@ -130,11 +130,11 @@ const Dashboard = () => {
         <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
           {greetingFor()}
         </p>
-        <h1 className="text-4xl font-display font-bold tracking-tight text-gradient mt-1">
-          MAI
+        <h1 className="text-3xl font-display font-bold tracking-tight mt-1">
+          Welcome back, <span className="text-gradient">{displayName}</span>
         </h1>
-        <p className="text-sm text-muted-foreground mt-2 max-w-xs">
-          Welcome back to <span className="text-foreground font-medium">{data.familyName}</span> — your AI-powered family command center.
+        <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
+          This is <span className="text-foreground font-semibold">MAI</span> — your AI co-pilot for everything {data.familyName}. Ready when you are. ✨
         </p>
       </div>
 
