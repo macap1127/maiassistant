@@ -115,7 +115,7 @@
 
 @layer utilities {
   .page-container {
-    @apply px-5 pt-4 pb-24 max-w-lg mx-auto min-h-screen relative;
+    @apply px-5 pt-20 pb-28 max-w-lg mx-auto min-h-screen relative;
   }
 
   .glass {
