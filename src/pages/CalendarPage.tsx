@@ -562,7 +562,7 @@ const CalendarPage = () => {
                         {event.time && (
                           <span className="text-xs text-muted-foreground flex items-center gap-1">
                             <Clock className="w-3 h-3" />
-                            {event.time}
+                            {formatTime12h(event.time)}
                           </span>
                         )}
                         {event.location && (
