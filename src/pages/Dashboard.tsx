@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ShoppingCart,
   CheckSquare,
@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useFamilyData } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { todayISO, bucketForDate, formatDueLabel } from "@/lib/date";
 import maiLogo from "@/assets/mai-logo.png";
 
@@ -21,23 +22,72 @@ const greetingFor = () => {
   return "Good night";
 };
 
+const firstNameFrom = (name?: string | null) => {
+  const first = String(name || "there").trim().split(/[\s._-]+/)[0] || "there";
+  return first.charAt(0).toUpperCase() + first.slice(1);
+};
+
+const digitsOnly = (value?: string | null) => String(value || "").replace(/\D/g, "");
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { data, loading } = useFamilyData();
   const { user } = useAuth();
+  const [loggedInMemberName, setLoggedInMemberName] = useState("");
 
-  const displayName = useMemo(() => {
-    const meta: any = user?.user_metadata || {};
-    const raw =
-      meta.first_name ||
-      meta.full_name ||
-      meta.name ||
-      meta.display_name ||
-      (user?.email ? user.email.split("@")[0] : "") ||
-      "friend";
-    const first = String(raw).split(/[\s._-]+/)[0];
-    return first.charAt(0).toUpperCase() + first.slice(1);
-  }, [user]);
+  const directMemberName = useMemo(() => {
+    const meta = (user?.user_metadata || {}) as Record<string, unknown>;
+    const userPhone = digitsOnly(user?.phone || meta.phone as string | undefined || meta.phone_number as string | undefined);
+    const emailHandle = String(user?.email || "").split("@")[0].toLowerCase();
+    const emailParts = emailHandle.split(/[._-]+/).filter(Boolean);
+
+    return (
+      data.members.find((member) => {
+        const memberPhone = digitsOnly(member.phone);
+        return userPhone && memberPhone && memberPhone.endsWith(userPhone.slice(-10));
+      })?.name ||
+      data.members.find((member) => {
+        const memberFirst = firstNameFrom(member.name).toLowerCase();
+        return memberFirst && (emailParts.includes(memberFirst) || emailHandle.includes(memberFirst));
+      })?.name ||
+      ""
+    );
+  }, [data.members, user]);
+
+  useEffect(() => {
+    if (!user?.id || data.members.length === 0 || directMemberName) {
+      setLoggedInMemberName("");
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      const { data: memberships } = await supabase
+        .from("household_members")
+        .select("household_id")
+        .eq("user_id", user.id)
+        .limit(1);
+
+      const householdId = memberships?.[0]?.household_id;
+      if (!householdId) return;
+
+      const { data: householdMembers } = await supabase
+        .from("household_members")
+        .select("user_id, created_at")
+        .eq("household_id", householdId)
+        .order("created_at", { ascending: true });
+
+      if (cancelled) return;
+      const loginIndex = householdMembers?.findIndex((member) => member.user_id === user.id) ?? -1;
+      setLoggedInMemberName(loginIndex >= 0 ? data.members[loginIndex]?.name || "" : "");
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [data.members, directMemberName, user?.id]);
+
+  const displayName = firstNameFrom(directMemberName || loggedInMemberName || (data.members.length === 1 ? data.members[0].name : ""));
 
   const today = todayISO();
 
