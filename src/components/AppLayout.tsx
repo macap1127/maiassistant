@@ -1,11 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt } from "lucide-react";
-import { useAuth } from "@/lib/auth";
-import AuthPage from "@/pages/AuthPage";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
-import maiLogo from "@/assets/mai-logo.png";
-import { VoiceAssistant } from "@/components/VoiceAssistant";
+import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt, Sparkles } from "lucide-react";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
@@ -23,9 +17,25 @@ const menuItems = [
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
   { path: "/receipts", icon: Receipt, label: "Receipts" },
   { path: "/family", icon: Users, label: "Family" },
+  { path: "/about", icon: Sparkles, label: "About MAI" },
   { path: "/settings", icon: Settings, label: "Settings" },
   { path: "/pricing", icon: CreditCard, label: "Pricing" },
 ];
+
+const titleFor = (path: string) => {
+  const map: Record<string, string> = {
+    "/": "Home",
+    "/grocery": "Grocery",
+    "/tasks": "To Do",
+    "/calendar": "Calendar",
+    "/receipts": "Receipts",
+    "/family": "Family",
+    "/about": "About",
+    "/settings": "Settings",
+    "/pricing": "Pricing",
+  };
+  return map[path] ?? "MAI";
+};
 
 const AppLayout = () => {
   const location = useLocation();
