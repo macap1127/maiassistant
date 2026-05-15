@@ -73,8 +73,7 @@ Deno.serve(async (req) => {
       ui_mode: "embedded_page",
       return_url: returnUrl,
       customer: customerId,
-      managed_payments: { enabled: true },
-      metadata: { userId: user.id, householdId, managed_payments: "true" },
+      metadata: { userId: user.id, householdId },
       subscription_data: { metadata: { userId: user.id, householdId } },
     });
 
