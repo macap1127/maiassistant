@@ -299,6 +299,93 @@ const VoiceAssistantInner = () => {
           return `Failed to add: ${getErrorMessage(e)}`;
         }
       },
+      getEventsForDate: async (params: { date: string }) => {
+        console.log("[Mai] getEventsForDate called", params);
+        try {
+          const hid = requireHousehold();
+          const { data, error } = await supabase
+            .from("events")
+            .select("title, date, time, location, notes, assigned_to")
+            .eq("household_id", hid)
+            .eq("date", params.date)
+            .order("time", { ascending: true });
+          if (error) return `Couldn't read calendar: ${error.message}`;
+          if (!data || data.length === 0) return `Nothing on the calendar for ${params.date}.`;
+          const list = data.map((e: any) => {
+            const t = e.time ? ` at ${e.time}` : "";
+            const loc = e.location ? ` (${e.location})` : "";
+            const who = e.assigned_to ? ` — ${e.assigned_to}` : "";
+            return `${e.title}${t}${loc}${who}`;
+          }).join("; ");
+          return `On ${params.date}: ${list}.`;
+        } catch (e) {
+          return `Failed to look up calendar: ${getErrorMessage(e)}`;
+        }
+      },
+      searchReceipts: async (params: { query: string }) => {
+        console.log("[Mai] searchReceipts called", params);
+        try {
+          const hid = requireHousehold();
+          const q = (params.query || "").trim();
+          if (!q) return `What store or item should I search for?`;
+          const { data, error } = await supabase
+            .from("receipts")
+            .select("store, purchase_date, total, currency, items_summary, image_path")
+            .eq("household_id", hid)
+            .or(`store.ilike.%${q}%,items_summary.ilike.%${q}%,notes.ilike.%${q}%`)
+            .order("purchase_date", { ascending: false, nullsFirst: false })
+            .limit(5);
+          if (error) return `Couldn't search receipts: ${error.message}`;
+          if (!data || data.length === 0) return `No receipts found for "${q}".`;
+          const list = data.map((r: any) => {
+            const date = r.purchase_date || "no date";
+            const total = r.total != null ? ` — ${r.currency || "USD"} ${r.total}` : "";
+            const items = r.items_summary ? ` (${r.items_summary})` : "";
+            return `${r.store || "Unknown store"} on ${date}${total}${items}`;
+          }).join("; ");
+          return `Found ${data.length} receipt${data.length === 1 ? "" : "s"} for "${q}": ${list}. Open the Receipts tab to view the photo.`;
+        } catch (e) {
+          return `Failed to search receipts: ${getErrorMessage(e)}`;
+        }
+      },
+      addRecipeToGroceryList: async (params: { dish: string; servings?: number; store?: string }) => {
+        console.log("[Mai] addRecipeToGroceryList called", params);
+        try {
+          const dish = (params.dish || "").trim();
+          if (!dish) return `What recipe should I shop for?`;
+          const { data, error } = await supabase.functions.invoke("recipe-ingredients", {
+            body: { dish, servings: params.servings },
+          });
+          if (error) return `Couldn't get ingredients: ${error.message}`;
+          const ingredients: { name: string; quantity?: string }[] = data?.ingredients || [];
+          if (ingredients.length === 0) return `I couldn't find ingredients for ${dish}.`;
+          const added = await addGroceryItems(
+            ingredients.map((i) => ({ name: i.name, quantity: i.quantity, store: params.store }))
+          );
+          if (added.length === 0) return `All ingredients for ${dish} were already on the list.`;
+          toast({ title: `Added ${dish} ingredients`, description: added.join(", ") });
+          return `Added ${added.length} ingredient${added.length === 1 ? "" : "s"} for ${dish}: ${added.join(", ")}.`;
+        } catch (e) {
+          return `Failed to add recipe: ${getErrorMessage(e)}`;
+        }
+      },
+      getRecipeIngredients: async (params: { dish: string; servings?: number }) => {
+        console.log("[Mai] getRecipeIngredients called", params);
+        try {
+          const dish = (params.dish || "").trim();
+          if (!dish) return `What recipe should I look up?`;
+          const { data, error } = await supabase.functions.invoke("recipe-ingredients", {
+            body: { dish, servings: params.servings },
+          });
+          if (error) return `Couldn't get ingredients: ${error.message}`;
+          const ingredients: { name: string; quantity?: string }[] = data?.ingredients || [];
+          if (ingredients.length === 0) return `I couldn't find ingredients for ${dish}.`;
+          const list = ingredients.map((i) => i.quantity ? `${i.quantity} ${i.name}` : i.name).join(", ");
+          return `For ${dish} you'll need: ${list}. Want me to add these to the grocery list?`;
+        } catch (e) {
+          return `Failed: ${getErrorMessage(e)}`;
+        }
+      },
       addEvent: async (params: {
         title: string;
         date: string;
