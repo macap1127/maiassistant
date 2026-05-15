@@ -160,9 +160,15 @@ const VoiceAssistantInner = () => {
   useEffect(() => {
     if (!user) {
       householdIdRef.current = null;
+      userNameRef.current = "";
+      familyMembersRef.current = [];
       setQuota(null);
       return;
     }
+    const meta = (user.user_metadata || {}) as Record<string, unknown>;
+    const metaName = (meta.full_name || meta.name || meta.first_name) as string | undefined;
+    userNameRef.current = (metaName || user.email?.split("@")[0] || "").trim();
+
     (async () => {
       const { data, error } = await supabase
         .from("household_members")
@@ -170,8 +176,14 @@ const VoiceAssistantInner = () => {
         .eq("user_id", user.id)
         .limit(1);
       if (!error && data && data.length > 0) {
-        householdIdRef.current = data[0].household_id;
+        const hid = data[0].household_id;
+        householdIdRef.current = hid;
         void refreshQuota();
+        const { data: fam } = await supabase
+          .from("family_members")
+          .select("name, role")
+          .eq("household_id", hid);
+        if (fam) familyMembersRef.current = fam.filter((f: any) => f?.name);
       }
     })();
   }, [user, refreshQuota]);
