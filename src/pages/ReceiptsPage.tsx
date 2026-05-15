@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Receipt, Plus, X, Loader2, Camera, Trash2, Calendar as CalIcon, Store, DollarSign, Sparkles } from "lucide-react";
+import { Receipt, Plus, X, Loader2, Camera, Trash2, Calendar as CalIcon, Store, DollarSign, Sparkles, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
