@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useFamilyData } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
 import { todayISO, bucketForDate, formatDueLabel } from "@/lib/date";
 import maiLogo from "@/assets/mai-logo.png";
 
