@@ -53,22 +53,27 @@ const cleanStoreName = (value: string) =>
 
 const extractGroceryItemsFromUserText = (text: string, awaitingItem: boolean): { name: string; store?: string }[] => {
   const lower = text.toLowerCase();
-  const isGroceryCommand = /\b(grocery|groceries|shopping list|list)\b/.test(lower);
+  const isGroceryCommand = /\b(grocery|groceries|shopping\s*list)\b/.test(lower);
   const isAddCommand = /^\s*(add|put|include)\b/i.test(text);
-  const mentionsOtherArea = /\b(task|chore|calendar|event|appointment|reminder)\b/.test(lower);
+  const mentionsOtherArea = /\b(task|tasks|to[-\s]?do|todo|chore|chores|calendar|event|events|appointment|appointments|reminder|reminders|schedule)\b/.test(lower);
 
-  const storeMatch = text.match(/^\s*(?:add|put|include)\s+(.+?)\s+(?:to|on|in)\s+(?:my\s+|our\s+|the\s+)?(.+?)\s+(?:grocery\s+|shopping\s+)?list\b/i);
+  // Never treat as grocery if the user is talking about another area.
+  if (mentionsOtherArea && !isGroceryCommand) return [];
+
+  const storeMatch = text.match(/^\s*(?:add|put|include)\s+(.+?)\s+(?:to|on|in)\s+(?:my\s+|our\s+|the\s+)?(.+?)\s+(?:grocery|shopping)\s+list\b/i);
   if (storeMatch?.[1] && storeMatch?.[2]) {
     const store = cleanStoreName(storeMatch[2]);
     return splitGroceryNames(storeMatch[1]).map((name) => ({ name, store: store || undefined }));
   }
 
   if (isGroceryCommand && isAddCommand) {
-    const afterAdd = text.replace(/^\s*(add|put|include)\b/i, "").split(/\b(?:to|on|in)\b\s+(?:my\s+|our\s+)?(?:grocery|groceries|shopping list)/i)[0];
+    const afterAdd = text.replace(/^\s*(add|put|include)\b/i, "").split(/\b(?:to|on|in)\b\s+(?:my\s+|our\s+)?(?:grocery|groceries|shopping\s*list)/i)[0];
     return splitGroceryNames(afterAdd).map((name) => ({ name }));
   }
 
-  if (awaitingItem || (isAddCommand && !mentionsOtherArea)) {
+  // Only fall back to treating speech as grocery items when Mai explicitly asked
+  // for grocery items (awaitingItem). Do NOT infer grocery from a bare "add X".
+  if (awaitingItem && !mentionsOtherArea) {
     return splitGroceryNames(text.replace(/^\s*(add|put|include)\b/i, "")).map((name) => ({ name }));
   }
 
