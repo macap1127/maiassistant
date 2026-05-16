@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.lovable.900ab33e726449beaa2455300941d738',
-  appName: 'maiassistant',
+  appName: 'Mia Assistant',
   webDir: 'dist',
   server: {
     url: 'https://900ab33e-7264-49be-aa24-55300941d738.lovableproject.com?forceHideBadge=true',
