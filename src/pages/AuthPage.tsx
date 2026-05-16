@@ -81,7 +81,7 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-sm text-center animate-fade-in">
-        <img src={maiLogo} alt="Mia Assistant" className="w-16 h-16 rounded-2xl shadow-sm mx-auto mb-6" />
+        <img src={maiLogo} alt="Mia Assistant" className="w-28 h-28 rounded-2xl shadow-sm mx-auto mb-6" />
         <h1 className="text-2xl font-serif font-semibold mb-2">
           {mode === "signin" ? "Welcome Back" : "Create Your Account"}
         </h1>
