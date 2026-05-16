@@ -82,8 +82,8 @@ const SettingsPage = () => {
       <h1 className="text-2xl font-serif font-semibold mb-6 animate-fade-in">Settings</h1>
 
       <div className="flex flex-col items-center mb-8 animate-slide-up">
-        <img src={maiLogo} alt="Mai" className="w-20 h-20 rounded-3xl shadow-sm mb-3" />
-        <p className="text-lg font-serif font-semibold">Mai</p>
+        <img src={maiLogo} alt="Mia" className="w-20 h-20 rounded-3xl shadow-sm mb-3" />
+        <p className="text-lg font-serif font-semibold">Mia</p>
         <p className="text-xs text-muted-foreground">Your Family Assistant</p>
       </div>
 
@@ -101,7 +101,7 @@ const SettingsPage = () => {
             {isLocked && (
               <div className="flex items-start gap-2 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl p-3 mb-3 text-xs">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Your subscription has ended. Pick a plan to keep using Mai.</span>
+                <span>Your subscription has ended. Pick a plan to keep using Mia.</span>
               </div>
             )}
 
@@ -118,7 +118,7 @@ const SettingsPage = () => {
             {isPastDue && (
               <div className="flex items-start gap-2 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl p-3 mb-3 text-xs">
                 <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Last payment failed. Update billing to keep Mai active.</span>
+                <span>Last payment failed. Update billing to keep Mia active.</span>
               </div>
             )}
 

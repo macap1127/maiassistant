@@ -89,7 +89,7 @@ const AcceptInvitePage = () => {
         <Users className="w-8 h-8 text-primary mx-auto mb-3" />
         <h1 className="font-serif font-semibold text-lg mb-1">You've been invited</h1>
         <p className="text-sm text-muted-foreground mb-5">
-          Join <span className="font-medium text-foreground">{invite?.household_name}</span> on Mai.
+          Join <span className="font-medium text-foreground">{invite?.household_name}</span> on Mia.
         </p>
 
         {!user ? (

@@ -9,11 +9,11 @@ const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
 const getStartErrorMessage = (err: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
-  if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mai.";
+  if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mia.";
   if (err instanceof DOMException && err.name === "NotReadableError") return "Your microphone is busy in another app or tab.";
   const message = typeof err === "string" ? err : err instanceof Error ? err.message : "";
   if (/requested device not found|notfounderror|no device/i.test(message)) return "No microphone was found on this device.";
-  if (/permission|notallowed/i.test(message)) return "Please allow microphone access to talk to Mai.";
+  if (/permission|notallowed/i.test(message)) return "Please allow microphone access to talk to Mia.";
   if (/notreadable|busy|in use/i.test(message)) return "Your microphone is busy in another app or tab.";
   return message || "Please allow microphone access and try again.";
 };
@@ -71,7 +71,7 @@ const extractGroceryItemsFromUserText = (text: string, awaitingItem: boolean): {
     return splitGroceryNames(afterAdd).map((name) => ({ name }));
   }
 
-  // Only fall back to treating speech as grocery items when Mai explicitly asked
+  // Only fall back to treating speech as grocery items when Mia explicitly asked
   // for grocery items (awaitingItem). Do NOT infer grocery from a bare "add X".
   if (awaitingItem && !mentionsOtherArea) {
     return splitGroceryNames(text.replace(/^\s*(add|put|include)\b/i, "")).map((name) => ({ name }));
@@ -155,9 +155,9 @@ const VoiceAssistantInner = () => {
     const hid = householdIdRef.current;
     if (!hid) return { ok: false, reason: "No household" };
     const { data: hasAccess } = await supabase.rpc("household_has_access", { _household_id: hid });
-    if (!hasAccess) return { ok: false, reason: "Your subscription has ended or your trial is over. Choose a plan to keep using Mai." };
+    if (!hasAccess) return { ok: false, reason: "Your subscription has ended or your trial is over. Choose a plan to keep using Mia." };
     const { data: remaining } = await supabase.rpc("voice_seconds_remaining", { _household_id: hid });
-    if ((remaining ?? 0) <= 0) return { ok: false, reason: "You've used all your voice minutes for this period. Upgrade to keep talking to Mai." };
+    if ((remaining ?? 0) <= 0) return { ok: false, reason: "You've used all your voice minutes for this period. Upgrade to keep talking to Mia." };
     return { ok: true };
   }, []);
 
@@ -212,7 +212,7 @@ const VoiceAssistantInner = () => {
     const promise = supabase.functions
       .invoke("elevenlabs-token", { body: { agentId: AGENT_ID } })
       .then(({ data, error }) => {
-        if (error || !data?.signedUrl) throw new Error(error?.message || data?.error || "Failed to prepare Mai");
+        if (error || !data?.signedUrl) throw new Error(error?.message || data?.error || "Failed to prepare Mia");
         voiceConnectionRef.current = { signedUrl: data.signedUrl as string, createdAt: Date.now() };
         setVoiceReady(true);
         return data.signedUrl as string;
@@ -233,8 +233,8 @@ const VoiceAssistantInner = () => {
 
   useEffect(() => {
     void prepareVoiceConnection().catch((error) => {
-      console.error("[Mai] voice connection prepare failed", error);
-      setStatusMessage("Tap the microphone to prepare Mai.");
+      console.error("[Mia] voice connection prepare failed", error);
+      setStatusMessage("Tap the microphone to prepare Mia.");
     });
   }, [prepareVoiceConnection]);
 
@@ -251,7 +251,7 @@ const VoiceAssistantInner = () => {
         quantity: item.quantity ?? "",
         category: item.category ?? "Other",
         store: item.store?.trim() || null,
-        added_by: "Mai",
+        added_by: "Mia",
         completed: false,
       }));
 
@@ -270,7 +270,7 @@ const VoiceAssistantInner = () => {
   const conversation = useConversation({
     clientTools: {
       addGrocery: async (params: { name: string; quantity?: string; category?: string; store?: string }) => {
-        console.log("[Mai] addGrocery called", params);
+        console.log("[Mia] addGrocery called", params);
         try {
           // Reject vague referential phrases — agent should pass actual item names
           const rawName = (params.name || "").trim();
@@ -291,12 +291,12 @@ const VoiceAssistantInner = () => {
           const where = params.store ? ` (${params.store})` : "";
           return `Added ${added.join(", ")}${where} to the grocery list.`;
         } catch (e: unknown) {
-          console.error("[Mai] addGrocery threw", e);
+          console.error("[Mia] addGrocery threw", e);
           return `Failed to add: ${getErrorMessage(e)}`;
         }
       },
       addTask: async (params: { title: string; assignedTo?: string; dueDate?: string; date?: string; time?: string }) => {
-        console.log("[Mai] addTask called", params);
+        console.log("[Mia] addTask called", params);
         try {
           // To-do items have no date/time. If a date or time is given, route to calendar instead.
           if (params.dueDate || params.date || params.time) {
@@ -311,19 +311,19 @@ const VoiceAssistantInner = () => {
             completed: false,
           });
           if (error) {
-            console.error("[Mai] addTask insert error", error);
+            console.error("[Mia] addTask insert error", error);
             toast({ variant: "destructive", title: "Couldn't add to-do", description: error.message });
             return `Failed to add: ${error.message}`;
           }
           toast({ title: "Added to To Do List", description: params.title });
           return `Added to your to-do list: ${params.title}.`;
         } catch (e: unknown) {
-          console.error("[Mai] addTask threw", e);
+          console.error("[Mia] addTask threw", e);
           return `Failed to add: ${getErrorMessage(e)}`;
         }
       },
       getEventsForDate: async (params: { date: string }) => {
-        console.log("[Mai] getEventsForDate called", params);
+        console.log("[Mia] getEventsForDate called", params);
         try {
           const hid = requireHousehold();
           const { data, error } = await supabase
@@ -346,7 +346,7 @@ const VoiceAssistantInner = () => {
         }
       },
       searchReceipts: async (params: { query: string }) => {
-        console.log("[Mai] searchReceipts called", params);
+        console.log("[Mia] searchReceipts called", params);
         try {
           const hid = requireHousehold();
           const q = (params.query || "").trim();
@@ -372,7 +372,7 @@ const VoiceAssistantInner = () => {
         }
       },
       addRecipeToGroceryList: async (params: { dish: string; servings?: number; store?: string }) => {
-        console.log("[Mai] addRecipeToGroceryList called", params);
+        console.log("[Mia] addRecipeToGroceryList called", params);
         try {
           const dish = (params.dish || "").trim();
           if (!dish) return `What recipe should I shop for?`;
@@ -393,7 +393,7 @@ const VoiceAssistantInner = () => {
         }
       },
       getRecipeIngredients: async (params: { dish: string; servings?: number }) => {
-        console.log("[Mai] getRecipeIngredients called", params);
+        console.log("[Mia] getRecipeIngredients called", params);
         try {
           const dish = (params.dish || "").trim();
           if (!dish) return `What recipe should I look up?`;
@@ -416,7 +416,7 @@ const VoiceAssistantInner = () => {
         location?: string;
         notes?: string;
       }) => {
-        console.log("[Mai] addEvent called", params);
+        console.log("[Mia] addEvent called", params);
         try {
           const hid = requireHousehold();
           const { error } = await supabase.from("events").insert({
@@ -426,23 +426,23 @@ const VoiceAssistantInner = () => {
             time: params.time || null,
             location: params.location || null,
             notes: params.notes || null,
-            added_by: "Mai",
+            added_by: "Mia",
           });
           if (error) {
-            console.error("[Mai] addEvent insert error", error);
+            console.error("[Mia] addEvent insert error", error);
             toast({ variant: "destructive", title: "Couldn't add event", description: error.message });
             return `Failed to add: ${error.message}`;
           }
           toast({ title: "Event added", description: `${params.title} — ${params.date}${params.time ? " " + params.time : ""}` });
           return `Added event: ${params.title} on ${params.date}.`;
         } catch (e: unknown) {
-          console.error("[Mai] addEvent threw", e);
+          console.error("[Mia] addEvent threw", e);
           return `Failed to add: ${getErrorMessage(e)}`;
         }
       },
     },
     onMessage: (message: MaiMessage) => {
-      console.log("[Mai] message", message);
+      console.log("[Mia] message", message);
       const text =
         message?.message ||
         message?.agent_response_event?.agent_response ||
@@ -460,13 +460,13 @@ const VoiceAssistantInner = () => {
               }
             })
             .catch((error) => {
-              console.error("[Mai] grocery fallback insert failed", error);
+              console.error("[Mia] grocery fallback insert failed", error);
               toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(error) });
             });
         }
       } else if (text && (source === "user" || source === "user_transcript")) {
         const spokenItems = extractGroceryItemsFromUserText(text, awaitingGroceryItemRef.current);
-        console.log("[Mai] user transcript parsed grocery items", { text, spokenItems });
+        console.log("[Mia] user transcript parsed grocery items", { text, spokenItems });
         if (spokenItems.length > 0) {
           awaitingGroceryItemRef.current = false;
           void addGroceryItems(spokenItems)
@@ -476,7 +476,7 @@ const VoiceAssistantInner = () => {
               }
             })
             .catch((error) => {
-              console.error("[Mai] user transcript grocery insert failed", error);
+              console.error("[Mia] user transcript grocery insert failed", error);
               toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(error) });
             });
         }
@@ -485,7 +485,7 @@ const VoiceAssistantInner = () => {
     onConnect: (...args: unknown[]) => {
       const connectedAt = Date.now();
       sessionStartedAtRef.current = connectedAt;
-      console.log("[Mai] 🟢 onConnect fired", {
+      console.log("[Mia] 🟢 onConnect fired", {
         at: new Date(connectedAt).toISOString(),
         msSinceStartTap: lastStartTapAtRef.current ? connectedAt - lastStartTapAtRef.current : null,
         args,
@@ -493,12 +493,12 @@ const VoiceAssistantInner = () => {
       setConnecting(false);
       wasConnectedRef.current = true;
       setStatusMessage("Listening…");
-      toast({ title: "Connected to Mai", description: "Start speaking…" });
+      toast({ title: "Connected to Mia", description: "Start speaking…" });
     },
     onDisconnect: (...args: unknown[]) => {
       const disconnectedAt = Date.now();
       const lifetimeMs = sessionStartedAtRef.current ? disconnectedAt - sessionStartedAtRef.current : null;
-      console.warn("[Mai] 🔴 onDisconnect fired", {
+      console.warn("[Mia] 🔴 onDisconnect fired", {
         at: new Date(disconnectedAt).toISOString(),
         sessionLifetimeMs: lifetimeMs,
         wasConnected: wasConnectedRef.current,
@@ -524,11 +524,11 @@ const VoiceAssistantInner = () => {
       sessionStartedAtRef.current = null;
       setConnecting(false);
       setStatusMessage(null);
-      if (!userEndedSessionRef.current) void prepareVoiceConnection().catch((error) => console.error("[Mai] voice reconnect prepare failed", error));
+      if (!userEndedSessionRef.current) void prepareVoiceConnection().catch((error) => console.error("[Mia] voice reconnect prepare failed", error));
       if (wasConnectedRef.current && !userEndedSessionRef.current) {
         toast({
           variant: "destructive",
-          title: "Mai disconnected",
+          title: "Mia disconnected",
           description: lifetimeMs != null ? `Dropped after ${(lifetimeMs / 1000).toFixed(1)}s. Tap the mic to reconnect.` : "Tap the microphone to reconnect.",
         });
       } else if (userEndedSessionRef.current) {
@@ -539,7 +539,7 @@ const VoiceAssistantInner = () => {
     },
     onError: (error: unknown, ...rest: unknown[]) => {
       lastErrorRef.current = error;
-      console.error("[Mai] ❌ onError fired", {
+      console.error("[Mia] ❌ onError fired", {
         at: new Date().toISOString(),
         errorName: error instanceof Error ? error.name : typeof error,
         errorMessage: error instanceof Error ? error.message : String(error),
@@ -553,10 +553,10 @@ const VoiceAssistantInner = () => {
       toast({ variant: "destructive", title: "Connection error", description: message });
     },
     onStatusChange: (status: unknown) => {
-      console.log("[Mai] ℹ️ onStatusChange", { at: new Date().toISOString(), status });
+      console.log("[Mia] ℹ️ onStatusChange", { at: new Date().toISOString(), status });
     },
     onModeChange: (mode: unknown) => {
-      console.log("[Mai] ℹ️ onModeChange", { at: new Date().toISOString(), mode });
+      console.log("[Mia] ℹ️ onModeChange", { at: new Date().toISOString(), mode });
     },
   });
 
@@ -567,7 +567,7 @@ const VoiceAssistantInner = () => {
     lastStartTapAtRef.current = tappedAt;
     lastErrorRef.current = null;
 
-    // Unlock browser audio output inside the same user gesture so Mai's first words aren't clipped.
+    // Unlock browser audio output inside the same user gesture so Mia's first words aren't clipped.
     // The ElevenLabs SDK plays via Web Audio API, so we must create AND resume an AudioContext
     // synchronously inside the gesture (iOS Safari requirement), then play a brief silent buffer
     // through it to fully prime the output graph before the agent's first audio chunks arrive.
@@ -607,29 +607,29 @@ const VoiceAssistantInner = () => {
     }
 
     const cached = voiceConnectionRef.current;
-    console.log("[Mai] 🎙️ start() tapped", {
+    console.log("[Mia] 🎙️ start() tapped", {
       at: new Date(tappedAt).toISOString(),
       hasCachedSignedUrl: !!cached,
       cachedAgeMs: cached ? tappedAt - cached.createdAt : null,
       conversationStatus: conversation.status,
     });
     setConnecting(true);
-    setStatusMessage("Connecting to Mai…");
+    setStatusMessage("Connecting to Mia…");
     try {
       if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
-        console.log("[Mai] start: no fresh signed URL, preparing…");
-        setStatusMessage("Preparing Mai… tap the microphone again in a moment.");
+        console.log("[Mia] start: no fresh signed URL, preparing…");
+        setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
         setConnecting(false);
         void prepareVoiceConnection()
           .then(() => {
-            console.log("[Mai] start: prepare complete, awaiting next tap");
-            toast({ title: "Mai is ready", description: "Tap the microphone again to start talking." });
+            console.log("[Mia] start: prepare complete, awaiting next tap");
+            toast({ title: "Mia is ready", description: "Tap the microphone again to start talking." });
           })
           .catch((error) => {
-            console.error("[Mai] start: prepare failed", error);
+            console.error("[Mia] start: prepare failed", error);
             const message = getStartErrorMessage(error);
             setStatusMessage(message);
-            toast({ variant: "destructive", title: "Couldn't prepare Mai", description: message });
+            toast({ variant: "destructive", title: "Couldn't prepare Mia", description: message });
           });
         return;
       }
@@ -639,7 +639,7 @@ const VoiceAssistantInner = () => {
       setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
-      console.log("[Mai] start: calling conversation.startSession()", { connectionType: "websocket" });
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket" });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
@@ -654,17 +654,17 @@ const VoiceAssistantInner = () => {
         },
       });
       Promise.resolve(result)
-        .then((sessionId) => console.log("[Mai] startSession resolved", { sessionId, at: new Date().toISOString() }))
-        .catch((err) => console.error("[Mai] startSession rejected", err));
+        .then((sessionId) => console.log("[Mia] startSession resolved", { sessionId, at: new Date().toISOString() }))
+        .catch((err) => console.error("[Mia] startSession rejected", err));
     } catch (err) {
-      console.error("[Mai] start: synchronous throw", err);
+      console.error("[Mia] start: synchronous throw", err);
       voiceConnectionRef.current = null;
       setVoiceReady(false);
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
       toast({
         variant: "destructive",
-        title: "Couldn't start Mai",
+        title: "Couldn't start Mia",
         description: message,
       });
     } finally {
@@ -673,14 +673,14 @@ const VoiceAssistantInner = () => {
   }, [conversation, prepareVoiceConnection, checkAccess]);
 
   const stop = useCallback(async () => {
-    console.log("[Mai] 🛑 stop() called by user", { at: new Date().toISOString() });
+    console.log("[Mia] 🛑 stop() called by user", { at: new Date().toISOString() });
     userEndedSessionRef.current = true;
     await conversation.endSession();
-    console.log("[Mai] stop: endSession resolved");
+    console.log("[Mia] stop: endSession resolved");
   }, [conversation]);
 
   useEffect(() => {
-    console.log("[Mai] 🔄 conversation.status changed", {
+    console.log("[Mia] 🔄 conversation.status changed", {
       at: new Date().toISOString(),
       status: conversation.status,
       isSpeaking: conversation.isSpeaking,
@@ -704,7 +704,7 @@ const VoiceAssistantInner = () => {
         <button
           onClick={isConnected ? stop : start}
           disabled={connecting}
-          aria-label={isConnected ? "End conversation with Mai" : "Talk to Mai"}
+          aria-label={isConnected ? "End conversation with Mia" : "Talk to Mia"}
           className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
             isConnected
               ? "bg-destructive text-destructive-foreground animate-pulse"

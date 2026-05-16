@@ -174,7 +174,7 @@ const Dashboard = () => {
       {/* Landing hero */}
       <div className="flex flex-col items-center text-center mb-8 mt-2 animate-fade-in">
         <div className="relative mb-4">
-          <img src={maiLogo} alt="MAI" className="w-28 h-28 rounded-3xl relative z-10" />
+          <img src={maiLogo} alt="MIA" className="w-28 h-28 rounded-3xl relative z-10" />
           <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
         </div>
         <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
@@ -184,7 +184,7 @@ const Dashboard = () => {
           Welcome back, <span className="text-gradient">{displayName}</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
-          This is <span className="text-foreground font-semibold">MAI</span> — your AI co-pilot for everything {data.familyName}. Ready when you are. ✨
+          This is <span className="text-foreground font-semibold">MIA</span> — your AI co-pilot for everything {data.familyName}. Ready when you are. ✨
         </p>
       </div>
 

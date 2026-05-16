@@ -22,7 +22,7 @@ const menuItems = [
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
   { path: "/receipts", icon: Receipt, label: "Receipts" },
   { path: "/family", icon: Users, label: "Family" },
-  { path: "/about", icon: Sparkles, label: "About MAI" },
+  { path: "/about", icon: Sparkles, label: "About MIA" },
   { path: "/settings", icon: Settings, label: "Settings" },
   { path: "/pricing", icon: CreditCard, label: "Pricing" },
 ];
@@ -39,7 +39,7 @@ const titleFor = (path: string) => {
     "/settings": "Settings",
     "/pricing": "Pricing",
   };
-  return map[path] ?? "MAI";
+  return map[path] ?? "MIA";
 };
 
 const AppLayout = () => {
@@ -76,11 +76,11 @@ const AppLayout = () => {
             <SheetContent side="left" className="w-72 p-0 glass-strong border-r border-border">
               <div className="flex items-center gap-3 p-5 border-b border-border">
                 <div className="relative">
-                  <img src={maiLogo} alt="Mai" className="w-11 h-11 rounded-xl relative z-10" />
+                  <img src={maiLogo} alt="Mia" className="w-11 h-11 rounded-xl relative z-10" />
                   <div className="absolute inset-0 rounded-xl blur-lg bg-gradient-brand opacity-60" />
                 </div>
                 <div>
-                  <p className="font-display font-semibold text-base text-gradient">MAI</p>
+                  <p className="font-display font-semibold text-base text-gradient">MIA</p>
                   <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">AI Assistant</p>
                 </div>
               </div>
@@ -122,7 +122,7 @@ const AppLayout = () => {
 
           {/* Logo on the right */}
           <button onClick={() => navigate("/")} className="relative w-9 h-9 shrink-0">
-            <img src={maiLogo} alt="MAI" className="w-9 h-9 rounded-lg relative z-10" />
+            <img src={maiLogo} alt="MIA" className="w-9 h-9 rounded-lg relative z-10" />
             <div className="absolute inset-0 rounded-lg blur-md bg-gradient-brand opacity-50" />
           </button>
         </div>
