@@ -658,7 +658,7 @@ const VoiceAssistantInner = () => {
         overrides: {
           agent: {
             language: (assistantLanguageRef.current || "en") as any,
-            firstMessage: "Hey there! I'm Mia — your family assistant. What can I help you with today?",
+            firstMessage: "Hi! Mia here. What are we tackling today?",
           },
         },
         dynamicVariables: {
