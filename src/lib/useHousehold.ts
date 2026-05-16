@@ -26,6 +26,7 @@ export interface HouseholdState {
   stripeSubscriptionId: string | null;
   isOwner: boolean;
   memberCount: number;
+  assistantLanguage: string;
   // Derived:
   hasAccess: boolean;          // can use paid features right now
   isInTrial: boolean;          // free trial window, no Stripe sub yet
