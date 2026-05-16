@@ -99,6 +99,7 @@ export const useHousehold = () => {
         stripeSubscriptionId: h.stripe_subscription_id,
         isOwner: h.owner_user_id === user.id,
         memberCount: count ?? 1,
+        assistantLanguage: (h as any).assistant_language ?? "en",
         ...derived,
       });
     }
