@@ -155,7 +155,7 @@ const PricingPage = () => {
           <h2 className="font-serif text-lg font-semibold">FAQ</h2>
           <div>
             <p className="font-medium">What happens if I run out of voice minutes?</p>
-            <p className="text-muted-foreground text-xs mt-1">You can still use tasks, groceries, and calendar by hand. Upgrade to keep talking to Mai.</p>
+            <p className="text-muted-foreground text-xs mt-1">You can still use tasks, groceries, and calendar by hand. Upgrade to keep talking to Mia.</p>
           </div>
           <div>
             <p className="font-medium">Can I switch plans later?</p>

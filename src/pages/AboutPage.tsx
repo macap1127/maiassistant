@@ -4,8 +4,8 @@ import maiLogo from "@/assets/mai-logo.png";
 const features = [
   {
     icon: Mic,
-    title: "Talk to MAI",
-    body: "Just speak — add groceries, schedule events, or check in on the day. MAI listens, understands, and acts in seconds.",
+    title: "Talk to MIA",
+    body: "Just speak — add groceries, schedule events, or check in on the day. MIA listens, understands, and acts in seconds.",
   },
   {
     icon: ShoppingCart,
@@ -15,7 +15,7 @@ const features = [
   {
     icon: CheckSquare,
     title: "To-Do, Done",
-    body: "Assign tasks, track progress, and finally clear the mental load. MAI keeps the family in sync.",
+    body: "Assign tasks, track progress, and finally clear the mental load. MIA keeps the family in sync.",
   },
   {
     icon: CalendarDays,
@@ -25,7 +25,7 @@ const features = [
   {
     icon: Receipt,
     title: "Receipts, Decoded",
-    body: "Snap a photo — MAI extracts the items, totals, and categories. Goodbye shoebox.",
+    body: "Snap a photo — MIA extracts the items, totals, and categories. Goodbye shoebox.",
   },
   {
     icon: Users,
@@ -40,17 +40,17 @@ const AboutPage = () => {
       {/* Hero */}
       <div className="flex flex-col items-center text-center mb-10 animate-fade-in">
         <div className="relative mb-5">
-          <img src={maiLogo} alt="MAI" className="w-24 h-24 rounded-3xl relative z-10" />
+          <img src={maiLogo} alt="MIA" className="w-24 h-24 rounded-3xl relative z-10" />
           <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
         </div>
         <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
-          Meet MAI
+          Meet MIA
         </p>
         <h1 className="text-3xl font-display font-bold tracking-tight text-gradient mt-1">
           Your Family's AI Co-Pilot
         </h1>
         <p className="text-sm text-muted-foreground mt-3 max-w-sm leading-relaxed">
-          MAI is the always-on assistant that turns the chaos of family life into something quietly, beautifully effortless.
+          MIA is the always-on assistant that turns the chaos of family life into something quietly, beautifully effortless.
           Speak to it. Trust it. Reclaim your weekends.
         </p>
       </div>
