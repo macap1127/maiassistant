@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import maiLogo from "@/assets/mai-logo.png";
@@ -156,6 +157,16 @@ const AuthPage = () => {
         <p className="text-xs text-muted-foreground mt-8">
           Temporary email login while SMS verification is pending approval.
         </p>
+
+        <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground">
+          <Link to="/privacy" className="hover:text-foreground transition-colors">
+            Privacy Policy
+          </Link>
+          <span>&middot;</span>
+          <Link to="/terms" className="hover:text-foreground transition-colors">
+            Terms & Conditions
+          </Link>
+        </div>
       </div>
     </div>
   );
