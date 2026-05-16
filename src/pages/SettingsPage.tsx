@@ -254,6 +254,16 @@ const SettingsPage = () => {
         >
           {saved ? "✓ Saved!" : "Save Changes"}
         </button>
+
+        <div className="flex items-center justify-center gap-3 pt-2 text-xs text-muted-foreground animate-slide-up" style={{ animationDelay: "200ms" }}>
+          <Link to="/privacy" className="hover:text-foreground transition-colors">
+            Privacy Policy
+          </Link>
+          <span>&middot;</span>
+          <Link to="/terms" className="hover:text-foreground transition-colors">
+            Terms & Conditions
+          </Link>
+        </div>
       </div>
     </div>
   );
