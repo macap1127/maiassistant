@@ -185,6 +185,12 @@ const VoiceAssistantInner = () => {
         const hid = data[0].household_id;
         householdIdRef.current = hid;
         void refreshQuota();
+        const { data: hh } = await supabase
+          .from("households")
+          .select("assistant_language")
+          .eq("id", hid)
+          .maybeSingle();
+        assistantLanguageRef.current = ((hh as any)?.assistant_language as string) || "en";
         const { data: fam } = await supabase
           .from("family_members")
           .select("name, role")
