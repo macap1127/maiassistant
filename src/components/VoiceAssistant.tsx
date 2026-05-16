@@ -127,6 +127,7 @@ const VoiceAssistantInner = () => {
   const [preparingVoice, setPreparingVoice] = useState(false);
   const [quota, setQuota] = useState<{ used: number; limit: number; tier: string } | null>(null);
   const householdIdRef = useRef<string | null>(null);
+  const assistantLanguageRef = useRef<string>("en");
   const userNameRef = useRef<string>("");
   const familyMembersRef = useRef<{ name: string; role: string }[]>([]);
   const awaitingGroceryItemRef = useRef(false);
@@ -184,6 +185,12 @@ const VoiceAssistantInner = () => {
         const hid = data[0].household_id;
         householdIdRef.current = hid;
         void refreshQuota();
+        const { data: hh } = await supabase
+          .from("households")
+          .select("assistant_language")
+          .eq("id", hid)
+          .maybeSingle();
+        assistantLanguageRef.current = ((hh as any)?.assistant_language as string) || "en";
         const { data: fam } = await supabase
           .from("family_members")
           .select("name, role")
@@ -648,6 +655,9 @@ const VoiceAssistantInner = () => {
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
+        overrides: {
+          agent: { language: (assistantLanguageRef.current || "en") as any },
+        },
         dynamicVariables: {
           user_name: userName,
           family_members: familySummary || "no family members added yet",

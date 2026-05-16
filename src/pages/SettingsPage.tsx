@@ -5,9 +5,25 @@ import maiLogo from "@/assets/mai-logo.png";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare } from "lucide-react";
+import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare, Languages } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { SmsReminderCard } from "@/components/SmsReminderCard";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
+  { value: "en", label: "English" },
+  { value: "es", label: "Spanish (Español)" },
+  { value: "fr", label: "French (Français)" },
+  { value: "de", label: "German (Deutsch)" },
+  { value: "it", label: "Italian (Italiano)" },
+  { value: "pt", label: "Portuguese (Português)" },
+  { value: "nl", label: "Dutch (Nederlands)" },
+  { value: "pl", label: "Polish (Polski)" },
+  { value: "hi", label: "Hindi (हिन्दी)" },
+  { value: "ja", label: "Japanese (日本語)" },
+  { value: "zh", label: "Chinese (中文)" },
+  { value: "ar", label: "Arabic (العربية)" },
+];
 
 const STATUS_LABELS: Record<string, string> = {
   active: "Active",
@@ -195,23 +211,40 @@ const SettingsPage = () => {
         {household && <SmsReminderCard household={household} />}
 
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "80ms" }}>
-          <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-            Assistant Preferences
-          </label>
-          <div className="mt-3 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Voice Tone</span>
-              <span className="text-sm text-muted-foreground">Friendly</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Reminders</span>
-              <span className="text-sm text-muted-foreground">Enabled</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm">Language</span>
-              <span className="text-sm text-muted-foreground">English</span>
-            </div>
+          <div className="flex items-center gap-2 mb-3">
+            <Languages className="w-4 h-4 text-primary" />
+            <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+              Assistant Language
+            </label>
           </div>
+          <Select
+            value={(household as any)?.assistantLanguage ?? "en"}
+            onValueChange={async (val) => {
+              if (!household?.id) return;
+              const { error } = await supabase
+                .from("households")
+                .update({ assistant_language: val } as any)
+                .eq("id", household.id);
+              if (error) {
+                toast({ variant: "destructive", title: "Couldn't save language", description: error.message });
+                return;
+              }
+              await refresh();
+              toast({ title: "Language updated", description: "Mia will use this language on your next conversation." });
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              {LANGUAGE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-[11px] text-muted-foreground mt-2">
+            Changes apply the next time you start a conversation with Mia.
+          </p>
         </div>
 
         <button

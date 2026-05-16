@@ -26,6 +26,7 @@ export interface HouseholdState {
   stripeSubscriptionId: string | null;
   isOwner: boolean;
   memberCount: number;
+  assistantLanguage: string;
   // Derived:
   hasAccess: boolean;          // can use paid features right now
   isInTrial: boolean;          // free trial window, no Stripe sub yet
@@ -98,6 +99,7 @@ export const useHousehold = () => {
         stripeSubscriptionId: h.stripe_subscription_id,
         isOwner: h.owner_user_id === user.id,
         memberCount: count ?? 1,
+        assistantLanguage: (h as any).assistant_language ?? "en",
         ...derived,
       });
     }
