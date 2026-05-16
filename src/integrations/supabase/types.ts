@@ -237,6 +237,7 @@ export type Database = {
       households: {
         Row: {
           access_locked: boolean
+          assistant_language: string
           cancel_at_period_end: boolean
           created_at: string
           current_period_end: string | null
@@ -256,6 +257,7 @@ export type Database = {
         }
         Insert: {
           access_locked?: boolean
+          assistant_language?: string
           cancel_at_period_end?: boolean
           created_at?: string
           current_period_end?: string | null
@@ -275,6 +277,7 @@ export type Database = {
         }
         Update: {
           access_locked?: boolean
+          assistant_language?: string
           cancel_at_period_end?: boolean
           created_at?: string
           current_period_end?: string | null

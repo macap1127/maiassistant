@@ -1,0 +1,1 @@
+ALTER TABLE public.households ADD COLUMN IF NOT EXISTS assistant_language text NOT NULL DEFAULT 'en';
