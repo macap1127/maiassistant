@@ -656,7 +656,10 @@ const VoiceAssistantInner = () => {
         connectionType: "websocket",
         useWakeLock: false,
         overrides: {
-          agent: { language: (assistantLanguageRef.current || "en") as any },
+          agent: {
+            language: (assistantLanguageRef.current || "en") as any,
+            firstMessage: "Good to hear from you! I'm Mia, ready to help keep your household running smooth. What's on your mind?",
+          },
         },
         dynamicVariables: {
           user_name: userName,
