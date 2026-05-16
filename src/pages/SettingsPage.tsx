@@ -5,9 +5,25 @@ import maiLogo from "@/assets/mai-logo.png";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare } from "lucide-react";
+import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare, Languages } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { SmsReminderCard } from "@/components/SmsReminderCard";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
+  { value: "en", label: "English" },
+  { value: "es", label: "Spanish (Español)" },
+  { value: "fr", label: "French (Français)" },
+  { value: "de", label: "German (Deutsch)" },
+  { value: "it", label: "Italian (Italiano)" },
+  { value: "pt", label: "Portuguese (Português)" },
+  { value: "nl", label: "Dutch (Nederlands)" },
+  { value: "pl", label: "Polish (Polski)" },
+  { value: "hi", label: "Hindi (हिन्दी)" },
+  { value: "ja", label: "Japanese (日本語)" },
+  { value: "zh", label: "Chinese (中文)" },
+  { value: "ar", label: "Arabic (العربية)" },
+];
 
 const STATUS_LABELS: Record<string, string> = {
   active: "Active",
