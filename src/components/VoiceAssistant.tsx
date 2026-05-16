@@ -656,7 +656,7 @@ const VoiceAssistantInner = () => {
         connectionType: "websocket",
         useWakeLock: false,
         overrides: {
-          agent: { language: assistantLanguageRef.current || "en" },
+          agent: { language: (assistantLanguageRef.current || "en") as any },
         },
         dynamicVariables: {
           user_name: userName,
