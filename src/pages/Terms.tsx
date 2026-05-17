@@ -12,7 +12,7 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">1. Acceptance of Terms</h2>
           <p>
-            By accessing or using Mia Assistant ("the Service"), you agree to be
+            By accessing or using Mia Family Assistant ("the Service"), you agree to be
             bound by these Terms and Conditions. If you do not agree, do not
             use the Service.
           </p>
@@ -21,7 +21,7 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">2. The Service</h2>
           <p>
-            Mia Assistant is a household management application that lets users
+            Mia Family Assistant is a household management application that lets users
             share groceries, tasks, and calendar events with members of their
             household.
           </p>
@@ -89,7 +89,7 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">9. Limitation of Liability</h2>
           <p>
-            To the maximum extent permitted by law, Mia Assistant shall not be
+            To the maximum extent permitted by law, Mia Family Assistant shall not be
             liable for any indirect, incidental, special, or consequential
             damages arising out of or in connection with your use of the
             Service.

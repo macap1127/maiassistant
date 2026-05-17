@@ -12,7 +12,7 @@ const PrivacyPolicy = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">1. Introduction</h2>
           <p>
-            Mia Assistant ("we", "us", "our") provides a household management
+            Mia Family Assistant ("we", "us", "our") provides a household management
             application that helps families coordinate groceries, tasks, and
             calendar events. This Privacy Policy explains how we collect, use,
             and protect your information when you use our service.
