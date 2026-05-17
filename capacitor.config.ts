@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.900ab33e726449beaa2455300941d738',
+  appId: 'app.lovable.miafamilyassistant',
   appName: 'Mia Family Assistant',
   webDir: 'dist',
   server: {
