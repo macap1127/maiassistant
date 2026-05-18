@@ -12,7 +12,7 @@ function getSupabase() {
 const PRICE_TO_TIER: Record<string, { tier: string; seconds: number }> = {
   mai_basic_monthly: { tier: "basic", seconds: 1800 },
   mai_family_monthly: { tier: "family", seconds: 7200 },
-  mai_family_plus_monthly: { tier: "family_plus", seconds: 18000 },
+  mai_family_plus_monthly: { tier: "family_plus", seconds: 14400 },
 };
 
 function priceIdFromItem(item: any): string | null {
