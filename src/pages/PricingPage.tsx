@@ -64,7 +64,7 @@ const tiers: TierDef[] = [
     icon: Sparkles,
     highlights: [
       "Up to 6 logins",
-      "300 shared voice minutes / month",
+      "240 shared voice minutes / month",
       "Everything in Family",
       "Priority support",
       "Early access to new features",
