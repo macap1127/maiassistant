@@ -91,7 +91,7 @@ const featureMatrix: { group: string; rows: FeatureRow[] }[] = [
   {
     group: "Mia voice assistant",
     rows: [
-      { label: "Voice minutes / month", basic: "30", family: "120", family_plus: "300" },
+      { label: "Voice minutes / month", basic: "30", family: "120", family_plus: "240" },
       { label: "15 supported languages", basic: true, family: true, family_plus: true },
       { label: "Bidirectional calendar sync", basic: true, family: true, family_plus: true },
     ],
