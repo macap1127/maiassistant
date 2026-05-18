@@ -228,9 +228,16 @@ const CalendarPage = () => {
         });
 
         const { data: result, error } = await supabase.functions.invoke("extract-events", {
-          body: { imageDataUrl: dataUrl, source },
+          body: { imageDataUrl: dataUrl, source, householdId: household?.id },
         });
-        if (error) throw error;
+        if (error) {
+          const msg = (error as any)?.context?.body?.error || (error as any)?.message || "";
+          if (msg.includes("Family") || msg.includes("upgrade")) {
+            toast.error("AI calendar import requires the Family plan. Upgrade in Settings to enable.");
+            return;
+          }
+          throw error;
+        }
 
         const extracted = (result?.events || []) as Array<{
           title: string; date: string; time?: string | null;
