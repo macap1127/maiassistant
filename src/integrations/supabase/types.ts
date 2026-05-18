@@ -468,10 +468,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      household_feature_allowed: {
+        Args: { _feature: string; _household_id: string }
+        Returns: boolean
+      }
       household_has_access: {
         Args: { _household_id: string }
         Returns: boolean
       }
+      household_tier: { Args: { _household_id: string }; Returns: string }
       increment_voice_usage: {
         Args: { _household_id: string; _seconds: number }
         Returns: number
