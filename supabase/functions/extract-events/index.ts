@@ -1,4 +1,7 @@
 // Extract calendar events from an image or PDF using Lovable AI (Gemini vision).
+// Gated to Family / Family Plus tiers.
+import { createClient } from "npm:@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -8,10 +11,44 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { imageDataUrl, source } = await req.json();
+    const { imageDataUrl, source, householdId } = await req.json();
     if (!imageDataUrl) {
       return new Response(JSON.stringify({ error: "imageDataUrl required" }), {
         status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Tier gate: only Family / Family Plus may use AI calendar import.
+    const authHeader = req.headers.get("Authorization") || "";
+    const token = authHeader.replace("Bearer ", "");
+    if (!token || !householdId) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: userData } = await supabase.auth.getUser(token);
+    if (!userData?.user) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { data: allowed } = await supabase.rpc("household_feature_allowed", {
+      _household_id: householdId,
+      _feature: "ai_calendar_import",
+    });
+    if (!allowed) {
+      return new Response(JSON.stringify({
+        error: "AI calendar import is available on the Family and Family Plus plans. Please upgrade.",
+        code: "TIER_UPGRADE_REQUIRED",
+      }), {
+        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

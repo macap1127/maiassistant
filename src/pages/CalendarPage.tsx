@@ -3,6 +3,7 @@ import { Plus, MapPin, Clock, Trash2, ChevronLeft, ChevronRight, Upload, Tag, Fi
 import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
 import { supabase } from "@/integrations/supabase/client";
+import { useHousehold } from "@/lib/useHousehold";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { formatTime12h } from "@/lib/date";
@@ -47,6 +48,7 @@ function getSourceColor(source: string, allSources: string[]) {
 
 const CalendarPage = () => {
   const { data, update } = useFamilyData();
+  const { household } = useHousehold();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
@@ -226,9 +228,16 @@ const CalendarPage = () => {
         });
 
         const { data: result, error } = await supabase.functions.invoke("extract-events", {
-          body: { imageDataUrl: dataUrl, source },
+          body: { imageDataUrl: dataUrl, source, householdId: household?.id },
         });
-        if (error) throw error;
+        if (error) {
+          const msg = (error as any)?.context?.body?.error || (error as any)?.message || "";
+          if (msg.includes("Family") || msg.includes("upgrade")) {
+            toast.error("AI calendar import requires the Family plan. Upgrade in Settings to enable.");
+            return;
+          }
+          throw error;
+        }
 
         const extracted = (result?.events || []) as Array<{
           title: string; date: string; time?: string | null;
