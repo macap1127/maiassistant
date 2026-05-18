@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Crown, Zap, Sparkles, X, Loader2 } from "lucide-react";
+import { Check, Crown, Zap, Sparkles, X, Minus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useHousehold, type Tier } from "@/lib/useHousehold";
@@ -14,22 +14,30 @@ const PRICE_IDS: Record<Tier, string> = {
   family_plus: "mai_family_plus_monthly",
 };
 
-const tiers: Array<{
+type TierDef = {
   id: Tier;
   name: string;
   tagline: string;
   price: string;
   icon: typeof Zap;
   popular?: boolean;
-  features: string[];
-}> = [
+  highlights: string[];
+};
+
+const tiers: TierDef[] = [
   {
     id: "basic",
     name: "Basic",
     tagline: "For one person",
     price: "$9",
     icon: Zap,
-    features: ["1 login", "30 voice minutes / month", "Tasks, groceries & calendar", "Web & app access"],
+    highlights: [
+      "1 login",
+      "30 voice minutes / month",
+      "Tasks, groceries & calendar",
+      "Voice assistant (15 languages)",
+      "10 receipt scans / month",
+    ],
   },
   {
     id: "family",
@@ -38,7 +46,15 @@ const tiers: Array<{
     price: "$29",
     icon: Crown,
     popular: true,
-    features: ["Up to 4 logins", "120 shared voice minutes / month", "Everything in Basic", "Shared family workspace"],
+    highlights: [
+      "Up to 4 logins",
+      "120 shared voice minutes / month",
+      "Everything in Basic",
+      "Shared family workspace & invites",
+      "Daily SMS reminders",
+      "Unlimited receipt scanning",
+      "AI calendar import (PDF & images)",
+    ],
   },
   {
     id: "family_plus",
@@ -46,16 +62,70 @@ const tiers: Array<{
     tagline: "For larger households",
     price: "$49",
     icon: Sparkles,
-    features: ["Up to 6 logins", "240 shared voice minutes / month", "Everything in Family", "Priority support"],
+    highlights: [
+      "Up to 6 logins",
+      "300 shared voice minutes / month",
+      "Everything in Family",
+      "Priority support",
+      "Early access to new features",
+    ],
   },
 ];
+
+type FeatureRow = {
+  label: string;
+  basic: string | boolean;
+  family: string | boolean;
+  family_plus: string | boolean;
+};
+
+const featureMatrix: { group: string; rows: FeatureRow[] }[] = [
+  {
+    group: "Household",
+    rows: [
+      { label: "Logins included", basic: "1", family: "4", family_plus: "6" },
+      { label: "Shared family workspace", basic: false, family: true, family_plus: true },
+      { label: "Invite household members", basic: false, family: true, family_plus: true },
+    ],
+  },
+  {
+    group: "Mia voice assistant",
+    rows: [
+      { label: "Voice minutes / month", basic: "30", family: "120", family_plus: "300" },
+      { label: "15 supported languages", basic: true, family: true, family_plus: true },
+      { label: "Bidirectional calendar sync", basic: true, family: true, family_plus: true },
+    ],
+  },
+  {
+    group: "Everyday tools",
+    rows: [
+      { label: "Tasks, groceries & calendar", basic: true, family: true, family_plus: true },
+      { label: "Daily SMS reminders", basic: false, family: true, family_plus: true },
+      { label: "Receipt scanning (OCR)", basic: "10 / mo", family: "Unlimited", family_plus: "Unlimited" },
+      { label: "AI calendar import (PDF / image)", basic: false, family: true, family_plus: true },
+    ],
+  },
+  {
+    group: "Support",
+    rows: [
+      { label: "Email support", basic: true, family: true, family_plus: true },
+      { label: "Priority support", basic: false, family: false, family_plus: true },
+      { label: "Early access to new features", basic: false, family: false, family_plus: true },
+    ],
+  },
+];
+
+function Cell({ value }: { value: string | boolean }) {
+  if (value === true) return <Check className="w-3.5 h-3.5 text-primary mx-auto" />;
+  if (value === false) return <Minus className="w-3.5 h-3.5 text-muted-foreground/50 mx-auto" />;
+  return <span className="text-[11px] font-medium">{value}</span>;
+}
 
 const PricingPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { household } = useHousehold();
   const [checkoutTier, setCheckoutTier] = useState<Tier | null>(null);
-  const [loadingPortal, setLoadingPortal] = useState(false);
 
   const hasActiveSub =
     !!household?.stripeSubscriptionId &&
@@ -70,13 +140,10 @@ const PricingPage = () => {
       toast({ variant: "destructive", title: "Owner only", description: "Only the household owner can change the plan." });
       return;
     }
-    // Existing subscriber → route through Stripe portal (handles upgrade/downgrade with proration)
     if (hasActiveSub) {
-      setLoadingPortal(true);
       const { data, error } = await supabase.functions.invoke("create-portal-session", {
         body: { environment: getStripeEnvironment(), returnUrl: window.location.href },
       });
-      setLoadingPortal(false);
       if (error || !data?.url) {
         toast({ variant: "destructive", title: "Couldn't open billing portal", description: error?.message || data?.error || "Try again." });
         return;
@@ -131,7 +198,7 @@ const PricingPage = () => {
                 </div>
 
                 <ul className="space-y-1.5 mb-4">
-                  {tier.features.map((f) => (
+                  {tier.highlights.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm">
                       <Check className="w-3.5 h-3.5 mt-0.5 text-primary shrink-0" />
                       <span>{f}</span>
@@ -151,6 +218,34 @@ const PricingPage = () => {
           })}
         </div>
 
+        {/* Compare features table */}
+        <div className="mt-10">
+          <h2 className="font-serif text-lg font-semibold mb-3 text-center">Compare plans</h2>
+          <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-[1.4fr_repeat(3,1fr)] bg-secondary/50 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="px-3 py-2">Feature</div>
+              <div className="px-2 py-2 text-center">Basic</div>
+              <div className="px-2 py-2 text-center text-primary">Family</div>
+              <div className="px-2 py-2 text-center">Family+</div>
+            </div>
+            {featureMatrix.map((section) => (
+              <div key={section.group}>
+                <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground bg-secondary/20 border-t border-border">
+                  {section.group}
+                </div>
+                {section.rows.map((row) => (
+                  <div key={row.label} className="grid grid-cols-[1.4fr_repeat(3,1fr)] items-center border-t border-border text-xs">
+                    <div className="px-3 py-2.5">{row.label}</div>
+                    <div className="px-2 py-2.5 text-center"><Cell value={row.basic} /></div>
+                    <div className="px-2 py-2.5 text-center"><Cell value={row.family} /></div>
+                    <div className="px-2 py-2.5 text-center"><Cell value={row.family_plus} /></div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="mt-10 space-y-4 text-sm">
           <h2 className="font-serif text-lg font-semibold">FAQ</h2>
           <div>
@@ -162,8 +257,12 @@ const PricingPage = () => {
             <p className="text-muted-foreground text-xs mt-1">Yes — change anytime from Settings. You'll be pro-rated automatically.</p>
           </div>
           <div>
-            <p className="font-medium">When do voice minutes reset?</p>
-            <p className="text-muted-foreground text-xs mt-1">On your billing anniversary each month.</p>
+            <p className="font-medium">When do voice minutes & receipt scans reset?</p>
+            <p className="text-muted-foreground text-xs mt-1">On the 1st of each month.</p>
+          </div>
+          <div>
+            <p className="font-medium">Do voice minutes share across the family?</p>
+            <p className="text-muted-foreground text-xs mt-1">Yes — Family and Family Plus minutes are pooled across all logins in the household.</p>
           </div>
         </div>
       </div>
