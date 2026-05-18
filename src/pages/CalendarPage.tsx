@@ -48,6 +48,7 @@ function getSourceColor(source: string, allSources: string[]) {
 
 const CalendarPage = () => {
   const { data, update } = useFamilyData();
+  const { household } = useHousehold();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
