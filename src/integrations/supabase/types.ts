@@ -242,6 +242,7 @@ export type Database = {
           created_at: string
           current_period_end: string | null
           current_period_start: string
+          has_used_trial: boolean
           id: string
           name: string
           owner_user_id: string
@@ -262,6 +263,7 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string
+          has_used_trial?: boolean
           id?: string
           name?: string
           owner_user_id: string
@@ -282,6 +284,7 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string
+          has_used_trial?: boolean
           id?: string
           name?: string
           owner_user_id?: string
