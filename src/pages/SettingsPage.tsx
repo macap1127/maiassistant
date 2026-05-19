@@ -47,11 +47,29 @@ const STATUS_LABELS: Record<string, string> = {
 const SettingsPage = () => {
   const { data, update } = useFamilyData();
   const { household, refresh } = useHousehold();
+  const { signOut } = useAuth();
   const [familyName, setFamilyName] = useState(data.familyName);
   const [saved, setSaved] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const deleteAccount = async () => {
+    setDeleting(true);
+    const { data: res, error } = await supabase.functions.invoke("delete-account", {
+      body: { environment: getStripeEnvironment() },
+    });
+    if (error || !res?.deleted) {
+      setDeleting(false);
+      toast({ variant: "destructive", title: "Couldn't delete account", description: error?.message || res?.error || "Try again." });
+      return;
+    }
+    toast({ title: "Account deleted", description: "Your account and data have been permanently removed." });
+    await signOut?.();
+    navigate("/", { replace: true });
+  };
+
 
   // Handle return from Stripe Checkout
   useEffect(() => {
