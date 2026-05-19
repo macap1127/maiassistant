@@ -25,10 +25,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Set listener FIRST
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(false);
+      // Auto-create a household for first-time sign-ins (covers Google OAuth
+      // users who never go through the email signup form). Defer to avoid
+      // deadlocks inside the auth callback.
+      if (event === "SIGNED_IN" && s?.user) {
+        const u = s.user;
+        setTimeout(async () => {
+          const { data: existing } = await supabase
+            .from("household_members")
+            .select("household_id")
+            .eq("user_id", u.id)
+            .limit(1);
+          if (existing && existing.length > 0) return;
+          await supabase.from("households").insert({
+            owner_user_id: u.id,
+            primary_phone: u.email ?? "",
+            name: "My Family",
+          });
+        }, 0);
+      }
     });
 
     // THEN check existing session
