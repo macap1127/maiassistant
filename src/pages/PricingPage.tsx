@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check, Crown, Zap, Sparkles, X, Minus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useHousehold, type Tier } from "@/lib/useHousehold";
 import { StripeEmbeddedCheckout, PaymentTestModeBanner } from "@/components/StripeEmbeddedCheckout";
@@ -164,7 +164,12 @@ const PricingPage = () => {
 
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-2xl font-serif font-semibold mb-2">Choose your plan</h1>
-          <p className="text-sm text-muted-foreground">Cancel anytime. Voice minutes reset each month.</p>
+          <p className="text-sm text-muted-foreground">Start with a 7-day free trial. Cancel anytime.</p>
+          {household && !household.hasUsedTrial && (
+            <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-semibold text-primary">
+              <Sparkles className="w-3 h-3" /> 7-day free trial on any plan
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -211,7 +216,13 @@ const PricingPage = () => {
                   disabled={isCurrent}
                   className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
                 >
-                  {isCurrent ? "Current plan" : household ? `Switch to ${tier.name}` : `Get ${tier.name}`}
+                  {isCurrent
+                    ? "Current plan"
+                    : household && hasActiveSub
+                    ? `Switch to ${tier.name}`
+                    : household && !household.hasUsedTrial
+                    ? `Start 7-day free trial`
+                    : `Get ${tier.name}`}
                 </button>
               </div>
             );
@@ -276,6 +287,23 @@ const PricingPage = () => {
                 <X className="w-4 h-4" />
               </button>
             </div>
+
+            <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-[11px] text-muted-foreground leading-relaxed">
+              {household && !household.hasUsedTrial ? (
+                <>
+                  <p className="text-foreground font-medium mb-1">7-day free trial, then {tiers.find(t => t.id === checkoutTier)?.price}/month.</p>
+                  <p>You won't be charged today. Your subscription auto-renews monthly at the listed price until you cancel. Cancel anytime from Settings → Manage billing — no charge if you cancel before the trial ends.</p>
+                </>
+              ) : (
+                <p>Your subscription auto-renews monthly at {tiers.find(t => t.id === checkoutTier)?.price} until you cancel. Cancel anytime from Settings → Manage billing.</p>
+              )}
+              <p className="mt-2">
+                By subscribing, you agree to our{" "}
+                <Link to="/terms" className="underline hover:text-foreground" target="_blank">Terms</Link> and{" "}
+                <Link to="/privacy" className="underline hover:text-foreground" target="_blank">Privacy Policy</Link>.
+              </p>
+            </div>
+
             <StripeEmbeddedCheckout
               priceId={PRICE_IDS[checkoutTier]}
               returnUrl={`${window.location.origin}/settings?checkout=success`}

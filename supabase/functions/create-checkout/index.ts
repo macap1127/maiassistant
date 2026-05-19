@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
     // Block creating a *second* subscription. Plan changes must go through the portal.
     const { data: h } = await supabase
       .from("households")
-      .select("stripe_subscription_id, subscription_status, owner_user_id")
+      .select("stripe_subscription_id, subscription_status, owner_user_id, has_used_trial")
       .eq("id", householdId)
       .maybeSingle();
     if (!h) throw new Error("Household not found");
@@ -67,6 +67,10 @@ Deno.serve(async (req) => {
 
     const customerId = await resolveOrCreateCustomer(stripe, { email: user.email, userId: user.id });
 
+    // 7-day free trial — one per household. Card is collected up-front; Stripe
+    // charges automatically at the end of the trial unless the user cancels.
+    const eligibleForTrial = !h.has_used_trial;
+
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: stripePrice.id, quantity: 1 }],
       mode: "subscription",
@@ -74,7 +78,13 @@ Deno.serve(async (req) => {
       return_url: returnUrl,
       customer: customerId,
       metadata: { userId: user.id, householdId },
-      subscription_data: { metadata: { userId: user.id, householdId } },
+      subscription_data: {
+        metadata: { userId: user.id, householdId },
+        ...(eligibleForTrial && {
+          trial_period_days: 7,
+          trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
+        }),
+      },
     });
 
     return new Response(JSON.stringify({ clientSecret: session.client_secret }), {

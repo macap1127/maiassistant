@@ -5,10 +5,15 @@ import maiLogo from "@/assets/mai-logo.png";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare, Languages } from "lucide-react";
+import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare, Languages, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { SmsReminderCard } from "@/components/SmsReminderCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useAuth } from "@/lib/auth";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
   { value: "en", label: "English" },
@@ -42,11 +47,29 @@ const STATUS_LABELS: Record<string, string> = {
 const SettingsPage = () => {
   const { data, update } = useFamilyData();
   const { household, refresh } = useHousehold();
+  const { logout } = useAuth();
   const [familyName, setFamilyName] = useState(data.familyName);
   const [saved, setSaved] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const deleteAccount = async () => {
+    setDeleting(true);
+    const { data: res, error } = await supabase.functions.invoke("delete-account", {
+      body: { environment: getStripeEnvironment() },
+    });
+    if (error || !res?.deleted) {
+      setDeleting(false);
+      toast({ variant: "destructive", title: "Couldn't delete account", description: error?.message || res?.error || "Try again." });
+      return;
+    }
+    toast({ title: "Account deleted", description: "Your account and data have been permanently removed." });
+    await logout();
+    navigate("/", { replace: true });
+  };
+
 
   // Handle return from Stripe Checkout
   useEffect(() => {
@@ -266,6 +289,46 @@ const SettingsPage = () => {
           <Link to="/terms" className="hover:text-foreground transition-colors">
             Terms & Conditions
           </Link>
+        </div>
+
+        <div className="bg-card border border-destructive/30 rounded-2xl p-4 mt-6 animate-slide-up" style={{ animationDelay: "240ms" }}>
+          <div className="flex items-center gap-2 mb-2">
+            <Trash2 className="w-4 h-4 text-destructive" />
+            <h2 className="font-medium text-sm text-destructive">Delete account</h2>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            Permanently delete your Mia account{household?.isOwner ? ", your household, and all its data" : " and leave your household"}. This cannot be undone. Any active subscription will be canceled.
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                disabled={deleting}
+                className="w-full bg-destructive/10 text-destructive border border-destructive/30 rounded-xl py-2 text-xs font-medium hover:bg-destructive/15 disabled:opacity-50 flex items-center justify-center gap-1.5"
+              >
+                {deleting && <Loader2 className="w-3 h-3 animate-spin" />}
+                Delete my account
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This permanently deletes your account
+                  {household?.isOwner ? ", your household, all family members, events, tasks, groceries, receipts," : ","}
+                  {" "}and cancels any active subscription. This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={deleteAccount}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Yes, delete everything
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>
