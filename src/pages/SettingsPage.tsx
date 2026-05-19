@@ -47,7 +47,7 @@ const STATUS_LABELS: Record<string, string> = {
 const SettingsPage = () => {
   const { data, update } = useFamilyData();
   const { household, refresh } = useHousehold();
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
   const [familyName, setFamilyName] = useState(data.familyName);
   const [saved, setSaved] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
