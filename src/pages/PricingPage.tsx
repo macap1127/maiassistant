@@ -164,7 +164,12 @@ const PricingPage = () => {
 
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-2xl font-serif font-semibold mb-2">Choose your plan</h1>
-          <p className="text-sm text-muted-foreground">Cancel anytime. Voice minutes reset each month.</p>
+          <p className="text-sm text-muted-foreground">Start with a 7-day free trial. Cancel anytime.</p>
+          {household && !household.has_used_trial && (
+            <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-semibold text-primary">
+              <Sparkles className="w-3 h-3" /> 7-day free trial on any plan
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">
