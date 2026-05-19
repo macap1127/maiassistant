@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check, Crown, Zap, Sparkles, X, Minus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useHousehold, type Tier } from "@/lib/useHousehold";
 import { StripeEmbeddedCheckout, PaymentTestModeBanner } from "@/components/StripeEmbeddedCheckout";
