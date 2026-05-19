@@ -98,6 +98,7 @@ export const useHousehold = () => {
         accessLocked: (h as any).access_locked ?? false,
         stripeCustomerId: h.stripe_customer_id,
         stripeSubscriptionId: h.stripe_subscription_id,
+        hasUsedTrial: (h as any).has_used_trial ?? false,
         isOwner: h.owner_user_id === user.id,
         memberCount: count ?? 1,
         assistantLanguage: (h as any).assistant_language ?? "en",
