@@ -5,10 +5,15 @@ import maiLogo from "@/assets/mai-logo.png";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare, Languages } from "lucide-react";
+import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare, Languages, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { SmsReminderCard } from "@/components/SmsReminderCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useAuth } from "@/lib/auth";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
   { value: "en", label: "English" },
