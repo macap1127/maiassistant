@@ -66,7 +66,7 @@ const SettingsPage = () => {
       return;
     }
     toast({ title: "Account deleted", description: "Your account and data have been permanently removed." });
-    await signOut?.();
+    await logout();
     navigate("/", { replace: true });
   };
 
