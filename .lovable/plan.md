@@ -1,112 +1,49 @@
-# Mai Pricing & Tier System Build Plan
+## Feature Graphic — 1024 × 500 PNG
 
-## Tiers (Option A)
-| Tier | Price | Logins | Voice/month |
-|---|---|---|---|
-| Basic | $9/mo | 1 | 30 min |
-| Family | $29/mo | 4 | 120 min shared |
-| Family Plus | $49/mo | 6 | 240 min shared |
+Output: `/mnt/documents/mai-feature-graphic-1024x500.png`
 
-No free tier. Quotas reset on each household's billing anniversary.
+### Visual composition
 
----
+```
+┌────────────────────────────────────────────────────────────┐
+│  [aurora glow bg + faint grid]                             │
+│                                                            │
+│   ╭──────╮       MIA                                       │
+│   │ orb  │       Your Family Assistant                     │
+│   │ icon │       Groceries · Calendar · To-Dos · Receipts  │
+│   ╰──────╯                                                 │
+│                                  [● Voice-powered]         │
+└────────────────────────────────────────────────────────────┘
+```
 
-## Step 1 — Database schema
+- **Background**: deep space navy `#0A0A1A` with radial auroras — cyan top-right, violet bottom-left, magenta bottom-right (same recipe as `body` in `index.css`)
+- **Faint grid overlay** at ~6% opacity for tech feel
+- **Left**: uploaded MIA orb icon (≈360px), with a soft cyan/violet glow halo
+- **Right column**:
+  - "MIA" — Space Grotesk Bold, ~140pt, cyan→violet→magenta gradient (matches `--gradient-brand`)
+  - "Your Family Assistant" — Space Grotesk Medium, ~44pt, white
+  - "Groceries · Calendar · To-Dos · Receipts" — DM Sans, ~24pt, muted gray
+- **Voice badge** (bottom-right pill): tiny glowing dot + "Voice-powered" in JetBrains Mono uppercase, glassy border — echoes the `.glass` utility
 
-Add to `households` table:
-- `subscription_tier` text — `'basic' | 'family' | 'family_plus'` (default `'basic'`)
-- `subscription_status` text — `'trialing' | 'active' | 'past_due' | 'canceled'`
-- `stripe_customer_id`, `stripe_subscription_id` text
-- `current_period_start`, `current_period_end` timestamptz (drives quota reset)
-- `voice_seconds_used` integer (default 0) — reset each period
-- `voice_seconds_limit` integer — derived from tier but stored for overrides
+### Build steps
 
-New table `household_invites`:
-- `household_id`, `email` (or `phone`), `invite_code` (random), `expires_at`, `accepted_at`, `invited_by`
+1. `code--copy user-uploads://MIA_android_icon_centered_512x512_1.png /tmp/mia-icon.png`
+2. Download Space Grotesk Bold/Medium, DM Sans Regular, JetBrains Mono Medium from Google Fonts to `/tmp/fonts/`
+3. Write `/tmp/feature-graphic.py` using Pillow:
+   - Create 1024×500 canvas, paint navy + 3 radial gradient auroras
+   - Draw subtle 32px grid lines at low alpha
+   - Paste icon with a pre-blurred glow underlay
+   - Render "MIA" by drawing text to a mask, then filling with a horizontal cyan→violet→magenta gradient
+   - Render sub-headline + tagline in flat colors
+   - Draw rounded-rect voice badge with thin border + glow dot
+4. Save to `/mnt/documents/mai-feature-graphic-1024x500.png`
 
-New table `voice_usage_log` (audit trail):
-- `household_id`, `user_id`, `seconds`, `started_at`, `ended_at`, `conversation_id`
+### QA pass
 
-RLS: members can read their own household; only owner can invite/remove members and change tier.
+- Open the PNG, verify: nothing clipped at edges, text crisp at 100%, gradient on "MIA" reads left-to-right cleanly, icon glow not muddy, badge legible
+- If anything's off, iterate (`_v2.png`) until clean
+- Deliver via `<presentation-artifact>` tag
 
----
+### Memory cleanup
 
-## Step 2 — Login limit enforcement
-
-Add a DB trigger on `household_members` insert: count members vs tier limit (1/4/6); reject if exceeded with clear error.
-
-Update auth flow so when a user signs up via an invite code, they auto-join that household instead of creating a new one.
-
----
-
-## Step 3 — Family invite flow
-
-Owner-only **Family** page section:
-- "Invite member" button → enter email/phone → generates invite code → shows shareable link `/?invite=ABC123`
-- List of pending invites with revoke button
-- List of current members with remove button (owner can't remove self)
-
-New `/invite/:code` route: shows household name, prompts sign in or create account, then auto-adds to household.
-
----
-
-## Step 4 — Voice quota tracking
-
-In `VoiceAssistant.tsx`:
-- On `onConnect`: check `voice_seconds_used < voice_seconds_limit`. If over, refuse to start and show upgrade toast.
-- On `onDisconnect`: compute session duration, call edge function `log-voice-usage` to increment `voice_seconds_used` and write to `voice_usage_log`.
-- Show a small "Voice: 12 / 30 min used this month" indicator near the mic button.
-
-Edge function `reset-voice-quotas` (cron-style, called daily): for any household where `current_period_end < now()`, reset `voice_seconds_used` to 0 and roll the period forward by 1 month.
-
----
-
-## Step 5 — Stripe billing (seamless via Lovable)
-
-Use Lovable's built-in Stripe Payments (no API key needed). Three products created via `batch_create_product`:
-- Basic — $9/mo recurring
-- Family — $29/mo recurring
-- Family Plus — $49/mo recurring
-
-Edge functions:
-- `create-checkout` — owner picks tier, redirects to Stripe Checkout
-- `customer-portal` — manage/cancel subscription
-- `stripe-webhook` — listens for `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`. Updates `subscription_tier`, `subscription_status`, `stripe_*` IDs, period dates, and `voice_seconds_limit` on the household.
-
-Tax handling: **calculation only** (Stripe `automatic_tax: { enabled: true }`) — simpler than full managed payments and works for digital subscriptions worldwide.
-
----
-
-## Step 6 — Pricing page rewrite
-
-Update `/pricing` with the three tiers in a clean comparison grid:
-- Show price, login count, voice minutes, full feature list
-- "Get started" buttons trigger the checkout flow when logged in, or send to signup first
-- Highlight Family as the recommended tier
-- Add FAQ: "what happens at the limit", "can I upgrade later", "annual discount" (deferred), "cancel anytime"
-
----
-
-## Step 7 — Settings page additions
-
-In `/settings`, add a **Billing** section (owner only):
-- Current tier + renewal date + minutes used
-- "Manage billing" → Stripe Customer Portal
-- "Upgrade tier" → checkout for higher tier
-- Past-due/canceled banner if `subscription_status` is unhealthy
-
----
-
-## Build order (to keep it shippable in chunks)
-1. **Schema migration** (Step 1)
-2. **Login limit + invite flow** (Steps 2–3) — household becomes multi-user
-3. **Voice quota tracking + UI indicator** (Step 4)
-4. **Stripe enable + checkout + webhook** (Step 5)
-5. **Pricing page + Settings billing section** (Steps 6–7)
-
-I'll need you to:
-- **Approve the database migration** in Step 1
-- **Confirm Lovable Cloud is enabled** (it is — good)
-- **Fill out the Stripe enable form** when we get to Step 4 (just business name + email)
-
-Ready to start with the schema migration?
+The `mem://design/aesthetic-direction` memory still says "sage green" but your real app is dark futuristic cyan/violet. I'll update it after the banner is built so future sessions don't drift.
