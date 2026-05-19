@@ -51,6 +51,7 @@ async function applySubscription(subscription: any) {
     current_period_end: newEnd,
     cancel_at_period_end: subscription.cancel_at_period_end ?? false,
     access_locked: false, // any active/updated sub unlocks access
+    has_used_trial: true, // one trial per household, ever
     updated_at: new Date().toISOString(),
   };
   if (tierInfo) {
