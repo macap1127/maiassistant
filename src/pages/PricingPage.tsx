@@ -287,6 +287,23 @@ const PricingPage = () => {
                 <X className="w-4 h-4" />
               </button>
             </div>
+
+            <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-[11px] text-muted-foreground leading-relaxed">
+              {household && !household.hasUsedTrial ? (
+                <>
+                  <p className="text-foreground font-medium mb-1">7-day free trial, then {tiers.find(t => t.id === checkoutTier)?.price}/month.</p>
+                  <p>You won't be charged today. Your subscription auto-renews monthly at the listed price until you cancel. Cancel anytime from Settings → Manage billing — no charge if you cancel before the trial ends.</p>
+                </>
+              ) : (
+                <p>Your subscription auto-renews monthly at {tiers.find(t => t.id === checkoutTier)?.price} until you cancel. Cancel anytime from Settings → Manage billing.</p>
+              )}
+              <p className="mt-2">
+                By subscribing, you agree to our{" "}
+                <Link to="/terms" className="underline hover:text-foreground" target="_blank">Terms</Link> and{" "}
+                <Link to="/privacy" className="underline hover:text-foreground" target="_blank">Privacy Policy</Link>.
+              </p>
+            </div>
+
             <StripeEmbeddedCheckout
               priceId={PRICE_IDS[checkoutTier]}
               returnUrl={`${window.location.origin}/settings?checkout=success`}
