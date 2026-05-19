@@ -216,7 +216,13 @@ const PricingPage = () => {
                   disabled={isCurrent}
                   className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
                 >
-                  {isCurrent ? "Current plan" : household ? `Switch to ${tier.name}` : `Get ${tier.name}`}
+                  {isCurrent
+                    ? "Current plan"
+                    : household && hasActiveSub
+                    ? `Switch to ${tier.name}`
+                    : household && !household.hasUsedTrial
+                    ? `Start 7-day free trial`
+                    : `Get ${tier.name}`}
                 </button>
               </div>
             );
