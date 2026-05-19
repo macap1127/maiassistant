@@ -24,6 +24,7 @@ export interface HouseholdState {
   accessLocked: boolean;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
+  hasUsedTrial: boolean;
   isOwner: boolean;
   memberCount: number;
   assistantLanguage: string;
