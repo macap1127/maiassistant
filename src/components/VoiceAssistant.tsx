@@ -217,12 +217,13 @@ const VoiceAssistantInner = () => {
     setVoiceReady(false);
     setPreparingVoice(true);
     const promise = supabase.functions
-      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID } })
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
       .then(({ data, error }) => {
-        if (error || !data?.signedUrl) throw new Error(error?.message || data?.error || "Failed to prepare Mia");
-        voiceConnectionRef.current = { signedUrl: data.signedUrl as string, createdAt: Date.now() };
+        const token = (data as any)?.token;
+        if (error || !token) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
+        voiceConnectionRef.current = { signedUrl: token as string, createdAt: Date.now() };
         setVoiceReady(true);
-        return data.signedUrl as string;
+        return token as string;
       })
       .catch((error) => {
         voiceConnectionRef.current = null;
