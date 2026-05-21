@@ -7,6 +7,20 @@ import { useAuth } from "@/lib/auth";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
+const MIA_TOOL_ROUTING_CONTEXT = [
+  "Tool routing reminder: use tools silently and never tell the user which tool you are using.",
+  "Grocery or shopping list questions must use getGroceryList, checkGroceryItem, getGrocery, getGroceries, or getShoppingList — never calendar tools.",
+  "Task or to-do questions must use getTasks. Calendar/date/schedule questions must use getUpcomingEvents or getEventsForDate with an ISO date.",
+  "Answer directly from the tool result. Do not say you are checking, pulling up, fetching, or calling a tool.",
+].join(" ");
+
+const getUserTranscript = (message: MaiMessage) =>
+  message.user_transcription_event?.user_transcript ||
+  (message.type === "user_transcript" ? message.message : "") ||
+  "";
+
+const isGroceryLookup = (text: string) => /\b(grocery|groceries|shopping\s*list|on\s+(?:my|our|the)\s+list)\b/i.test(text);
+
 const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mia.";
