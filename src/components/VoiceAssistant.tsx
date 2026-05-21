@@ -305,6 +305,30 @@ const VoiceAssistantInner = () => {
     return rows.map((row) => row.name);
   }, []);
 
+  const readGroceryList = useCallback(async (params: { store?: string } = {}) => {
+    const hid = requireHousehold();
+    let query = supabase
+      .from("grocery_items")
+      .select("name, quantity, store, completed, category")
+      .eq("household_id", hid)
+      .order("completed", { ascending: true });
+    if (params.store?.trim()) query = query.ilike("store", `%${params.store.trim()}%`);
+    const { data, error } = await query;
+    if (error) return `Couldn't read the grocery list: ${error.message}`;
+    if (!data || data.length === 0) return params.store ? `Nothing on the ${params.store} grocery list.` : `The grocery list is empty.`;
+    const open = data.filter((i: any) => !i.completed);
+    const done = data.filter((i: any) => i.completed);
+    const fmt = (i: any) => {
+      const qty = i.quantity ? `${i.quantity} ` : "";
+      const where = i.store ? ` (${i.store})` : "";
+      return `${qty}${i.name}${where}`;
+    };
+    const parts: string[] = [];
+    if (open.length) parts.push(`Still needed (${open.length}): ${open.map(fmt).join(", ")}`);
+    if (done.length) parts.push(`Already got (${done.length}): ${done.map(fmt).join(", ")}`);
+    return parts.join(". ") + ".";
+  }, []);
+
   const conversation = useConversation({
     clientTools: {
       addGrocery: async (params: { name: string; quantity?: string; category?: string; store?: string }) => {
