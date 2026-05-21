@@ -136,23 +136,11 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
   return Array.from(recentAdds).some(([recentKey, addedAt]) => recentKey.startsWith(namePrefix) && now - addedAt <= 20_000);
 };
 
-type VoiceConnection = { signedUrl: string; createdAt: number };
+type VoiceConnection = { conversationToken: string; createdAt: number };
+type VoiceAccess = { ok: boolean; reason?: string; checkedAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
-
-const requestMicrophoneDeviceId = async () => {
-  if (!navigator.mediaDevices?.getUserMedia) {
-    throw new Error("Microphone access is not supported in this browser.");
-  }
-
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const [track] = stream.getAudioTracks();
-  const deviceId = track?.getSettings().deviceId;
-  stream.getTracks().forEach((mediaTrack) => mediaTrack.stop());
-
-  if (!track) throw new DOMException("Requested device not found", "NotFoundError");
-  return deviceId;
-};
+const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
@@ -169,6 +157,7 @@ const VoiceAssistantInner = () => {
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
   const voiceConnectionPromiseRef = useRef<Promise<string> | null>(null);
+  const voiceAccessRef = useRef<VoiceAccess | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
   const sessionStartedAtRef = useRef<number | null>(null);
@@ -197,6 +186,15 @@ const VoiceAssistantInner = () => {
     return { ok: true };
   }, []);
 
+  const getVoiceAccess = useCallback(async () => {
+    const cached = voiceAccessRef.current;
+    if (cached && Date.now() - cached.checkedAt < VOICE_ACCESS_MAX_AGE_MS) return cached;
+    const result = await checkAccess();
+    const checked = { ...result, checkedAt: Date.now() };
+    voiceAccessRef.current = checked;
+    return checked;
+  }, [checkAccess]);
+
   // Resolve current household once user is known
   useEffect(() => {
     if (!user) {
@@ -220,6 +218,7 @@ const VoiceAssistantInner = () => {
         const hid = data[0].household_id;
         householdIdRef.current = hid;
         void refreshQuota();
+        void getVoiceAccess().catch((error) => console.error("[Mia] voice access check failed", error));
         const { data: hh } = await supabase
           .from("households")
           .select("assistant_language")
@@ -245,20 +244,20 @@ const VoiceAssistantInner = () => {
     const cached = voiceConnectionRef.current;
     if (cached && Date.now() - cached.createdAt < VOICE_CONNECTION_MAX_AGE_MS) {
       setVoiceReady(true);
-      return cached.signedUrl;
+      return cached.conversationToken;
     }
     if (voiceConnectionPromiseRef.current) return voiceConnectionPromiseRef.current;
 
     setVoiceReady(false);
     setPreparingVoice(true);
     const promise = supabase.functions
-      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "websocket" } })
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
       .then(({ data, error }) => {
-        const signedUrl = (data as any)?.signedUrl;
-        if (error || !signedUrl) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
-        voiceConnectionRef.current = { signedUrl: signedUrl as string, createdAt: Date.now() };
+        const conversationToken = (data as any)?.token;
+        if (error || !conversationToken) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
+        voiceConnectionRef.current = { conversationToken: conversationToken as string, createdAt: Date.now() };
         setVoiceReady(true);
-        return signedUrl as string;
+        return conversationToken as string;
       })
       .catch((error) => {
         voiceConnectionRef.current = null;
@@ -724,8 +723,32 @@ const VoiceAssistantInner = () => {
       // ignore – best effort
     }
 
-    // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota)
-    const access = await checkAccess();
+    // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota).
+    // If it is not already warmed, prepare it first so mic startup remains directly tied to the tap.
+    const access = voiceAccessRef.current;
+    if (!access || Date.now() - access.checkedAt >= VOICE_ACCESS_MAX_AGE_MS) {
+      setConnecting(true);
+      setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
+      void getVoiceAccess()
+        .then((result) => {
+          if (!result.ok) {
+            const msg = result.reason || "You don't have access to voice right now.";
+            setStatusMessage(msg);
+            toast({ variant: "destructive", title: "Voice unavailable", description: msg });
+            return;
+          }
+          setStatusMessage("Mia is ready. Tap the microphone again to start talking.");
+          toast({ title: "Mia is ready", description: "Tap the microphone again to start talking." });
+        })
+        .catch((error) => {
+          console.error("[Mia] start: voice access check failed", error);
+          const message = getStartErrorMessage(error);
+          setStatusMessage(message);
+          toast({ variant: "destructive", title: "Voice unavailable", description: message });
+        })
+        .finally(() => setConnecting(false));
+      return;
+    }
     if (!access.ok) {
       const msg = access.reason || "You don't have access to voice right now.";
       setStatusMessage(msg);
@@ -736,7 +759,7 @@ const VoiceAssistantInner = () => {
     const cached = voiceConnectionRef.current;
     console.log("[Mia] 🎙️ start() tapped", {
       at: new Date(tappedAt).toISOString(),
-      hasCachedSignedUrl: !!cached,
+      hasCachedConversationToken: !!cached,
       cachedAgeMs: cached ? tappedAt - cached.createdAt : null,
       conversationStatus: conversation.status,
     });
@@ -744,7 +767,7 @@ const VoiceAssistantInner = () => {
     setStatusMessage("Connecting to Mia…");
     try {
       if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
-        console.log("[Mia] start: no fresh signed URL, preparing…");
+        console.log("[Mia] start: no fresh conversation token, preparing…");
         setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
         setConnecting(false);
         void prepareVoiceConnection()
@@ -761,21 +784,22 @@ const VoiceAssistantInner = () => {
         return;
       }
 
-      const signedUrl = cached.signedUrl;
+      const conversationToken = cached.conversationToken;
       voiceConnectionRef.current = null;
       setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
-      const inputDeviceId = await requestMicrophoneDeviceId();
-      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket", hasInputDeviceId: !!inputDeviceId });
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Microphone access is not supported in this browser.");
+      }
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "webrtc" });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
-        signedUrl,
-        connectionType: "websocket",
-        inputDeviceId,
+        conversationToken,
+        connectionType: "webrtc",
         useWakeLock: false,
         overrides: {
           agent: {
@@ -808,7 +832,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation, prepareVoiceConnection, checkAccess]);
+  }, [conversation, prepareVoiceConnection, getVoiceAccess]);
 
   const stop = useCallback(async () => {
     console.log("[Mia] 🛑 stop() called by user", { at: new Date().toISOString() });
