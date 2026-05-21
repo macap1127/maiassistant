@@ -136,7 +136,7 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
   return Array.from(recentAdds).some(([recentKey, addedAt]) => recentKey.startsWith(namePrefix) && now - addedAt <= 20_000);
 };
 
-type VoiceConnection = { conversationToken: string; createdAt: number };
+type VoiceConnection = { signedUrl: string; createdAt: number };
 type VoiceAccess = { ok: boolean; reason?: string; checkedAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
@@ -244,20 +244,20 @@ const VoiceAssistantInner = () => {
     const cached = voiceConnectionRef.current;
     if (cached && Date.now() - cached.createdAt < VOICE_CONNECTION_MAX_AGE_MS) {
       setVoiceReady(true);
-      return cached.conversationToken;
+      return cached.signedUrl;
     }
     if (voiceConnectionPromiseRef.current) return voiceConnectionPromiseRef.current;
 
     setVoiceReady(false);
     setPreparingVoice(true);
     const promise = supabase.functions
-      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "websocket" } })
       .then(({ data, error }) => {
-        const conversationToken = (data as any)?.token;
-        if (error || !conversationToken) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
-        voiceConnectionRef.current = { conversationToken: conversationToken as string, createdAt: Date.now() };
+        const signedUrl = (data as any)?.signedUrl;
+        if (error || !signedUrl) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
+        voiceConnectionRef.current = { signedUrl: signedUrl as string, createdAt: Date.now() };
         setVoiceReady(true);
-        return conversationToken as string;
+        return signedUrl as string;
       })
       .catch((error) => {
         voiceConnectionRef.current = null;
