@@ -7,11 +7,13 @@ import { useAuth } from "@/lib/auth";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
-const getStartErrorMessage = (err: unknown) => {
+const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mia.";
   if (err instanceof DOMException && err.name === "NotReadableError") return "Your microphone is busy in another app or tab.";
-  const message = typeof err === "string" ? err : err instanceof Error ? err.message : "";
+  const message = [err, fallback]
+    .map((value) => (typeof value === "string" ? value : value instanceof Error || value instanceof DOMException ? `${value.name} ${value.message}` : ""))
+    .join(" ");
   if (/requested device not found|notfounderror|no device/i.test(message)) return "No microphone was found on this device.";
   if (/permission|notallowed/i.test(message)) return "Please allow microphone access to talk to Mia.";
   if (/notreadable|busy|in use/i.test(message)) return "Your microphone is busy in another app or tab.";
@@ -119,6 +121,20 @@ type VoiceConnection = { signedUrl: string; createdAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
 
+const requestMicrophoneDeviceId = async () => {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    throw new Error("Microphone access is not supported in this browser.");
+  }
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const [track] = stream.getAudioTracks();
+  const deviceId = track?.getSettings().deviceId;
+  stream.getTracks().forEach((mediaTrack) => mediaTrack.stop());
+
+  if (!track) throw new DOMException("Requested device not found", "NotFoundError");
+  return deviceId;
+};
+
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -217,13 +233,13 @@ const VoiceAssistantInner = () => {
     setVoiceReady(false);
     setPreparingVoice(true);
     const promise = supabase.functions
-      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "websocket" } })
       .then(({ data, error }) => {
-        const token = (data as any)?.token;
-        if (error || !token) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
-        voiceConnectionRef.current = { signedUrl: token as string, createdAt: Date.now() };
+        const signedUrl = (data as any)?.signedUrl;
+        if (error || !signedUrl) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
+        voiceConnectionRef.current = { signedUrl: signedUrl as string, createdAt: Date.now() };
         setVoiceReady(true);
-        return token as string;
+        return signedUrl as string;
       })
       .catch((error) => {
         voiceConnectionRef.current = null;
@@ -606,7 +622,7 @@ const VoiceAssistantInner = () => {
         rest,
       });
       setConnecting(false);
-      const message = getStartErrorMessage(error);
+      const message = getStartErrorMessage(error, rest[0]);
       setStatusMessage(message);
       toast({ variant: "destructive", title: "Connection error", description: message });
     },
@@ -697,14 +713,16 @@ const VoiceAssistantInner = () => {
       setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
-      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "webrtc" });
+      const inputDeviceId = await requestMicrophoneDeviceId();
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket", hasInputDeviceId: !!inputDeviceId });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
-        conversationToken: signedUrl,
-        connectionType: "webrtc",
+        signedUrl,
+        connectionType: "websocket",
+        inputDeviceId,
         useWakeLock: false,
         overrides: {
           agent: {
