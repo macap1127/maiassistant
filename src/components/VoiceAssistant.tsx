@@ -186,6 +186,15 @@ const VoiceAssistantInner = () => {
     return { ok: true };
   }, []);
 
+  const getVoiceAccess = useCallback(async () => {
+    const cached = voiceAccessRef.current;
+    if (cached && Date.now() - cached.checkedAt < VOICE_ACCESS_MAX_AGE_MS) return cached;
+    const result = await checkAccess();
+    const checked = { ...result, checkedAt: Date.now() };
+    voiceAccessRef.current = checked;
+    return checked;
+  }, [checkAccess]);
+
   // Resolve current household once user is known
   useEffect(() => {
     if (!user) {
@@ -209,6 +218,7 @@ const VoiceAssistantInner = () => {
         const hid = data[0].household_id;
         householdIdRef.current = hid;
         void refreshQuota();
+        void getVoiceAccess().catch((error) => console.error("[Mia] voice access check failed", error));
         const { data: hh } = await supabase
           .from("households")
           .select("assistant_language")
