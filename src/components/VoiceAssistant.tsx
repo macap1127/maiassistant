@@ -137,8 +137,10 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
 };
 
 type VoiceConnection = { signedUrl: string; createdAt: number };
+type VoiceAccess = { ok: boolean; reason?: string; checkedAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
+const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
@@ -155,6 +157,7 @@ const VoiceAssistantInner = () => {
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
   const voiceConnectionPromiseRef = useRef<Promise<string> | null>(null);
+  const voiceAccessRef = useRef<VoiceAccess | null>(null);
   const userEndedSessionRef = useRef(false);
   const wasConnectedRef = useRef(false);
   const sessionStartedAtRef = useRef<number | null>(null);
