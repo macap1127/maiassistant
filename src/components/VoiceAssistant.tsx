@@ -136,7 +136,7 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
   return Array.from(recentAdds).some(([recentKey, addedAt]) => recentKey.startsWith(namePrefix) && now - addedAt <= 20_000);
 };
 
-type VoiceConnection = { conversationToken: string; createdAt: number };
+type VoiceConnection = { signedUrl: string; createdAt: number };
 type VoiceAccess = { ok: boolean; reason?: string; checkedAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
@@ -244,20 +244,20 @@ const VoiceAssistantInner = () => {
     const cached = voiceConnectionRef.current;
     if (cached && Date.now() - cached.createdAt < VOICE_CONNECTION_MAX_AGE_MS) {
       setVoiceReady(true);
-      return cached.conversationToken;
+      return cached.signedUrl;
     }
     if (voiceConnectionPromiseRef.current) return voiceConnectionPromiseRef.current;
 
     setVoiceReady(false);
     setPreparingVoice(true);
     const promise = supabase.functions
-      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "websocket" } })
       .then(({ data, error }) => {
-        const conversationToken = (data as any)?.token;
-        if (error || !conversationToken) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
-        voiceConnectionRef.current = { conversationToken: conversationToken as string, createdAt: Date.now() };
+        const signedUrl = (data as any)?.signedUrl;
+        if (error || !signedUrl) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
+        voiceConnectionRef.current = { signedUrl: signedUrl as string, createdAt: Date.now() };
         setVoiceReady(true);
-        return conversationToken as string;
+        return signedUrl as string;
       })
       .catch((error) => {
         voiceConnectionRef.current = null;
@@ -759,7 +759,7 @@ const VoiceAssistantInner = () => {
     const cached = voiceConnectionRef.current;
     console.log("[Mia] 🎙️ start() tapped", {
       at: new Date(tappedAt).toISOString(),
-      hasCachedConversationToken: !!cached,
+      hasCachedSignedUrl: !!cached,
       cachedAgeMs: cached ? tappedAt - cached.createdAt : null,
       conversationStatus: conversation.status,
     });
@@ -767,7 +767,7 @@ const VoiceAssistantInner = () => {
     setStatusMessage("Connecting to Mia…");
     try {
       if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
-        console.log("[Mia] start: no fresh conversation token, preparing…");
+        console.log("[Mia] start: no fresh signed URL, preparing…");
         setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
         setConnecting(false);
         void prepareVoiceConnection()
@@ -784,7 +784,7 @@ const VoiceAssistantInner = () => {
         return;
       }
 
-      const conversationToken = cached.conversationToken;
+      const signedUrl = cached.signedUrl;
       voiceConnectionRef.current = null;
       setVoiceReady(false);
       userEndedSessionRef.current = false;
@@ -792,24 +792,15 @@ const VoiceAssistantInner = () => {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error("Microphone access is not supported in this browser.");
       }
-      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "webrtc" });
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket" });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
-        conversationToken,
-        connectionType: "webrtc",
+        signedUrl,
+        connectionType: "websocket",
         useWakeLock: false,
-        overrides: {
-          agent: {
-            language: (assistantLanguageRef.current || "en") as any,
-            firstMessage: "Hi! Mia here. What are we tackling today?",
-            prompt: {
-              prompt: MIA_SESSION_PROMPT,
-            },
-          },
-        },
         dynamicVariables: {
           user_name: userName,
           family_members: familySummary || "no family members added yet",
