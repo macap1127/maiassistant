@@ -447,6 +447,89 @@ const VoiceAssistantInner = () => {
           console.error("[Mia] addEvent threw", e);
           return `Failed to add: ${getErrorMessage(e)}`;
         }
+      getGroceryList: async (params: { store?: string } = {}) => {
+        console.log("[Mia] getGroceryList called", params);
+        try {
+          const hid = requireHousehold();
+          let query = supabase
+            .from("grocery_items")
+            .select("name, quantity, store, completed, category")
+            .eq("household_id", hid)
+            .order("completed", { ascending: true });
+          if (params.store?.trim()) query = query.ilike("store", `%${params.store.trim()}%`);
+          const { data, error } = await query;
+          if (error) return `Couldn't read the grocery list: ${error.message}`;
+          if (!data || data.length === 0) return params.store ? `Nothing on the ${params.store} grocery list.` : `The grocery list is empty.`;
+          const open = data.filter((i: any) => !i.completed);
+          const done = data.filter((i: any) => i.completed);
+          const fmt = (i: any) => {
+            const qty = i.quantity ? `${i.quantity} ` : "";
+            const where = i.store ? ` (${i.store})` : "";
+            return `${qty}${i.name}${where}`;
+          };
+          const parts: string[] = [];
+          if (open.length) parts.push(`Still needed (${open.length}): ${open.map(fmt).join(", ")}`);
+          if (done.length) parts.push(`Already got (${done.length}): ${done.map(fmt).join(", ")}`);
+          return parts.join(". ") + ".";
+        } catch (e) {
+          return `Failed to read grocery list: ${getErrorMessage(e)}`;
+        }
+      },
+      getTasks: async (params: { assignedTo?: string } = {}) => {
+        console.log("[Mia] getTasks called", params);
+        try {
+          const hid = requireHousehold();
+          let query = supabase
+            .from("tasks")
+            .select("title, assigned_to, due_date, completed")
+            .eq("household_id", hid)
+            .order("completed", { ascending: true })
+            .order("due_date", { ascending: true, nullsFirst: false });
+          if (params.assignedTo?.trim()) query = query.ilike("assigned_to", `%${params.assignedTo.trim()}%`);
+          const { data, error } = await query.limit(50);
+          if (error) return `Couldn't read tasks: ${error.message}`;
+          if (!data || data.length === 0) return `No to-do items.`;
+          const open = data.filter((t: any) => !t.completed);
+          if (open.length === 0) return `All to-do items are done. 🎉`;
+          const list = open.map((t: any) => {
+            const who = t.assigned_to ? ` — ${t.assigned_to}` : "";
+            const when = t.due_date ? ` (due ${t.due_date})` : "";
+            return `${t.title}${who}${when}`;
+          }).join("; ");
+          return `${open.length} open to-do${open.length === 1 ? "" : "s"}: ${list}.`;
+        } catch (e) {
+          return `Failed to read tasks: ${getErrorMessage(e)}`;
+        }
+      },
+      getUpcomingEvents: async (params: { days?: number } = {}) => {
+        console.log("[Mia] getUpcomingEvents called", params);
+        try {
+          const hid = requireHousehold();
+          const days = Math.max(1, Math.min(60, params.days ?? 7));
+          const today = new Date();
+          const end = new Date(today);
+          end.setDate(end.getDate() + days);
+          const iso = (d: Date) => d.toISOString().slice(0, 10);
+          const { data, error } = await supabase
+            .from("events")
+            .select("title, date, time, location, assigned_to")
+            .eq("household_id", hid)
+            .gte("date", iso(today))
+            .lte("date", iso(end))
+            .order("date", { ascending: true })
+            .order("time", { ascending: true, nullsFirst: true });
+          if (error) return `Couldn't read calendar: ${error.message}`;
+          if (!data || data.length === 0) return `Nothing on the calendar for the next ${days} day${days === 1 ? "" : "s"}.`;
+          const list = data.map((e: any) => {
+            const t = e.time ? ` at ${e.time}` : "";
+            const loc = e.location ? ` (${e.location})` : "";
+            const who = e.assigned_to ? ` — ${e.assigned_to}` : "";
+            return `${e.date}${t}: ${e.title}${loc}${who}`;
+          }).join("; ");
+          return `Next ${days} day${days === 1 ? "" : "s"} (${data.length} event${data.length === 1 ? "" : "s"}): ${list}.`;
+        } catch (e) {
+          return `Failed to read calendar: ${getErrorMessage(e)}`;
+        }
       },
     },
     onMessage: (message: MaiMessage) => {
