@@ -447,6 +447,7 @@ const VoiceAssistantInner = () => {
           console.error("[Mia] addEvent threw", e);
           return `Failed to add: ${getErrorMessage(e)}`;
         }
+      },
       getGroceryList: async (params: { store?: string } = {}) => {
         console.log("[Mia] getGroceryList called", params);
         try {
