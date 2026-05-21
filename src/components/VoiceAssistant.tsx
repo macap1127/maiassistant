@@ -119,6 +119,20 @@ type VoiceConnection = { signedUrl: string; createdAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
 
+const requestMicrophoneDeviceId = async () => {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    throw new Error("Microphone access is not supported in this browser.");
+  }
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const [track] = stream.getAudioTracks();
+  const deviceId = track?.getSettings().deviceId;
+  stream.getTracks().forEach((mediaTrack) => mediaTrack.stop());
+
+  if (!track) throw new DOMException("Requested device not found", "NotFoundError");
+  return deviceId;
+};
+
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -217,13 +231,13 @@ const VoiceAssistantInner = () => {
     setVoiceReady(false);
     setPreparingVoice(true);
     const promise = supabase.functions
-      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "voice" } })
+      .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "websocket" } })
       .then(({ data, error }) => {
-        const token = (data as any)?.token;
-        if (error || !token) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
-        voiceConnectionRef.current = { signedUrl: token as string, createdAt: Date.now() };
+        const signedUrl = (data as any)?.signedUrl;
+        if (error || !signedUrl) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
+        voiceConnectionRef.current = { signedUrl: signedUrl as string, createdAt: Date.now() };
         setVoiceReady(true);
-        return token as string;
+        return signedUrl as string;
       })
       .catch((error) => {
         voiceConnectionRef.current = null;
