@@ -647,14 +647,14 @@ const VoiceAssistantInner = () => {
       setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
-      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket" });
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "webrtc" });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
-        signedUrl,
-        connectionType: "websocket",
+        conversationToken: signedUrl,
+        connectionType: "webrtc",
         useWakeLock: false,
         overrides: {
           agent: {
