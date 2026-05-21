@@ -565,6 +565,12 @@ const VoiceAssistantInner = () => {
     },
     onMessage: (message: MaiMessage) => {
       console.log("[Mia] message", message);
+      const transcript = getUserTranscript(message);
+      if (transcript && isGroceryLookup(transcript)) {
+        conversation.sendContextualUpdate(
+          "The user is asking about the grocery/shopping list. Silently call getGroceryList and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
+        );
+      }
       // NOTE: We intentionally do NOT auto-parse user transcripts or agent confirmations
       // to insert grocery items. That heuristic added random words from the conversation
       // (reported during Google Play alpha testing). Items are added ONLY when the agent
@@ -742,6 +748,9 @@ const VoiceAssistantInner = () => {
           agent: {
             language: (assistantLanguageRef.current || "en") as any,
             firstMessage: "Hi! Mia here. What are we tackling today?",
+            prompt: {
+              prompt: MIA_TOOL_ROUTING_CONTEXT,
+            },
           },
         },
         dynamicVariables: {
