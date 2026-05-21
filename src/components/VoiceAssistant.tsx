@@ -7,6 +7,25 @@ import { useAuth } from "@/lib/auth";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
+const MIA_SESSION_PROMPT = [
+  "You are Mia, a warm and casual family assistant for {{user_name}}. The family members in this household are: {{family_members}}.",
+  "Address {{user_name}} naturally by first name sometimes, not in every sentence. Use family member names from the list; if an unknown name is mentioned, ask who they mean.",
+  "You help the household manage groceries, tasks, calendar events, receipts, and recipe ingredients.",
+  "Use tools silently. Never tell the user which tool you are using, and never say you are checking, pulling up, fetching, looking up, or calling a tool.",
+  "Grocery or shopping list questions must use getGroceryList, checkGroceryItem, getGrocery, getGroceries, or getShoppingList. Never use calendar tools for grocery questions.",
+  "If the user asks whether a specific grocery item is on the list, use checkGroceryItem or getGroceryList, then answer yes or no naturally.",
+  "Task or to-do questions must use getTasks. Calendar, date, schedule, appointment, or event questions must use getUpcomingEvents or getEventsForDate with an ISO date.",
+  "Only say something was added, found, or changed if the relevant tool returned success. If something fails, say so plainly without naming the tool.",
+  "Keep answers brief, friendly, and direct. Answer from tool results only; never guess household data.",
+].join(" ");
+
+const getUserTranscript = (message: MaiMessage) =>
+  message.user_transcription_event?.user_transcript ||
+  (message.type === "user_transcript" ? message.message : "") ||
+  "";
+
+const isGroceryLookup = (text: string) => /\b(grocery|groceries|shopping\s*list|on\s+(?:my|our|the)\s+list)\b/i.test(text);
+
 const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mia.";
@@ -291,6 +310,30 @@ const VoiceAssistantInner = () => {
     return rows.map((row) => row.name);
   }, []);
 
+  const readGroceryList = useCallback(async (params: { store?: string } = {}) => {
+    const hid = requireHousehold();
+    let query = supabase
+      .from("grocery_items")
+      .select("name, quantity, store, completed, category")
+      .eq("household_id", hid)
+      .order("completed", { ascending: true });
+    if (params.store?.trim()) query = query.ilike("store", `%${params.store.trim()}%`);
+    const { data, error } = await query;
+    if (error) return `Couldn't read the grocery list: ${error.message}`;
+    if (!data || data.length === 0) return params.store ? `Nothing on the ${params.store} grocery list.` : `The grocery list is empty.`;
+    const open = data.filter((i: any) => !i.completed);
+    const done = data.filter((i: any) => i.completed);
+    const fmt = (i: any) => {
+      const qty = i.quantity ? `${i.quantity} ` : "";
+      const where = i.store ? ` (${i.store})` : "";
+      return `${qty}${i.name}${where}`;
+    };
+    const parts: string[] = [];
+    if (open.length) parts.push(`Still needed (${open.length}): ${open.map(fmt).join(", ")}`);
+    if (done.length) parts.push(`Already got (${done.length}): ${done.map(fmt).join(", ")}`);
+    return parts.join(". ") + ".";
+  }, []);
+
   const conversation = useConversation({
     clientTools: {
       addGrocery: async (params: { name: string; quantity?: string; category?: string; store?: string }) => {
@@ -467,27 +510,31 @@ const VoiceAssistantInner = () => {
       getGroceryList: async (params: { store?: string } = {}) => {
         console.log("[Mia] getGroceryList called", params);
         try {
+          return await readGroceryList(params);
+        } catch (e) {
+          return `Failed to read grocery list: ${getErrorMessage(e)}`;
+        }
+      },
+      getGrocery: async (params: { store?: string } = {}) => readGroceryList(params),
+      getGroceries: async (params: { store?: string } = {}) => readGroceryList(params),
+      getShoppingList: async (params: { store?: string } = {}) => readGroceryList(params),
+      checkGroceryItem: async (params: { name: string; store?: string }) => {
+        console.log("[Mia] checkGroceryItem called", params);
+        try {
           const hid = requireHousehold();
+          const itemName = cleanGroceryName(params.name || "");
+          if (!itemName) return "Which grocery item?";
           let query = supabase
             .from("grocery_items")
-            .select("name, quantity, store, completed, category")
+            .select("name, quantity, store, completed")
             .eq("household_id", hid)
-            .order("completed", { ascending: true });
+            .ilike("name", `%${itemName}%`);
           if (params.store?.trim()) query = query.ilike("store", `%${params.store.trim()}%`);
-          const { data, error } = await query;
+          const { data, error } = await query.limit(10);
           if (error) return `Couldn't read the grocery list: ${error.message}`;
-          if (!data || data.length === 0) return params.store ? `Nothing on the ${params.store} grocery list.` : `The grocery list is empty.`;
-          const open = data.filter((i: any) => !i.completed);
-          const done = data.filter((i: any) => i.completed);
-          const fmt = (i: any) => {
-            const qty = i.quantity ? `${i.quantity} ` : "";
-            const where = i.store ? ` (${i.store})` : "";
-            return `${qty}${i.name}${where}`;
-          };
-          const parts: string[] = [];
-          if (open.length) parts.push(`Still needed (${open.length}): ${open.map(fmt).join(", ")}`);
-          if (done.length) parts.push(`Already got (${done.length}): ${done.map(fmt).join(", ")}`);
-          return parts.join(". ") + ".";
+          if (!data || data.length === 0) return `No, ${itemName} isn't on the grocery list.`;
+          const matches = data.map((i: any) => `${i.completed ? "already got" : "still needed"}: ${i.quantity ? `${i.quantity} ` : ""}${i.name}${i.store ? ` (${i.store})` : ""}`);
+          return `Yes — ${matches.join("; ")}.`;
         } catch (e) {
           return `Failed to read grocery list: ${getErrorMessage(e)}`;
         }
@@ -551,6 +598,12 @@ const VoiceAssistantInner = () => {
     },
     onMessage: (message: MaiMessage) => {
       console.log("[Mia] message", message);
+      const transcript = getUserTranscript(message);
+      if (transcript && isGroceryLookup(transcript)) {
+        conversation.sendContextualUpdate(
+          "The user is asking about the grocery/shopping list. Silently call getGroceryList and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
+        );
+      }
       // NOTE: We intentionally do NOT auto-parse user transcripts or agent confirmations
       // to insert grocery items. That heuristic added random words from the conversation
       // (reported during Google Play alpha testing). Items are added ONLY when the agent
@@ -728,6 +781,9 @@ const VoiceAssistantInner = () => {
           agent: {
             language: (assistantLanguageRef.current || "en") as any,
             firstMessage: "Hi! Mia here. What are we tackling today?",
+            prompt: {
+              prompt: MIA_SESSION_PROMPT,
+            },
           },
         },
         dynamicVariables: {
