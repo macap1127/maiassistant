@@ -451,44 +451,10 @@ const VoiceAssistantInner = () => {
     },
     onMessage: (message: MaiMessage) => {
       console.log("[Mia] message", message);
-      const text =
-        message?.message ||
-        message?.agent_response_event?.agent_response ||
-        message?.user_transcription_event?.user_transcript;
-      const source = message?.source || message?.type;
-      if (text && (source === "ai" || source === "agent_response")) {
-        awaitingGroceryItemRef.current = /\bgrocery list\b/i.test(text) && /\b(quantity|specific|include|just|what would|which item)\b/i.test(text);
-
-        const confirmedItems = extractGroceryItemFromAgentConfirmation(text);
-        if (confirmedItems.length > 0) {
-          void addGroceryItems(confirmedItems)
-            .then((added) => {
-              if (added.length > 0) {
-                toast({ title: "Added to grocery list", description: added.join(", ") });
-              }
-            })
-            .catch((error) => {
-              console.error("[Mia] grocery fallback insert failed", error);
-              toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(error) });
-            });
-        }
-      } else if (text && (source === "user" || source === "user_transcript")) {
-        const spokenItems = extractGroceryItemsFromUserText(text, awaitingGroceryItemRef.current);
-        console.log("[Mia] user transcript parsed grocery items", { text, spokenItems });
-        if (spokenItems.length > 0) {
-          awaitingGroceryItemRef.current = false;
-          void addGroceryItems(spokenItems)
-            .then((added) => {
-              if (added.length > 0) {
-                toast({ title: "Added to grocery list", description: added.join(", ") });
-              }
-            })
-            .catch((error) => {
-              console.error("[Mia] user transcript grocery insert failed", error);
-              toast({ variant: "destructive", title: "Couldn't add grocery item", description: getErrorMessage(error) });
-            });
-        }
-      }
+      // NOTE: We intentionally do NOT auto-parse user transcripts or agent confirmations
+      // to insert grocery items. That heuristic added random words from the conversation
+      // (reported during Google Play alpha testing). Items are added ONLY when the agent
+      // explicitly calls the `addGrocery` client tool with a real item name.
     },
     onConnect: (...args: unknown[]) => {
       const connectedAt = Date.now();
