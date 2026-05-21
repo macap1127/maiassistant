@@ -759,7 +759,7 @@ const VoiceAssistantInner = () => {
     const cached = voiceConnectionRef.current;
     console.log("[Mia] 🎙️ start() tapped", {
       at: new Date(tappedAt).toISOString(),
-      hasCachedConversationToken: !!cached,
+      hasCachedSignedUrl: !!cached,
       cachedAgeMs: cached ? tappedAt - cached.createdAt : null,
       conversationStatus: conversation.status,
     });
@@ -767,7 +767,7 @@ const VoiceAssistantInner = () => {
     setStatusMessage("Connecting to Mia…");
     try {
       if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
-        console.log("[Mia] start: no fresh conversation token, preparing…");
+        console.log("[Mia] start: no fresh signed URL, preparing…");
         setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
         setConnecting(false);
         void prepareVoiceConnection()
@@ -784,7 +784,7 @@ const VoiceAssistantInner = () => {
         return;
       }
 
-      const conversationToken = cached.conversationToken;
+      const signedUrl = cached.signedUrl;
       voiceConnectionRef.current = null;
       setVoiceReady(false);
       userEndedSessionRef.current = false;
@@ -792,24 +792,15 @@ const VoiceAssistantInner = () => {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error("Microphone access is not supported in this browser.");
       }
-      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "webrtc" });
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket" });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
-        conversationToken,
-        connectionType: "webrtc",
+        signedUrl,
+        connectionType: "websocket",
         useWakeLock: false,
-        overrides: {
-          agent: {
-            language: (assistantLanguageRef.current || "en") as any,
-            firstMessage: "Hi! Mia here. What are we tackling today?",
-            prompt: {
-              prompt: MIA_SESSION_PROMPT,
-            },
-          },
-        },
         dynamicVariables: {
           user_name: userName,
           family_members: familySummary || "no family members added yet",
