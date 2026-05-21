@@ -782,7 +782,7 @@ const VoiceAssistantInner = () => {
             language: (assistantLanguageRef.current || "en") as any,
             firstMessage: "Hi! Mia here. What are we tackling today?",
             prompt: {
-              prompt: MIA_TOOL_ROUTING_CONTEXT,
+              prompt: MIA_SESSION_PROMPT,
             },
           },
         },
