@@ -23,3 +23,5 @@ Changes made:
 
 - **Stopped Mia from auto-adding random words to the grocery list.** Removed the transcript-based fallback that parsed the user's raw speech and inserted anything that looked like a grocery word. Items are now added **only** when Mia explicitly calls the `addGrocery` tool with a real item name, which eliminates the false positives reported during testing.
 
+- **Registered the 3 new client tools (`getGroceryList`, `getTasks`, `getUpcomingEvents`) in the ElevenLabs agent dashboard.** Each tool configured with: Wait for response = ON, Disable interruptions = OFF, Pre-tool speech = Auto, Execution mode = Immediate, Response timeout = 5s. Parameters are all optional (store / assignee / days). This makes the client-side tool handlers actually reachable by the agent so Mia can read live grocery, task, and calendar data back to the user.
+
