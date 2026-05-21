@@ -140,20 +140,6 @@ type VoiceConnection = { signedUrl: string; createdAt: number };
 
 const VOICE_CONNECTION_MAX_AGE_MS = 4 * 60 * 1000;
 
-const requestMicrophoneDeviceId = async () => {
-  if (!navigator.mediaDevices?.getUserMedia) {
-    throw new Error("Microphone access is not supported in this browser.");
-  }
-
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const [track] = stream.getAudioTracks();
-  const deviceId = track?.getSettings().deviceId;
-  stream.getTracks().forEach((mediaTrack) => mediaTrack.stop());
-
-  if (!track) throw new DOMException("Requested device not found", "NotFoundError");
-  return deviceId;
-};
-
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const [connecting, setConnecting] = useState(false);
@@ -766,8 +752,10 @@ const VoiceAssistantInner = () => {
       setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
-      const inputDeviceId = await requestMicrophoneDeviceId();
-      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket", hasInputDeviceId: !!inputDeviceId });
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Microphone access is not supported in this browser.");
+      }
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket" });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
@@ -775,7 +763,7 @@ const VoiceAssistantInner = () => {
       const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
-        inputDeviceId,
+        preferHeadphonesForIosDevices: true,
         useWakeLock: false,
         overrides: {
           agent: {
