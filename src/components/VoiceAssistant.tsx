@@ -7,11 +7,13 @@ import { useAuth } from "@/lib/auth";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
-const getStartErrorMessage = (err: unknown) => {
+const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
   if (err instanceof DOMException && err.name === "NotAllowedError") return "Please allow microphone access to talk to Mia.";
   if (err instanceof DOMException && err.name === "NotReadableError") return "Your microphone is busy in another app or tab.";
-  const message = typeof err === "string" ? err : err instanceof Error ? err.message : "";
+  const message = [err, fallback]
+    .map((value) => (typeof value === "string" ? value : value instanceof Error || value instanceof DOMException ? `${value.name} ${value.message}` : ""))
+    .join(" ");
   if (/requested device not found|notfounderror|no device/i.test(message)) return "No microphone was found on this device.";
   if (/permission|notallowed/i.test(message)) return "Please allow microphone access to talk to Mia.";
   if (/notreadable|busy|in use/i.test(message)) return "Your microphone is busy in another app or tab.";
@@ -620,7 +622,7 @@ const VoiceAssistantInner = () => {
         rest,
       });
       setConnecting(false);
-      const message = getStartErrorMessage(error);
+      const message = getStartErrorMessage(error, rest[0]);
       setStatusMessage(message);
       toast({ variant: "destructive", title: "Connection error", description: message });
     },
