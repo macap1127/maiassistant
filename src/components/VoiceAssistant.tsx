@@ -736,7 +736,7 @@ const VoiceAssistantInner = () => {
     const cached = voiceConnectionRef.current;
     console.log("[Mia] 🎙️ start() tapped", {
       at: new Date(tappedAt).toISOString(),
-      hasCachedSignedUrl: !!cached,
+      hasCachedConversationToken: !!cached,
       cachedAgeMs: cached ? tappedAt - cached.createdAt : null,
       conversationStatus: conversation.status,
     });
@@ -744,7 +744,7 @@ const VoiceAssistantInner = () => {
     setStatusMessage("Connecting to Mia…");
     try {
       if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
-        console.log("[Mia] start: no fresh signed URL, preparing…");
+        console.log("[Mia] start: no fresh conversation token, preparing…");
         setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
         setConnecting(false);
         void prepareVoiceConnection()
@@ -761,7 +761,7 @@ const VoiceAssistantInner = () => {
         return;
       }
 
-      const signedUrl = cached.signedUrl;
+      const conversationToken = cached.conversationToken;
       voiceConnectionRef.current = null;
       setVoiceReady(false);
       userEndedSessionRef.current = false;
@@ -769,15 +769,14 @@ const VoiceAssistantInner = () => {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error("Microphone access is not supported in this browser.");
       }
-      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket" });
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "webrtc" });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
-        signedUrl,
-        connectionType: "websocket",
-        preferHeadphonesForIosDevices: true,
+        conversationToken,
+        connectionType: "webrtc",
         useWakeLock: false,
         overrides: {
           agent: {
