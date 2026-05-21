@@ -723,8 +723,9 @@ const VoiceAssistantInner = () => {
       // ignore – best effort
     }
 
-    // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota)
-    const access = await checkAccess();
+    // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota).
+    // This is warmed in the background so the mic request still happens directly from the tap.
+    const access = await getVoiceAccess();
     if (!access.ok) {
       const msg = access.reason || "You don't have access to voice right now.";
       setStatusMessage(msg);
@@ -809,7 +810,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation, prepareVoiceConnection, checkAccess]);
+  }, [conversation, prepareVoiceConnection, getVoiceAccess]);
 
   const stop = useCallback(async () => {
     console.log("[Mia] 🛑 stop() called by user", { at: new Date().toISOString() });
