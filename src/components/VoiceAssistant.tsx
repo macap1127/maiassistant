@@ -724,8 +724,31 @@ const VoiceAssistantInner = () => {
     }
 
     // Server-authoritative entitlement check (covers expired trial, canceled sub, over quota).
-    // This is warmed in the background so the mic request still happens directly from the tap.
-    const access = await getVoiceAccess();
+    // If it is not already warmed, prepare it first so mic startup remains directly tied to the tap.
+    const access = voiceAccessRef.current;
+    if (!access || Date.now() - access.checkedAt >= VOICE_ACCESS_MAX_AGE_MS) {
+      setConnecting(true);
+      setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
+      void getVoiceAccess()
+        .then((result) => {
+          if (!result.ok) {
+            const msg = result.reason || "You don't have access to voice right now.";
+            setStatusMessage(msg);
+            toast({ variant: "destructive", title: "Voice unavailable", description: msg });
+            return;
+          }
+          setStatusMessage("Mia is ready. Tap the microphone again to start talking.");
+          toast({ title: "Mia is ready", description: "Tap the microphone again to start talking." });
+        })
+        .catch((error) => {
+          console.error("[Mia] start: voice access check failed", error);
+          const message = getStartErrorMessage(error);
+          setStatusMessage(message);
+          toast({ variant: "destructive", title: "Voice unavailable", description: message });
+        })
+        .finally(() => setConnecting(false));
+      return;
+    }
     if (!access.ok) {
       const msg = access.reason || "You don't have access to voice right now.";
       setStatusMessage(msg);
