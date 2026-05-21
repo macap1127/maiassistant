@@ -711,14 +711,16 @@ const VoiceAssistantInner = () => {
       setVoiceReady(false);
       userEndedSessionRef.current = false;
       wasConnectedRef.current = false;
-      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "webrtc" });
+      const inputDeviceId = await requestMicrophoneDeviceId();
+      console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket", hasInputDeviceId: !!inputDeviceId });
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
       const result = conversation.startSession({
-        conversationToken: signedUrl,
-        connectionType: "webrtc",
+        signedUrl,
+        connectionType: "websocket",
+        inputDeviceId,
         useWakeLock: false,
         overrides: {
           agent: {
