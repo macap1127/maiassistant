@@ -505,27 +505,31 @@ const VoiceAssistantInner = () => {
       getGroceryList: async (params: { store?: string } = {}) => {
         console.log("[Mia] getGroceryList called", params);
         try {
+          return await readGroceryList(params);
+        } catch (e) {
+          return `Failed to read grocery list: ${getErrorMessage(e)}`;
+        }
+      },
+      getGrocery: async (params: { store?: string } = {}) => readGroceryList(params),
+      getGroceries: async (params: { store?: string } = {}) => readGroceryList(params),
+      getShoppingList: async (params: { store?: string } = {}) => readGroceryList(params),
+      checkGroceryItem: async (params: { name: string; store?: string }) => {
+        console.log("[Mia] checkGroceryItem called", params);
+        try {
           const hid = requireHousehold();
+          const itemName = cleanGroceryName(params.name || "");
+          if (!itemName) return "Which grocery item?";
           let query = supabase
             .from("grocery_items")
-            .select("name, quantity, store, completed, category")
+            .select("name, quantity, store, completed")
             .eq("household_id", hid)
-            .order("completed", { ascending: true });
+            .ilike("name", `%${itemName}%`);
           if (params.store?.trim()) query = query.ilike("store", `%${params.store.trim()}%`);
-          const { data, error } = await query;
+          const { data, error } = await query.limit(10);
           if (error) return `Couldn't read the grocery list: ${error.message}`;
-          if (!data || data.length === 0) return params.store ? `Nothing on the ${params.store} grocery list.` : `The grocery list is empty.`;
-          const open = data.filter((i: any) => !i.completed);
-          const done = data.filter((i: any) => i.completed);
-          const fmt = (i: any) => {
-            const qty = i.quantity ? `${i.quantity} ` : "";
-            const where = i.store ? ` (${i.store})` : "";
-            return `${qty}${i.name}${where}`;
-          };
-          const parts: string[] = [];
-          if (open.length) parts.push(`Still needed (${open.length}): ${open.map(fmt).join(", ")}`);
-          if (done.length) parts.push(`Already got (${done.length}): ${done.map(fmt).join(", ")}`);
-          return parts.join(". ") + ".";
+          if (!data || data.length === 0) return `No, ${itemName} isn't on the grocery list.`;
+          const matches = data.map((i: any) => `${i.completed ? "already got" : "still needed"}: ${i.quantity ? `${i.quantity} ` : ""}${i.name}${i.store ? ` (${i.store})` : ""}`);
+          return `Yes — ${matches.join("; ")}.`;
         } catch (e) {
           return `Failed to read grocery list: ${getErrorMessage(e)}`;
         }
