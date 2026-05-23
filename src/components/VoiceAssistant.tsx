@@ -639,10 +639,15 @@ const VoiceAssistantInner = () => {
         // call that may not be configured on the agent side.
         void (async () => {
           try {
-            const summary = await readGroceryList({});
-            conversation.sendContextualUpdate(
-              `GROCERY_LIST_GROUND_TRUTH: ${summary} Answer the user's grocery question using ONLY this data. Do not say the list is empty unless it actually is. Do not mention tools, fetching, or checking — just answer naturally.`
-            );
+            const localSummary = summarizeGroceryRows(groceryListRef.current, {});
+            const summary = /empty/i.test(localSummary) ? await readGroceryList({}) : localSummary;
+            const answer = /empty|Nothing on/i.test(summary)
+              ? summary
+              : `On your grocery list: ${summary}`;
+            conversation.sendContextualUpdate(`GROCERY_LIST_GROUND_TRUTH: ${summary}`);
+            setTimeout(() => {
+              if (conversation.status === "connected") conversation.sendUserMessage(`Answer my grocery list question using this exact list and do not call calendar tools: ${answer}`);
+            }, 200);
           } catch (e) {
             conversation.sendContextualUpdate(
               "The user is asking about the grocery/shopping list. Silently call getGroceryList and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
