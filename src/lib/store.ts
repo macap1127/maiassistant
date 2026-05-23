@@ -167,7 +167,7 @@ export function useFamilyData() {
 
     // Realtime subscriptions
     const channel = supabase
-      .channel(`household-${householdId}`)
+      .channel(`household-${householdId}-${Math.random().toString(36).slice(2, 8)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "households", filter: `id=eq.${householdId}` }, loadAll)
       .on("postgres_changes", { event: "*", schema: "public", table: "family_members", filter: `household_id=eq.${householdId}` }, loadAll)
       .on("postgres_changes", { event: "*", schema: "public", table: "grocery_items", filter: `household_id=eq.${householdId}` }, loadAll)
