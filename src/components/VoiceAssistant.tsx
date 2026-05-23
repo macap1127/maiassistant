@@ -439,7 +439,7 @@ const VoiceAssistantInner = () => {
             .order("time", { ascending: true });
           if (error) return `Couldn't read calendar: ${error.message}`;
           if (!data || data.length === 0) return `Nothing on the calendar for ${params.date}.`;
-          const list = data.map((e: any) => {
+          const list = (data as EventSummaryRow[]).map((e) => {
             const t = e.time ? ` at ${e.time}` : "";
             const loc = e.location ? ` (${e.location})` : "";
             const who = e.assigned_to ? ` — ${e.assigned_to}` : "";
@@ -465,7 +465,7 @@ const VoiceAssistantInner = () => {
             .limit(5);
           if (error) return `Couldn't search receipts: ${error.message}`;
           if (!data || data.length === 0) return `No receipts found for "${q}".`;
-          const list = data.map((r: any) => {
+          const list = (data as ReceiptSummaryRow[]).map((r) => {
             const date = r.purchase_date || "no date";
             const total = r.total != null ? ` — ${r.currency || "USD"} ${r.total}` : "";
             const items = r.items_summary ? ` (${r.items_summary})` : "";
@@ -573,7 +573,7 @@ const VoiceAssistantInner = () => {
           const { data, error } = await query.limit(10);
           if (error) return `Couldn't read the grocery list: ${error.message}`;
           if (!data || data.length === 0) return `No, ${itemName} isn't on the grocery list.`;
-          const matches = data.map((i: any) => `${i.completed ? "already got" : "still needed"}: ${i.quantity ? `${i.quantity} ` : ""}${i.name}${i.store ? ` (${i.store})` : ""}`);
+          const matches = (data as GroceryCheckRow[]).map((i) => `${i.completed ? "already got" : "still needed"}: ${i.quantity ? `${i.quantity} ` : ""}${i.name}${i.store ? ` (${i.store})` : ""}`);
           return `Yes — ${matches.join("; ")}.`;
         } catch (e) {
           return `Failed to read grocery list: ${getErrorMessage(e)}`;
@@ -593,9 +593,9 @@ const VoiceAssistantInner = () => {
           const { data, error } = await query.limit(50);
           if (error) return `Couldn't read tasks: ${error.message}`;
           if (!data || data.length === 0) return `No to-do items.`;
-          const open = data.filter((t: any) => !t.completed);
+          const open = (data as TaskSummaryRow[]).filter((t) => !t.completed);
           if (open.length === 0) return `All to-do items are done. 🎉`;
-          const list = open.map((t: any) => {
+          const list = open.map((t) => {
             const who = t.assigned_to ? ` — ${t.assigned_to}` : "";
             const when = t.due_date ? ` (due ${t.due_date})` : "";
             return `${t.title}${who}${when}`;
@@ -624,7 +624,7 @@ const VoiceAssistantInner = () => {
             .order("time", { ascending: true, nullsFirst: true });
           if (error) return `Couldn't read calendar: ${error.message}`;
           if (!data || data.length === 0) return `Nothing on the calendar for the next ${days} day${days === 1 ? "" : "s"}.`;
-          const list = data.map((e: any) => {
+          const list = (data as EventSummaryRow[]).map((e) => {
             const t = e.time ? ` at ${e.time}` : "";
             const loc = e.location ? ` (${e.location})` : "";
             const who = e.assigned_to ? ` — ${e.assigned_to}` : "";
