@@ -599,9 +599,21 @@ const VoiceAssistantInner = () => {
       console.log("[Mia] message", message);
       const transcript = getUserTranscript(message);
       if (transcript && isGroceryLookup(transcript)) {
-        conversation.sendContextualUpdate(
-          "The user is asking about the grocery/shopping list. Silently call getGroceryList and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
-        );
+        // Fetch the real list ourselves and inject it as ground truth so Mia
+        // answers from actual data instead of guessing or relying on a tool
+        // call that may not be configured on the agent side.
+        void (async () => {
+          try {
+            const summary = await readGroceryList({});
+            conversation.sendContextualUpdate(
+              `GROCERY_LIST_GROUND_TRUTH: ${summary} Answer the user's grocery question using ONLY this data. Do not say the list is empty unless it actually is. Do not mention tools, fetching, or checking — just answer naturally.`
+            );
+          } catch (e) {
+            conversation.sendContextualUpdate(
+              "The user is asking about the grocery/shopping list. Silently call getGroceryList and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
+            );
+          }
+        })();
       }
       // NOTE: We intentionally do NOT auto-parse user transcripts or agent confirmations
       // to insert grocery items. That heuristic added random words from the conversation
