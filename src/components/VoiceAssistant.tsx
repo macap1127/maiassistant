@@ -4,6 +4,7 @@ import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useFamilyData, type GroceryItem } from "@/lib/store";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
@@ -136,6 +137,33 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
   return Array.from(recentAdds).some(([recentKey, addedAt]) => recentKey.startsWith(namePrefix) && now - addedAt <= 20_000);
 };
 
+type GrocerySummaryRow = Pick<GroceryItem, "name" | "quantity" | "completed" | "store" | "category">;
+type TokenResponse = { signedUrl?: string; error?: string };
+type EventSummaryRow = { title: string; date?: string; time?: string | null; location?: string | null; notes?: string | null; assigned_to?: string | null };
+type ReceiptSummaryRow = { store?: string | null; purchase_date?: string | null; total?: number | null; currency?: string | null; items_summary?: string | null; image_path?: string | null };
+type GroceryCheckRow = { name: string; quantity?: string | null; store?: string | null; completed: boolean };
+type TaskSummaryRow = { title: string; assigned_to?: string | null; due_date?: string | null; completed: boolean };
+
+const summarizeGroceryRows = (rows: GrocerySummaryRow[], params: { store?: string } = {}) => {
+  const store = params.store?.trim().toLowerCase();
+  const filtered = store
+    ? rows.filter((item) => (item.store || "").toLowerCase().includes(store))
+    : rows;
+  if (filtered.length === 0) return params.store ? `Nothing on the ${params.store} grocery list.` : `The grocery list is empty.`;
+
+  const open = filtered.filter((item) => !item.completed);
+  const done = filtered.filter((item) => item.completed);
+  const fmt = (item: GrocerySummaryRow) => {
+    const qty = item.quantity ? `${item.quantity} ` : "";
+    const where = item.store ? ` (${item.store})` : "";
+    return `${qty}${item.name}${where}`;
+  };
+  const parts: string[] = [];
+  if (open.length) parts.push(`Still needed (${open.length}): ${open.map(fmt).join(", ")}`);
+  if (done.length) parts.push(`Already got (${done.length}): ${done.map(fmt).join(", ")}`);
+  return parts.join(". ") + ".";
+};
+
 type VoiceConnection = { signedUrl: string; createdAt: number };
 type VoiceAccess = { ok: boolean; reason?: string; checkedAt: number };
 
@@ -144,6 +172,7 @@ const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
+  const { data: familyData } = useFamilyData();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
@@ -153,6 +182,7 @@ const VoiceAssistantInner = () => {
   const assistantLanguageRef = useRef<string>("en");
   const userNameRef = useRef<string>("");
   const familyMembersRef = useRef<{ name: string; role: string }[]>([]);
+  const groceryListRef = useRef<GrocerySummaryRow[]>([]);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
@@ -163,6 +193,16 @@ const VoiceAssistantInner = () => {
   const sessionStartedAtRef = useRef<number | null>(null);
   const lastStartTapAtRef = useRef<number | null>(null);
   const lastErrorRef = useRef<unknown>(null);
+
+  useEffect(() => {
+    groceryListRef.current = familyData.groceryList.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      completed: item.completed,
+      store: item.store,
+      category: item.category,
+    }));
+  }, [familyData.groceryList]);
 
   const refreshQuota = useCallback(async () => {
     const hid = householdIdRef.current;
@@ -224,15 +264,15 @@ const VoiceAssistantInner = () => {
           .select("assistant_language")
           .eq("id", hid)
           .maybeSingle();
-        assistantLanguageRef.current = ((hh as any)?.assistant_language as string) || "en";
+        assistantLanguageRef.current = hh?.assistant_language || "en";
         const { data: fam } = await supabase
           .from("family_members")
           .select("name, role")
           .eq("household_id", hid);
-        if (fam) familyMembersRef.current = fam.filter((f: any) => f?.name);
+        if (fam) familyMembersRef.current = fam.filter((f) => f?.name);
       }
     })();
-  }, [user, refreshQuota]);
+  }, [user, refreshQuota, getVoiceAccess]);
 
   const requireHousehold = () => {
     const hid = householdIdRef.current;
@@ -253,8 +293,9 @@ const VoiceAssistantInner = () => {
     const promise = supabase.functions
       .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "websocket" } })
       .then(({ data, error }) => {
-        const signedUrl = (data as any)?.signedUrl;
-        if (error || !signedUrl) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
+        const tokenData = data as TokenResponse | null;
+        const signedUrl = tokenData?.signedUrl;
+        if (error || !signedUrl) throw new Error(error?.message || tokenData?.error || "Failed to prepare Mia");
         voiceConnectionRef.current = { signedUrl: signedUrl as string, createdAt: Date.now() };
         setVoiceReady(true);
         return signedUrl as string;
@@ -318,19 +359,17 @@ const VoiceAssistantInner = () => {
       .order("completed", { ascending: true });
     if (params.store?.trim()) query = query.ilike("store", `%${params.store.trim()}%`);
     const { data, error } = await query;
-    if (error) return `Couldn't read the grocery list: ${error.message}`;
-    if (!data || data.length === 0) return params.store ? `Nothing on the ${params.store} grocery list.` : `The grocery list is empty.`;
-    const open = data.filter((i: any) => !i.completed);
-    const done = data.filter((i: any) => i.completed);
-    const fmt = (i: any) => {
-      const qty = i.quantity ? `${i.quantity} ` : "";
-      const where = i.store ? ` (${i.store})` : "";
-      return `${qty}${i.name}${where}`;
-    };
-    const parts: string[] = [];
-    if (open.length) parts.push(`Still needed (${open.length}): ${open.map(fmt).join(", ")}`);
-    if (done.length) parts.push(`Already got (${done.length}): ${done.map(fmt).join(", ")}`);
-    return parts.join(". ") + ".";
+    if (error) {
+      const localSummary = summarizeGroceryRows(groceryListRef.current, params);
+      if (!/empty|Nothing on/i.test(localSummary)) return localSummary;
+      return `Couldn't read the grocery list: ${error.message}`;
+    }
+
+    const rows = (data || []) as GrocerySummaryRow[];
+    if (rows.length === 0 && groceryListRef.current.length > 0) {
+      return summarizeGroceryRows(groceryListRef.current, params);
+    }
+    return summarizeGroceryRows(rows, params);
   }, []);
 
   const conversation = useConversation({
@@ -400,7 +439,7 @@ const VoiceAssistantInner = () => {
             .order("time", { ascending: true });
           if (error) return `Couldn't read calendar: ${error.message}`;
           if (!data || data.length === 0) return `Nothing on the calendar for ${params.date}.`;
-          const list = data.map((e: any) => {
+          const list = (data as EventSummaryRow[]).map((e) => {
             const t = e.time ? ` at ${e.time}` : "";
             const loc = e.location ? ` (${e.location})` : "";
             const who = e.assigned_to ? ` — ${e.assigned_to}` : "";
@@ -426,7 +465,7 @@ const VoiceAssistantInner = () => {
             .limit(5);
           if (error) return `Couldn't search receipts: ${error.message}`;
           if (!data || data.length === 0) return `No receipts found for "${q}".`;
-          const list = data.map((r: any) => {
+          const list = (data as ReceiptSummaryRow[]).map((r) => {
             const date = r.purchase_date || "no date";
             const total = r.total != null ? ` — ${r.currency || "USD"} ${r.total}` : "";
             const items = r.items_summary ? ` (${r.items_summary})` : "";
@@ -509,6 +548,8 @@ const VoiceAssistantInner = () => {
       getGroceryList: async (params: { store?: string } = {}) => {
         console.log("[Mia] getGroceryList called", params);
         try {
+          const localSummary = summarizeGroceryRows(groceryListRef.current, params);
+          if (!/empty|Nothing on/i.test(localSummary)) return localSummary;
           return await readGroceryList(params);
         } catch (e) {
           return `Failed to read grocery list: ${getErrorMessage(e)}`;
@@ -532,7 +573,7 @@ const VoiceAssistantInner = () => {
           const { data, error } = await query.limit(10);
           if (error) return `Couldn't read the grocery list: ${error.message}`;
           if (!data || data.length === 0) return `No, ${itemName} isn't on the grocery list.`;
-          const matches = data.map((i: any) => `${i.completed ? "already got" : "still needed"}: ${i.quantity ? `${i.quantity} ` : ""}${i.name}${i.store ? ` (${i.store})` : ""}`);
+          const matches = (data as GroceryCheckRow[]).map((i) => `${i.completed ? "already got" : "still needed"}: ${i.quantity ? `${i.quantity} ` : ""}${i.name}${i.store ? ` (${i.store})` : ""}`);
           return `Yes — ${matches.join("; ")}.`;
         } catch (e) {
           return `Failed to read grocery list: ${getErrorMessage(e)}`;
@@ -552,9 +593,9 @@ const VoiceAssistantInner = () => {
           const { data, error } = await query.limit(50);
           if (error) return `Couldn't read tasks: ${error.message}`;
           if (!data || data.length === 0) return `No to-do items.`;
-          const open = data.filter((t: any) => !t.completed);
+          const open = (data as TaskSummaryRow[]).filter((t) => !t.completed);
           if (open.length === 0) return `All to-do items are done. 🎉`;
-          const list = open.map((t: any) => {
+          const list = open.map((t) => {
             const who = t.assigned_to ? ` — ${t.assigned_to}` : "";
             const when = t.due_date ? ` (due ${t.due_date})` : "";
             return `${t.title}${who}${when}`;
@@ -583,7 +624,7 @@ const VoiceAssistantInner = () => {
             .order("time", { ascending: true, nullsFirst: true });
           if (error) return `Couldn't read calendar: ${error.message}`;
           if (!data || data.length === 0) return `Nothing on the calendar for the next ${days} day${days === 1 ? "" : "s"}.`;
-          const list = data.map((e: any) => {
+          const list = (data as EventSummaryRow[]).map((e) => {
             const t = e.time ? ` at ${e.time}` : "";
             const loc = e.location ? ` (${e.location})` : "";
             const who = e.assigned_to ? ` — ${e.assigned_to}` : "";
@@ -604,10 +645,15 @@ const VoiceAssistantInner = () => {
         // call that may not be configured on the agent side.
         void (async () => {
           try {
-            const summary = await readGroceryList({});
-            conversation.sendContextualUpdate(
-              `GROCERY_LIST_GROUND_TRUTH: ${summary} Answer the user's grocery question using ONLY this data. Do not say the list is empty unless it actually is. Do not mention tools, fetching, or checking — just answer naturally.`
-            );
+            const localSummary = summarizeGroceryRows(groceryListRef.current, {});
+            const summary = /empty/i.test(localSummary) ? await readGroceryList({}) : localSummary;
+            const answer = /empty|Nothing on/i.test(summary)
+              ? summary
+              : `On your grocery list: ${summary}`;
+            conversation.sendContextualUpdate(`GROCERY_LIST_GROUND_TRUTH: ${summary}`);
+            setTimeout(() => {
+              if (conversation.status === "connected") conversation.sendUserMessage(`Answer my grocery list question using this exact list and do not call calendar tools: ${answer}`);
+            }, 200);
           } catch (e) {
             conversation.sendContextualUpdate(
               "The user is asking about the grocery/shopping list. Silently call getGroceryList and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
