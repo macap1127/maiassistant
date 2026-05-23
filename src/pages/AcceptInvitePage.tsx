@@ -18,24 +18,21 @@ const AcceptInvitePage = () => {
     if (!code) return;
     (async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("household_invites")
-        .select("household_id, expires_at, accepted_at, households(name)")
-        .eq("invite_code", code.toUpperCase())
-        .maybeSingle();
-      if (error || !data) {
+      const { data, error } = await supabase.rpc("get_invite_by_code", {
+        _code: code,
+      });
+      const row = Array.isArray(data) ? data[0] : data;
+      if (error || !row) {
         setError("This invite link is invalid.");
-      } else if (data.accepted_at) {
+      } else if (row.accepted_at) {
         setError("This invite has already been used.");
-      } else if (new Date(data.expires_at) < new Date()) {
+      } else if (new Date(row.expires_at) < new Date()) {
         setError("This invite has expired.");
       } else {
-        const joined = data.households as { name?: string } | { name?: string }[] | null;
-        const hname = Array.isArray(joined) ? joined[0]?.name : joined?.name;
         setInvite({
-          household_id: data.household_id,
-          household_name: hname ?? "a family",
-          expires_at: data.expires_at,
+          household_id: row.household_id,
+          household_name: row.household_name ?? "a family",
+          expires_at: row.expires_at,
         });
       }
       setLoading(false);
