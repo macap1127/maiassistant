@@ -471,6 +471,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_invite_by_code: {
+        Args: { _code: string }
+        Returns: {
+          accepted_at: string
+          expires_at: string
+          household_id: string
+          household_name: string
+        }[]
+      }
       household_feature_allowed: {
         Args: { _feature: string; _household_id: string }
         Returns: boolean
