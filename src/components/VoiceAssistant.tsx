@@ -138,6 +138,7 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
 };
 
 type GrocerySummaryRow = Pick<GroceryItem, "name" | "quantity" | "completed" | "store" | "category">;
+type TokenResponse = { signedUrl?: string; error?: string };
 
 const summarizeGroceryRows = (rows: GrocerySummaryRow[], params: { store?: string } = {}) => {
   const store = params.store?.trim().toLowerCase();
@@ -259,15 +260,15 @@ const VoiceAssistantInner = () => {
           .select("assistant_language")
           .eq("id", hid)
           .maybeSingle();
-        assistantLanguageRef.current = ((hh as any)?.assistant_language as string) || "en";
+        assistantLanguageRef.current = hh?.assistant_language || "en";
         const { data: fam } = await supabase
           .from("family_members")
           .select("name, role")
           .eq("household_id", hid);
-        if (fam) familyMembersRef.current = fam.filter((f: any) => f?.name);
+        if (fam) familyMembersRef.current = fam.filter((f) => f?.name);
       }
     })();
-  }, [user, refreshQuota]);
+  }, [user, refreshQuota, getVoiceAccess]);
 
   const requireHousehold = () => {
     const hid = householdIdRef.current;
@@ -288,8 +289,9 @@ const VoiceAssistantInner = () => {
     const promise = supabase.functions
       .invoke("elevenlabs-token", { body: { agentId: AGENT_ID, mode: "websocket" } })
       .then(({ data, error }) => {
-        const signedUrl = (data as any)?.signedUrl;
-        if (error || !signedUrl) throw new Error(error?.message || (data as any)?.error || "Failed to prepare Mia");
+        const tokenData = data as TokenResponse | null;
+        const signedUrl = tokenData?.signedUrl;
+        if (error || !signedUrl) throw new Error(error?.message || tokenData?.error || "Failed to prepare Mia");
         voiceConnectionRef.current = { signedUrl: signedUrl as string, createdAt: Date.now() };
         setVoiceReady(true);
         return signedUrl as string;
