@@ -139,6 +139,10 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
 
 type GrocerySummaryRow = Pick<GroceryItem, "name" | "quantity" | "completed" | "store" | "category">;
 type TokenResponse = { signedUrl?: string; error?: string };
+type EventSummaryRow = { title: string; date?: string; time?: string | null; location?: string | null; notes?: string | null; assigned_to?: string | null };
+type ReceiptSummaryRow = { store?: string | null; purchase_date?: string | null; total?: number | null; currency?: string | null; items_summary?: string | null; image_path?: string | null };
+type GroceryCheckRow = { name: string; quantity?: string | null; store?: string | null; completed: boolean };
+type TaskSummaryRow = { title: string; assigned_to?: string | null; due_date?: string | null; completed: boolean };
 
 const summarizeGroceryRows = (rows: GrocerySummaryRow[], params: { store?: string } = {}) => {
   const store = params.store?.trim().toLowerCase();
