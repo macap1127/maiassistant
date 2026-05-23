@@ -4,6 +4,7 @@ import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useFamilyData, type GroceryItem } from "@/lib/store";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
@@ -134,6 +135,28 @@ const wasRecentlyAdded = (recentAdds: Map<string, number>, name: string, store: 
 
   const namePrefix = `${name}:`.toLowerCase();
   return Array.from(recentAdds).some(([recentKey, addedAt]) => recentKey.startsWith(namePrefix) && now - addedAt <= 20_000);
+};
+
+type GrocerySummaryRow = Pick<GroceryItem, "name" | "quantity" | "completed" | "store" | "category">;
+
+const summarizeGroceryRows = (rows: GrocerySummaryRow[], params: { store?: string } = {}) => {
+  const store = params.store?.trim().toLowerCase();
+  const filtered = store
+    ? rows.filter((item) => (item.store || "").toLowerCase().includes(store))
+    : rows;
+  if (filtered.length === 0) return params.store ? `Nothing on the ${params.store} grocery list.` : `The grocery list is empty.`;
+
+  const open = filtered.filter((item) => !item.completed);
+  const done = filtered.filter((item) => item.completed);
+  const fmt = (item: GrocerySummaryRow) => {
+    const qty = item.quantity ? `${item.quantity} ` : "";
+    const where = item.store ? ` (${item.store})` : "";
+    return `${qty}${item.name}${where}`;
+  };
+  const parts: string[] = [];
+  if (open.length) parts.push(`Still needed (${open.length}): ${open.map(fmt).join(", ")}`);
+  if (done.length) parts.push(`Already got (${done.length}): ${done.map(fmt).join(", ")}`);
+  return parts.join(". ") + ".";
 };
 
 type VoiceConnection = { signedUrl: string; createdAt: number };
