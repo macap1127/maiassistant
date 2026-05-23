@@ -167,6 +167,7 @@ const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
+  const { data: familyData } = useFamilyData();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
@@ -176,6 +177,7 @@ const VoiceAssistantInner = () => {
   const assistantLanguageRef = useRef<string>("en");
   const userNameRef = useRef<string>("");
   const familyMembersRef = useRef<{ name: string; role: string }[]>([]);
+  const groceryListRef = useRef<GrocerySummaryRow[]>([]);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
@@ -186,6 +188,16 @@ const VoiceAssistantInner = () => {
   const sessionStartedAtRef = useRef<number | null>(null);
   const lastStartTapAtRef = useRef<number | null>(null);
   const lastErrorRef = useRef<unknown>(null);
+
+  useEffect(() => {
+    groceryListRef.current = familyData.groceryList.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      completed: item.completed,
+      store: item.store,
+      category: item.category,
+    }));
+  }, [familyData.groceryList]);
 
   const refreshQuota = useCallback(async () => {
     const hid = householdIdRef.current;
