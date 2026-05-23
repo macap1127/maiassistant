@@ -542,6 +542,8 @@ const VoiceAssistantInner = () => {
       getGroceryList: async (params: { store?: string } = {}) => {
         console.log("[Mia] getGroceryList called", params);
         try {
+          const localSummary = summarizeGroceryRows(groceryListRef.current, params);
+          if (!/empty|Nothing on/i.test(localSummary)) return localSummary;
           return await readGroceryList(params);
         } catch (e) {
           return `Failed to read grocery list: ${getErrorMessage(e)}`;
