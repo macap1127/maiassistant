@@ -61,14 +61,15 @@ export default function HouseholdLogins() {
       return;
     }
     setCreating(true);
+    const trimmedEmail = email.trim();
     const { data, error } = await supabase
       .from("household_invites")
       .insert({
         household_id: household.id,
         invited_by: user.id,
-        email: email.trim() || null,
+        email: trimmedEmail || null,
       })
-      .select("invite_code")
+      .select("id, invite_code, expires_at")
       .single();
     setCreating(false);
     if (error) {
@@ -78,8 +79,52 @@ export default function HouseholdLogins() {
     setEmail("");
     void loadAll();
     const link = `${window.location.origin}/invite/${data.invite_code}`;
-    void navigator.clipboard.writeText(link).catch(() => {});
-    toast({ title: "Invite link copied", description: link });
+
+    if (trimmedEmail) {
+      const inviterName =
+        (user.user_metadata as any)?.full_name ||
+        (user.user_metadata as any)?.name ||
+        user.email?.split("@")[0] ||
+        "A family member";
+      const expiresAt = new Date(data.expires_at).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      const { error: emailError } = await supabase.functions.invoke(
+        "send-transactional-email",
+        {
+          body: {
+            templateName: "household-invite",
+            recipientEmail: trimmedEmail,
+            idempotencyKey: `household-invite-${data.id}`,
+            templateData: {
+              inviterName,
+              householdName: household.name,
+              inviteCode: data.invite_code,
+              inviteUrl: link,
+              expiresAt,
+            },
+          },
+        },
+      );
+      if (emailError) {
+        void navigator.clipboard.writeText(link).catch(() => {});
+        toast({
+          variant: "destructive",
+          title: "Invite created, but email failed",
+          description: `${emailError.message}. Link copied to clipboard instead.`,
+        });
+      } else {
+        toast({
+          title: "Invite sent",
+          description: `Email sent to ${trimmedEmail}.`,
+        });
+      }
+    } else {
+      void navigator.clipboard.writeText(link).catch(() => {});
+      toast({ title: "Invite link copied", description: link });
+    }
   };
 
   const revoke = async (id: string) => {
