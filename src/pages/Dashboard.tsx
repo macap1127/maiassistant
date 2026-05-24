@@ -33,9 +33,31 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { data, loading } = useFamilyData();
   const { user } = useAuth();
+  const [linkedMemberName, setLinkedMemberName] = useState("");
   const [loggedInMemberName, setLoggedInMemberName] = useState("");
 
+  // Primary source: family_members row explicitly linked to this user via user_id
+  useEffect(() => {
+    if (!user?.id) {
+      setLinkedMemberName("");
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data: linked } = await supabase
+        .from("family_members")
+        .select("name")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!cancelled) setLinkedMemberName(linked?.name || "");
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, data.members]);
+
   const directMemberName = useMemo(() => {
+    if (linkedMemberName) return linkedMemberName;
     const meta = (user?.user_metadata || {}) as Record<string, unknown>;
     const userPhone = digitsOnly(user?.phone || meta.phone as string | undefined || meta.phone_number as string | undefined);
     const emailHandle = String(user?.email || "").split("@")[0].toLowerCase();
@@ -52,7 +74,7 @@ const Dashboard = () => {
       })?.name ||
       ""
     );
-  }, [data.members, user]);
+  }, [data.members, user, linkedMemberName]);
 
   useEffect(() => {
     if (!user?.id || data.members.length === 0 || directMemberName) {
