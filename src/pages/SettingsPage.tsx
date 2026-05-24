@@ -282,14 +282,19 @@ const SettingsPage = () => {
           {saved ? "✓ Saved!" : "Save Changes"}
         </button>
 
-        <div className="flex items-center justify-center gap-3 pt-2 text-xs text-muted-foreground animate-slide-up" style={{ animationDelay: "200ms" }}>
-          <Link to="/privacy" className="hover:text-foreground transition-colors">
-            Privacy Policy
-          </Link>
-          <span>&middot;</span>
-          <Link to="/terms" className="hover:text-foreground transition-colors">
-            Terms & Conditions
-          </Link>
+        <div className="flex flex-col items-center gap-2 pt-2 text-xs text-muted-foreground animate-slide-up" style={{ animationDelay: "200ms" }}>
+          <div className="flex items-center justify-center gap-3">
+            <Link to="/privacy" className="hover:text-foreground transition-colors">
+              Privacy Policy
+            </Link>
+            <span>&middot;</span>
+            <Link to="/terms" className="hover:text-foreground transition-colors">
+              Terms & Conditions
+            </Link>
+          </div>
+          <a href="mailto:support@miafamilyasistant.com" className="hover:text-foreground transition-colors">
+            support@miafamilyasistant.com
+          </a>
         </div>
 
         <div className="bg-card border border-destructive/30 rounded-2xl p-4 mt-6 animate-slide-up" style={{ animationDelay: "240ms" }}>
