@@ -928,6 +928,19 @@ const VoiceAssistantInner = () => {
         throw new Error("Microphone access is not supported in this browser.");
       }
       console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket" });
+      // Always re-fetch the linked family member right before starting,
+      // so Mia uses the latest "I am…" selection (set after sign-in, etc.)
+      if (user && householdIdRef.current) {
+        const { data: fam } = await supabase
+          .from("family_members")
+          .select("name, role, user_id")
+          .eq("household_id", householdIdRef.current);
+        if (fam) {
+          familyMembersRef.current = fam.filter((f) => f?.name);
+          const me = fam.find((f) => (f as any).user_id === user.id);
+          if (me?.name) userNameRef.current = me.name;
+        }
+      }
       const familySummary = familyMembersRef.current
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
