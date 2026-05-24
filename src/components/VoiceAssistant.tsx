@@ -322,9 +322,13 @@ const VoiceAssistantInner = () => {
         assistantLanguageRef.current = hh?.assistant_language || "en";
         const { data: fam } = await supabase
           .from("family_members")
-          .select("name, role")
+          .select("name, role, user_id")
           .eq("household_id", hid);
-        if (fam) familyMembersRef.current = fam.filter((f) => f?.name);
+        if (fam) {
+          familyMembersRef.current = fam.filter((f) => f?.name);
+          const me = fam.find((f) => (f as any).user_id === user.id);
+          if (me?.name) userNameRef.current = me.name;
+        }
       }
     })();
   }, [user, refreshQuota, getVoiceAccess, refreshListSnapshots]);

@@ -20,14 +20,22 @@ interface MemberRow {
   created_at: string;
 }
 
+interface FamilyMemberRow {
+  id: string;
+  name: string;
+  user_id: string | null;
+}
+
 export default function HouseholdLogins() {
   const { user } = useAuth();
   const { household, refresh } = useHousehold();
   const navigate = useNavigate();
   const [invites, setInvites] = useState<InviteRow[]>([]);
   const [members, setMembers] = useState<MemberRow[]>([]);
+  const [familyMembers, setFamilyMembers] = useState<FamilyMemberRow[]>([]);
   const [email, setEmail] = useState("");
   const [creating, setCreating] = useState(false);
+  const [linking, setLinking] = useState(false);
 
   const loadAll = async () => {
     if (!household) return;
@@ -44,11 +52,18 @@ export default function HouseholdLogins() {
       .eq("household_id", household.id)
       .order("created_at", { ascending: true });
     setMembers(mems ?? []);
+    const { data: fam } = await supabase
+      .from("family_members")
+      .select("id, name, user_id")
+      .eq("household_id", household.id)
+      .order("name");
+    setFamilyMembers((fam ?? []) as FamilyMemberRow[]);
   };
 
   useEffect(() => {
     void loadAll();
   }, [household?.id]);
+
 
   if (!household) return null;
   const tier = TIER_INFO[household.subscriptionTier];
@@ -139,11 +154,39 @@ export default function HouseholdLogins() {
     void refresh();
   };
 
+  const myFamilyMember = familyMembers.find((f) => f.user_id === user?.id);
+
+  const linkToFamilyMember = async (familyMemberId: string) => {
+    if (!user || !household) return;
+    setLinking(true);
+    // Clear any prior link this user had
+    await supabase
+      .from("family_members")
+      .update({ user_id: null })
+      .eq("household_id", household.id)
+      .eq("user_id", user.id);
+    if (familyMemberId) {
+      const { error } = await supabase
+        .from("family_members")
+        .update({ user_id: user.id })
+        .eq("id", familyMemberId);
+      if (error) {
+        toast({ variant: "destructive", title: "Couldn't link profile", description: error.message });
+        setLinking(false);
+        return;
+      }
+    }
+    await loadAll();
+    setLinking(false);
+    toast({ title: "Profile linked", description: "Mia will now know it's you when you talk." });
+  };
+
   const copyLink = (code: string) => {
     const link = `${window.location.origin}/invite/${code}`;
     void navigator.clipboard.writeText(link);
     toast({ title: "Link copied", description: link });
   };
+
 
   return (
     <div className="bg-card rounded-2xl border border-border p-4 mb-4 animate-slide-up">
@@ -176,6 +219,32 @@ export default function HouseholdLogins() {
           </div>
         ))}
       </div>
+
+      {familyMembers.length > 0 && (
+        <div className="mb-3 pt-3 border-t border-border">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
+            I am…
+          </p>
+          <select
+            value={myFamilyMember?.id ?? ""}
+            onChange={(e) => void linkToFamilyMember(e.target.value)}
+            disabled={linking}
+            className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+          >
+            <option value="">Choose your profile…</option>
+            {familyMembers
+              .filter((f) => !f.user_id || f.user_id === user?.id)
+              .map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.name}
+                </option>
+              ))}
+          </select>
+          <p className="text-[11px] text-muted-foreground mt-1.5">
+            Tells Mia which family member is talking when you use voice.
+          </p>
+        </div>
+      )}
 
       {household.isOwner && (
         <>
