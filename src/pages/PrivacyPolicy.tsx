@@ -49,13 +49,44 @@ const PrivacyPolicy = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">4. SMS Messaging</h2>
+          <h2 className="text-xl font-semibold">4. SMS Messaging & Consent</h2>
           <p>
-            By entering your phone number and requesting a code, you consent to
-            receive a one-time SMS verification code at that number. Message and
-            data rates may apply. Reply <strong>STOP</strong> to opt out at any
-            time, or <strong>HELP</strong> for assistance. We do not send
-            marketing messages.
+            Mia Family Assistant uses SMS for two purposes:
+          </p>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>
+              <strong>Account verification:</strong> When you sign in, you may
+              receive a one-time SMS verification code at the phone number you
+              provide.
+            </li>
+            <li>
+              <strong>Daily event reminders (opt-in):</strong> If you turn on
+              "Daily event SMS reminders" in Settings and enter your mobile
+              number, you will receive <strong>one SMS per day</strong> at the
+              time you choose, summarizing your household's calendar events for
+              that day. This is strictly opt-in — the setting is off by default,
+              and you can disable it at any time from Settings or by replying{" "}
+              <strong>STOP</strong> to any message. Reply <strong>HELP</strong>{" "}
+              for assistance.
+            </li>
+          </ul>
+          <p>
+            <strong>Message frequency:</strong> Verification codes are sent only
+            when you request to sign in. Daily reminders are sent at most once
+            per day per opted-in user.
+          </p>
+          <p>
+            <strong>Message and data rates may apply.</strong> Carriers are not
+            liable for delayed or undelivered messages.
+          </p>
+          <p>
+            <strong>Mobile information sharing:</strong> No mobile information
+            will be shared with third parties or affiliates for marketing or
+            promotional purposes. Information sharing to subcontractors in
+            support of the services we provide (for example, our SMS delivery
+            provider) is permitted only as required to operate the service.
+            All other categories — text messaging originator opt-in data and
+            consent — will not be shared with any third parties.
           </p>
         </section>
 
@@ -64,8 +95,10 @@ const PrivacyPolicy = () => {
           <p>
             We do not sell your personal information. We share data only with
             service providers required to operate the app (such as our SMS
-            provider and cloud infrastructure) and only as needed to deliver the
-            service.
+            provider, payment processor, and cloud infrastructure) and only as
+            needed to deliver the service. As stated above, mobile phone numbers
+            and SMS opt-in consent are never shared, sold, or transferred to
+            third parties or affiliates for marketing purposes.
           </p>
         </section>
 
