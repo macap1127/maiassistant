@@ -5,7 +5,7 @@ const Terms = () => {
         <header>
           <h1 className="text-3xl font-bold">Terms and Conditions</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Last updated: May 8, 2026
+            Last updated: May 24, 2026
           </p>
         </header>
 
