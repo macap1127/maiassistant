@@ -154,11 +154,39 @@ export default function HouseholdLogins() {
     void refresh();
   };
 
+  const myFamilyMember = familyMembers.find((f) => f.user_id === user?.id);
+
+  const linkToFamilyMember = async (familyMemberId: string) => {
+    if (!user || !household) return;
+    setLinking(true);
+    // Clear any prior link this user had
+    await supabase
+      .from("family_members")
+      .update({ user_id: null })
+      .eq("household_id", household.id)
+      .eq("user_id", user.id);
+    if (familyMemberId) {
+      const { error } = await supabase
+        .from("family_members")
+        .update({ user_id: user.id })
+        .eq("id", familyMemberId);
+      if (error) {
+        toast({ variant: "destructive", title: "Couldn't link profile", description: error.message });
+        setLinking(false);
+        return;
+      }
+    }
+    await loadAll();
+    setLinking(false);
+    toast({ title: "Profile linked", description: "Mia will now know it's you when you talk." });
+  };
+
   const copyLink = (code: string) => {
     const link = `${window.location.origin}/invite/${code}`;
     void navigator.clipboard.writeText(link);
     toast({ title: "Link copied", description: link });
   };
+
 
   return (
     <div className="bg-card rounded-2xl border border-border p-4 mb-4 animate-slide-up">
