@@ -289,8 +289,11 @@ const VoiceAssistantInner = () => {
   useEffect(() => {
     if (!user) {
       householdIdRef.current = null;
+      setActiveHouseholdId(null);
       userNameRef.current = "";
       familyMembersRef.current = [];
+      groceryListRef.current = [];
+      taskListRef.current = [];
       setQuota(null);
       return;
     }
@@ -307,8 +310,10 @@ const VoiceAssistantInner = () => {
       if (!error && data && data.length > 0) {
         const hid = data[0].household_id;
         householdIdRef.current = hid;
+        setActiveHouseholdId(hid);
         void refreshQuota();
         void getVoiceAccess().catch((error) => console.error("[Mia] voice access check failed", error));
+        void refreshListSnapshots(hid);
         const { data: hh } = await supabase
           .from("households")
           .select("assistant_language")
@@ -322,7 +327,7 @@ const VoiceAssistantInner = () => {
         if (fam) familyMembersRef.current = fam.filter((f) => f?.name);
       }
     })();
-  }, [user, refreshQuota, getVoiceAccess]);
+  }, [user, refreshQuota, getVoiceAccess, refreshListSnapshots]);
 
   const requireHousehold = () => {
     const hid = householdIdRef.current;
