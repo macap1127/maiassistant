@@ -25,3 +25,17 @@ Changes made:
 
 - **Registered the 3 new client tools (`getGroceryList`, `getTasks`, `getUpcomingEvents`) in the ElevenLabs agent dashboard.** Each tool configured with: Wait for response = ON, Disable interruptions = OFF, Pre-tool speech = Auto, Execution mode = Immediate, Response timeout = 5s. Parameters are all optional (store / assignee / days). This makes the client-side tool handlers actually reachable by the agent so Mia can read live grocery, task, and calendar data back to the user.
 
+---
+
+## 2026-05-24 — Follow-up fixes & polish
+
+Issues / requests addressed:
+
+- **Mic disconnected immediately on tap.** Removed the client-side `overrides.agent.prompt` from the ElevenLabs `startSession` call in `VoiceAssistant.tsx`. ElevenLabs rejects the connection when "Prompt overrides" isn't explicitly enabled in the agent's Security settings, which was causing the session to drop the instant it opened. The full Mia system prompt is now configured directly in the ElevenLabs dashboard, and the client only passes dynamic variables (user name, family members, etc.) — which don't require the override toggle.
+
+- **Updated support email across the app.** Replaced the placeholder `support@maiassistant.lovable.app` with the real address **support@miafamilyasistant.com** on the Privacy Policy page, Terms of Service page, About page, and Settings page footer so testers and users have a working contact.
+
+- **Cleaned up test/demo accounts in the database.** Removed leftover test accounts (`michael@aiblueribbon.com` and an anonymous demo account with placeholder family members "Sarah/Mike/Emma/Liam"). Kept only the real owner account (`michaeldmacri@gmail.com`) and the Google Play review account (`review@miaassistant.com`).
+
+- **Confirmed household / multi-user sharing model for reviewers.** Verified that one household links multiple logins via the `household_members` table — all members see the same grocery list, tasks, calendar, and receipts via RLS (`is_household_member`). Member limits per tier: Basic = 1, Family = 4, Family Plus = 6. Invite links are generated from the **Family** page (`HouseholdLogins` component) using one-time codes routed through `/invite/:code`. Noted for a future paid-tier feature: optional "private to me" visibility flag on tasks/events (deferred — not in this build).
+
