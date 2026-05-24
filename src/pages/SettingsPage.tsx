@@ -234,8 +234,7 @@ const SettingsPage = () => {
           />
         </div>
 
-        {/* SMS reminders hidden until Twilio is wired up post-launch */}
-        {/* {household && <SmsReminderCard household={household} />} */}
+        {household && <SmsReminderCard household={household} />}
 
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "80ms" }}>
           <div className="flex items-center gap-2 mb-3">
