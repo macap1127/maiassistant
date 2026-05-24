@@ -631,6 +631,10 @@ export type Database = {
         Args: { _household_id: string }
         Returns: boolean
       }
+      household_has_valid_invite: {
+        Args: { _household_id: string }
+        Returns: boolean
+      }
       household_tier: { Args: { _household_id: string }; Returns: string }
       increment_voice_usage: {
         Args: { _household_id: string; _seconds: number }
