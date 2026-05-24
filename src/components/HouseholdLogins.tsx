@@ -220,6 +220,32 @@ export default function HouseholdLogins() {
         ))}
       </div>
 
+      {familyMembers.length > 0 && (
+        <div className="mb-3 pt-3 border-t border-border">
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
+            I am…
+          </p>
+          <select
+            value={myFamilyMember?.id ?? ""}
+            onChange={(e) => void linkToFamilyMember(e.target.value)}
+            disabled={linking}
+            className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+          >
+            <option value="">Choose your profile…</option>
+            {familyMembers
+              .filter((f) => !f.user_id || f.user_id === user?.id)
+              .map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.name}
+                </option>
+              ))}
+          </select>
+          <p className="text-[11px] text-muted-foreground mt-1.5">
+            Tells Mia which family member is talking when you use voice.
+          </p>
+        </div>
+      )}
+
       {household.isOwner && (
         <>
           {invites.length > 0 && (
