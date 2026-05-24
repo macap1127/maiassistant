@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
 import AuthPage from "./pages/AuthPage";
 import SmsOptInPage from "./pages/SmsOptInPage";
+import UnsubscribePage from "./pages/UnsubscribePage";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/sms-opt-in" element={<SmsOptInPage />} />
             <Route path="/invite/:code" element={<AcceptInvitePage />} />
+            <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
