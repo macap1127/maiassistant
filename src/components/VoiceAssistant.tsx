@@ -148,7 +148,7 @@ type TokenResponse = { signedUrl?: string; error?: string };
 type EventSummaryRow = { title: string; date?: string; time?: string | null; location?: string | null; notes?: string | null; assigned_to?: string | null };
 type ReceiptSummaryRow = { store?: string | null; purchase_date?: string | null; total?: number | null; currency?: string | null; items_summary?: string | null; image_path?: string | null };
 type GroceryCheckRow = { name: string; quantity?: string | null; store?: string | null; completed: boolean };
-type TaskSummaryRow = { title: string; assigned_to?: string | null; due_date?: string | null; completed: boolean };
+type TaskSummaryRow = { title: string; assigned_to?: string | null; due_date?: string | null; time?: string | null; completed: boolean };
 
 const summarizeGroceryRows = (rows: GrocerySummaryRow[], params: { store?: string } = {}) => {
   const store = params.store?.trim().toLowerCase();
@@ -170,6 +170,26 @@ const summarizeGroceryRows = (rows: GrocerySummaryRow[], params: { store?: strin
   return parts.join(". ") + ".";
 };
 
+const summarizeTaskRows = (rows: TaskSummaryRow[], params: { assignedTo?: string } = {}) => {
+  const assignedTo = params.assignedTo?.trim().toLowerCase();
+  const filtered = assignedTo
+    ? rows.filter((task) => (task.assigned_to || "").toLowerCase().includes(assignedTo))
+    : rows;
+  if (filtered.length === 0) return params.assignedTo ? `No to-do items assigned to ${params.assignedTo}.` : "No to-do items.";
+
+  const open = filtered.filter((task) => !task.completed);
+  const done = filtered.filter((task) => task.completed);
+  const fmt = (task: TaskSummaryRow) => {
+    const who = task.assigned_to ? ` — ${task.assigned_to}` : "";
+    const due = task.due_date ? ` (due ${task.due_date}${task.time ? ` at ${task.time}` : ""})` : task.time ? ` (${task.time})` : "";
+    return `${task.title}${who}${due}`;
+  };
+  const parts: string[] = [];
+  if (open.length) parts.push(`Open to-dos (${open.length}): ${open.map(fmt).join("; ")}`);
+  if (done.length) parts.push(`Done (${done.length}): ${done.map(fmt).join("; ")}`);
+  return parts.join(". ") + ".";
+};
+
 type VoiceConnection = { signedUrl: string; createdAt: number };
 type VoiceAccess = { ok: boolean; reason?: string; checkedAt: number };
 
@@ -178,7 +198,6 @@ const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
-  const { data: familyData } = useFamilyData();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
@@ -189,6 +208,7 @@ const VoiceAssistantInner = () => {
   const userNameRef = useRef<string>("");
   const familyMembersRef = useRef<{ name: string; role: string }[]>([]);
   const groceryListRef = useRef<GrocerySummaryRow[]>([]);
+  const taskListRef = useRef<TaskSummaryRow[]>([]);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
