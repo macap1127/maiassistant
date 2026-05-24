@@ -55,9 +55,30 @@ const AcceptInvitePage = () => {
       .from("household_invites")
       .update({ accepted_at: new Date().toISOString(), accepted_by: user.id })
       .eq("invite_code", code.toUpperCase());
+
+    // Clean up any auto-created solo household the user owns (other than the one
+    // they just joined). New signups get a default "My Family" household; if they
+    // accepted an invite instead of using it, drop it so the app picks up the
+    // invited household.
+    const { data: ownedSolo } = await supabase
+      .from("households")
+      .select("id")
+      .eq("owner_user_id", user.id)
+      .neq("id", invite.household_id);
+    for (const h of ownedSolo ?? []) {
+      const { count } = await supabase
+        .from("household_members")
+        .select("*", { count: "exact", head: true })
+        .eq("household_id", h.id);
+      if ((count ?? 0) <= 1) {
+        await supabase.from("households").delete().eq("id", h.id);
+      }
+    }
+
     toast({ title: "Welcome!", description: `You've joined ${invite.household_name}.` });
     navigate("/");
   };
+
 
   if (loading || authLoading) {
     return (
