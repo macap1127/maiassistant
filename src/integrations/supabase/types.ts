@@ -164,6 +164,7 @@ export type Database = {
           phone: string
           role: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           avatar?: string | null
@@ -174,6 +175,7 @@ export type Database = {
           phone?: string
           role?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           avatar?: string | null
@@ -184,6 +186,7 @@ export type Database = {
           phone?: string
           role?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
