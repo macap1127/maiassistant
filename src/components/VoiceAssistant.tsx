@@ -407,25 +407,45 @@ const VoiceAssistantInner = () => {
 
   const readGroceryList = useCallback(async (params: { store?: string } = {}) => {
     const hid = requireHousehold();
-    let query = supabase
-      .from("grocery_items")
-      .select("name, quantity, store, completed, category")
-      .eq("household_id", hid)
-      .order("completed", { ascending: true });
-    if (params.store?.trim()) query = query.ilike("store", `%${params.store.trim()}%`);
-    const { data, error } = await query;
-    if (error) {
+    try {
+      const rows = await loadGrocerySnapshot(hid);
+      return summarizeGroceryRows(rows, params);
+    } catch (error) {
       const localSummary = summarizeGroceryRows(groceryListRef.current, params);
       if (!/empty|Nothing on/i.test(localSummary)) return localSummary;
-      return `Couldn't read the grocery list: ${error.message}`;
+      return `Couldn't read the grocery list: ${getErrorMessage(error)}`;
     }
+  }, [loadGrocerySnapshot]);
 
-    const rows = (data || []) as GrocerySummaryRow[];
-    if (rows.length === 0 && groceryListRef.current.length > 0) {
-      return summarizeGroceryRows(groceryListRef.current, params);
+  const readTaskList = useCallback(async (params: { assignedTo?: string } = {}) => {
+    const hid = requireHousehold();
+    try {
+      const rows = await loadTaskSnapshot(hid);
+      return summarizeTaskRows(rows, params);
+    } catch (error) {
+      const localSummary = summarizeTaskRows(taskListRef.current, params);
+      if (!/No to-do items/i.test(localSummary)) return localSummary;
+      return `Couldn't read to-do items: ${getErrorMessage(error)}`;
     }
-    return summarizeGroceryRows(rows, params);
-  }, []);
+  }, [loadTaskSnapshot]);
+
+  useEffect(() => {
+    if (!activeHouseholdId) return;
+    void refreshListSnapshots(activeHouseholdId);
+    const channel = supabase
+      .channel(`voice-lists-${activeHouseholdId}-${crypto.randomUUID()}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "grocery_items", filter: `household_id=eq.${activeHouseholdId}` }, () => {
+        void loadGrocerySnapshot(activeHouseholdId).catch((error) => console.error("[Mia] grocery snapshot refresh failed", error));
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "tasks", filter: `household_id=eq.${activeHouseholdId}` }, () => {
+        void loadTaskSnapshot(activeHouseholdId).catch((error) => console.error("[Mia] task snapshot refresh failed", error));
+      })
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [activeHouseholdId, refreshListSnapshots, loadGrocerySnapshot, loadTaskSnapshot]);
 
   const conversation = useConversation({
     clientTools: {
