@@ -401,9 +401,10 @@ const VoiceAssistantInner = () => {
       rows.forEach((row) => recentGroceryAddsRef.current.delete(`${row.name}:${row.store || ""}`.toLowerCase()));
       throw error;
     }
+    void loadGrocerySnapshot(hid).catch((error) => console.error("[Mia] grocery snapshot refresh failed", error));
 
     return rows.map((row) => row.name);
-  }, []);
+  }, [loadGrocerySnapshot]);
 
   const readGroceryList = useCallback(async (params: { store?: string } = {}) => {
     const hid = requireHousehold();
@@ -623,8 +624,6 @@ const VoiceAssistantInner = () => {
       getGroceryList: async (params: { store?: string } = {}) => {
         console.log("[Mia] getGroceryList called", params);
         try {
-          const localSummary = summarizeGroceryRows(groceryListRef.current, params);
-          if (!/empty|Nothing on/i.test(localSummary)) return localSummary;
           return await readGroceryList(params);
         } catch (e) {
           return `Failed to read grocery list: ${getErrorMessage(e)}`;
@@ -657,29 +656,16 @@ const VoiceAssistantInner = () => {
       getTasks: async (params: { assignedTo?: string } = {}) => {
         console.log("[Mia] getTasks called", params);
         try {
-          const hid = requireHousehold();
-          let query = supabase
-            .from("tasks")
-            .select("title, assigned_to, due_date, completed")
-            .eq("household_id", hid)
-            .order("completed", { ascending: true })
-            .order("due_date", { ascending: true, nullsFirst: false });
-          if (params.assignedTo?.trim()) query = query.ilike("assigned_to", `%${params.assignedTo.trim()}%`);
-          const { data, error } = await query.limit(50);
-          if (error) return `Couldn't read tasks: ${error.message}`;
-          if (!data || data.length === 0) return `No to-do items.`;
-          const open = (data as TaskSummaryRow[]).filter((t) => !t.completed);
-          if (open.length === 0) return `All to-do items are done. 🎉`;
-          const list = open.map((t) => {
-            const who = t.assigned_to ? ` — ${t.assigned_to}` : "";
-            const when = t.due_date ? ` (due ${t.due_date})` : "";
-            return `${t.title}${who}${when}`;
-          }).join("; ");
-          return `${open.length} open to-do${open.length === 1 ? "" : "s"}: ${list}.`;
+          return await readTaskList(params);
         } catch (e) {
           return `Failed to read tasks: ${getErrorMessage(e)}`;
         }
       },
+      getTodoList: async (params: { assignedTo?: string } = {}) => readTaskList(params),
+      getToDoList: async (params: { assignedTo?: string } = {}) => readTaskList(params),
+      getTodos: async (params: { assignedTo?: string } = {}) => readTaskList(params),
+      getToDos: async (params: { assignedTo?: string } = {}) => readTaskList(params),
+      getTaskList: async (params: { assignedTo?: string } = {}) => readTaskList(params),
       getUpcomingEvents: async (params: { days?: number } = {}) => {
         console.log("[Mia] getUpcomingEvents called", params);
         try {
