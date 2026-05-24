@@ -935,11 +935,6 @@ const VoiceAssistantInner = () => {
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
-        overrides: {
-          agent: {
-            prompt: { prompt: MIA_SESSION_PROMPT },
-          },
-        },
         dynamicVariables: {
           user_name: userName,
           family_members: familySummary || "no family members added yet",
