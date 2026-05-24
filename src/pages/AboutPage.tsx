@@ -99,6 +99,12 @@ const AboutPage = () => {
           <p className="text-[11px] text-muted-foreground mt-1">
             Premium intelligence, tuned for the people who matter most.
           </p>
+          <p className="text-[11px] text-muted-foreground mt-3">
+            Questions? Email{" "}
+            <a href="mailto:support@miafamilyasistant.com" className="text-primary hover:underline">
+              support@miafamilyasistant.com
+            </a>
+          </p>
         </div>
       </div>
     </div>
