@@ -203,6 +203,7 @@ const VoiceAssistantInner = () => {
   const [voiceReady, setVoiceReady] = useState(false);
   const [preparingVoice, setPreparingVoice] = useState(false);
   const [quota, setQuota] = useState<{ used: number; limit: number; tier: string } | null>(null);
+  const [activeHouseholdId, setActiveHouseholdId] = useState<string | null>(null);
   const householdIdRef = useRef<string | null>(null);
   const assistantLanguageRef = useRef<string>("en");
   const userNameRef = useRef<string>("");
@@ -220,15 +221,38 @@ const VoiceAssistantInner = () => {
   const lastStartTapAtRef = useRef<number | null>(null);
   const lastErrorRef = useRef<unknown>(null);
 
-  useEffect(() => {
-    groceryListRef.current = familyData.groceryList.map((item) => ({
-      name: item.name,
-      quantity: item.quantity,
-      completed: item.completed,
-      store: item.store,
-      category: item.category,
-    }));
-  }, [familyData.groceryList]);
+  const loadGrocerySnapshot = useCallback(async (hid = householdIdRef.current) => {
+    if (!hid) return [] as GrocerySummaryRow[];
+    const { data, error } = await supabase
+      .from("grocery_items")
+      .select("name, quantity, store, completed, category")
+      .eq("household_id", hid)
+      .order("completed", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    const rows = (data || []) as GrocerySummaryRow[];
+    groceryListRef.current = rows;
+    return rows;
+  }, []);
+
+  const loadTaskSnapshot = useCallback(async (hid = householdIdRef.current) => {
+    if (!hid) return [] as TaskSummaryRow[];
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("title, assigned_to, due_date, time, completed")
+      .eq("household_id", hid)
+      .order("completed", { ascending: true })
+      .order("due_date", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    const rows = (data || []) as TaskSummaryRow[];
+    taskListRef.current = rows;
+    return rows;
+  }, []);
+
+  const refreshListSnapshots = useCallback(async (hid = householdIdRef.current) => {
+    await Promise.allSettled([loadGrocerySnapshot(hid), loadTaskSnapshot(hid)]);
+  }, [loadGrocerySnapshot, loadTaskSnapshot]);
 
   const refreshQuota = useCallback(async () => {
     const hid = householdIdRef.current;
