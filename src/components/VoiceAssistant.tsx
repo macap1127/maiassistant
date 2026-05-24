@@ -4,7 +4,7 @@ import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { useFamilyData, type GroceryItem } from "@/lib/store";
+import type { GroceryItem } from "@/lib/store";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
@@ -15,7 +15,10 @@ const MIA_SESSION_PROMPT = [
   "Use tools silently. Never tell the user which tool you are using, and never say you are checking, pulling up, fetching, looking up, or calling a tool.",
   "Grocery or shopping list questions must use getGroceryList, checkGroceryItem, getGrocery, getGroceries, or getShoppingList. Never use calendar tools for grocery questions.",
   "If the user asks whether a specific grocery item is on the list, use checkGroceryItem or getGroceryList, then answer yes or no naturally.",
-  "Task or to-do questions must use getTasks. Calendar, date, schedule, appointment, or event questions must use getUpcomingEvents or getEventsForDate with an ISO date.",
+  "Task or to-do questions must use getTasks, getTodoList, getToDoList, getTodos, getToDos, or getTaskList. Calendar, date, schedule, appointment, or event questions must use getUpcomingEvents or getEventsForDate with an ISO date.",
+  "The current grocery snapshot at session start is: {{grocery_list_snapshot}}",
+  "The current to-do snapshot at session start is: {{todo_list_snapshot}}",
+  "If a tool returns list data, that tool result is the source of truth. Never say a list is blank unless the tool result or snapshot explicitly says it is empty. Never say you can only see items you added.",
   "Only say something was added, found, or changed if the relevant tool returned success. If something fails, say so plainly without naming the tool.",
   "Keep answers brief, friendly, and direct. Answer from tool results only; never guess household data.",
 ].join(" ");
@@ -26,6 +29,9 @@ const getUserTranscript = (message: MaiMessage) =>
   "";
 
 const isGroceryLookup = (text: string) => /\b(grocery|groceries|shopping\s*list|on\s+(?:my|our|the)\s+list)\b/i.test(text);
+
+const isTaskLookup = (text: string) =>
+  /\b(to[-\s]?do\s*list|todo\s*list|task\s*list|tasks?|chores?|what\s+(?:do\s+)?(?:i|we)\s+(?:need|have)\s+to\s+do)\b/i.test(text);
 
 const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
