@@ -701,13 +701,9 @@ const VoiceAssistantInner = () => {
       console.log("[Mia] message", message);
       const transcript = getUserTranscript(message);
       if (transcript && isGroceryLookup(transcript)) {
-        // Fetch the real list ourselves and inject it as ground truth so Mia
-        // answers from actual data instead of guessing or relying on a tool
-        // call that may not be configured on the agent side.
         void (async () => {
           try {
-            const localSummary = summarizeGroceryRows(groceryListRef.current, {});
-            const summary = /empty/i.test(localSummary) ? await readGroceryList({}) : localSummary;
+            const summary = await readGroceryList({});
             const answer = /empty|Nothing on/i.test(summary)
               ? summary
               : `On your grocery list: ${summary}`;
@@ -718,6 +714,22 @@ const VoiceAssistantInner = () => {
           } catch (e) {
             conversation.sendContextualUpdate(
               "The user is asking about the grocery/shopping list. Silently call getGroceryList and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
+            );
+          }
+        })();
+      }
+      if (transcript && isTaskLookup(transcript)) {
+        void (async () => {
+          try {
+            const summary = await readTaskList({});
+            const answer = /No to-do items/i.test(summary) ? summary : `On your to-do list: ${summary}`;
+            conversation.sendContextualUpdate(`TODO_LIST_GROUND_TRUTH: ${summary}`);
+            setTimeout(() => {
+              if (conversation.status === "connected") conversation.sendUserMessage(`Answer my to-do list question using this exact list and do not call calendar tools: ${answer}`);
+            }, 200);
+          } catch {
+            conversation.sendContextualUpdate(
+              "The user is asking about the to-do/task list. Silently call getTasks and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
             );
           }
         })();
@@ -916,13 +928,23 @@ const VoiceAssistantInner = () => {
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
+      await refreshListSnapshots(householdIdRef.current);
+      const grocerySnapshot = summarizeGroceryRows(groceryListRef.current, {});
+      const todoSnapshot = summarizeTaskRows(taskListRef.current, {});
       const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
+        overrides: {
+          agent: {
+            prompt: { prompt: MIA_SESSION_PROMPT },
+          },
+        },
         dynamicVariables: {
           user_name: userName,
           family_members: familySummary || "no family members added yet",
+          grocery_list_snapshot: grocerySnapshot,
+          todo_list_snapshot: todoSnapshot,
         },
       });
       Promise.resolve(result)
@@ -942,7 +964,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation, prepareVoiceConnection, getVoiceAccess]);
+  }, [conversation, prepareVoiceConnection, getVoiceAccess, refreshListSnapshots]);
 
   const stop = useCallback(async () => {
     console.log("[Mia] 🛑 stop() called by user", { at: new Date().toISOString() });
