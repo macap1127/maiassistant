@@ -20,14 +20,22 @@ interface MemberRow {
   created_at: string;
 }
 
+interface FamilyMemberRow {
+  id: string;
+  name: string;
+  user_id: string | null;
+}
+
 export default function HouseholdLogins() {
   const { user } = useAuth();
   const { household, refresh } = useHousehold();
   const navigate = useNavigate();
   const [invites, setInvites] = useState<InviteRow[]>([]);
   const [members, setMembers] = useState<MemberRow[]>([]);
+  const [familyMembers, setFamilyMembers] = useState<FamilyMemberRow[]>([]);
   const [email, setEmail] = useState("");
   const [creating, setCreating] = useState(false);
+  const [linking, setLinking] = useState(false);
 
   const loadAll = async () => {
     if (!household) return;
@@ -44,11 +52,18 @@ export default function HouseholdLogins() {
       .eq("household_id", household.id)
       .order("created_at", { ascending: true });
     setMembers(mems ?? []);
+    const { data: fam } = await supabase
+      .from("family_members")
+      .select("id, name, user_id")
+      .eq("household_id", household.id)
+      .order("name");
+    setFamilyMembers((fam ?? []) as FamilyMemberRow[]);
   };
 
   useEffect(() => {
     void loadAll();
   }, [household?.id]);
+
 
   if (!household) return null;
   const tier = TIER_INFO[household.subscriptionTier];
