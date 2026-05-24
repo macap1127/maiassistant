@@ -4,7 +4,7 @@ import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { useFamilyData, type GroceryItem } from "@/lib/store";
+import type { GroceryItem } from "@/lib/store";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
@@ -15,7 +15,10 @@ const MIA_SESSION_PROMPT = [
   "Use tools silently. Never tell the user which tool you are using, and never say you are checking, pulling up, fetching, looking up, or calling a tool.",
   "Grocery or shopping list questions must use getGroceryList, checkGroceryItem, getGrocery, getGroceries, or getShoppingList. Never use calendar tools for grocery questions.",
   "If the user asks whether a specific grocery item is on the list, use checkGroceryItem or getGroceryList, then answer yes or no naturally.",
-  "Task or to-do questions must use getTasks. Calendar, date, schedule, appointment, or event questions must use getUpcomingEvents or getEventsForDate with an ISO date.",
+  "Task or to-do questions must use getTasks, getTodoList, getToDoList, getTodos, getToDos, or getTaskList. Calendar, date, schedule, appointment, or event questions must use getUpcomingEvents or getEventsForDate with an ISO date.",
+  "The current grocery snapshot at session start is: {{grocery_list_snapshot}}",
+  "The current to-do snapshot at session start is: {{todo_list_snapshot}}",
+  "If a tool returns list data, that tool result is the source of truth. Never say a list is blank unless the tool result or snapshot explicitly says it is empty. Never say you can only see items you added.",
   "Only say something was added, found, or changed if the relevant tool returned success. If something fails, say so plainly without naming the tool.",
   "Keep answers brief, friendly, and direct. Answer from tool results only; never guess household data.",
 ].join(" ");
@@ -26,6 +29,9 @@ const getUserTranscript = (message: MaiMessage) =>
   "";
 
 const isGroceryLookup = (text: string) => /\b(grocery|groceries|shopping\s*list|on\s+(?:my|our|the)\s+list)\b/i.test(text);
+
+const isTaskLookup = (text: string) =>
+  /\b(to[-\s]?do\s*list|todo\s*list|task\s*list|tasks?|chores?|what\s+(?:do\s+)?(?:i|we)\s+(?:need|have)\s+to\s+do)\b/i.test(text);
 
 const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
@@ -142,7 +148,7 @@ type TokenResponse = { signedUrl?: string; error?: string };
 type EventSummaryRow = { title: string; date?: string; time?: string | null; location?: string | null; notes?: string | null; assigned_to?: string | null };
 type ReceiptSummaryRow = { store?: string | null; purchase_date?: string | null; total?: number | null; currency?: string | null; items_summary?: string | null; image_path?: string | null };
 type GroceryCheckRow = { name: string; quantity?: string | null; store?: string | null; completed: boolean };
-type TaskSummaryRow = { title: string; assigned_to?: string | null; due_date?: string | null; completed: boolean };
+type TaskSummaryRow = { title: string; assigned_to?: string | null; due_date?: string | null; time?: string | null; completed: boolean };
 
 const summarizeGroceryRows = (rows: GrocerySummaryRow[], params: { store?: string } = {}) => {
   const store = params.store?.trim().toLowerCase();
@@ -164,6 +170,26 @@ const summarizeGroceryRows = (rows: GrocerySummaryRow[], params: { store?: strin
   return parts.join(". ") + ".";
 };
 
+const summarizeTaskRows = (rows: TaskSummaryRow[], params: { assignedTo?: string } = {}) => {
+  const assignedTo = params.assignedTo?.trim().toLowerCase();
+  const filtered = assignedTo
+    ? rows.filter((task) => (task.assigned_to || "").toLowerCase().includes(assignedTo))
+    : rows;
+  if (filtered.length === 0) return params.assignedTo ? `No to-do items assigned to ${params.assignedTo}.` : "No to-do items.";
+
+  const open = filtered.filter((task) => !task.completed);
+  const done = filtered.filter((task) => task.completed);
+  const fmt = (task: TaskSummaryRow) => {
+    const who = task.assigned_to ? ` — ${task.assigned_to}` : "";
+    const due = task.due_date ? ` (due ${task.due_date}${task.time ? ` at ${task.time}` : ""})` : task.time ? ` (${task.time})` : "";
+    return `${task.title}${who}${due}`;
+  };
+  const parts: string[] = [];
+  if (open.length) parts.push(`Open to-dos (${open.length}): ${open.map(fmt).join("; ")}`);
+  if (done.length) parts.push(`Done (${done.length}): ${done.map(fmt).join("; ")}`);
+  return parts.join(". ") + ".";
+};
+
 type VoiceConnection = { signedUrl: string; createdAt: number };
 type VoiceAccess = { ok: boolean; reason?: string; checkedAt: number };
 
@@ -172,17 +198,18 @@ const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
-  const { data: familyData } = useFamilyData();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
   const [preparingVoice, setPreparingVoice] = useState(false);
   const [quota, setQuota] = useState<{ used: number; limit: number; tier: string } | null>(null);
+  const [activeHouseholdId, setActiveHouseholdId] = useState<string | null>(null);
   const householdIdRef = useRef<string | null>(null);
   const assistantLanguageRef = useRef<string>("en");
   const userNameRef = useRef<string>("");
   const familyMembersRef = useRef<{ name: string; role: string }[]>([]);
   const groceryListRef = useRef<GrocerySummaryRow[]>([]);
+  const taskListRef = useRef<TaskSummaryRow[]>([]);
   const awaitingGroceryItemRef = useRef(false);
   const recentGroceryAddsRef = useRef<Map<string, number>>(new Map());
   const voiceConnectionRef = useRef<VoiceConnection | null>(null);
@@ -194,15 +221,38 @@ const VoiceAssistantInner = () => {
   const lastStartTapAtRef = useRef<number | null>(null);
   const lastErrorRef = useRef<unknown>(null);
 
-  useEffect(() => {
-    groceryListRef.current = familyData.groceryList.map((item) => ({
-      name: item.name,
-      quantity: item.quantity,
-      completed: item.completed,
-      store: item.store,
-      category: item.category,
-    }));
-  }, [familyData.groceryList]);
+  const loadGrocerySnapshot = useCallback(async (hid = householdIdRef.current) => {
+    if (!hid) return [] as GrocerySummaryRow[];
+    const { data, error } = await supabase
+      .from("grocery_items")
+      .select("name, quantity, store, completed, category")
+      .eq("household_id", hid)
+      .order("completed", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    const rows = (data || []) as GrocerySummaryRow[];
+    groceryListRef.current = rows;
+    return rows;
+  }, []);
+
+  const loadTaskSnapshot = useCallback(async (hid = householdIdRef.current) => {
+    if (!hid) return [] as TaskSummaryRow[];
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("title, assigned_to, due_date, time, completed")
+      .eq("household_id", hid)
+      .order("completed", { ascending: true })
+      .order("due_date", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    const rows = (data || []) as TaskSummaryRow[];
+    taskListRef.current = rows;
+    return rows;
+  }, []);
+
+  const refreshListSnapshots = useCallback(async (hid = householdIdRef.current) => {
+    await Promise.allSettled([loadGrocerySnapshot(hid), loadTaskSnapshot(hid)]);
+  }, [loadGrocerySnapshot, loadTaskSnapshot]);
 
   const refreshQuota = useCallback(async () => {
     const hid = householdIdRef.current;
@@ -239,8 +289,11 @@ const VoiceAssistantInner = () => {
   useEffect(() => {
     if (!user) {
       householdIdRef.current = null;
+      setActiveHouseholdId(null);
       userNameRef.current = "";
       familyMembersRef.current = [];
+      groceryListRef.current = [];
+      taskListRef.current = [];
       setQuota(null);
       return;
     }
@@ -257,8 +310,10 @@ const VoiceAssistantInner = () => {
       if (!error && data && data.length > 0) {
         const hid = data[0].household_id;
         householdIdRef.current = hid;
+        setActiveHouseholdId(hid);
         void refreshQuota();
         void getVoiceAccess().catch((error) => console.error("[Mia] voice access check failed", error));
+        void refreshListSnapshots(hid);
         const { data: hh } = await supabase
           .from("households")
           .select("assistant_language")
@@ -272,7 +327,7 @@ const VoiceAssistantInner = () => {
         if (fam) familyMembersRef.current = fam.filter((f) => f?.name);
       }
     })();
-  }, [user, refreshQuota, getVoiceAccess]);
+  }, [user, refreshQuota, getVoiceAccess, refreshListSnapshots]);
 
   const requireHousehold = () => {
     const hid = householdIdRef.current;
@@ -346,31 +401,52 @@ const VoiceAssistantInner = () => {
       rows.forEach((row) => recentGroceryAddsRef.current.delete(`${row.name}:${row.store || ""}`.toLowerCase()));
       throw error;
     }
+    void loadGrocerySnapshot(hid).catch((error) => console.error("[Mia] grocery snapshot refresh failed", error));
 
     return rows.map((row) => row.name);
-  }, []);
+  }, [loadGrocerySnapshot]);
 
   const readGroceryList = useCallback(async (params: { store?: string } = {}) => {
     const hid = requireHousehold();
-    let query = supabase
-      .from("grocery_items")
-      .select("name, quantity, store, completed, category")
-      .eq("household_id", hid)
-      .order("completed", { ascending: true });
-    if (params.store?.trim()) query = query.ilike("store", `%${params.store.trim()}%`);
-    const { data, error } = await query;
-    if (error) {
+    try {
+      const rows = await loadGrocerySnapshot(hid);
+      return summarizeGroceryRows(rows, params);
+    } catch (error) {
       const localSummary = summarizeGroceryRows(groceryListRef.current, params);
       if (!/empty|Nothing on/i.test(localSummary)) return localSummary;
-      return `Couldn't read the grocery list: ${error.message}`;
+      return `Couldn't read the grocery list: ${getErrorMessage(error)}`;
     }
+  }, [loadGrocerySnapshot]);
 
-    const rows = (data || []) as GrocerySummaryRow[];
-    if (rows.length === 0 && groceryListRef.current.length > 0) {
-      return summarizeGroceryRows(groceryListRef.current, params);
+  const readTaskList = useCallback(async (params: { assignedTo?: string } = {}) => {
+    const hid = requireHousehold();
+    try {
+      const rows = await loadTaskSnapshot(hid);
+      return summarizeTaskRows(rows, params);
+    } catch (error) {
+      const localSummary = summarizeTaskRows(taskListRef.current, params);
+      if (!/No to-do items/i.test(localSummary)) return localSummary;
+      return `Couldn't read to-do items: ${getErrorMessage(error)}`;
     }
-    return summarizeGroceryRows(rows, params);
-  }, []);
+  }, [loadTaskSnapshot]);
+
+  useEffect(() => {
+    if (!activeHouseholdId) return;
+    void refreshListSnapshots(activeHouseholdId);
+    const channel = supabase
+      .channel(`voice-lists-${activeHouseholdId}-${crypto.randomUUID()}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "grocery_items", filter: `household_id=eq.${activeHouseholdId}` }, () => {
+        void loadGrocerySnapshot(activeHouseholdId).catch((error) => console.error("[Mia] grocery snapshot refresh failed", error));
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "tasks", filter: `household_id=eq.${activeHouseholdId}` }, () => {
+        void loadTaskSnapshot(activeHouseholdId).catch((error) => console.error("[Mia] task snapshot refresh failed", error));
+      })
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [activeHouseholdId, refreshListSnapshots, loadGrocerySnapshot, loadTaskSnapshot]);
 
   const conversation = useConversation({
     clientTools: {
@@ -548,8 +624,6 @@ const VoiceAssistantInner = () => {
       getGroceryList: async (params: { store?: string } = {}) => {
         console.log("[Mia] getGroceryList called", params);
         try {
-          const localSummary = summarizeGroceryRows(groceryListRef.current, params);
-          if (!/empty|Nothing on/i.test(localSummary)) return localSummary;
           return await readGroceryList(params);
         } catch (e) {
           return `Failed to read grocery list: ${getErrorMessage(e)}`;
@@ -582,29 +656,16 @@ const VoiceAssistantInner = () => {
       getTasks: async (params: { assignedTo?: string } = {}) => {
         console.log("[Mia] getTasks called", params);
         try {
-          const hid = requireHousehold();
-          let query = supabase
-            .from("tasks")
-            .select("title, assigned_to, due_date, completed")
-            .eq("household_id", hid)
-            .order("completed", { ascending: true })
-            .order("due_date", { ascending: true, nullsFirst: false });
-          if (params.assignedTo?.trim()) query = query.ilike("assigned_to", `%${params.assignedTo.trim()}%`);
-          const { data, error } = await query.limit(50);
-          if (error) return `Couldn't read tasks: ${error.message}`;
-          if (!data || data.length === 0) return `No to-do items.`;
-          const open = (data as TaskSummaryRow[]).filter((t) => !t.completed);
-          if (open.length === 0) return `All to-do items are done. 🎉`;
-          const list = open.map((t) => {
-            const who = t.assigned_to ? ` — ${t.assigned_to}` : "";
-            const when = t.due_date ? ` (due ${t.due_date})` : "";
-            return `${t.title}${who}${when}`;
-          }).join("; ");
-          return `${open.length} open to-do${open.length === 1 ? "" : "s"}: ${list}.`;
+          return await readTaskList(params);
         } catch (e) {
           return `Failed to read tasks: ${getErrorMessage(e)}`;
         }
       },
+      getTodoList: async (params: { assignedTo?: string } = {}) => readTaskList(params),
+      getToDoList: async (params: { assignedTo?: string } = {}) => readTaskList(params),
+      getTodos: async (params: { assignedTo?: string } = {}) => readTaskList(params),
+      getToDos: async (params: { assignedTo?: string } = {}) => readTaskList(params),
+      getTaskList: async (params: { assignedTo?: string } = {}) => readTaskList(params),
       getUpcomingEvents: async (params: { days?: number } = {}) => {
         console.log("[Mia] getUpcomingEvents called", params);
         try {
@@ -640,13 +701,9 @@ const VoiceAssistantInner = () => {
       console.log("[Mia] message", message);
       const transcript = getUserTranscript(message);
       if (transcript && isGroceryLookup(transcript)) {
-        // Fetch the real list ourselves and inject it as ground truth so Mia
-        // answers from actual data instead of guessing or relying on a tool
-        // call that may not be configured on the agent side.
         void (async () => {
           try {
-            const localSummary = summarizeGroceryRows(groceryListRef.current, {});
-            const summary = /empty/i.test(localSummary) ? await readGroceryList({}) : localSummary;
+            const summary = await readGroceryList({});
             const answer = /empty|Nothing on/i.test(summary)
               ? summary
               : `On your grocery list: ${summary}`;
@@ -657,6 +714,22 @@ const VoiceAssistantInner = () => {
           } catch (e) {
             conversation.sendContextualUpdate(
               "The user is asking about the grocery/shopping list. Silently call getGroceryList and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
+            );
+          }
+        })();
+      }
+      if (transcript && isTaskLookup(transcript)) {
+        void (async () => {
+          try {
+            const summary = await readTaskList({});
+            const answer = /No to-do items/i.test(summary) ? summary : `On your to-do list: ${summary}`;
+            conversation.sendContextualUpdate(`TODO_LIST_GROUND_TRUTH: ${summary}`);
+            setTimeout(() => {
+              if (conversation.status === "connected") conversation.sendUserMessage(`Answer my to-do list question using this exact list and do not call calendar tools: ${answer}`);
+            }, 200);
+          } catch {
+            conversation.sendContextualUpdate(
+              "The user is asking about the to-do/task list. Silently call getTasks and answer only from that result. Do not mention tools, checking, fetching, or the calendar."
             );
           }
         })();
@@ -855,13 +928,23 @@ const VoiceAssistantInner = () => {
         .map((m) => (m.role && m.role !== "Member" ? `${m.name} (${m.role})` : m.name))
         .join(", ");
       const userName = userNameRef.current?.trim() || "there";
+      await refreshListSnapshots(householdIdRef.current);
+      const grocerySnapshot = summarizeGroceryRows(groceryListRef.current, {});
+      const todoSnapshot = summarizeTaskRows(taskListRef.current, {});
       const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
+        overrides: {
+          agent: {
+            prompt: { prompt: MIA_SESSION_PROMPT },
+          },
+        },
         dynamicVariables: {
           user_name: userName,
           family_members: familySummary || "no family members added yet",
+          grocery_list_snapshot: grocerySnapshot,
+          todo_list_snapshot: todoSnapshot,
         },
       });
       Promise.resolve(result)
@@ -881,7 +964,7 @@ const VoiceAssistantInner = () => {
     } finally {
       setConnecting(false);
     }
-  }, [conversation, prepareVoiceConnection, getVoiceAccess]);
+  }, [conversation, prepareVoiceConnection, getVoiceAccess, refreshListSnapshots]);
 
   const stop = useCallback(async () => {
     console.log("[Mia] 🛑 stop() called by user", { at: new Date().toISOString() });
