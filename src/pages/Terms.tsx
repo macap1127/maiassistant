@@ -5,7 +5,7 @@ const Terms = () => {
         <header>
           <h1 className="text-3xl font-bold">Terms and Conditions</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Last updated: May 8, 2026
+            Last updated: May 24, 2026
           </p>
         </header>
 
@@ -38,13 +38,62 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">4. SMS Communications</h2>
+          <h2 className="text-xl font-semibold">4. SMS Program Terms</h2>
           <p>
-            By providing your phone number and requesting a code, you consent
-            to receive a one-time verification SMS at that number. Message and
-            data rates may apply. Reply <strong>STOP</strong> to opt out, or{" "}
-            <strong>HELP</strong> for assistance. We do not send marketing or
-            promotional messages.
+            <strong>Program name:</strong> Mia Family Assistant Alerts.
+          </p>
+          <p>
+            <strong>Program description:</strong> By providing your mobile phone
+            number to Mia Family Assistant, you consent to receive SMS messages
+            from us in two categories:
+          </p>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>
+              <strong>Account verification:</strong> One-time passcodes sent
+              only when you request to sign in.
+            </li>
+            <li>
+              <strong>Daily event reminders (opt-in):</strong> When you enable
+              "Daily event SMS reminders" in Settings, you will receive{" "}
+              <strong>one SMS per day</strong> at your chosen time summarizing
+              your household's calendar events. This feature is off by default
+              and may be turned off at any time in Settings or by replying STOP.
+            </li>
+          </ul>
+          <p>
+            <strong>Message frequency:</strong> Verification messages are sent
+            only on sign-in request. Daily reminders are sent at most once per
+            day per opted-in user.
+          </p>
+          <p>
+            <strong>Message and data rates may apply.</strong> Check your mobile
+            plan for details. Carriers (including but not limited to AT&T,
+            T-Mobile, Verizon) are not liable for delayed or undelivered
+            messages.
+          </p>
+          <p>
+            <strong>Help:</strong> Reply <strong>HELP</strong> to any message
+            for assistance, or email{" "}
+            <a className="underline" href="mailto:support@miafamilyassistant.com">
+              support@miafamilyassistant.com
+            </a>
+            .
+          </p>
+          <p>
+            <strong>Cancellation:</strong> Reply <strong>STOP</strong> to any
+            message at any time to opt out of SMS messages. You will receive a
+            one-time confirmation that you have been unsubscribed; no further
+            messages will be sent.
+          </p>
+          <p>
+            <strong>Privacy:</strong> Your mobile phone number and SMS opt-in
+            consent are never shared, sold, or transferred to third parties or
+            affiliates for marketing purposes. See our{" "}
+            <a className="underline" href="/privacy">Privacy Policy</a> for
+            details.
+          </p>
+          <p>
+            We do not send marketing or promotional messages.
           </p>
         </section>
 
@@ -109,8 +158,8 @@ const Terms = () => {
           <h2 className="text-xl font-semibold">11. Contact</h2>
           <p>
             Questions about these Terms? Contact us at{" "}
-            <a className="underline" href="mailto:support@miafamilyasistant.com">
-              support@miafamilyasistant.com
+            <a className="underline" href="mailto:support@miafamilyassistant.com">
+              support@miafamilyassistant.com
             </a>
             .
           </p>
