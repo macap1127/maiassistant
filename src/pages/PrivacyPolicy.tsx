@@ -107,8 +107,8 @@ const PrivacyPolicy = () => {
           <h2 className="text-xl font-semibold">10. Contact</h2>
           <p>
             Questions about this Privacy Policy? Contact us at{" "}
-            <a className="underline" href="mailto:support@maiassistant.lovable.app">
-              support@maiassistant.lovable.app
+            <a className="underline" href="mailto:support@miafamilyasistant.com">
+              support@miafamilyasistant.com
             </a>
             .
           </p>
