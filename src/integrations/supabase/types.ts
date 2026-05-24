@@ -300,6 +300,30 @@ export type Database = {
         }
         Relationships: []
       }
+      public_sms_optins: {
+        Row: {
+          consent: boolean
+          created_at: string
+          id: string
+          phone: string
+          user_agent: string | null
+        }
+        Insert: {
+          consent?: boolean
+          created_at?: string
+          id?: string
+          phone: string
+          user_agent?: string | null
+        }
+        Update: {
+          consent?: boolean
+          created_at?: string
+          id?: string
+          phone?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       receipts: {
         Row: {
           added_by: string
