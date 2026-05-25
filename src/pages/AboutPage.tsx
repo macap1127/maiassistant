@@ -107,6 +107,10 @@ const AboutPage = () => {
           </p>
         </div>
       </div>
+
+      <p className="text-[10px] text-center text-muted-foreground/70 mt-6">
+        © 2026 Mia Family Assistant. All rights reserved.
+      </p>
     </div>
   );
 };
