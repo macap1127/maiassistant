@@ -103,7 +103,7 @@ const AppLayout = () => {
                   );
                 })}
               </nav>
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
+              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border space-y-3">
                 <button
                   onClick={() => { logout(); setOpen(false); }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
@@ -111,6 +111,9 @@ const AppLayout = () => {
                   <LogOut className="w-4.5 h-4.5" />
                   Sign out
                 </button>
+                <p className="text-[10px] text-center text-muted-foreground/70 leading-relaxed">
+                  © 2026 Mia Family Assistant.<br />All rights reserved.
+                </p>
               </div>
             </SheetContent>
           </Sheet>
