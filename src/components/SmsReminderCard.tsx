@@ -89,7 +89,7 @@ export function SmsReminderCard({ household }: Props) {
     <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up">
       <div className="flex items-center gap-2 mb-3">
         <MessageSquare className="w-4 h-4 text-primary" />
-        <h2 className="font-medium text-sm">Daily event SMS reminders</h2>
+        <h2 className="font-medium text-sm">Mia Family Assistant — Daily event SMS reminders</h2>
       </div>
 
       {!tierAllowed ? (
