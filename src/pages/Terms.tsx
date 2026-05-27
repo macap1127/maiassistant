@@ -41,11 +41,11 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">4. SMS Program Terms</h2>
           <p>
-            <strong>Program name:</strong> Mia Family Assistant Alerts.
+            <strong>Program name:</strong> Mia Family Assistant Alerts (operated by Mia Family Assistant, Sole Proprietor).
           </p>
           <p>
             <strong>Program description:</strong> By providing your mobile phone
-            number to Mia Family Assistant, you consent to receive SMS messages
+            number to Mia Family Assistant (Sole Proprietor), you consent to receive SMS messages
             from us in two categories:
           </p>
           <ul className="list-disc pl-6 space-y-2">
