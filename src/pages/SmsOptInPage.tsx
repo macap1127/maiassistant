@@ -124,13 +124,13 @@ const SmsOptInPage = () => {
               />
               <span className="text-xs text-muted-foreground leading-relaxed">
                 I agree to receive recurring automated SMS messages from
-                Mia Family Assistant at the number provided, including daily
+                <strong> Mia Family Assistant (Sole Proprietor)</strong> at the number provided, including daily
                 event reminders and account verification codes. Consent is not
                 a condition of purchase. Message frequency varies (up to 1/day).
                 Message and data rates may apply. Reply STOP to cancel, HELP for
                 help. I have read and agree to the{" "}
                 <Link to="/terms" className="text-primary underline">
-                  Terms &amp; Conditions
+                  Mia Family Assistant Terms &amp; Conditions
                 </Link>{" "}
                 and{" "}
                 <Link to="/privacy" className="text-primary underline">
