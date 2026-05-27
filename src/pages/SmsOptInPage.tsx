@@ -153,7 +153,7 @@ const SmsOptInPage = () => {
 
             <p className="text-[11px] text-muted-foreground text-center">
               By submitting, you confirm the number entered is yours and that
-              you authorize Mia Family Assistant to send SMS to it.
+              you authorize Mia Family Assistant (Sole Proprietor) to send SMS to it.
             </p>
           </form>
         )}
