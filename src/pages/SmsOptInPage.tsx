@@ -41,12 +41,12 @@ const SmsOptInPage = () => {
         <header className="mb-8 text-center">
           <div className="inline-flex items-center gap-2 text-primary mb-3">
             <MessageSquare className="w-5 h-5" />
-            <span className="text-xs uppercase tracking-wider">SMS Sign-Up</span>
+            <span className="text-xs uppercase tracking-wider">Mia Family Assistant (Sole Proprietor) — SMS Sign-Up</span>
           </div>
-          <h1 className="text-3xl font-bold">Daily Event SMS Reminders</h1>
+          <h1 className="text-3xl font-bold">Mia Family Assistant — Daily Event SMS Reminders</h1>
           <p className="text-sm text-muted-foreground mt-3">
-            Sign up to receive a daily text message from Mia Family Assistant
-            summarizing your household's calendar events for the day.
+            Sign up to receive a daily text message from <strong>Mia Family Assistant (Sole Proprietor)</strong>
+            {" "}summarizing your household's calendar events for the day.
           </p>
         </header>
 
