@@ -41,12 +41,12 @@ const SmsOptInPage = () => {
         <header className="mb-8 text-center">
           <div className="inline-flex items-center gap-2 text-primary mb-3">
             <MessageSquare className="w-5 h-5" />
-            <span className="text-xs uppercase tracking-wider">SMS Sign-Up</span>
+            <span className="text-xs uppercase tracking-wider">Mia Family Assistant (Sole Proprietor) — SMS Sign-Up</span>
           </div>
-          <h1 className="text-3xl font-bold">Daily Event SMS Reminders</h1>
+          <h1 className="text-3xl font-bold">Mia Family Assistant — Daily Event SMS Reminders</h1>
           <p className="text-sm text-muted-foreground mt-3">
-            Sign up to receive a daily text message from Mia Family Assistant
-            summarizing your household's calendar events for the day.
+            Sign up to receive a daily text message from <strong>Mia Family Assistant (Sole Proprietor)</strong>
+            {" "}summarizing your household's calendar events for the day.
           </p>
         </header>
 
@@ -124,13 +124,13 @@ const SmsOptInPage = () => {
               />
               <span className="text-xs text-muted-foreground leading-relaxed">
                 I agree to receive recurring automated SMS messages from
-                Mia Family Assistant at the number provided, including daily
+                <strong> Mia Family Assistant (Sole Proprietor)</strong> at the number provided, including daily
                 event reminders and account verification codes. Consent is not
                 a condition of purchase. Message frequency varies (up to 1/day).
                 Message and data rates may apply. Reply STOP to cancel, HELP for
                 help. I have read and agree to the{" "}
                 <Link to="/terms" className="text-primary underline">
-                  Terms &amp; Conditions
+                  Mia Family Assistant Terms &amp; Conditions
                 </Link>{" "}
                 and{" "}
                 <Link to="/privacy" className="text-primary underline">
@@ -153,7 +153,7 @@ const SmsOptInPage = () => {
 
             <p className="text-[11px] text-muted-foreground text-center">
               By submitting, you confirm the number entered is yours and that
-              you authorize Mia Family Assistant to send SMS to it.
+              you authorize Mia Family Assistant (Sole Proprietor) to send SMS to it.
             </p>
           </form>
         )}

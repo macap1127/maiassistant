@@ -12,7 +12,8 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">1. Acceptance of Terms</h2>
           <p>
-            By accessing or using Mia Family Assistant ("the Service"), you agree to be
+            <strong>Mia Family Assistant (Sole Proprietor)</strong> ("Mia Family Assistant", "we", "us", "our") is the
+            provider and operator of this service ("the Service"). By accessing or using the Service, you agree to be
             bound by these Terms and Conditions. If you do not agree, do not
             use the Service.
           </p>
@@ -40,11 +41,11 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">4. SMS Program Terms</h2>
           <p>
-            <strong>Program name:</strong> Mia Family Assistant Alerts.
+            <strong>Program name:</strong> Mia Family Assistant Alerts (operated by Mia Family Assistant, Sole Proprietor).
           </p>
           <p>
             <strong>Program description:</strong> By providing your mobile phone
-            number to Mia Family Assistant, you consent to receive SMS messages
+            number to Mia Family Assistant (Sole Proprietor), you consent to receive SMS messages
             from us in two categories:
           </p>
           <ul className="list-disc pl-6 space-y-2">

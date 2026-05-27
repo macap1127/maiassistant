@@ -89,7 +89,7 @@ export function SmsReminderCard({ household }: Props) {
     <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up">
       <div className="flex items-center gap-2 mb-3">
         <MessageSquare className="w-4 h-4 text-primary" />
-        <h2 className="font-medium text-sm">Daily event SMS reminders</h2>
+        <h2 className="font-medium text-sm">Mia Family Assistant — Daily event SMS reminders</h2>
       </div>
 
       {!tierAllowed ? (
@@ -147,7 +147,7 @@ export function SmsReminderCard({ household }: Props) {
                 </label>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                You'll get one text per day at {fmtTime12(sendTime)}. Reply STOP at any time to cancel from your carrier.
+                You'll get one text per day at {fmtTime12(sendTime)} from <strong>Mia Family Assistant (Sole Proprietor)</strong>. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help. See <a href="/terms" className="underline">Terms</a> &amp; <a href="/privacy" className="underline">Privacy</a>.
               </p>
             </>
           )}

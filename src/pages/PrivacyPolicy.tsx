@@ -12,10 +12,11 @@ const PrivacyPolicy = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">1. Introduction</h2>
           <p>
-            Mia Family Assistant ("we", "us", "our") provides a household management
+            <strong>Mia Family Assistant (Sole Proprietor)</strong> ("Mia Family Assistant", "we", "us", "our") is the
+            operating entity and data controller for this service. We provide a household management
             application that helps families coordinate groceries, tasks, and
-            calendar events. This Privacy Policy explains how we collect, use,
-            and protect your information when you use our service.
+            calendar events. This Privacy Policy explains how Mia Family Assistant (Sole Proprietor) collects, uses,
+            and protects your information when you use our service.
           </p>
         </section>
 
@@ -51,7 +52,7 @@ const PrivacyPolicy = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">4. SMS Messaging & Consent</h2>
           <p>
-            Mia Family Assistant uses SMS for two purposes:
+            Mia Family Assistant (Sole Proprietor) uses SMS for two purposes:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>
