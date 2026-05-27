@@ -147,7 +147,7 @@ export function SmsReminderCard({ household }: Props) {
                 </label>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                You'll get one text per day at {fmtTime12(sendTime)}. Reply STOP at any time to cancel from your carrier.
+                You'll get one text per day at {fmtTime12(sendTime)} from <strong>Mia Family Assistant (Sole Proprietor)</strong>. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help. See <a href="/terms" className="underline">Terms</a> &amp; <a href="/privacy" className="underline">Privacy</a>.
               </p>
             </>
           )}
