@@ -18,6 +18,7 @@ const AuthPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [signupSuccess, setSignupSuccess] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -46,6 +47,11 @@ const AuthPage = () => {
         if (data.user && !inviteCode) await ensureHousehold(data.user.id);
         if (data.user && inviteCode) {
           window.location.href = `/invite/${inviteCode}`;
+          return;
+        }
+        // If no session was returned, the user needs to verify their email first
+        if (!data.session) {
+          setSignupSuccess(true);
           return;
         }
       } else {
@@ -85,6 +91,33 @@ const AuthPage = () => {
       console.error("ensureHousehold error:", err);
     }
   };
+
+  if (signupSuccess) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="w-full max-w-sm text-center animate-fade-in">
+          <img src={maiLogo} alt="Mia Family Assistant" className="w-28 h-28 rounded-2xl shadow-sm mx-auto mb-6" />
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Mail className="w-6 h-6 text-primary" />
+          </div>
+          <h1 className="text-2xl font-serif font-semibold mb-3">Check your email</h1>
+          <p className="text-sm text-muted-foreground mb-2">
+            We sent a verification link to
+          </p>
+          <p className="text-sm font-medium mb-6 break-all">{email}</p>
+          <p className="text-xs text-muted-foreground mb-8">
+            Click the link in the email to verify your account, then come back here to sign in. Don't see it? Check your spam folder.
+          </p>
+          <button
+            onClick={() => { setSignupSuccess(false); setMode("signin"); setPassword(""); }}
+            className="w-full bg-primary text-primary-foreground rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            Back to Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
