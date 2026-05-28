@@ -267,14 +267,28 @@ const VoiceAssistantInner = () => {
 
   // Server-side entitlement check
   const checkAccess = useCallback(async (): Promise<{ ok: boolean; reason?: string }> => {
-    const hid = householdIdRef.current;
-    if (!hid) return { ok: false, reason: "No household" };
+    let hid = householdIdRef.current;
+    if (!hid && user) {
+      // Household may not have been resolved yet — fetch it on demand.
+      const { data } = await supabase
+        .from("household_members")
+        .select("household_id")
+        .eq("user_id", user.id)
+        .limit(1);
+      if (data && data.length > 0) {
+        hid = data[0].household_id;
+        householdIdRef.current = hid;
+        setActiveHouseholdId(hid);
+      }
+    }
+    if (!hid) return { ok: false, reason: "Setting up your household… please try again in a moment." };
     const { data: hasAccess } = await supabase.rpc("household_has_access", { _household_id: hid });
     if (!hasAccess) return { ok: false, reason: "Your subscription has ended or your trial is over. Choose a plan to keep using Mia." };
     const { data: remaining } = await supabase.rpc("voice_seconds_remaining", { _household_id: hid });
     if ((remaining ?? 0) <= 0) return { ok: false, reason: "You've used all your voice minutes for this period. Upgrade to keep talking to Mia." };
     return { ok: true };
-  }, []);
+  }, [user]);
+
 
   const getVoiceAccess = useCallback(async () => {
     const cached = voiceAccessRef.current;
