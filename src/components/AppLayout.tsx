@@ -2,10 +2,13 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt, Sparkles } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import AuthPage from "@/pages/AuthPage";
+import OnboardingPage from "@/pages/OnboardingPage";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import maiLogo from "@/assets/mai-logo.png";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
+
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
@@ -47,8 +50,44 @@ const AppLayout = () => {
   const navigate = useNavigate();
   const { user, loading, logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const [needsOnboarding, setNeedsOnboarding] = useState<null | { householdId: string }>(null);
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
-  if (loading) {
+  useEffect(() => {
+    if (!user) {
+      setNeedsOnboarding(null);
+      setCheckingOnboarding(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setCheckingOnboarding(true);
+      const { data: mem } = await supabase
+        .from("household_members")
+        .select("household_id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+      if (cancelled) return;
+      if (!mem?.household_id) {
+        setNeedsOnboarding(null);
+        setCheckingOnboarding(false);
+        return;
+      }
+      const { count } = await supabase
+        .from("family_members")
+        .select("*", { count: "exact", head: true })
+        .eq("household_id", mem.household_id);
+      if (cancelled) return;
+      setNeedsOnboarding((count ?? 0) === 0 ? { householdId: mem.household_id } : null);
+      setCheckingOnboarding(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  if (loading || (user && checkingOnboarding)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-sm text-muted-foreground animate-pulse">Loading…</p>
@@ -60,7 +99,17 @@ const AppLayout = () => {
     return <AuthPage />;
   }
 
+  if (needsOnboarding) {
+    return (
+      <OnboardingPage
+        householdId={needsOnboarding.householdId}
+        onDone={() => setNeedsOnboarding(null)}
+      />
+    );
+  }
+
   const pageTitle = titleFor(location.pathname);
+
 
   return (
     <div className="min-h-screen bg-background">
