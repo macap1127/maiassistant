@@ -18,6 +18,7 @@ const AuthPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [signupSuccess, setSignupSuccess] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
