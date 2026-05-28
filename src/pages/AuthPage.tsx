@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Capacitor } from "@capacitor/core";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import maiLogo from "@/assets/mai-logo.png";
+
+// Google OAuth (managed Lovable flow) redirects to a web URL that the
+// Capacitor WebView can't receive back into the app, so hide the button when
+// running inside the installed native app. Web/PWA users still see it.
+const isNativeApp = Capacitor.isNativePlatform();
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
