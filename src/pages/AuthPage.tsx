@@ -49,6 +49,11 @@ const AuthPage = () => {
           window.location.href = `/invite/${inviteCode}`;
           return;
         }
+        // If no session was returned, the user needs to verify their email first
+        if (!data.session) {
+          setSignupSuccess(true);
+          return;
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
