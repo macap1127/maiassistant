@@ -325,8 +325,10 @@ const VoiceAssistantInner = () => {
         const hid = data[0].household_id;
         householdIdRef.current = hid;
         setActiveHouseholdId(hid);
+        voiceAccessRef.current = null; // invalidate any stale "no household" cache
         void refreshQuota();
         void getVoiceAccess().catch((error) => console.error("[Mia] voice access check failed", error));
+
         void refreshListSnapshots(hid);
         const { data: hh } = await supabase
           .from("households")
