@@ -2,10 +2,13 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt, Sparkles } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import AuthPage from "@/pages/AuthPage";
+import OnboardingPage from "@/pages/OnboardingPage";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import maiLogo from "@/assets/mai-logo.png";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
+
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
