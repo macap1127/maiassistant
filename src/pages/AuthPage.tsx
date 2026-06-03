@@ -16,6 +16,7 @@ const isIOS = Capacitor.getPlatform() === "ios";
 
 
 const AuthPage = () => {
+  const { user, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +24,12 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
+
+  // Redirect away from /auth once authenticated (unless mid-signup or handling invite)
+  if (!authLoading && user && !signupSuccess && !inviteCode) {
+    return <Navigate to="/" replace />;
+  }
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
