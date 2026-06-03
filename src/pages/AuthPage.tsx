@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { SignInWithApple, SignInWithAppleOptions } from "@capacitor-community/apple-sign-in";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { useAuth } from "@/lib/auth";
 import maiLogo from "@/assets/mai-logo.png";
 
 // Google OAuth (managed Lovable flow) redirects to a web URL that the
