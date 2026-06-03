@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { SignInWithApple, SignInWithAppleOptions } from "@capacitor-community/apple-sign-in";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { useAuth } from "@/lib/auth";
 import maiLogo from "@/assets/mai-logo.png";
 
 // Google OAuth (managed Lovable flow) redirects to a web URL that the
@@ -15,6 +16,7 @@ const isIOS = Capacitor.getPlatform() === "ios";
 
 
 const AuthPage = () => {
+  const { user, loading: authLoading } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,6 +24,12 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
+
+  // Redirect away from /auth once authenticated (unless mid-signup or handling invite)
+  if (!authLoading && user && !signupSuccess && !inviteCode) {
+    return <Navigate to="/" replace />;
+  }
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
