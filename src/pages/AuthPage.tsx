@@ -220,20 +220,43 @@ const AuthPage = () => {
                 setError("");
                 setLoading(true);
                 try {
-                  const redirect = inviteCode
-                    ? `${window.location.origin}/invite/${inviteCode}`
-                    : `${window.location.origin}/`;
-                  const result = await lovable.auth.signInWithOAuth("apple", {
-                    redirect_uri: redirect,
-                  });
-                  if (result.error) throw new Error(result.error.message || "Apple sign-in failed");
-                  if (result.redirected) return;
+                  if (isIOS) {
+                    // Native Sign in with Apple — uses the system sheet, required for App Store
+                    const options: SignInWithAppleOptions = {
+                      clientId: "com.aiblueribbon.mia",
+                      redirectURI: "https://kdrtvdkmggscyrkmxhws.supabase.co/auth/v1/callback",
+                      scopes: "email name",
+                    };
+                    const result = await SignInWithApple.authorize(options);
+                    const idToken = result.response?.identityToken;
+                    if (!idToken) throw new Error("No identity token returned from Apple");
+                    const { error } = await supabase.auth.signInWithIdToken({
+                      provider: "apple",
+                      token: idToken,
+                    });
+                    if (error) throw error;
+                    if (inviteCode) {
+                      window.location.href = `/invite/${inviteCode}`;
+                      return;
+                    }
+                  } else {
+                    // Web / Android — managed Lovable OAuth flow
+                    const redirect = inviteCode
+                      ? `${window.location.origin}/invite/${inviteCode}`
+                      : `${window.location.origin}/`;
+                    const result = await lovable.auth.signInWithOAuth("apple", {
+                      redirect_uri: redirect,
+                    });
+                    if (result.error) throw new Error(result.error.message || "Apple sign-in failed");
+                    if (result.redirected) return;
+                  }
                 } catch (err: any) {
                   console.error("Apple auth error:", err);
                   setError(err.message || "Apple sign-in failed. Try again.");
                   setLoading(false);
                 }
               }}
+
               disabled={loading}
               className="w-full bg-foreground text-background rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
