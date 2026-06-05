@@ -45,26 +45,16 @@ const Terms = () => {
           </p>
           <p>
             <strong>Program description:</strong> By providing your mobile phone
-            number to Mia Family Assistant (Sole Proprietor), you consent to receive SMS messages
-            from us in two categories:
+            number to Mia Family Assistant (Sole Proprietor), checking the SMS consent box, and submitting the form or saving the SMS reminder setting, you consent to receive recurring automated SMS text messages from us:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Account verification:</strong> One-time passcodes sent
-              only when you request to sign in.
-            </li>
-            <li>
-              <strong>Daily event reminders (opt-in):</strong> When you enable
-              "Daily event SMS reminders" in Settings, you will receive{" "}
-              <strong>one SMS per day</strong> at your chosen time summarizing
-              your household's calendar events. This feature is off by default
-              and may be turned off at any time in Settings or by replying STOP.
+              <strong>Daily event reminders:</strong> When you enable "Daily event SMS reminders" in Settings or complete the SMS sign-up form, you will receive up to <strong>one SMS per day</strong> at your chosen time summarizing your household's calendar events. This feature is off by default and may be turned off at any time in Settings or by replying STOP.
             </li>
           </ul>
           <p>
-            <strong>Message frequency:</strong> Verification messages are sent
-            only on sign-in request. Daily reminders are sent at most once per
-            day per opted-in user.
+            <strong>Message frequency:</strong> Daily reminders are sent at most once per
+            day per opted-in user. Message frequency may vary based on reminder settings and scheduled events.
           </p>
           <p>
             <strong>Message and data rates may apply.</strong> Check your mobile
