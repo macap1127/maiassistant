@@ -43,7 +43,7 @@ const PrivacyPolicy = () => {
           <p>We use your information to:</p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Authenticate you and keep your account secure.</li>
-            <li>Send one-time SMS verification codes when you sign in.</li>
+            <li>Send daily event reminder SMS messages only when you opt in.</li>
             <li>Provide and improve the household management features.</li>
             <li>Comply with legal obligations.</li>
           </ul>
