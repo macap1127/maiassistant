@@ -24,8 +24,8 @@ const PrivacyPolicy = () => {
           <h2 className="text-xl font-semibold">2. Information We Collect</h2>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Phone number:</strong> Used to authenticate your account
-              via SMS one-time passcodes.
+              <strong>Phone number:</strong> Collected only if you opt in to SMS
+              reminders, and used to send those reminders.
             </li>
             <li>
               <strong>Household data:</strong> Grocery items, tasks, calendar
@@ -43,7 +43,7 @@ const PrivacyPolicy = () => {
           <p>We use your information to:</p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Authenticate you and keep your account secure.</li>
-            <li>Send one-time SMS verification codes when you sign in.</li>
+            <li>Send daily event reminder SMS messages only when you opt in.</li>
             <li>Provide and improve the household management features.</li>
             <li>Comply with legal obligations.</li>
           </ul>
@@ -52,29 +52,17 @@ const PrivacyPolicy = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">4. SMS Messaging & Consent</h2>
           <p>
-            Mia Family Assistant (Sole Proprietor) uses SMS for two purposes:
+            Mia Family Assistant (Sole Proprietor) uses SMS only for opt-in daily event reminders:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Account verification:</strong> When you sign in, you may
-              receive a one-time SMS verification code at the phone number you
-              provide.
-            </li>
-            <li>
-              <strong>Daily event reminders (opt-in):</strong> If you turn on
-              "Daily event SMS reminders" in Settings and enter your mobile
-              number, you will receive <strong>one SMS per day</strong> at the
-              time you choose, summarizing your household's calendar events for
-              that day. This is strictly opt-in — the setting is off by default,
-              and you can disable it at any time from Settings or by replying{" "}
-              <strong>STOP</strong> to any message. Reply <strong>HELP</strong>{" "}
-              for assistance.
+              <strong>Daily event reminders:</strong> If you turn on "Daily event SMS reminders" in Settings
+              or complete our SMS sign-up form and enter your mobile number, you consent to receive recurring automated SMS text messages with your household's calendar events for the day. This is strictly opt-in — the setting is off by default, and you can disable it at any time from Settings or by replying <strong>STOP</strong> to any message. Reply <strong>HELP</strong> for assistance.
             </li>
           </ul>
           <p>
-            <strong>Message frequency:</strong> Verification codes are sent only
-            when you request to sign in. Daily reminders are sent at most once
-            per day per opted-in user.
+            <strong>Message frequency:</strong> Daily reminders are sent at most once
+            per day per opted-in user. Message frequency may vary based on reminder settings and scheduled events.
           </p>
           <p>
             <strong>Message and data rates may apply.</strong> Carriers are not
