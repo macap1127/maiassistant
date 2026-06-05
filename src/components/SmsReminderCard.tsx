@@ -147,7 +147,7 @@ export function SmsReminderCard({ household }: Props) {
                 </label>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                You'll get one text per day at {fmtTime12(sendTime)} from <strong>Mia Family Assistant (Sole Proprietor)</strong>. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help. See <a href="/terms" className="underline">Terms</a> &amp; <a href="/privacy" className="underline">Privacy</a>.
+                By enabling this setting and saving, you consent to receive recurring automated SMS text messages from <strong>Mia Family Assistant (Sole Proprietor)</strong> at the number provided for daily household calendar reminders. Message frequency varies, up to one message per day at {fmtTime12(sendTime)}. Message and data rates may apply. Reply STOP to cancel and HELP for help. Consent is not a condition of purchase. See <a href="/terms" className="underline">Terms</a> &amp; <a href="/privacy" className="underline">Privacy</a>.
               </p>
             </>
           )}
