@@ -43,10 +43,11 @@ const SmsOptInPage = () => {
             <MessageSquare className="w-5 h-5" />
             <span className="text-xs uppercase tracking-wider">Mia Family Assistant (Sole Proprietor) — SMS Sign-Up</span>
           </div>
-          <h1 className="text-3xl font-bold">Mia Family Assistant — Daily Event SMS Reminders</h1>
+          <h1 className="text-3xl font-bold">Mia Family Assistant SMS Reminders</h1>
           <p className="text-sm text-muted-foreground mt-3">
-            Sign up to receive a daily text message from <strong>Mia Family Assistant (Sole Proprietor)</strong>
-            {" "}summarizing your household's calendar events for the day.
+            Enter your mobile number and check the consent box below to opt in to recurring
+            text messages from <strong>Mia Family Assistant (Sole Proprietor)</strong> with daily
+            household calendar reminders.
           </p>
         </header>
 
@@ -68,16 +69,15 @@ const SmsOptInPage = () => {
               <div>
                 <h2 className="font-semibold mb-1">What you'll receive</h2>
                 <p className="text-muted-foreground">
-                  Up to <strong>one (1) SMS per day</strong> with your household's
-                  scheduled events (titles, times, and locations). You may also
-                  receive one-time passcodes when you sign in to your account.
+                  Up to <strong>one (1) recurring SMS per day</strong> with your household's
+                  scheduled events, including event titles, times, and locations.
                 </p>
               </div>
               <div>
                 <h2 className="font-semibold mb-1">Message frequency</h2>
                 <p className="text-muted-foreground">
-                  Recurring messages — up to 1 message per day, plus
-                  verification codes on request.
+                  Recurring messages — up to 1 message per day. Message frequency may vary
+                  based on your reminder settings and whether you have events scheduled.
                 </p>
               </div>
               <div>
@@ -123,12 +123,12 @@ const SmsOptInPage = () => {
                 required
               />
               <span className="text-xs text-muted-foreground leading-relaxed">
-                I agree to receive recurring automated SMS messages from
-                <strong> Mia Family Assistant (Sole Proprietor)</strong> at the number provided, including daily
-                event reminders and account verification codes. Consent is not
-                a condition of purchase. Message frequency varies (up to 1/day).
-                Message and data rates may apply. Reply STOP to cancel, HELP for
-                help. I have read and agree to the{" "}
+                By checking this box and submitting this form, I consent to receive recurring
+                automated SMS text messages from <strong> Mia Family Assistant (Sole Proprietor)</strong>
+                at the mobile number provided for daily household calendar event reminders.
+                Consent is not a condition of purchase. Message frequency varies, up to one
+                message per day. Message and data rates may apply. Reply STOP to cancel and HELP
+                for help. I have read and agree to the{" "}
                 <Link to="/terms" className="text-primary underline">
                   Mia Family Assistant Terms &amp; Conditions
                 </Link>{" "}
@@ -148,7 +148,7 @@ const SmsOptInPage = () => {
               className="w-full bg-primary text-primary-foreground rounded-xl py-3 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-              Yes, sign me up!
+              Agree and sign up for SMS reminders
             </button>
 
             <p className="text-[11px] text-muted-foreground text-center">
