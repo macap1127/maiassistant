@@ -68,10 +68,18 @@ const SmsOptInPage = () => {
             <div className="space-y-4 text-sm">
               <div>
                 <h2 className="font-semibold mb-1">What you'll receive</h2>
-                <p className="text-muted-foreground">
-                  Up to <strong>one (1) recurring SMS per day</strong> with your household's
-                  scheduled events, including event titles, times, and locations.
-                </p>
+                <ul className="text-muted-foreground list-disc pl-5 space-y-1">
+                  <li>
+                    <strong>Account verification codes (one-time passcodes)</strong> —
+                    sent only when you request a sign-in to your Mia Family
+                    Assistant account.
+                  </li>
+                  <li>
+                    Up to <strong>one (1) recurring SMS per day</strong> with your
+                    household's scheduled events, including event titles, times,
+                    and locations.
+                  </li>
+                </ul>
               </div>
               <div>
                 <h2 className="font-semibold mb-1">Message frequency</h2>
@@ -125,7 +133,8 @@ const SmsOptInPage = () => {
               <span className="text-xs text-muted-foreground leading-relaxed">
                 By checking this box and submitting this form, I consent to receive recurring
                 automated SMS text messages from <strong> Mia Family Assistant (Sole Proprietor)</strong>
-                at the mobile number provided for daily household calendar event reminders.
+                at the mobile number provided for (1) account verification one-time passcodes sent
+                when I request sign-in, and (2) opt-in once-daily household calendar event reminders.
                 Consent is not a condition of purchase. Message frequency varies, up to one
                 message per day. Message and data rates may apply. Reply STOP to cancel and HELP
                 for help. I have read and agree to the{" "}
