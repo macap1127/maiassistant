@@ -68,10 +68,18 @@ const SmsOptInPage = () => {
             <div className="space-y-4 text-sm">
               <div>
                 <h2 className="font-semibold mb-1">What you'll receive</h2>
-                <p className="text-muted-foreground">
-                  Up to <strong>one (1) recurring SMS per day</strong> with your household's
-                  scheduled events, including event titles, times, and locations.
-                </p>
+                <ul className="text-muted-foreground list-disc pl-5 space-y-1">
+                  <li>
+                    <strong>Account verification codes (one-time passcodes)</strong> —
+                    sent only when you request a sign-in to your Mia Family
+                    Assistant account.
+                  </li>
+                  <li>
+                    Up to <strong>one (1) recurring SMS per day</strong> with your
+                    household's scheduled events, including event titles, times,
+                    and locations.
+                  </li>
+                </ul>
               </div>
               <div>
                 <h2 className="font-semibold mb-1">Message frequency</h2>
