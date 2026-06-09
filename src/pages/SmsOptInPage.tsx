@@ -133,7 +133,8 @@ const SmsOptInPage = () => {
               <span className="text-xs text-muted-foreground leading-relaxed">
                 By checking this box and submitting this form, I consent to receive recurring
                 automated SMS text messages from <strong> Mia Family Assistant (Sole Proprietor)</strong>
-                at the mobile number provided for daily household calendar event reminders.
+                at the mobile number provided for (1) account verification one-time passcodes sent
+                when I request sign-in, and (2) opt-in once-daily household calendar event reminders.
                 Consent is not a condition of purchase. Message frequency varies, up to one
                 message per day. Message and data rates may apply. Reply STOP to cancel and HELP
                 for help. I have read and agree to the{" "}
