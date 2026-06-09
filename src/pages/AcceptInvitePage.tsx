@@ -42,19 +42,13 @@ const AcceptInvitePage = () => {
   const accept = async () => {
     if (!invite || !user || !code) return;
     setAccepting(true);
-    // Insert membership; trigger will block if at limit.
-    const { error: memErr } = await supabase
-      .from("household_members")
-      .insert({ household_id: invite.household_id, user_id: user.id, role: "member" });
-    if (memErr) {
+    // Server-side RPC validates invite code, inserts membership, and marks accepted atomically.
+    const { error: rpcErr } = await supabase.rpc("accept_invite", { _code: code });
+    if (rpcErr) {
       setAccepting(false);
-      toast({ variant: "destructive", title: "Couldn't join", description: memErr.message });
+      toast({ variant: "destructive", title: "Couldn't join", description: rpcErr.message });
       return;
     }
-    await supabase
-      .from("household_invites")
-      .update({ accepted_at: new Date().toISOString(), accepted_by: user.id })
-      .eq("invite_code", code.toUpperCase());
 
     // Clean up any auto-created solo household the user owns (other than the one
     // they just joined). New signups get a default "My Family" household; if they
