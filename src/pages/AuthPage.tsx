@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
-import { SignInWithApple, SignInWithAppleOptions } from "@capacitor-community/apple-sign-in";
+import { AppleSignIn, SignInScope } from "@capawesome/capacitor-apple-sign-in";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
@@ -230,13 +230,10 @@ const AuthPage = () => {
                 try {
                   if (isIOS) {
                     // Native Sign in with Apple — uses the system sheet, required for App Store
-                    const options: SignInWithAppleOptions = {
-                      clientId: "com.aiblueribbon.mia",
-                      redirectURI: "https://kdrtvdkmggscyrkmxhws.supabase.co/auth/v1/callback",
-                      scopes: "email name",
-                    };
-                    const result = await SignInWithApple.authorize(options);
-                    const idToken = result.response?.identityToken;
+                    const result = await AppleSignIn.signIn({
+                      scopes: [SignInScope.Email, SignInScope.FullName],
+                    });
+                    const idToken = result.idToken;
                     if (!idToken) throw new Error("No identity token returned from Apple");
                     const { error } = await supabase.auth.signInWithIdToken({
                       provider: "apple",
