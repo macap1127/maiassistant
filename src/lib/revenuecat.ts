@@ -5,7 +5,7 @@ import { Capacitor } from '@capacitor/core';
 // RevenueCat API keys — these are PUBLISHABLE keys, safe to ship in client code.
 // Get them from app.revenuecat.com → Project settings → API keys.
 // Replace the placeholders below with your real keys.
-const REVENUECAT_ANDROID_KEY = 'goog_YOUR_ANDROID_KEY_HERE';
+const REVENUECAT_ANDROID_KEY = 'goog_gXRwdrJEkRXwcdUmSLRUAraaJgR';
 const REVENUECAT_IOS_KEY = 'appl_YOUR_IOS_KEY_HERE';
 
 // Map your in-app Product IDs (used in code) to RevenueCat entitlement IDs.
