@@ -39,14 +39,13 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { data: allowed } = await supabase.rpc("household_feature_allowed", {
+    const { data: allowed } = await supabase.rpc("can_use_ai_calendar_import", {
       _household_id: householdId,
-      _feature: "ai_calendar_import",
     });
     if (!allowed) {
       return new Response(JSON.stringify({
-        error: "AI calendar import is available on the Family and Family Plus plans. Please upgrade.",
-        code: "TIER_UPGRADE_REQUIRED",
+        error: "You've used all 5 free AI calendar imports for this month. Upgrade to Family for unlimited imports, or wait until next month.",
+        code: "AI_IMPORT_LIMIT_REACHED",
       }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
