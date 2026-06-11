@@ -1,5 +1,5 @@
 // Extract calendar events from an image or PDF using Lovable AI (Gemini vision).
-// Gated to Family / Family Plus tiers.
+// Family / Family Plus: unlimited. Basic: 5 imports per calendar month.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
