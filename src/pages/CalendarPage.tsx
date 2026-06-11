@@ -377,6 +377,23 @@ const CalendarPage = () => {
             <p className="text-xs text-muted-foreground">
               Upload an .ics file, a photo of a schedule/flyer, or a PDF. We'll pull out the events automatically.
             </p>
+            {household?.subscriptionTier === "basic" && (() => {
+              const periodStart = household.aiCalendarImportsPeriodStart
+                ? new Date(household.aiCalendarImportsPeriodStart)
+                : null;
+              const currentPeriodStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+              const used = !periodStart || periodStart < currentPeriodStart
+                ? 0
+                : household.aiCalendarImportsUsed;
+              const remaining = Math.max(0, 5 - used);
+              return (
+                <div className={`text-xs rounded-lg px-3 py-2 ${remaining === 0 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
+                  {remaining > 0
+                    ? `${remaining} of 5 free AI imports left this month (.ics files are always free)`
+                    : "You've used all 5 free AI imports this month. Upgrade to Family for unlimited."}
+                </div>
+              );
+            })()}
             <div className="relative">
               <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
               <input
