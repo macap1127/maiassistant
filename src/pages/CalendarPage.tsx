@@ -231,7 +231,13 @@ const CalendarPage = () => {
           body: { imageDataUrl: dataUrl, source, householdId: household?.id },
         });
         if (error) {
-          const msg = (error as any)?.context?.body?.error || (error as any)?.message || "";
+          const ctx = (error as any)?.context?.body;
+          const msg = ctx?.error || (error as any)?.message || "";
+          const code = ctx?.code || "";
+          if (code === "AI_IMPORT_LIMIT_REACHED" || msg.includes("5 free AI calendar imports")) {
+            toast.error("You've used all 5 free AI calendar imports for this month. Upgrade to Family for unlimited.");
+            return;
+          }
           if (msg.includes("Family") || msg.includes("upgrade")) {
             toast.error("AI calendar import requires the Family plan. Upgrade in Settings to enable.");
             return;
