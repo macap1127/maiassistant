@@ -28,6 +28,8 @@ export interface HouseholdState {
   isOwner: boolean;
   memberCount: number;
   assistantLanguage: string;
+  aiCalendarImportsUsed: number;
+  aiCalendarImportsPeriodStart: string | null;
   // Derived:
   hasAccess: boolean;          // can use paid features right now
   isInTrial: boolean;          // free trial window, no Stripe sub yet
