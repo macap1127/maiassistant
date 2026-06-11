@@ -37,6 +37,7 @@ const tiers: TierDef[] = [
       "Tasks, groceries & calendar",
       "Voice assistant (15 languages)",
       "10 receipt scans / month",
+      "5 AI calendar imports / month",
     ],
   },
   {
@@ -102,7 +103,7 @@ const featureMatrix: { group: string; rows: FeatureRow[] }[] = [
       { label: "Tasks, groceries & calendar", basic: true, family: true, family_plus: true },
       { label: "Daily SMS reminders", basic: false, family: true, family_plus: true },
       { label: "Receipt scanning (OCR)", basic: "10 / mo", family: "Unlimited", family_plus: "Unlimited" },
-      { label: "AI calendar import (PDF / image)", basic: false, family: true, family_plus: true },
+      { label: "AI calendar import (PDF / image)", basic: "5 / mo", family: "Unlimited", family_plus: "Unlimited" },
     ],
   },
   {
