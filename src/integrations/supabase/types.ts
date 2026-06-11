@@ -327,6 +327,8 @@ export type Database = {
       households: {
         Row: {
           access_locked: boolean
+          ai_calendar_imports_period_start: string
+          ai_calendar_imports_used: number
           assistant_language: string
           cancel_at_period_end: boolean
           created_at: string
@@ -348,6 +350,8 @@ export type Database = {
         }
         Insert: {
           access_locked?: boolean
+          ai_calendar_imports_period_start?: string
+          ai_calendar_imports_used?: number
           assistant_language?: string
           cancel_at_period_end?: boolean
           created_at?: string
@@ -369,6 +373,8 @@ export type Database = {
         }
         Update: {
           access_locked?: boolean
+          ai_calendar_imports_period_start?: string
+          ai_calendar_imports_used?: number
           assistant_language?: string
           cancel_at_period_end?: boolean
           created_at?: string
@@ -610,6 +616,10 @@ export type Database = {
     }
     Functions: {
       accept_invite: { Args: { _code: string }; Returns: string }
+      can_use_ai_calendar_import: {
+        Args: { _household_id: string }
+        Returns: boolean
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -640,6 +650,10 @@ export type Database = {
         Returns: boolean
       }
       household_tier: { Args: { _household_id: string }; Returns: string }
+      increment_ai_calendar_usage: {
+        Args: { _household_id: string }
+        Returns: number
+      }
       increment_voice_usage: {
         Args: { _household_id: string; _seconds: number }
         Returns: number

@@ -1,5 +1,5 @@
 // Extract calendar events from an image or PDF using Lovable AI (Gemini vision).
-// Gated to Family / Family Plus tiers.
+// Family / Family Plus: unlimited. Basic: 5 imports per calendar month.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -39,14 +39,13 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { data: allowed } = await supabase.rpc("household_feature_allowed", {
+    const { data: allowed } = await supabase.rpc("can_use_ai_calendar_import", {
       _household_id: householdId,
-      _feature: "ai_calendar_import",
     });
     if (!allowed) {
       return new Response(JSON.stringify({
-        error: "AI calendar import is available on the Family and Family Plus plans. Please upgrade.",
-        code: "TIER_UPGRADE_REQUIRED",
+        error: "You've used all 5 free AI calendar imports for this month. Upgrade to Family for unlimited imports, or wait until next month.",
+        code: "AI_IMPORT_LIMIT_REACHED",
       }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -113,6 +112,21 @@ Return ONLY a JSON object: {"events":[{"title":"...","date":"YYYY-MM-DD","time":
         notes: e.notes || null,
         source: source || "Imported",
       }));
+
+    // Only count against the monthly allowance if we actually found events.
+    // Use a user-scoped client so auth.uid() is set inside the RPC's membership check.
+    if (events.length > 0) {
+      try {
+        const userClient = createClient(
+          Deno.env.get("SUPABASE_URL")!,
+          Deno.env.get("SUPABASE_ANON_KEY")!,
+          { global: { headers: { Authorization: `Bearer ${token}` } } },
+        );
+        await userClient.rpc("increment_ai_calendar_usage", { _household_id: householdId });
+      } catch (e) {
+        console.error("Failed to increment AI calendar usage", e);
+      }
+    }
 
     return new Response(JSON.stringify({ events }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

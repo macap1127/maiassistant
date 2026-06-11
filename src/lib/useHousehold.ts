@@ -28,6 +28,8 @@ export interface HouseholdState {
   isOwner: boolean;
   memberCount: number;
   assistantLanguage: string;
+  aiCalendarImportsUsed: number;
+  aiCalendarImportsPeriodStart: string | null;
   // Derived:
   hasAccess: boolean;          // can use paid features right now
   isInTrial: boolean;          // free trial window, no Stripe sub yet
@@ -106,6 +108,8 @@ export const useHousehold = () => {
         isOwner: h.owner_user_id === user.id,
         memberCount: count ?? 1,
         assistantLanguage: (h as any).assistant_language ?? "en",
+        aiCalendarImportsUsed: (h as any).ai_calendar_imports_used ?? 0,
+        aiCalendarImportsPeriodStart: (h as any).ai_calendar_imports_period_start ?? null,
         ...derived,
       });
     }
