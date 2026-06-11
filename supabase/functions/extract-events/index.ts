@@ -113,6 +113,17 @@ Return ONLY a JSON object: {"events":[{"title":"...","date":"YYYY-MM-DD","time":
         source: source || "Imported",
       }));
 
+    // Only count against the monthly allowance if we actually found events.
+    // Use a service-role client so the increment isn't blocked by the JWT membership
+    // check in the RPC (we already verified the user above).
+    if (events.length > 0) {
+      try {
+        await supabase.rpc("increment_ai_calendar_usage", { _household_id: householdId });
+      } catch (e) {
+        console.error("Failed to increment AI calendar usage", e);
+      }
+    }
+
     return new Response(JSON.stringify({ events }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
