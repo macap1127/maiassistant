@@ -114,11 +114,15 @@ Return ONLY a JSON object: {"events":[{"title":"...","date":"YYYY-MM-DD","time":
       }));
 
     // Only count against the monthly allowance if we actually found events.
-    // Use a service-role client so the increment isn't blocked by the JWT membership
-    // check in the RPC (we already verified the user above).
+    // Use a user-scoped client so auth.uid() is set inside the RPC's membership check.
     if (events.length > 0) {
       try {
-        await supabase.rpc("increment_ai_calendar_usage", { _household_id: householdId });
+        const userClient = createClient(
+          Deno.env.get("SUPABASE_URL")!,
+          Deno.env.get("SUPABASE_ANON_KEY")!,
+          { global: { headers: { Authorization: `Bearer ${token}` } } },
+        );
+        await userClient.rpc("increment_ai_calendar_usage", { _household_id: householdId });
       } catch (e) {
         console.error("Failed to increment AI calendar usage", e);
       }
