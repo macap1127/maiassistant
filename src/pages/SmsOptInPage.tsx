@@ -47,7 +47,7 @@ const SmsOptInPage = () => {
           <p className="text-sm text-muted-foreground mt-3">
             Enter your mobile number and check the consent box below to opt in to recurring
             text messages from <strong>Mia Family Assistant (Sole Proprietor)</strong> with daily
-            household calendar reminders.
+            household calendar reminders. <strong>This is one-way — members cannot use this to text each other.</strong>
           </p>
         </header>
 

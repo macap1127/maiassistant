@@ -57,6 +57,9 @@ const Terms = () => {
             day per opted-in user. Message frequency may vary based on reminder settings and scheduled events.
           </p>
           <p>
+            <strong>One-way only:</strong> SMS messages from Mia Family Assistant (Sole Proprietor) are automated reminders sent from the service to the opted-in user. Members cannot use the Service to send SMS messages to each other.
+          </p>
+          <p>
             <strong>Message and data rates may apply.</strong> Check your mobile
             plan for details. Carriers (including but not limited to AT&T,
             T-Mobile, Verizon) are not liable for delayed or undelivered
