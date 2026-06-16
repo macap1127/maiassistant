@@ -91,6 +91,9 @@ export function SmsReminderCard({ household }: Props) {
         <MessageSquare className="w-4 h-4 text-primary" />
         <h2 className="font-medium text-sm">Mia Family Assistant — Daily event SMS reminders</h2>
       </div>
+      <p className="text-[11px] text-muted-foreground mb-3">
+        These are automated one-way reminders from Mia Family Assistant. Members cannot use this to send texts to each other.
+      </p>
 
       {!tierAllowed ? (
         <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted rounded-xl p-3">
