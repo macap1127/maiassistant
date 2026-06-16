@@ -69,13 +69,7 @@ const PrivacyPolicy = () => {
             liable for delayed or undelivered messages.
           </p>
           <p>
-            <strong>Mobile information sharing:</strong> No mobile information
-            will be shared with third parties or affiliates for marketing or
-            promotional purposes. Information sharing to subcontractors in
-            support of the services we provide (for example, our SMS delivery
-            provider) is permitted only as required to operate the service.
-            All other categories — text messaging originator opt-in data and
-            consent — will not be shared with any third parties.
+            <strong>Mobile information sharing:</strong> Mobile phone numbers and SMS opt-in consent are not shared with third parties or affiliates for marketing purposes. Information sharing to subcontractors in support of the services we provide (for example, our SMS delivery provider) is permitted only as required to operate the service. All other categories — text messaging originator opt-in data and consent — will not be shared with any third parties.
           </p>
         </section>
 
