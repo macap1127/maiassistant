@@ -52,7 +52,7 @@ const PrivacyPolicy = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">4. SMS Messaging & Consent</h2>
           <p>
-            Mia Family Assistant (Sole Proprietor) uses SMS only for opt-in daily event reminders:
+            Mia Family Assistant (Sole Proprietor) uses SMS only for one-way, opt-in daily event reminders. Members cannot use the Service to send SMS messages to each other:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>
