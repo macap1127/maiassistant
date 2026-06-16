@@ -31,9 +31,9 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">3. Accounts and Authentication</h2>
           <p>
-            To use the Service, you must provide a valid mobile phone number
-            and verify it via SMS one-time passcode. You are responsible for
-            maintaining the security of your phone and account, and for all
+            To use the Service, you must create an account with a valid email
+            address or sign in via Google OAuth. You are responsible for
+            maintaining the security of your account credentials, and for all
             activity that occurs under your account.
           </p>
         </section>
