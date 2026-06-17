@@ -396,6 +396,27 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_testers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          notes: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          notes?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          notes?: string | null
+        }
+        Relationships: []
+      }
       public_sms_optins: {
         Row: {
           consent: boolean
@@ -616,6 +637,7 @@ export type Database = {
     }
     Functions: {
       accept_invite: { Args: { _code: string }; Returns: string }
+      admin_tester_activity_today: { Args: never; Returns: Json }
       can_use_ai_calendar_import: {
         Args: { _household_id: string }
         Returns: boolean
@@ -658,6 +680,7 @@ export type Database = {
         Args: { _household_id: string; _seconds: number }
         Returns: number
       }
+      is_app_admin: { Args: never; Returns: boolean }
       is_household_member: {
         Args: { _household_id: string; _user_id: string }
         Returns: boolean
