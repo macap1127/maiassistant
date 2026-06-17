@@ -21,6 +21,7 @@ import AcceptInvitePage from "./pages/AcceptInvitePage";
 import AuthPage from "./pages/AuthPage";
 import SmsOptInPage from "./pages/SmsOptInPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
+import AdminTesters from "./pages/AdminTesters";
 
 const queryClient = new QueryClient();
 
