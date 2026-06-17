@@ -21,6 +21,7 @@ import AcceptInvitePage from "./pages/AcceptInvitePage";
 import AuthPage from "./pages/AuthPage";
 import SmsOptInPage from "./pages/SmsOptInPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
+import AdminTesters from "./pages/AdminTesters";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/receipts" element={<ReceiptsPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/admin/testers" element={<AdminTesters />} />
             </Route>
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
