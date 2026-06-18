@@ -23,25 +23,44 @@ type Activity = {
   testers: Tester[];
 };
 
+type ActiveUser = {
+  email: string;
+  last_sign_in_at: string | null;
+  household_acted_today: boolean;
+  signed_in_today: boolean;
+  is_tester: boolean;
+};
+
+type ActiveToday = {
+  day_start: string;
+  summary: { total_active: number; household_acted: number; signed_in_only: number; testers_active: number };
+  users: ActiveUser[];
+};
+
 export default function AdminTesters() {
   const { user, loading: authLoading } = useAuth();
   const [data, setData] = useState<Activity | null>(null);
+  const [active, setActive] = useState<ActiveToday | null>(null);
   const [loading, setLoading] = useState(true);
   const [emails, setEmails] = useState("");
   const [saving, setSaving] = useState(false);
+
 
   const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
 
   async function load() {
     setLoading(true);
-    const { data, error } = await supabase.rpc("admin_tester_activity_today");
-    if (error) {
-      toast({ title: "Failed to load", description: error.message, variant: "destructive" });
-    } else {
-      setData(data as unknown as Activity);
-    }
+    const [a, b] = await Promise.all([
+      supabase.rpc("admin_tester_activity_today"),
+      supabase.rpc("admin_active_users_today"),
+    ]);
+    if (a.error) toast({ title: "Failed to load testers", description: a.error.message, variant: "destructive" });
+    else setData(a.data as unknown as Activity);
+    if (b.error) toast({ title: "Failed to load active users", description: b.error.message, variant: "destructive" });
+    else setActive(b.data as unknown as ActiveToday);
     setLoading(false);
   }
+
 
   useEffect(() => {
     if (isAdmin) load();
@@ -194,7 +213,62 @@ export default function AdminTesters() {
           )}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Active users today</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Y = this user's household recorded a real action today (grocery / task / event / receipt / voice). · =
+            signed in but no activity. Logged-in-but-idle doesn't count as Y.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {active && (
+            <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatCard label="Total active" value={active.summary.total_active} />
+              <StatCard label="Household acted" value={active.summary.household_acted} />
+              <StatCard label="Signed in only" value={active.summary.signed_in_only} />
+              <StatCard label="Testers active" value={active.summary.testers_active} />
+            </div>
+          )}
+          {active && active.users.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No active users yet today.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-muted-foreground">
+                  <tr className="text-left">
+                    <th className="py-2 pr-3">Email</th>
+                    <th className="py-2 pr-3 text-center">Today</th>
+                    <th className="py-2 pr-3">Tester</th>
+                    <th className="py-2 pr-3">Last sign-in</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {active?.users.map((u) => (
+                    <tr key={u.email} className="border-t border-border">
+                      <td className="py-2 pr-3 font-mono">{u.email}</td>
+                      <td className="py-2 pr-3 text-center font-mono">
+                        {u.household_acted_today ? (
+                          <span className="font-bold text-primary">Y</span>
+                        ) : (
+                          <span className="text-muted-foreground">·</span>
+                        )}
+                      </td>
+                      <td className="py-2 pr-3">{u.is_tester ? "Yes" : "—"}</td>
+                      <td className="py-2 pr-3">
+                        {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
+
   );
 }
 
