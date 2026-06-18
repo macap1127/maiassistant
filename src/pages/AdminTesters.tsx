@@ -213,7 +213,62 @@ export default function AdminTesters() {
           )}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Active users today</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Y = this user's household recorded a real action today (grocery / task / event / receipt / voice). · =
+            signed in but no activity. Logged-in-but-idle doesn't count as Y.
+          </p>
+        </CardHeader>
+        <CardContent>
+          {active && (
+            <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatCard label="Total active" value={active.summary.total_active} />
+              <StatCard label="Household acted" value={active.summary.household_acted} />
+              <StatCard label="Signed in only" value={active.summary.signed_in_only} />
+              <StatCard label="Testers active" value={active.summary.testers_active} />
+            </div>
+          )}
+          {active && active.users.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No active users yet today.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-muted-foreground">
+                  <tr className="text-left">
+                    <th className="py-2 pr-3">Email</th>
+                    <th className="py-2 pr-3 text-center">Today</th>
+                    <th className="py-2 pr-3">Tester</th>
+                    <th className="py-2 pr-3">Last sign-in</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {active?.users.map((u) => (
+                    <tr key={u.email} className="border-t border-border">
+                      <td className="py-2 pr-3 font-mono">{u.email}</td>
+                      <td className="py-2 pr-3 text-center font-mono">
+                        {u.household_acted_today ? (
+                          <span className="font-bold text-primary">Y</span>
+                        ) : (
+                          <span className="text-muted-foreground">·</span>
+                        )}
+                      </td>
+                      <td className="py-2 pr-3">{u.is_tester ? "Yes" : "—"}</td>
+                      <td className="py-2 pr-3">
+                        {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
+
   );
 }
 
