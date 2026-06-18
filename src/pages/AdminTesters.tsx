@@ -50,14 +50,17 @@ export default function AdminTesters() {
 
   async function load() {
     setLoading(true);
-    const { data, error } = await supabase.rpc("admin_tester_activity_today");
-    if (error) {
-      toast({ title: "Failed to load", description: error.message, variant: "destructive" });
-    } else {
-      setData(data as unknown as Activity);
-    }
+    const [a, b] = await Promise.all([
+      supabase.rpc("admin_tester_activity_today"),
+      supabase.rpc("admin_active_users_today"),
+    ]);
+    if (a.error) toast({ title: "Failed to load testers", description: a.error.message, variant: "destructive" });
+    else setData(a.data as unknown as Activity);
+    if (b.error) toast({ title: "Failed to load active users", description: b.error.message, variant: "destructive" });
+    else setActive(b.data as unknown as ActiveToday);
     setLoading(false);
   }
+
 
   useEffect(() => {
     if (isAdmin) load();
