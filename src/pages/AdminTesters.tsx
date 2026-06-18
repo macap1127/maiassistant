@@ -23,12 +23,28 @@ type Activity = {
   testers: Tester[];
 };
 
+type ActiveUser = {
+  email: string;
+  last_sign_in_at: string | null;
+  household_acted_today: boolean;
+  signed_in_today: boolean;
+  is_tester: boolean;
+};
+
+type ActiveToday = {
+  day_start: string;
+  summary: { total_active: number; household_acted: number; signed_in_only: number; testers_active: number };
+  users: ActiveUser[];
+};
+
 export default function AdminTesters() {
   const { user, loading: authLoading } = useAuth();
   const [data, setData] = useState<Activity | null>(null);
+  const [active, setActive] = useState<ActiveToday | null>(null);
   const [loading, setLoading] = useState(true);
   const [emails, setEmails] = useState("");
   const [saving, setSaving] = useState(false);
+
 
   const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
 
