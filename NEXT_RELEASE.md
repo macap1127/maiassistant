@@ -9,6 +9,8 @@ A running list of changes made in the codebase that have **not yet been shipped*
 ### Compliance / SMS (Twilio A2P 10DLC)
 - **Privacy Policy** — added the required Twilio-compliant section stating that mobile phone numbers and SMS opt-in consent are not shared with third parties or affiliates for marketing purposes.
 - **Public SMS opt-in page** (`/sms-opt-in`) — now linked from the public Auth page footer, the Privacy Policy footer, and the Terms & Conditions footer so the Twilio campaign reviewer can reach it without logging in.
+- **SMS database access** — added the missing backend grants required for the public opt-in form and signed-in Settings SMS reminder toggle to save correctly.
+- **Support email typo** — corrected the support address in About and Settings to `support@miafamilyassistant.com`.
 
 ### Native apps (Android + iOS)
 - **Removed "Continue with Google" button** from the Auth screen on native builds (Android and iOS). Native users sign in with email/password (Apple Sign-In also still available cross-platform). Web and PWA builds are unchanged and still show Google.

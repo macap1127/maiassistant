@@ -291,8 +291,8 @@ const SettingsPage = () => {
               Terms & Conditions
             </Link>
           </div>
-          <a href="mailto:support@miafamilyasistant.com" className="hover:text-foreground transition-colors">
-            support@miafamilyasistant.com
+          <a href="mailto:support@miafamilyassistant.com" className="hover:text-foreground transition-colors">
+            support@miafamilyassistant.com
           </a>
         </div>
 
