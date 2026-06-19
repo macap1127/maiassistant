@@ -197,7 +197,7 @@ const AuthPage = () => {
               <div className="flex-1 h-px bg-border" />
             </div>
 
-            {!isAndroid && (
+            {!isNativeApp && (
             <button
               type="button"
               onClick={async () => {
