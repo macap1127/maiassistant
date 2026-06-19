@@ -197,6 +197,7 @@ const AuthPage = () => {
               <div className="flex-1 h-px bg-border" />
             </div>
 
+            {!isAndroid && (
             <button
               type="button"
               onClick={async () => {
@@ -245,6 +246,7 @@ const AuthPage = () => {
               </svg>
               Continue with Google
             </button>
+            )}
 
             <button
               type="button"
