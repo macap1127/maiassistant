@@ -158,6 +158,16 @@ const Terms = () => {
             .
           </p>
         </section>
+
+        <div className="pt-6 border-t border-border text-sm text-muted-foreground">
+          <a href="/sms-opt-in" className="underline hover:text-foreground">
+            Sign up for SMS reminders
+          </a>
+          {" · "}
+          <a href="/privacy" className="underline hover:text-foreground">
+            Privacy Policy
+          </a>
+        </div>
       </div>
     </main>
   );
