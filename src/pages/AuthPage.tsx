@@ -326,13 +326,17 @@ const AuthPage = () => {
           Temporary email login while SMS verification is pending approval.
         </p>
 
-        <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground">
+        <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
           <Link to="/privacy" className="hover:text-foreground transition-colors">
             Privacy Policy
           </Link>
           <span>&middot;</span>
           <Link to="/terms" className="hover:text-foreground transition-colors">
             Terms & Conditions
+          </Link>
+          <span>&middot;</span>
+          <Link to="/sms-opt-in" className="hover:text-foreground transition-colors">
+            SMS Reminders Sign-Up
           </Link>
         </div>
       </div>
