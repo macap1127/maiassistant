@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
 
         let body: string;
         if (!events || events.length === 0) {
-          body = `${hh.name || "Mai"}: No events scheduled today. Have a good one!`;
+          body = `Mia Family Assistant: No events scheduled today. Reply STOP to opt out.`;
         } else {
           const lines = events
             .sort((a, b) => (a.time || "").localeCompare(b.time || ""))
@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
               const loc = e.location ? ` @ ${e.location}` : "";
               return `• ${t ? t + " " : ""}${e.title}${loc}${who}`;
             }).join("\n");
-          body = `${hh.name || "Mai"} — Today's events:\n${lines}\n\nReply STOP to opt out.`;
+          body = `Mia Family Assistant — Today's events:\n${lines}\n\nReply STOP to opt out.`;
         }
 
         await sendSms(p.phone, body);

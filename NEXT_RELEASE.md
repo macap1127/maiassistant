@@ -10,6 +10,7 @@ A running list of changes made in the codebase that have **not yet been shipped*
 - **Privacy Policy** — added the required Twilio-compliant section stating that mobile phone numbers and SMS opt-in consent are not shared with third parties or affiliates for marketing purposes.
 - **Public SMS opt-in page** (`/sms-opt-in`) — now linked from the public Auth page footer, the Privacy Policy footer, and the Terms & Conditions footer so the Twilio campaign reviewer can reach it without logging in.
 - **SMS database access** — added the missing backend grants required for the public opt-in form and signed-in Settings SMS reminder toggle to save correctly.
+- **SMS message content** — updated daily reminder SMS bodies so all outgoing reminder texts consistently identify “Mia Family Assistant” and include “Reply STOP to opt out.”
 - **Support email typo** — corrected the support address in About and Settings to `support@miafamilyassistant.com`.
 
 ### Native apps (Android + iOS)
