@@ -101,8 +101,8 @@ const AboutPage = () => {
           </p>
           <p className="text-[11px] text-muted-foreground mt-3">
             Questions? Email{" "}
-            <a href="mailto:support@miafamilyasistant.com" className="text-primary hover:underline">
-              support@miafamilyasistant.com
+            <a href="mailto:support@miafamilyassistant.com" className="text-primary hover:underline">
+              support@miafamilyassistant.com
             </a>
           </p>
         </div>
