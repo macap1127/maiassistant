@@ -3,25 +3,13 @@ import { Link, Navigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 import { AppleSignIn, SignInScope } from "@capawesome/capacitor-apple-sign-in";
-import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import maiLogo from "@/assets/mai-logo.png";
 
-const isNativeApp = Capacitor.isNativePlatform();
+const isWeb = Capacitor.getPlatform() === "web";
 const isIOS = Capacitor.getPlatform() === "ios";
-const isAndroid = Capacitor.getPlatform() === "android";
-
-// Initialize the native Google plugin once on native platforms.
-// The web client ID lives in capacitor.config.ts (serverClientId).
-if (isNativeApp) {
-  try {
-    GoogleAuth.initialize();
-  } catch (e) {
-    console.warn("GoogleAuth.initialize failed", e);
-  }
-}
 
 
 const AuthPage = () => {
@@ -197,38 +185,21 @@ const AuthPage = () => {
               <div className="flex-1 h-px bg-border" />
             </div>
 
-            {!isNativeApp && (
+            {isWeb && (
             <button
               type="button"
               onClick={async () => {
                 setError("");
                 setLoading(true);
                 try {
-                  if (isAndroid) {
-                    // Native Google Sign-In on Android — returns an idToken we exchange with Supabase
-                    const result = await GoogleAuth.signIn();
-                    const idToken = result.authentication?.idToken;
-                    if (!idToken) throw new Error("No identity token returned from Google");
-                    const { error } = await supabase.auth.signInWithIdToken({
-                      provider: "google",
-                      token: idToken,
-                    });
-                    if (error) throw error;
-                    if (inviteCode) {
-                      window.location.href = `/invite/${inviteCode}`;
-                      return;
-                    }
-                  } else {
-                    // Web / PWA / iOS — managed Lovable OAuth flow
-                    const redirect = inviteCode
-                      ? `${window.location.origin}/invite/${inviteCode}`
-                      : `${window.location.origin}/`;
-                    const result = await lovable.auth.signInWithOAuth("google", {
-                      redirect_uri: redirect,
-                    });
-                    if (result.error) throw new Error(result.error.message || "Google sign-in failed");
-                    if (result.redirected) return;
-                  }
+                  const redirect = inviteCode
+                    ? `${window.location.origin}/invite/${inviteCode}`
+                    : `${window.location.origin}/`;
+                  const result = await lovable.auth.signInWithOAuth("google", {
+                    redirect_uri: redirect,
+                  });
+                  if (result.error) throw new Error(result.error.message || "Google sign-in failed");
+                  if (result.redirected) return;
                 } catch (err: any) {
                   console.error("Google auth error:", err);
                   setError(err.message || "Google sign-in failed. Try again.");
