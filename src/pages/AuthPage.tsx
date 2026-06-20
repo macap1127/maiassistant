@@ -219,6 +219,7 @@ const AuthPage = () => {
             </button>
             )}
 
+            {(isWeb || isIOS) && (
             <button
               type="button"
               onClick={async () => {
@@ -242,7 +243,7 @@ const AuthPage = () => {
                       return;
                     }
                   } else {
-                    // Web / Android — managed Lovable OAuth flow
+                    // Web — managed Lovable OAuth flow
                     const redirect = inviteCode
                       ? `${window.location.origin}/invite/${inviteCode}`
                       : `${window.location.origin}/`;
@@ -267,6 +268,7 @@ const AuthPage = () => {
               </svg>
               Continue with Apple
             </button>
+            )}
           </>
 
 
