@@ -362,9 +362,6 @@ const AuthPage = () => {
         </div>
         )}
 
-        <p className="text-xs text-muted-foreground mt-8">
-          Temporary email login while SMS verification is pending approval.
-        </p>
 
         <div className="flex items-center justify-center gap-3 mt-4 text-xs text-muted-foreground flex-wrap">
           <Link to="/privacy" className="hover:text-foreground transition-colors">
