@@ -8,8 +8,10 @@ import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
 import maiLogo from "@/assets/mai-logo.png";
 
-const isWeb = Capacitor.getPlatform() === "web";
-const isIOS = Capacitor.getPlatform() === "ios";
+const platform = Capacitor.getPlatform();
+const isWeb = platform === "web";
+const isIOS = platform === "ios";
+const isAndroid = platform === "android";
 
 
 const AuthPage = () => {
