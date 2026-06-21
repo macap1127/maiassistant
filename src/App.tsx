@@ -19,6 +19,7 @@ import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
 import AuthPage from "./pages/AuthPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import SmsOptInPage from "./pages/SmsOptInPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminTesters from "./pages/AdminTesters";
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/sms-opt-in" element={<SmsOptInPage />} />
             <Route path="/invite/:code" element={<AcceptInvitePage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />

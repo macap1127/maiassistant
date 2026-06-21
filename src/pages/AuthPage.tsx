@@ -16,13 +16,14 @@ const isAndroid = platform === "android";
 
 const AuthPage = () => {
   const { user, loading: authLoading } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   // Redirect away from /auth once authenticated (unless mid-signup or handling invite)
   if (!authLoading && user && !signupSuccess && !inviteCode) {
@@ -40,6 +41,27 @@ const AuthPage = () => {
   }, []);
 
   const submit = async () => {
+    if (mode === "forgot") {
+      if (!email) {
+        setError("Enter your email");
+        return;
+      }
+      setLoading(true);
+      setError("");
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setResetSent(true);
+      } catch (err: any) {
+        console.error("Reset error:", err);
+        setError(err.message || "Could not send reset email");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
     if (!email || password.length < 6) {
       setError("Enter a valid email and password (min 6 chars)");
       return;
@@ -134,14 +156,29 @@ const AuthPage = () => {
       <div className="w-full max-w-sm text-center animate-fade-in">
         <img src={maiLogo} alt="Mia Family Assistant" className="w-28 h-28 rounded-2xl shadow-sm mx-auto mb-6" />
         <h1 className="text-2xl font-serif font-semibold mb-2">
-          {mode === "signin" ? "Welcome Back" : "Create Your Account"}
+          {mode === "signin" ? "Welcome Back" : mode === "signup" ? "Create Your Account" : "Reset Your Password"}
         </h1>
         <p className="text-sm text-muted-foreground mb-8">
           {mode === "signin"
             ? "Sign in with your email and password."
-            : "Enter your email and a password to create an account."}
+            : mode === "signup"
+            ? "Enter your email and a password to create an account."
+            : "Enter your email and we'll send you a reset link."}
         </p>
 
+        {mode === "forgot" && resetSent ? (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              If an account exists for <span className="font-medium text-foreground break-all">{email}</span>, a password reset link is on its way. Check your inbox (and spam folder).
+            </p>
+            <button
+              onClick={() => { setMode("signin"); setResetSent(false); setError(""); }}
+              className="w-full bg-primary text-primary-foreground rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Back to Sign In
+            </button>
+          </div>
+        ) : (
         <div className="space-y-4">
           <div className="relative">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -153,6 +190,7 @@ const AuthPage = () => {
               className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
+          {mode !== "forgot" && (
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -164,6 +202,18 @@ const AuthPage = () => {
               className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
+          )}
+          {mode === "signin" && (
+            <div className="text-right -mt-1">
+              <button
+                type="button"
+                onClick={() => { setMode("forgot"); setError(""); }}
+                className="text-xs text-primary hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
           {error && <p className="text-xs text-destructive">{error}</p>}
           <button
             onClick={submit}
@@ -174,12 +224,13 @@ const AuthPage = () => {
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                {mode === "signin" ? "Sign In" : "Create Account"}
+                {mode === "signin" ? "Sign In" : mode === "signup" ? "Create Account" : "Send Reset Link"}
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
 
+          {mode !== "forgot" && (
           <>
             <div className="flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-border" />
@@ -229,7 +280,6 @@ const AuthPage = () => {
                 setLoading(true);
                 try {
                   if (isIOS) {
-                    // Native Sign in with Apple — uses the system sheet, required for App Store
                     const result = await AppleSignIn.signIn({
                       scopes: [SignInScope.Email, SignInScope.FullName],
                     });
@@ -245,7 +295,6 @@ const AuthPage = () => {
                       return;
                     }
                   } else {
-                    // Web — managed Lovable OAuth flow
                     const redirect = inviteCode
                       ? `${window.location.origin}/invite/${inviteCode}`
                       : `${window.location.origin}/`;
@@ -261,7 +310,6 @@ const AuthPage = () => {
                   setLoading(false);
                 }
               }}
-
               disabled={loading}
               className="w-full bg-foreground text-background rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
@@ -272,7 +320,7 @@ const AuthPage = () => {
             </button>
             )}
           </>
-
+          )}
 
           <p className="text-sm text-muted-foreground">
             {mode === "signin" ? (
@@ -285,7 +333,7 @@ const AuthPage = () => {
                   Create one
                 </button>
               </>
-            ) : (
+            ) : mode === "signup" ? (
               <>
                 Already have an account?{" "}
                 <button
@@ -295,9 +343,20 @@ const AuthPage = () => {
                   Sign in
                 </button>
               </>
+            ) : (
+              <>
+                Remembered it?{" "}
+                <button
+                  onClick={() => { setMode("signin"); setError(""); }}
+                  className="text-primary font-medium hover:underline"
+                >
+                  Back to Sign In
+                </button>
+              </>
             )}
           </p>
         </div>
+        )}
 
         <p className="text-xs text-muted-foreground mt-8">
           Temporary email login while SMS verification is pending approval.
