@@ -276,7 +276,7 @@ const AuthPage = () => {
             </button>
             )}
 
-            {isWeb && (
+            {showAppleButton && (
             <button
               type="button"
               onClick={async () => {
