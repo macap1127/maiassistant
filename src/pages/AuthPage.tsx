@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
-import { AppleSignIn, SignInScope } from "@capawesome/capacitor-apple-sign-in";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/lib/auth";
@@ -10,12 +9,6 @@ import maiLogo from "@/assets/mai-logo.png";
 
 const platform = Capacitor.getPlatform();
 const isWeb = platform === "web";
-const isIOS = platform === "ios";
-const isAndroid = platform === "android";
-// Hide Apple Sign-In on Android devices even when running in a mobile browser/PWA
-const isAndroidUA =
-  typeof navigator !== "undefined" && /android/i.test(navigator.userAgent || "");
-const showAppleButton = !isAndroid && !isAndroidUA;
 
 
 const AuthPage = () => {
@@ -276,38 +269,20 @@ const AuthPage = () => {
             </button>
             )}
 
-            {showAppleButton && (
             <button
               type="button"
               onClick={async () => {
                 setError("");
                 setLoading(true);
                 try {
-                  if (isIOS) {
-                    const result = await AppleSignIn.signIn({
-                      scopes: [SignInScope.Email, SignInScope.FullName],
-                    });
-                    const idToken = result.idToken;
-                    if (!idToken) throw new Error("No identity token returned from Apple");
-                    const { error } = await supabase.auth.signInWithIdToken({
-                      provider: "apple",
-                      token: idToken,
-                    });
-                    if (error) throw error;
-                    if (inviteCode) {
-                      window.location.href = `/invite/${inviteCode}`;
-                      return;
-                    }
-                  } else {
-                    const redirect = inviteCode
-                      ? `${window.location.origin}/invite/${inviteCode}`
-                      : `${window.location.origin}/`;
-                    const result = await lovable.auth.signInWithOAuth("apple", {
-                      redirect_uri: redirect,
-                    });
-                    if (result.error) throw new Error(result.error.message || "Apple sign-in failed");
-                    if (result.redirected) return;
-                  }
+                  const redirect = inviteCode
+                    ? `${window.location.origin}/invite/${inviteCode}`
+                    : `${window.location.origin}/`;
+                  const result = await lovable.auth.signInWithOAuth("apple", {
+                    redirect_uri: redirect,
+                  });
+                  if (result.error) throw new Error(result.error.message || "Apple sign-in failed");
+                  if (result.redirected) return;
                 } catch (err: any) {
                   console.error("Apple auth error:", err);
                   setError(err.message || "Apple sign-in failed. Try again.");
@@ -322,7 +297,6 @@ const AuthPage = () => {
               </svg>
               Continue with Apple
             </button>
-            )}
           </>
           )}
 
