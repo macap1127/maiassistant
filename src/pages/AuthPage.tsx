@@ -41,6 +41,27 @@ const AuthPage = () => {
   }, []);
 
   const submit = async () => {
+    if (mode === "forgot") {
+      if (!email) {
+        setError("Enter your email");
+        return;
+      }
+      setLoading(true);
+      setError("");
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setResetSent(true);
+      } catch (err: any) {
+        console.error("Reset error:", err);
+        setError(err.message || "Could not send reset email");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
     if (!email || password.length < 6) {
       setError("Enter a valid email and password (min 6 chars)");
       return;
