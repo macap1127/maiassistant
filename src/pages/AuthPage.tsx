@@ -230,6 +230,7 @@ const AuthPage = () => {
             )}
           </button>
 
+          {mode !== "forgot" && (
           <>
             <div className="flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-border" />
@@ -279,7 +280,6 @@ const AuthPage = () => {
                 setLoading(true);
                 try {
                   if (isIOS) {
-                    // Native Sign in with Apple — uses the system sheet, required for App Store
                     const result = await AppleSignIn.signIn({
                       scopes: [SignInScope.Email, SignInScope.FullName],
                     });
@@ -295,7 +295,6 @@ const AuthPage = () => {
                       return;
                     }
                   } else {
-                    // Web — managed Lovable OAuth flow
                     const redirect = inviteCode
                       ? `${window.location.origin}/invite/${inviteCode}`
                       : `${window.location.origin}/`;
@@ -311,7 +310,6 @@ const AuthPage = () => {
                   setLoading(false);
                 }
               }}
-
               disabled={loading}
               className="w-full bg-foreground text-background rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
@@ -322,7 +320,7 @@ const AuthPage = () => {
             </button>
             )}
           </>
-
+          )}
 
           <p className="text-sm text-muted-foreground">
             {mode === "signin" ? (
@@ -335,7 +333,7 @@ const AuthPage = () => {
                   Create one
                 </button>
               </>
-            ) : (
+            ) : mode === "signup" ? (
               <>
                 Already have an account?{" "}
                 <button
@@ -345,9 +343,20 @@ const AuthPage = () => {
                   Sign in
                 </button>
               </>
+            ) : (
+              <>
+                Remembered it?{" "}
+                <button
+                  onClick={() => { setMode("signin"); setError(""); }}
+                  className="text-primary font-medium hover:underline"
+                >
+                  Back to Sign In
+                </button>
+              </>
             )}
           </p>
         </div>
+        )}
 
         <p className="text-xs text-muted-foreground mt-8">
           Temporary email login while SMS verification is pending approval.
