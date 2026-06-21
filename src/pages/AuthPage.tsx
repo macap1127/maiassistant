@@ -12,6 +12,10 @@ const platform = Capacitor.getPlatform();
 const isWeb = platform === "web";
 const isIOS = platform === "ios";
 const isAndroid = platform === "android";
+// Hide Apple Sign-In on Android devices even when running in a mobile browser/PWA
+const isAndroidUA =
+  typeof navigator !== "undefined" && /android/i.test(navigator.userAgent || "");
+const showAppleButton = !isAndroid && !isAndroidUA;
 
 
 const AuthPage = () => {
@@ -204,11 +208,11 @@ const AuthPage = () => {
           </div>
           )}
           {mode === "signin" && (
-            <div className="text-right -mt-1">
+            <div className="text-right -mt-2">
               <button
                 type="button"
                 onClick={() => { setMode("forgot"); setError(""); }}
-                className="text-xs text-primary hover:underline"
+                className="text-sm font-medium text-primary hover:underline"
               >
                 Forgot password?
               </button>
@@ -272,7 +276,7 @@ const AuthPage = () => {
             </button>
             )}
 
-            {isWeb && (
+            {showAppleButton && (
             <button
               type="button"
               onClick={async () => {
