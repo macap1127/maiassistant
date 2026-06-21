@@ -16,13 +16,14 @@ const isAndroid = platform === "android";
 
 const AuthPage = () => {
   const { user, loading: authLoading } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   // Redirect away from /auth once authenticated (unless mid-signup or handling invite)
   if (!authLoading && user && !signupSuccess && !inviteCode) {
