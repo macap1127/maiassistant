@@ -230,7 +230,7 @@ const AuthPage = () => {
             )}
           </button>
 
-          {mode !== "forgot" && (
+          {mode !== "forgot" && isWeb && (
           <>
             <div className="flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-border" />
