@@ -208,11 +208,11 @@ const AuthPage = () => {
           </div>
           )}
           {mode === "signin" && (
-            <div className="text-right -mt-1">
+            <div className="text-right -mt-2">
               <button
                 type="button"
                 onClick={() => { setMode("forgot"); setError(""); }}
-                className="text-xs text-primary hover:underline"
+                className="text-sm font-medium text-primary hover:underline"
               >
                 Forgot password?
               </button>
