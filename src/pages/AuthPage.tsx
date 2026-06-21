@@ -219,7 +219,7 @@ const AuthPage = () => {
             </button>
             )}
 
-            {(isWeb || isIOS) && (
+            {isIOS && (
             <button
               type="button"
               onClick={async () => {
