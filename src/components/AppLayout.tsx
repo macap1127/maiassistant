@@ -53,6 +53,7 @@ const AppLayout = () => {
   const [open, setOpen] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState<null | { householdId: string }>(null);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  usePushNotifications(user?.id);
 
   useEffect(() => {
     if (!user) {
