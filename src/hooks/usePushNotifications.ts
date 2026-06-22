@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Capacitor } from "@capacitor/core";
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { getToken, onMessage } from "firebase/messaging";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { getMessagingIfSupported, VAPID_KEY } from "@/lib/firebase";
+import { getPushPreference, saveDeviceToken, deleteDeviceToken } from "@/lib/pushPreference";
 
 async function registerWebPush(userId: string): Promise<(() => void) | undefined> {
   if (!("serviceWorker" in navigator) || !("Notification" in window)) return;
@@ -33,7 +34,10 @@ async function registerWebPush(userId: string): Promise<(() => void) | undefined
     .from("device_tokens")
     .upsert({ user_id: userId, token, platform: "web" }, { onConflict: "token" });
   if (error) console.error("[push/web] failed to save token", error);
-  else console.log("[push/web] FCM token saved");
+  else {
+    saveDeviceToken(token);
+    console.log("[push/web] FCM token saved");
+  }
 
   const unsub = onMessage(messaging, (payload) => {
     toast({
@@ -44,27 +48,31 @@ async function registerWebPush(userId: string): Promise<(() => void) | undefined
   return () => unsub();
 }
 
-/**
- * Registers the device with Firebase Cloud Messaging (FCM) on both iOS and
- * Android, then stores the FCM token in `device_tokens` for the current user.
- * Native platforms only.
- */
 export function usePushNotifications(userId: string | undefined) {
+  const [enabled, setEnabled] = useState(() => getPushPreference());
+
+  useEffect(() => {
+    const handler = () => setEnabled(getPushPreference());
+    window.addEventListener("push-preference-changed", handler);
+    return () => window.removeEventListener("push-preference-changed", handler);
+  }, []);
+
   useEffect(() => {
     if (!userId) return;
 
     let cleanup: (() => void) | undefined;
 
-    // Web (browser) push path
+    if (!enabled) {
+      deleteDeviceToken(userId).catch(console.error);
+      return;
+    }
+
     if (!Capacitor.isNativePlatform()) {
       registerWebPush(userId)
-        .then((fn) => {
-          if (fn) cleanup = fn;
-        })
+        .then((fn) => { if (fn) cleanup = fn; })
         .catch((e) => console.error("[push/web] setup failed", e));
       return () => cleanup?.();
     }
-
 
     (async () => {
       try {
@@ -81,15 +89,14 @@ export function usePushNotifications(userId: string | undefined) {
           const platform = Capacitor.getPlatform() as "ios" | "android" | "web";
           const { error } = await supabase
             .from("device_tokens")
-            .upsert(
-              { user_id: userId, token, platform },
-              { onConflict: "token" }
-            );
+            .upsert({ user_id: userId, token, platform }, { onConflict: "token" });
           if (error) console.error("[push] failed to save token", error);
-          else console.log("[push] FCM token saved", platform);
+          else {
+            saveDeviceToken(token);
+            console.log("[push] FCM token saved", platform);
+          }
         };
 
-        // Get initial token
         try {
           const { token } = await FirebaseMessaging.getToken();
           if (token) await saveToken(token);
@@ -124,5 +131,5 @@ export function usePushNotifications(userId: string | undefined) {
     })();
 
     return () => cleanup?.();
-  }, [userId]);
+  }, [userId, enabled]);
 }
