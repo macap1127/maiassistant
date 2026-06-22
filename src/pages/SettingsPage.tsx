@@ -276,6 +276,54 @@ const SettingsPage = () => {
           </p>
         </div>
 
+        <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "120ms" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Bell className="w-4 h-4 text-primary" />
+            <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+              Push Notifications
+            </label>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">
+                {pushEnabled ? "Enabled" : "Disabled"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {pushEnabled
+                  ? "You'll receive alerts on this device."
+                  : "Turn on to get alerts on this device."}
+              </p>
+            </div>
+            <Switch
+              checked={pushEnabled}
+              onCheckedChange={() => {
+                const next = !pushEnabled;
+                setPushEnabled(next);
+                setPushPreference(next);
+                toast({
+                  title: next ? "Push notifications enabled" : "Push notifications disabled",
+                  description: next
+                    ? "You'll receive notifications on this device."
+                    : "You won't receive push notifications on this device anymore.",
+                });
+              }}
+            />
+          </div>
+          {pushEnabled && (
+            <div className="mt-3 pt-3 border-t border-border space-y-1 text-xs text-muted-foreground">
+              <p className="font-medium text-foreground text-[11px] mb-1">What you'll receive:</p>
+              <ul className="list-disc list-inside space-y-0.5">
+                <li>Task reminders and due-date alerts</li>
+                <li>Grocery list updates from family members</li>
+                <li>New calendar events and import completions</li>
+                <li>Household activity (invites, member joins)</li>
+                <li>Receipt scan updates</li>
+                <li>Voice usage limit warnings</li>
+              </ul>
+            </div>
+          )}
+        </div>
+
         <button
           onClick={save}
           className="w-full bg-primary text-primary-foreground rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity animate-slide-up"
