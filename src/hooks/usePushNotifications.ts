@@ -52,9 +52,19 @@ async function registerWebPush(userId: string): Promise<(() => void) | undefined
 export function usePushNotifications(userId: string | undefined) {
   useEffect(() => {
     if (!userId) return;
-    if (!Capacitor.isNativePlatform()) return;
 
     let cleanup: (() => void) | undefined;
+
+    // Web (browser) push path
+    if (!Capacitor.isNativePlatform()) {
+      registerWebPush(userId)
+        .then((fn) => {
+          if (fn) cleanup = fn;
+        })
+        .catch((e) => console.error("[push/web] setup failed", e));
+      return () => cleanup?.();
+    }
+
 
     (async () => {
       try {
