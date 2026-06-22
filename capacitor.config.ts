@@ -13,6 +13,12 @@ const config: CapacitorConfig = {
   //   cleartext: true,
   // },
   plugins: {
+    FirebaseMessaging: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
     StatusBar: {
       style: 'DARK',
     },
