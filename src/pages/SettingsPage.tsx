@@ -55,6 +55,7 @@ const SettingsPage = () => {
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
+  const [pushEnabled, setPushEnabled] = useState(() => getPushPreference());
   const [searchParams, setSearchParams] = useSearchParams();
 
   const deleteAccount = async () => {
