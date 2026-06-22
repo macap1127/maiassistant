@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import maiLogo from "@/assets/mai-logo.png";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 
 const navItems = [
@@ -52,6 +53,7 @@ const AppLayout = () => {
   const [open, setOpen] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState<null | { householdId: string }>(null);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  usePushNotifications(user?.id);
 
   useEffect(() => {
     if (!user) {
