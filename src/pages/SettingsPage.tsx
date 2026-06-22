@@ -13,6 +13,8 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Switch } from "@/components/ui/switch";
+import { getPushPreference, setPushPreference } from "@/lib/pushPreference";
 import { useAuth } from "@/lib/auth";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
