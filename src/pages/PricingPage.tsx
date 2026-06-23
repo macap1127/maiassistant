@@ -289,11 +289,14 @@ const PricingPage = () => {
 
                 <button
                   onClick={() => handlePick(tier.id)}
-                  disabled={isCurrent}
-                  className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
+                  disabled={isCurrent || nativePurchasing !== null}
+                  className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
                 >
+                  {nativePurchasing === tier.id && <Loader2 className="w-4 h-4 animate-spin" />}
                   {isCurrent
                     ? "Current plan"
+                    : nativePurchasing === tier.id
+                    ? "Opening store…"
                     : household && hasActiveSub
                     ? `Switch to ${tier.name}`
                     : household && !household.hasUsedTrial
@@ -304,6 +307,18 @@ const PricingPage = () => {
             );
           })}
         </div>
+
+        {native && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={handleRestore}
+              disabled={restoring}
+              className="text-xs text-muted-foreground hover:text-foreground underline disabled:opacity-50"
+            >
+              {restoring ? "Restoring…" : "Restore purchases"}
+            </button>
+          </div>
+        )}
 
         {/* Compare features table */}
         <div className="mt-10">
