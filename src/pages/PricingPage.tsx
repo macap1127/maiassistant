@@ -8,17 +8,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "@/hooks/use-toast";
 
-const PRICE_IDS: Record<Tier, string> = {
-  basic: "mai_basic_monthly",
-  family: "mai_family_monthly",
-  family_plus: "mai_family_plus_monthly",
+type Interval = "monthly" | "yearly";
+
+const PRICE_IDS: Record<Interval, Record<Tier, string>> = {
+  monthly: {
+    basic: "mai_basic_monthly",
+    family: "mai_family_monthly",
+    family_plus: "mai_family_plus_monthly",
+  },
+  yearly: {
+    basic: "mai_basic_yearly",
+    family: "mai_family_yearly",
+    family_plus: "mai_family_plus_yearly",
+  },
 };
 
 type TierDef = {
   id: Tier;
   name: string;
   tagline: string;
-  price: string;
+  monthly: number;
+  yearly: number;
   icon: typeof Zap;
   popular?: boolean;
   highlights: string[];
@@ -29,7 +39,8 @@ const tiers: TierDef[] = [
     id: "basic",
     name: "Basic",
     tagline: "For one person",
-    price: "$9",
+    monthly: 7,
+    yearly: 70,
     icon: Zap,
     highlights: [
       "1 login",
@@ -44,7 +55,8 @@ const tiers: TierDef[] = [
     id: "family",
     name: "Family",
     tagline: "Most popular",
-    price: "$29",
+    monthly: 22,
+    yearly: 220,
     icon: Crown,
     popular: true,
     highlights: [
@@ -52,7 +64,7 @@ const tiers: TierDef[] = [
       "120 shared voice minutes / month",
       "Everything in Basic",
       "Shared family workspace & invites",
-      "Daily SMS reminders",
+      "Daily push reminders",
       "Unlimited receipt scanning",
       "AI calendar import (PDF & images)",
     ],
@@ -61,7 +73,8 @@ const tiers: TierDef[] = [
     id: "family_plus",
     name: "Family Plus",
     tagline: "For larger households",
-    price: "$49",
+    monthly: 35,
+    yearly: 350,
     icon: Sparkles,
     highlights: [
       "Up to 6 logins",
@@ -101,7 +114,7 @@ const featureMatrix: { group: string; rows: FeatureRow[] }[] = [
     group: "Everyday tools",
     rows: [
       { label: "Tasks, groceries & calendar", basic: true, family: true, family_plus: true },
-      { label: "Daily SMS reminders", basic: false, family: true, family_plus: true },
+      { label: "Daily push reminders", basic: false, family: true, family_plus: true },
       { label: "Receipt scanning (OCR)", basic: "10 / mo", family: "Unlimited", family_plus: "Unlimited" },
       { label: "AI calendar import (PDF / image)", basic: "5 / mo", family: "Unlimited", family_plus: "Unlimited" },
     ],
@@ -127,6 +140,7 @@ const PricingPage = () => {
   const { user } = useAuth();
   const { household } = useHousehold();
   const [checkoutTier, setCheckoutTier] = useState<Tier | null>(null);
+  const [interval, setInterval] = useState<Interval>("monthly");
 
   const hasActiveSub =
     !!household?.stripeSubscriptionId &&
@@ -198,8 +212,11 @@ const PricingPage = () => {
                     <p className="text-xs text-muted-foreground">{tier.tagline}</p>
                   </div>
                   <div className="ml-auto text-right">
-                    <span className="text-xl font-bold">{tier.price}</span>
-                    <span className="text-xs text-muted-foreground">/mo</span>
+                    <span className="text-xl font-bold">${interval === "monthly" ? tier.monthly : tier.yearly}</span>
+                    <span className="text-xs text-muted-foreground">/{interval === "monthly" ? "mo" : "yr"}</span>
+                    {interval === "yearly" && (
+                      <p className="text-[10px] text-muted-foreground mt-0.5">≈ ${(tier.yearly / 12).toFixed(2)}/mo</p>
+                    )}
                   </div>
                 </div>
 
@@ -289,26 +306,35 @@ const PricingPage = () => {
               </button>
             </div>
 
-            <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-[11px] text-muted-foreground leading-relaxed">
-              {household && !household.hasUsedTrial ? (
+            {(() => {
+              const tier = tiers.find(t => t.id === checkoutTier)!;
+              const amount = interval === "monthly" ? tier.monthly : tier.yearly;
+              const period = interval === "monthly" ? "month" : "year";
+              return (
                 <>
-                  <p className="text-foreground font-medium mb-1">7-day free trial, then {tiers.find(t => t.id === checkoutTier)?.price}/month.</p>
-                  <p>You won't be charged today. Your subscription auto-renews monthly at the listed price until you cancel. Cancel anytime from Settings → Manage billing — no charge if you cancel before the trial ends.</p>
-                </>
-              ) : (
-                <p>Your subscription auto-renews monthly at {tiers.find(t => t.id === checkoutTier)?.price} until you cancel. Cancel anytime from Settings → Manage billing.</p>
-              )}
-              <p className="mt-2">
-                By subscribing, you agree to our{" "}
-                <Link to="/terms" className="underline hover:text-foreground" target="_blank">Terms</Link> and{" "}
-                <Link to="/privacy" className="underline hover:text-foreground" target="_blank">Privacy Policy</Link>.
-              </p>
-            </div>
+                  <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-[11px] text-muted-foreground leading-relaxed">
+                    {household && !household.hasUsedTrial ? (
+                      <>
+                        <p className="text-foreground font-medium mb-1">7-day free trial, then ${amount}/{period}.</p>
+                        <p>You won't be charged today. Your subscription auto-renews {interval} at the listed price until you cancel. Cancel anytime from Settings → Manage billing — no charge if you cancel before the trial ends.</p>
+                      </>
+                    ) : (
+                      <p>Your subscription auto-renews {interval} at ${amount} until you cancel. Cancel anytime from Settings → Manage billing.</p>
+                    )}
+                    <p className="mt-2">
+                      By subscribing, you agree to our{" "}
+                      <Link to="/terms" className="underline hover:text-foreground" target="_blank">Terms</Link> and{" "}
+                      <Link to="/privacy" className="underline hover:text-foreground" target="_blank">Privacy Policy</Link>.
+                    </p>
+                  </div>
 
-            <StripeEmbeddedCheckout
-              priceId={PRICE_IDS[checkoutTier]}
-              returnUrl={`${window.location.origin}/settings?checkout=success`}
-            />
+                  <StripeEmbeddedCheckout
+                    priceId={PRICE_IDS[interval][checkoutTier]}
+                    returnUrl={`${window.location.origin}/settings?checkout=success`}
+                  />
+                </>
+              );
+            })()}
           </div>
         </div>
       )}
