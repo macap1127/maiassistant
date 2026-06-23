@@ -47,8 +47,8 @@ const tiers: TierDef[] = [
     id: "basic",
     name: "Basic",
     tagline: "For one person",
-    monthly: 7,
-    yearly: 70,
+    monthly: 7.99,
+    yearly: 70.99,
     icon: Zap,
     highlights: [
       "1 login",
@@ -63,8 +63,8 @@ const tiers: TierDef[] = [
     id: "family",
     name: "Family",
     tagline: "Most popular",
-    monthly: 22,
-    yearly: 220,
+    monthly: 22.99,
+    yearly: 220.99,
     icon: Crown,
     popular: true,
     highlights: [
@@ -81,8 +81,8 @@ const tiers: TierDef[] = [
     id: "family_plus",
     name: "Family Plus",
     tagline: "For larger households",
-    monthly: 35,
-    yearly: 350,
+    monthly: 35.99,
+    yearly: 350.99,
     icon: Sparkles,
     highlights: [
       "Up to 6 logins",
