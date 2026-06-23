@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare, Languages, Trash2, Bell } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { SmsReminderCard } from "@/components/SmsReminderCard";
+import { PushNotificationCard } from "@/components/PushNotificationCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
@@ -237,7 +237,8 @@ const SettingsPage = () => {
           />
         </div>
 
-        {household && <SmsReminderCard household={household} />}
+        <PushNotificationCard />
+        {/* SmsReminderCard intentionally retained in codebase but unused — push notifications replace SMS reminders. */}
 
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "80ms" }}>
           <div className="flex items-center gap-2 mb-3">
