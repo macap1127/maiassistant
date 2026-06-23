@@ -20,14 +20,14 @@ type Interval = "monthly" | "yearly";
 
 const PRICE_IDS: Record<Interval, Record<Tier, string>> = {
   monthly: {
-    basic: "mai_basic_monthly",
-    family: "mai_family_monthly",
-    family_plus: "mai_family_plus_monthly",
+    basic: "mia_basic_monthly",
+    family: "mia_family_monthly",
+    family_plus: "mia_family_plus_monthly",
   },
   yearly: {
-    basic: "mai_basic_yearly",
-    family: "mai_family_yearly",
-    family_plus: "mai_family_plus_yearly",
+    basic: "mia_basic_yearly",
+    family: "mia_family_yearly",
+    family_plus: "mia_family_plus_yearly",
   },
 };
 
