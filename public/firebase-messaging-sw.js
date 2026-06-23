@@ -12,18 +12,11 @@ firebase.initializeApp({
   appId: "1:1083180735307:web:c54aace3025499e4ece6ce",
 });
 
-const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage((payload) => {
-  const title = payload.notification?.title || "Mia";
-  const options = {
-    body: payload.notification?.body || "",
-    icon: "/icon-192.png",
-    badge: "/icon-192.png",
-    data: payload.data || {},
-  };
-  self.registration.showNotification(title, options);
-});
+// Initialize messaging so FCM can auto-display notifications from the
+// `notification` payload. Do NOT add an onBackgroundMessage handler that
+// calls showNotification — FCM already shows it, and a manual call here
+// produces duplicate notifications.
+firebase.messaging();
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
