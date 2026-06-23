@@ -34,6 +34,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // deadlocks inside the auth callback.
       if (event === "SIGNED_IN" && s?.user) {
         const u = s.user;
+        // Identify the user to RevenueCat on native so webhook events map back.
+        setTimeout(() => {
+          import("@/lib/revenuecat")
+            .then((m) => m.initRevenueCat(u.id))
+            .catch((e) => console.warn("[revenuecat] init failed", e));
+        }, 0);
         setTimeout(async () => {
           const { data: existing } = await supabase
             .from("household_members")
@@ -47,6 +53,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             name: "My Family",
           });
         }, 0);
+      }
+      if (event === "SIGNED_OUT") {
+        import("@/lib/revenuecat")
+          .then((m) => m.logoutRevenueCat())
+          .catch(() => {});
       }
     });
 
