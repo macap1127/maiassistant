@@ -13,7 +13,11 @@ const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPAB
 
 const SAAS_TAX_CODE = "txcd_10103001"; // Software as a Service
 
-const LOOKUP_KEYS = ["mai_basic_monthly", "mai_family_monthly", "mai_family_plus_monthly"];
+const LOOKUP_KEYS = [
+  "mai_basic_monthly", "mai_basic_yearly",
+  "mai_family_monthly", "mai_family_yearly",
+  "mai_family_plus_monthly", "mai_family_plus_yearly",
+];
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });

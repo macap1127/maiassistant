@@ -5,9 +5,9 @@ import { useAuth } from "@/lib/auth";
 export type Tier = "basic" | "family" | "family_plus";
 
 export const TIER_INFO: Record<Tier, { label: string; price: number; logins: number; minutes: number; seconds: number }> = {
-  basic: { label: "Basic", price: 9, logins: 1, minutes: 30, seconds: 1800 },
-  family: { label: "Family", price: 29, logins: 4, minutes: 120, seconds: 7200 },
-  family_plus: { label: "Family Plus", price: 49, logins: 6, minutes: 240, seconds: 14400 },
+  basic: { label: "Basic", price: 7, logins: 1, minutes: 30, seconds: 1800 },
+  family: { label: "Family", price: 22, logins: 4, minutes: 120, seconds: 7200 },
+  family_plus: { label: "Family Plus", price: 35, logins: 6, minutes: 240, seconds: 14400 },
 };
 
 export interface HouseholdState {
