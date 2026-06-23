@@ -70,7 +70,7 @@ export async function logoutRevenueCat() {
 
 // Map a RevenueCat Offering's packages to our internal price IDs.
 // Assumes packages are configured in RC with the same identifiers as our Stripe
-// lookup keys (mai_basic_monthly, mai_basic_yearly, etc.) OR with the standard
+// lookup keys (mia_basic_monthly, mia_basic_yearly, etc.) OR with the standard
 // RC identifiers ($rc_monthly / $rc_annual) when only one tier is exposed.
 export type RcPackage = {
   identifier: string;

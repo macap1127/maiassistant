@@ -5,12 +5,12 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const PRODUCT_TO_TIER: Record<string, { tier: string; seconds: number }> = {
-  mai_basic_monthly: { tier: "basic", seconds: 1800 },
-  mai_basic_yearly: { tier: "basic", seconds: 1800 },
-  mai_family_monthly: { tier: "family", seconds: 7200 },
-  mai_family_yearly: { tier: "family", seconds: 7200 },
-  mai_family_plus_monthly: { tier: "family_plus", seconds: 14400 },
-  mai_family_plus_yearly: { tier: "family_plus", seconds: 14400 },
+  mia_basic_monthly: { tier: "basic", seconds: 1800 },
+  mia_basic_yearly: { tier: "basic", seconds: 1800 },
+  mia_family_monthly: { tier: "family", seconds: 7200 },
+  mia_family_yearly: { tier: "family", seconds: 7200 },
+  mia_family_plus_monthly: { tier: "family_plus", seconds: 14400 },
+  mia_family_plus_yearly: { tier: "family_plus", seconds: 14400 },
 };
 
 let _supabase: ReturnType<typeof createClient> | null = null;
