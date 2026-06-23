@@ -114,7 +114,7 @@ const featureMatrix: { group: string; rows: FeatureRow[] }[] = [
     group: "Everyday tools",
     rows: [
       { label: "Tasks, groceries & calendar", basic: true, family: true, family_plus: true },
-      { label: "Daily SMS reminders", basic: false, family: true, family_plus: true },
+      { label: "Daily push reminders", basic: false, family: true, family_plus: true },
       { label: "Receipt scanning (OCR)", basic: "10 / mo", family: "Unlimited", family_plus: "Unlimited" },
       { label: "AI calendar import (PDF / image)", basic: "5 / mo", family: "Unlimited", family_plus: "Unlimited" },
     ],
