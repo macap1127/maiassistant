@@ -112,9 +112,37 @@ If you want, I can ship the "hide pricing on iOS" change now — it's a 5-minute
 
 ---
 
-## 7. Deploy loop
+## 7. Push notifications setup (iOS native)
+
+Android push works out of the box via Firebase. iOS requires two extra one-time steps before notifications will arrive on a real device or TestFlight build.
+
+### A. Upload APNs Auth Key to Firebase
+1. In Apple Developer → **Certificates, Identifiers & Profiles → Keys → +**
+2. Name it "Mia APNs", check **Apple Push Notifications service (APNs)**, click Continue → Register.
+3. Download the `.p8` file (you can only download it once). Note the **Key ID** and your **Team ID**.
+4. Firebase Console → **Project settings → Cloud Messaging → Apple app configuration**.
+5. Upload the `.p8`, paste Key ID + Team ID, Save.
+
+### B. Enable Push capability in Xcode
+1. Open `ios/App/App.xcworkspace` in Xcode.
+2. Select the **App** target → **Signing & Capabilities**.
+3. Click **+ Capability** and add:
+   - **Push Notifications**
+   - **Background Modes** → check **Remote notifications**
+4. Confirm your team is selected and provisioning profile rebuilds without errors.
+5. `npx cap sync ios`, then Product → Archive → upload to TestFlight to test on a real device (push doesn't work in the simulator).
+
+### C. Verify
+- Sign in on an iOS device build, accept the notification prompt.
+- Have another household member add a grocery item → push should arrive within seconds.
+- Daily digest fires at **9:00 AM ET**.
+
+---
+
+## 8. Deploy loop
 
 ```bash
 git pull && npm install && npm run build && npx cap sync ios
 # Xcode → Product → Archive → Distribute App → App Store Connect
 ```
+
