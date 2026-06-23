@@ -1,12 +1,20 @@
-import { useState } from "react";
-import { Check, Crown, Zap, Sparkles, X, Minus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, Crown, Zap, Sparkles, X, Minus, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { Capacitor } from "@capacitor/core";
 import { useAuth } from "@/lib/auth";
 import { useHousehold, type Tier } from "@/lib/useHousehold";
 import { StripeEmbeddedCheckout, PaymentTestModeBanner } from "@/components/StripeEmbeddedCheckout";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "@/hooks/use-toast";
+import {
+  initRevenueCat,
+  getOfferings,
+  purchasePackage,
+  restorePurchases,
+  isNative,
+} from "@/lib/revenuecat";
 
 type Interval = "monthly" | "yearly";
 
@@ -138,13 +146,59 @@ function Cell({ value }: { value: string | boolean }) {
 const PricingPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { household } = useHousehold();
+  const { household, refresh } = useHousehold();
   const [checkoutTier, setCheckoutTier] = useState<Tier | null>(null);
   const [interval, setInterval] = useState<Interval>("monthly");
+  const [nativePurchasing, setNativePurchasing] = useState<Tier | null>(null);
+  const [restoring, setRestoring] = useState(false);
+  const native = isNative();
+
+  useEffect(() => {
+    if (native && user?.id) initRevenueCat(user.id).catch(console.warn);
+  }, [native, user?.id]);
 
   const hasActiveSub =
     !!household?.stripeSubscriptionId &&
     ["active", "trialing", "past_due"].includes(household.subscriptionStatus);
+
+  const handleNativePurchase = async (tier: Tier) => {
+    setNativePurchasing(tier);
+    try {
+      const offering = await getOfferings();
+      if (!offering) throw new Error("No subscription offerings configured. Try again later.");
+      const wantedProduct = PRICE_IDS[interval][tier];
+      // Match either by RC package identifier or store product identifier.
+      const pkg = offering.availablePackages.find(
+        (p: any) =>
+          p.identifier === wantedProduct ||
+          p.product?.identifier === wantedProduct ||
+          p.product?.identifier?.endsWith(`.${wantedProduct}`),
+      );
+      if (!pkg) throw new Error(`Plan ${wantedProduct} not available on this device.`);
+      await purchasePackage(pkg);
+      toast({ title: "Purchase complete", description: "Updating your plan…" });
+      // Give RC webhook a moment to update Supabase, then refresh.
+      setTimeout(() => refresh?.(), 2500);
+    } catch (e: any) {
+      if (e?.userCancelled) return;
+      toast({ variant: "destructive", title: "Purchase failed", description: e?.message ?? String(e) });
+    } finally {
+      setNativePurchasing(null);
+    }
+  };
+
+  const handleRestore = async () => {
+    setRestoring(true);
+    try {
+      await restorePurchases();
+      toast({ title: "Purchases restored", description: "Refreshing your plan…" });
+      setTimeout(() => refresh?.(), 1500);
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Restore failed", description: e?.message ?? String(e) });
+    } finally {
+      setRestoring(false);
+    }
+  };
 
   const handlePick = async (tier: Tier) => {
     if (!user) {
@@ -153,6 +207,10 @@ const PricingPage = () => {
     }
     if (household && !household.isOwner) {
       toast({ variant: "destructive", title: "Owner only", description: "Only the household owner can change the plan." });
+      return;
+    }
+    if (native) {
+      await handleNativePurchase(tier);
       return;
     }
     if (hasActiveSub) {
