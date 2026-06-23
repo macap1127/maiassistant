@@ -160,23 +160,8 @@ Deno.serve(async (req) => {
 
   const rawBody = await req.text();
 
-  const signingSecret = Deno.env.get("REVENUECAT_WEBHOOK_SIGNING_SECRET");
-  if (signingSecret) {
-    const sig =
-      req.headers.get("x-revenuecat-webhook-signature") ??
-      req.headers.get("x-revenuecat-signature") ??
-      req.headers.get("revenuecat-signature") ??
-      "";
-    if (!sig) {
-      console.error("[revenuecat-webhook] missing signature header");
-      return new Response("Missing signature", { status: 401 });
-    }
-    const ok = await verifyHmac(rawBody, sig, signingSecret);
-    if (!ok) {
-      console.error("[revenuecat-webhook] invalid HMAC signature");
-      return new Response("Invalid signature", { status: 401 });
-    }
-  }
+  // RevenueCat authenticates webhooks via the Authorization header only (verified above).
+  // No HMAC signature is sent, so no additional signature check is required.
 
   let payload: { event?: RCEvent };
   try {
