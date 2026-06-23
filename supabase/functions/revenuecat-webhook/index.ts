@@ -121,6 +121,29 @@ async function applyBillingIssue(householdId: string) {
     .eq("id", householdId);
 }
 
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+async function verifyHmac(rawBody: string, signatureHeader: string, secret: string): Promise<boolean> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sigBuf = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(rawBody));
+  const bytes = new Uint8Array(sigBuf);
+  const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const b64 = btoa(String.fromCharCode(...bytes));
+  const presented = signatureHeader.trim().replace(/^sha256=/i, "");
+  return timingSafeEqual(presented, hex) || timingSafeEqual(presented, b64);
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
@@ -135,9 +158,28 @@ Deno.serve(async (req) => {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  const rawBody = await req.text();
+
+  const signingSecret = Deno.env.get("REVENUECAT_WEBHOOK_SIGNING_SECRET");
+  if (signingSecret) {
+    const sig =
+      req.headers.get("x-revenuecat-signature") ??
+      req.headers.get("revenuecat-signature") ??
+      "";
+    if (!sig) {
+      console.error("[revenuecat-webhook] missing signature header");
+      return new Response("Missing signature", { status: 401 });
+    }
+    const ok = await verifyHmac(rawBody, sig, signingSecret);
+    if (!ok) {
+      console.error("[revenuecat-webhook] invalid HMAC signature");
+      return new Response("Invalid signature", { status: 401 });
+    }
+  }
+
   let payload: { event?: RCEvent };
   try {
-    payload = await req.json();
+    payload = JSON.parse(rawBody);
   } catch {
     return new Response("Bad JSON", { status: 400 });
   }
