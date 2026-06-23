@@ -93,8 +93,8 @@ Deno.serve(async (req) => {
       const tokenUserIds = [...new Set((tokens ?? []).map((t) => t.user_id))];
       if (!tokenUserIds.length) continue;
 
-      // ===== Daily digest at 08:00 local (5-min window) =====
-      if (now.hh === 8 && now.mm < 5) {
+      // ===== Daily digest at 09:00 local (5-min window) =====
+      if (now.hh === 9 && now.mm < 5) {
         const { data: todays } = await supabase
           .from("events")
           .select("title, time, location")
