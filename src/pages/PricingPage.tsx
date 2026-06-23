@@ -140,6 +140,7 @@ const PricingPage = () => {
   const { user } = useAuth();
   const { household } = useHousehold();
   const [checkoutTier, setCheckoutTier] = useState<Tier | null>(null);
+  const [interval, setInterval] = useState<Interval>("monthly");
 
   const hasActiveSub =
     !!household?.stripeSubscriptionId &&
