@@ -71,7 +71,23 @@ Deno.serve(async (req) => {
   try {
     const saRaw = Deno.env.get("FIREBASE_SERVICE_ACCOUNT");
     if (!saRaw) throw new Error("FIREBASE_SERVICE_ACCOUNT secret is not set");
-    const sa = JSON.parse(saRaw) as { client_email: string; private_key: string; project_id: string };
+    // Be tolerant of stray wrapping/whitespace from secret pasting.
+    let saText = saRaw.trim();
+    const firstBrace = saText.indexOf("{");
+    const lastBrace = saText.lastIndexOf("}");
+    if (firstBrace > 0 || lastBrace < saText.length - 1) {
+      if (firstBrace !== -1 && lastBrace !== -1) saText = saText.slice(firstBrace, lastBrace + 1);
+    }
+    let sa: { client_email: string; private_key: string; project_id: string };
+    try {
+      sa = JSON.parse(saText);
+    } catch (e) {
+      throw new Error(`FIREBASE_SERVICE_ACCOUNT is not valid JSON (len=${saRaw.length}, first40=${JSON.stringify(saRaw.slice(0, 40))}): ${(e as Error).message}`);
+    }
+    // Some pasting flows escape the private key newlines as literal "\n".
+    if (sa.private_key && !sa.private_key.includes("\n") && sa.private_key.includes("\\n")) {
+      sa.private_key = sa.private_key.replace(/\\n/g, "\n");
+    }
 
     const { user_ids, tokens: explicitTokens, title, body, data } = await req.json();
     if (!title || !body) throw new Error("title and body are required");
