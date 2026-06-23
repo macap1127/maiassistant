@@ -212,8 +212,11 @@ const PricingPage = () => {
                     <p className="text-xs text-muted-foreground">{tier.tagline}</p>
                   </div>
                   <div className="ml-auto text-right">
-                    <span className="text-xl font-bold">{tier.price}</span>
-                    <span className="text-xs text-muted-foreground">/mo</span>
+                    <span className="text-xl font-bold">${interval === "monthly" ? tier.monthly : tier.yearly}</span>
+                    <span className="text-xs text-muted-foreground">/{interval === "monthly" ? "mo" : "yr"}</span>
+                    {interval === "yearly" && (
+                      <p className="text-[10px] text-muted-foreground mt-0.5">≈ ${(tier.yearly / 12).toFixed(2)}/mo</p>
+                    )}
                   </div>
                 </div>
 
