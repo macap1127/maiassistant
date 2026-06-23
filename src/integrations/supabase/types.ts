@@ -468,6 +468,27 @@ export type Database = {
         }
         Relationships: []
       }
+      push_send_log: {
+        Row: {
+          key: string
+          kind: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          key: string
+          kind: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          key?: string
+          kind?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       receipts: {
         Row: {
           added_by: string
@@ -725,6 +746,16 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      notify_household_activity: {
+        Args: {
+          _added_by: string
+          _body: string
+          _household_id: string
+          _kind: string
+          _title: string
+        }
+        Returns: undefined
       }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
