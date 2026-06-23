@@ -8,17 +8,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "@/hooks/use-toast";
 
-const PRICE_IDS: Record<Tier, string> = {
-  basic: "mai_basic_monthly",
-  family: "mai_family_monthly",
-  family_plus: "mai_family_plus_monthly",
+type Interval = "monthly" | "yearly";
+
+const PRICE_IDS: Record<Interval, Record<Tier, string>> = {
+  monthly: {
+    basic: "mai_basic_monthly",
+    family: "mai_family_monthly",
+    family_plus: "mai_family_plus_monthly",
+  },
+  yearly: {
+    basic: "mai_basic_yearly",
+    family: "mai_family_yearly",
+    family_plus: "mai_family_plus_yearly",
+  },
 };
 
 type TierDef = {
   id: Tier;
   name: string;
   tagline: string;
-  price: string;
+  monthly: number;
+  yearly: number;
   icon: typeof Zap;
   popular?: boolean;
   highlights: string[];
@@ -29,7 +39,8 @@ const tiers: TierDef[] = [
     id: "basic",
     name: "Basic",
     tagline: "For one person",
-    price: "$9",
+    monthly: 7,
+    yearly: 70,
     icon: Zap,
     highlights: [
       "1 login",
@@ -44,7 +55,8 @@ const tiers: TierDef[] = [
     id: "family",
     name: "Family",
     tagline: "Most popular",
-    price: "$29",
+    monthly: 22,
+    yearly: 220,
     icon: Crown,
     popular: true,
     highlights: [
@@ -52,7 +64,7 @@ const tiers: TierDef[] = [
       "120 shared voice minutes / month",
       "Everything in Basic",
       "Shared family workspace & invites",
-      "Daily SMS reminders",
+      "Daily push reminders",
       "Unlimited receipt scanning",
       "AI calendar import (PDF & images)",
     ],
@@ -61,7 +73,8 @@ const tiers: TierDef[] = [
     id: "family_plus",
     name: "Family Plus",
     tagline: "For larger households",
-    price: "$49",
+    monthly: 35,
+    yearly: 350,
     icon: Sparkles,
     highlights: [
       "Up to 6 logins",
