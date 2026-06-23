@@ -56,3 +56,23 @@ export async function restorePurchases() {
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   return Purchases.restorePurchases();
 }
+
+export async function logoutRevenueCat() {
+  if (!isNative() || !initialized) return;
+  try {
+    const { Purchases } = await import('@revenuecat/purchases-capacitor');
+    await Purchases.logOut();
+  } catch (e) {
+    console.warn('[revenuecat] logout failed', e);
+  }
+  initialized = false;
+}
+
+// Map a RevenueCat Offering's packages to our internal price IDs.
+// Assumes packages are configured in RC with the same identifiers as our Stripe
+// lookup keys (mai_basic_monthly, mai_basic_yearly, etc.) OR with the standard
+// RC identifiers ($rc_monthly / $rc_annual) when only one tier is exposed.
+export type RcPackage = {
+  identifier: string;
+  product: { identifier: string; priceString: string; price: number };
+};

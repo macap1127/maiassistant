@@ -12,6 +12,9 @@ verify_jwt = false
 [functions.payments-webhook]
 verify_jwt = false
 
+[functions.revenuecat-webhook]
+verify_jwt = false
+
 [functions.setup-stripe-products]
 verify_jwt = false
 
