@@ -23,6 +23,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import SmsOptInPage from "./pages/SmsOptInPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminTesters from "./pages/AdminTesters";
+import { DeepLinkHandler } from "@/lib/deepLinks";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <BrowserRouter>
+          <DeepLinkHandler />
           <Routes>
             <Route element={<AppLayout />}>
               <Route path="/" element={<Dashboard />} />
