@@ -46,8 +46,13 @@ const AuthPage = () => {
       setLoading(true);
       setError("");
       try {
+        // On native (Android/iOS) window.location.origin is `http(s)://localhost`,
+        // which would produce a reset link that goes nowhere when tapped from
+        // the email app. Always send users to the public web reset page; they
+        // set the new password in the browser and then sign back into the app.
+        const webOrigin = isWeb ? window.location.origin : "https://miafamilyassistant.com";
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`,
+          redirectTo: `${webOrigin}/reset-password`,
         });
         if (error) throw error;
         setResetSent(true);
