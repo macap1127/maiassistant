@@ -350,10 +350,6 @@ const AuthPage = () => {
           <Link to="/terms" className="hover:text-foreground transition-colors">
             Terms & Conditions
           </Link>
-          <span>&middot;</span>
-          <Link to="/sms-opt-in" className="hover:text-foreground transition-colors">
-            SMS Reminders Sign-Up
-          </Link>
         </div>
       </div>
     </div>

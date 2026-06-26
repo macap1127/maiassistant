@@ -16,6 +16,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { getPushPreference, setPushPreference } from "@/lib/pushPreference";
 import { useAuth } from "@/lib/auth";
+import { isNative, restorePurchases } from "@/lib/revenuecat";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
   { value: "en", label: "English" },
@@ -53,6 +54,7 @@ const SettingsPage = () => {
   const [familyName, setFamilyName] = useState(data.familyName);
   const [saved, setSaved] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
+  const [restoringPurchases, setRestoringPurchases] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
   const [pushEnabled, setPushEnabled] = useState(() => getPushPreference());
@@ -109,6 +111,19 @@ const SettingsPage = () => {
       return;
     }
     window.open(pdata.url, "_blank");
+  };
+
+  const restoreNativePurchases = async () => {
+    setRestoringPurchases(true);
+    try {
+      await restorePurchases();
+      toast({ title: "Purchases restored", description: "Refreshing your plan…" });
+      setTimeout(() => void refresh(), 1500);
+    } catch (e) {
+      toast({ variant: "destructive", title: "Restore failed", description: e instanceof Error ? e.message : "Try again." });
+    } finally {
+      setRestoringPurchases(false);
+    }
   };
 
   const tier = household ? TIER_INFO[household.subscriptionTier] : null;
@@ -178,7 +193,7 @@ const SettingsPage = () => {
               <div>
                 <p className="text-[10px] uppercase text-muted-foreground">Plan</p>
                 <p className="font-medium">
-                  {household.isInTrial ? `Trial of ${tier.label}` : isLocked ? "No active plan" : `${tier.label} · $${tier.price}/mo`}
+                  {household.isInTrial ? `Trial of ${tier.label}` : isLocked ? "No active plan" : `${tier.label} · $${tier.price.toFixed(2)}/mo`}
                 </p>
               </div>
               <div>
@@ -205,14 +220,14 @@ const SettingsPage = () => {
 
             <div className="flex gap-2">
               <button
-                onClick={() => (hasActiveSub && household.isOwner ? openPortal() : navigate("/pricing"))}
+                onClick={() => (!isNative() && hasActiveSub && household.isOwner ? openPortal() : navigate("/pricing"))}
                 disabled={loadingPortal}
                 className="flex-1 bg-primary text-primary-foreground rounded-xl py-2 text-xs font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"
               >
                 {loadingPortal && <Loader2 className="w-3 h-3 animate-spin" />}
                 {hasActiveSub ? "Change plan" : isLocked ? "Choose a plan" : "Subscribe"}
               </button>
-              {household.isOwner && household.stripeCustomerId && (
+              {!isNative() && household.isOwner && household.stripeCustomerId && (
                 <button
                   onClick={openPortal}
                   disabled={loadingPortal}
@@ -220,6 +235,16 @@ const SettingsPage = () => {
                 >
                   {loadingPortal ? <Loader2 className="w-3 h-3 animate-spin" /> : <ExternalLink className="w-3 h-3" />}
                   Manage billing
+                </button>
+              )}
+              {isNative() && household.isOwner && (
+                <button
+                  onClick={restoreNativePurchases}
+                  disabled={restoringPurchases}
+                  className="flex-1 bg-secondary text-secondary-foreground rounded-xl py-2 text-xs font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  {restoringPurchases && <Loader2 className="w-3 h-3 animate-spin" />}
+                  Restore purchases
                 </button>
               )}
             </div>
@@ -238,7 +263,7 @@ const SettingsPage = () => {
         </div>
 
         <PushNotificationCard />
-        {/* SmsReminderCard intentionally retained in codebase but unused — push notifications replace SMS reminders. */}
+        {/* Legacy SMS component stays out of the active settings UI. */}
 
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "80ms" }}>
           <div className="flex items-center gap-2 mb-3">

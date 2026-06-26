@@ -39,50 +39,39 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">4. SMS Program Terms</h2>
+          <h2 className="text-xl font-semibold">4. Notification Terms</h2>
           <p>
             <strong>Program name:</strong> Mia Family Assistant Alerts (operated by Mia Family Assistant, Sole Proprietor).
           </p>
           <p>
-            <strong>Program description:</strong> By providing your mobile phone
-            number to Mia Family Assistant (Sole Proprietor), checking the SMS consent box, and submitting the form or saving the SMS reminder setting, you consent to receive recurring automated SMS text messages from us:
+            <strong>Program description:</strong> If you enable push notifications in the app, you consent to receive automated app notifications from us:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Daily event reminders:</strong> When you enable "Daily event SMS reminders" in Settings or complete the SMS sign-up form, you will receive up to <strong>one SMS per day</strong> at your chosen time summarizing your household's calendar events. This feature is off by default and may be turned off at any time in Settings or by replying STOP.
+              <strong>Daily event reminders:</strong> When you enable push notifications in Settings, you may receive a daily calendar digest, event reminders, and family activity alerts. This feature is off by default and may be turned off at any time in Settings or your device notification settings.
             </li>
           </ul>
           <p>
-            <strong>Message frequency:</strong> Daily reminders are sent at most once per
-            day per opted-in user. Message frequency may vary based on reminder settings and scheduled events.
+            <strong>Message frequency:</strong> Notification frequency may vary based on reminder settings, scheduled events, and household activity.
           </p>
           <p>
-            <strong>One-way only:</strong> SMS messages from Mia Family Assistant (Sole Proprietor) are automated reminders sent from the service to the opted-in user. Members cannot use the Service to send SMS messages to each other.
+            <strong>One-way only:</strong> Notifications from Mia Family Assistant (Sole Proprietor) are automated reminders and alerts sent from the service to the opted-in user. Members cannot use the Service to send SMS messages to each other.
           </p>
           <p>
-            <strong>Message and data rates may apply.</strong> Check your mobile
-            plan for details. Carriers (including but not limited to AT&T,
-            T-Mobile, Verizon) are not liable for delayed or undelivered
-            messages.
+            <strong>Data rates may apply.</strong> Check your mobile plan for details. Delivery may depend on device, network, and operating system settings.
           </p>
           <p>
-            <strong>Help:</strong> Reply <strong>HELP</strong> to any message
-            for assistance, or email{" "}
+            <strong>Help:</strong> Email{" "}
             <a className="underline" href="mailto:support@miafamilyassistant.com">
               support@miafamilyassistant.com
             </a>
             .
           </p>
           <p>
-            <strong>Cancellation:</strong> Reply <strong>STOP</strong> to any
-            message at any time to opt out of SMS messages. You will receive a
-            one-time confirmation that you have been unsubscribed; no further
-            messages will be sent.
+            <strong>Cancellation:</strong> Turn off push notifications in Settings or in your device notification settings at any time.
           </p>
           <p>
-            <strong>Privacy:</strong> Your mobile phone number and SMS opt-in
-            consent are never shared, sold, or transferred to third parties or
-            affiliates for marketing purposes. See our{" "}
+            <strong>Privacy:</strong> Notification preferences are used only to operate reminders and alerts. See our{" "}
             <a className="underline" href="/privacy">Privacy Policy</a> for
             details.
           </p>
@@ -160,10 +149,6 @@ const Terms = () => {
         </section>
 
         <div className="pt-6 border-t border-border text-sm text-muted-foreground">
-          <a href="/sms-opt-in" className="underline hover:text-foreground">
-            Sign up for SMS reminders
-          </a>
-          {" · "}
           <a href="/privacy" className="underline hover:text-foreground">
             Privacy Policy
           </a>
