@@ -17,7 +17,31 @@ export const ENTITLEMENTS = {
   family_plus: 'family_plus',
 } as const;
 
-export const isNative = () => Capacitor.isNativePlatform();
+export const getNativePlatform = (): 'android' | 'ios' | null => {
+  const cap = (globalThis as any).Capacitor;
+  const platform = cap?.getPlatform?.() ?? Capacitor.getPlatform?.();
+
+  if (platform === 'android' || platform === 'ios') return platform;
+  if (Capacitor.isNativePlatform()) {
+    const nativePlatform = Capacitor.getPlatform();
+    return nativePlatform === 'ios' ? 'ios' : 'android';
+  }
+
+  // Defensive fallback for release builds where the Capacitor bridge is slow or
+  // not reported correctly on first render. Android native WebViews include
+  // `; wv` in the UA; iOS Capacitor commonly serves from capacitor://localhost.
+  if (typeof window !== 'undefined') {
+    const ua = window.navigator.userAgent;
+    const isAndroidWebView = /Android/i.test(ua) && /; wv\)/i.test(ua);
+    const isCapacitorScheme = window.location.protocol === 'capacitor:';
+    if (isAndroidWebView) return 'android';
+    if (isCapacitorScheme) return 'ios';
+  }
+
+  return null;
+};
+
+export const isNative = () => getNativePlatform() !== null;
 
 let initialized = false;
 
@@ -25,7 +49,7 @@ export async function initRevenueCat(appUserId?: string) {
   if (!isNative() || initialized) return;
   const { Purchases, LOG_LEVEL } = await import('@revenuecat/purchases-capacitor');
   await Purchases.setLogLevel({ level: LOG_LEVEL.WARN });
-  const platform = Capacitor.getPlatform();
+  const platform = getNativePlatform();
   const apiKey = platform === 'ios' ? REVENUECAT_IOS_KEY : REVENUECAT_ANDROID_KEY;
   await Purchases.configure({ apiKey, appUserID: appUserId });
   initialized = true;
