@@ -2,6 +2,7 @@ import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/client";
 import { useCallback } from "react";
+import { isNative } from "@/lib/revenuecat";
 
 interface Props {
   priceId: string;
@@ -9,6 +10,14 @@ interface Props {
 }
 
 export function StripeEmbeddedCheckout({ priceId, returnUrl }: Props) {
+  if (isNative()) {
+    return (
+      <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+        Native app purchases must use the App Store or Google Play. Close this screen and choose the plan again.
+      </div>
+    );
+  }
+
   const fetchClientSecret = useCallback(async (): Promise<string> => {
     const { data, error } = await supabase.functions.invoke("create-checkout", {
       body: { priceId, returnUrl, environment: getStripeEnvironment() },
@@ -27,6 +36,7 @@ export function StripeEmbeddedCheckout({ priceId, returnUrl }: Props) {
 }
 
 export function PaymentTestModeBanner() {
+  if (isNative()) return null;
   const token = import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN;
   if (!token?.startsWith("pk_test_")) return null;
   return (
