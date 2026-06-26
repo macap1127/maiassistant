@@ -17,25 +17,31 @@ export const ENTITLEMENTS = {
   family_plus: 'family_plus',
 } as const;
 
+export const BILLING_BUILD_LABEL = 'Billing build v15';
+
 export const getNativePlatform = (): 'android' | 'ios' | null => {
   const cap = (globalThis as any).Capacitor;
   const platform = cap?.getPlatform?.() ?? Capacitor.getPlatform?.();
 
   if (platform === 'android' || platform === 'ios') return platform;
-  if (Capacitor.isNativePlatform()) {
-    const nativePlatform = Capacitor.getPlatform();
+  const nativePlatformReported = cap?.isNativePlatform?.() ?? Capacitor.isNativePlatform?.();
+  if (nativePlatformReported) {
+    const nativePlatform = cap?.getPlatform?.() ?? Capacitor.getPlatform();
     return nativePlatform === 'ios' ? 'ios' : 'android';
   }
 
   // Defensive fallback for release builds where the Capacitor bridge is slow or
-  // not reported correctly on first render. Android native WebViews include
-  // `; wv` in the UA; iOS Capacitor commonly serves from capacitor://localhost.
+  // not reported correctly on first render. Android native WebViews commonly
+  // include `wv` in the UA and Capacitor serves bundled apps from localhost.
   if (typeof window !== 'undefined') {
     const ua = window.navigator.userAgent;
-    const isAndroidWebView = /Android/i.test(ua) && /; wv\)/i.test(ua);
-    const isCapacitorScheme = window.location.protocol === 'capacitor:';
+    const isAndroidWebView = /Android/i.test(ua) && (/\bwv\b/i.test(ua) || /Version\/\d+(?:\.\d+)*.*Chrome/i.test(ua));
+    const isIosWebView = /iPad|iPhone|iPod/i.test(ua) && !/Safari/i.test(ua);
+    const isCapacitorScheme = ['capacitor:', 'ionic:'].includes(window.location.protocol);
+    const isCapacitorLocalhost = !!cap && window.location.hostname === 'localhost';
     if (isAndroidWebView) return 'android';
-    if (isCapacitorScheme) return 'ios';
+    if (isCapacitorScheme || isIosWebView) return 'ios';
+    if (isCapacitorLocalhost) return /Android/i.test(ua) ? 'android' : 'ios';
   }
 
   return null;

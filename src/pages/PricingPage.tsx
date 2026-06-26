@@ -14,6 +14,8 @@ import {
   purchasePackage,
   restorePurchases,
   isNative,
+  getNativePlatform,
+  BILLING_BUILD_LABEL,
 } from "@/lib/revenuecat";
 
 type Interval = "monthly" | "yearly";
@@ -151,11 +153,30 @@ const PricingPage = () => {
   const [interval, setInterval] = useState<Interval>("monthly");
   const [nativePurchasing, setNativePurchasing] = useState<Tier | null>(null);
   const [restoring, setRestoring] = useState(false);
-  const native = isNative();
+  const [nativePlatform, setNativePlatform] = useState<"android" | "ios" | null>(() => getNativePlatform());
+  const native = nativePlatform !== null;
 
   useEffect(() => {
     if (native && user?.id) initRevenueCat(user.id).catch(console.warn);
   }, [native, user?.id]);
+
+  useEffect(() => {
+    // Re-check briefly after first render in native release builds, where the
+    // Capacitor bridge can become available after React has already mounted.
+    let checks = 0;
+    let intervalId: number | undefined;
+    const updatePlatform = () => {
+      const platform = getNativePlatform();
+      if (platform) setNativePlatform(platform);
+      checks += 1;
+      if ((platform || checks >= 10) && intervalId) window.clearInterval(intervalId);
+    };
+    updatePlatform();
+    intervalId = window.setInterval(updatePlatform, 300);
+    return () => {
+      if (intervalId) window.clearInterval(intervalId);
+    };
+  }, []);
 
   const hasActiveSub =
     !!household?.stripeSubscriptionId &&
@@ -209,7 +230,9 @@ const PricingPage = () => {
       toast({ variant: "destructive", title: "Owner only", description: "Only the household owner can change the plan." });
       return;
     }
-    if (native) {
+    const runtimeNativePlatform = getNativePlatform();
+    if (runtimeNativePlatform) {
+      setNativePlatform(runtimeNativePlatform);
       await handleNativePurchase(tier);
       return;
     }
@@ -238,6 +261,9 @@ const PricingPage = () => {
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-2xl font-serif font-semibold mb-2">Choose your plan</h1>
           <p className="text-sm text-muted-foreground">Start with a 7-day free trial. Cancel anytime.</p>
+          <p className="mt-1 text-[10px] text-muted-foreground/70">
+            {BILLING_BUILD_LABEL}{nativePlatform ? ` · ${nativePlatform} store billing` : ""}
+          </p>
           {household && !household.hasUsedTrial && (
             <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-semibold text-primary">
               <Sparkles className="w-3 h-3" /> 7-day free trial on any plan
