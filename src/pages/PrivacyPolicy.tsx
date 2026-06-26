@@ -24,7 +24,7 @@ const PrivacyPolicy = () => {
           <h2 className="text-xl font-semibold">2. Information We Collect</h2>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Phone number:</strong> Collected only if you choose to save one for household member details or future SMS reminder features.
+              <strong>Phone number:</strong> Collected only if you choose to save one for household member details.
             </li>
             <li>
               <strong>Household data:</strong> Grocery items, tasks, calendar
