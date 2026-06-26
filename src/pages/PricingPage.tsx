@@ -164,15 +164,18 @@ const PricingPage = () => {
     // Re-check briefly after first render in native release builds, where the
     // Capacitor bridge can become available after React has already mounted.
     let checks = 0;
+    let intervalId: number | undefined;
     const updatePlatform = () => {
       const platform = getNativePlatform();
       if (platform) setNativePlatform(platform);
       checks += 1;
-      if (platform || checks >= 10) window.clearInterval(intervalId);
+      if ((platform || checks >= 10) && intervalId) window.clearInterval(intervalId);
     };
     updatePlatform();
-    const intervalId = window.setInterval(updatePlatform, 300);
-    return () => window.clearInterval(intervalId);
+    intervalId = window.setInterval(updatePlatform, 300);
+    return () => {
+      if (intervalId) window.clearInterval(intervalId);
+    };
   }, []);
 
   const hasActiveSub =
