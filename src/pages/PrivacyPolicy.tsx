@@ -24,8 +24,7 @@ const PrivacyPolicy = () => {
           <h2 className="text-xl font-semibold">2. Information We Collect</h2>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Phone number:</strong> Collected only if you opt in to SMS
-              reminders, and used to send those reminders.
+              <strong>Phone number:</strong> Collected only if you choose to save one for household member details or future SMS reminder features.
             </li>
             <li>
               <strong>Household data:</strong> Grocery items, tasks, calendar
@@ -43,33 +42,30 @@ const PrivacyPolicy = () => {
           <p>We use your information to:</p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Authenticate you and keep your account secure.</li>
-            <li>Send daily event reminder SMS messages only when you opt in.</li>
+            <li>Send push notification reminders and household activity alerts only when you opt in.</li>
             <li>Provide and improve the household management features.</li>
             <li>Comply with legal obligations.</li>
           </ul>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">4. SMS Messaging & Consent</h2>
+          <h2 className="text-xl font-semibold">4. Push Notifications & Consent</h2>
           <p>
-            Mia Family Assistant (Sole Proprietor) uses SMS only for one-way, opt-in daily event reminders. Members cannot use the Service to send SMS messages to each other:
+            Mia Family Assistant (Sole Proprietor) uses push notifications for one-way, opt-in reminders and household alerts. Members cannot use the Service to send SMS messages to each other:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Daily event reminders:</strong> If you turn on "Daily event SMS reminders" in Settings
-              or complete our SMS sign-up form and enter your mobile number, you consent to receive recurring automated SMS text messages with your household's calendar events for the day. This is strictly opt-in — the setting is off by default, and you can disable it at any time from Settings or by replying <strong>STOP</strong> to any message. Reply <strong>HELP</strong> for assistance.
+              <strong>Daily event reminders:</strong> If you turn on push notifications in Settings, you consent to receive automated notifications with your household's calendar events, upcoming event reminders, and family activity alerts. This is strictly opt-in — the setting is off by default, and you can disable it at any time from Settings or your device notification settings.
             </li>
           </ul>
           <p>
-            <strong>Message frequency:</strong> Daily reminders are sent at most once
-            per day per opted-in user. Message frequency may vary based on reminder settings and scheduled events.
+            <strong>Notification frequency:</strong> Notification frequency may vary based on reminder settings, scheduled events, and household activity.
           </p>
           <p>
-            <strong>Message and data rates may apply.</strong> Carriers are not
-            liable for delayed or undelivered messages.
+            <strong>Data rates may apply.</strong> Delivery may depend on device, network, and operating system settings.
           </p>
           <p>
-            <strong>Mobile information sharing:</strong> Mobile phone numbers and SMS opt-in consent are not shared with third parties or affiliates for marketing purposes. Information sharing to subcontractors in support of the services we provide (for example, our SMS delivery provider) is permitted only as required to operate the service. All other categories — text messaging originator opt-in data and consent — will not be shared with any third parties.
+            <strong>Notification information sharing:</strong> Notification tokens and preferences are not shared with third parties or affiliates for marketing purposes. Information sharing to subcontractors in support of the services we provide is permitted only as required to operate the service.
           </p>
         </section>
 
@@ -77,11 +73,9 @@ const PrivacyPolicy = () => {
           <h2 className="text-xl font-semibold">5. Sharing of Information</h2>
           <p>
             We do not sell your personal information. We share data only with
-            service providers required to operate the app (such as our SMS
-            provider, payment processor, and cloud infrastructure) and only as
-            needed to deliver the service. As stated above, mobile phone numbers
-            and SMS opt-in consent are never shared, sold, or transferred to
-            third parties or affiliates for marketing purposes.
+            service providers required to operate the app (such as notification delivery,
+            payment processing, and cloud infrastructure) and only as
+            needed to deliver the service. As stated above, notification data is not shared, sold, or transferred to third parties or affiliates for marketing purposes.
           </p>
         </section>
 
@@ -131,10 +125,6 @@ const PrivacyPolicy = () => {
         </section>
 
         <div className="pt-6 border-t border-border text-sm text-muted-foreground">
-          <a href="/sms-opt-in" className="underline hover:text-foreground">
-            Sign up for SMS reminders
-          </a>
-          {" · "}
           <a href="/terms" className="underline hover:text-foreground">
             Terms & Conditions
           </a>

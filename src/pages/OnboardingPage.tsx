@@ -126,7 +126,7 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
             className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
           <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
-            We'll only use this later if you enable daily SMS reminders.
+            Optional household detail only.
           </p>
         </div>
 
