@@ -10,6 +10,15 @@ interface Props {
 }
 
 export function StripeEmbeddedCheckout({ priceId, returnUrl }: Props) {
+  const fetchClientSecret = useCallback(async (): Promise<string> => {
+    if (isNative()) throw new Error("Native app purchases must use the App Store or Google Play.");
+    const { data, error } = await supabase.functions.invoke("create-checkout", {
+      body: { priceId, returnUrl, environment: getStripeEnvironment() },
+    });
+    if (error || !data?.clientSecret) throw new Error(error?.message || data?.error || "Failed to create checkout session");
+    return data.clientSecret;
+  }, [priceId, returnUrl]);
+
   if (isNative()) {
     return (
       <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
@@ -17,14 +26,6 @@ export function StripeEmbeddedCheckout({ priceId, returnUrl }: Props) {
       </div>
     );
   }
-
-  const fetchClientSecret = useCallback(async (): Promise<string> => {
-    const { data, error } = await supabase.functions.invoke("create-checkout", {
-      body: { priceId, returnUrl, environment: getStripeEnvironment() },
-    });
-    if (error || !data?.clientSecret) throw new Error(error?.message || data?.error || "Failed to create checkout session");
-    return data.clientSecret;
-  }, [priceId, returnUrl]);
 
   return (
     <div id="checkout">
