@@ -123,6 +123,7 @@ Deno.serve(async (req) => {
           : "Your calendar is clear for today.";
 
         for (const uid of tokenUserIds) {
+          if (!wants(uid, "daily_digest")) continue;
           if (await alreadySent(uid, "daily_digest", now.date)) continue;
           await sendPush([uid], title, body, { type: "daily_digest", date: now.date });
           digestSent++;
