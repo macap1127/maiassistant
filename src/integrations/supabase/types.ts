@@ -468,6 +468,36 @@ export type Database = {
         }
         Relationships: []
       }
+      push_preferences: {
+        Row: {
+          account_billing: boolean
+          created_at: string
+          daily_digest: boolean
+          event_reminders: boolean
+          family_activity: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_billing?: boolean
+          created_at?: string
+          daily_digest?: boolean
+          event_reminders?: boolean
+          family_activity?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_billing?: boolean
+          created_at?: string
+          daily_digest?: boolean
+          event_reminders?: boolean
+          family_activity?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       push_send_log: {
         Row: {
           key: string

@@ -93,6 +93,19 @@ Deno.serve(async (req) => {
       const tokenUserIds = [...new Set((tokens ?? []).map((t) => t.user_id))];
       if (!tokenUserIds.length) continue;
 
+      // Load preferences for these users (missing row = defaults ON)
+      const { data: prefRows } = await supabase
+        .from("push_preferences")
+        .select("user_id, daily_digest, event_reminders")
+        .in("user_id", tokenUserIds);
+      const prefMap = new Map<string, { daily_digest: boolean; event_reminders: boolean }>();
+      for (const p of prefRows ?? []) prefMap.set(p.user_id, p as any);
+      const wants = (uid: string, key: "daily_digest" | "event_reminders") => {
+        const p = prefMap.get(uid);
+        return p ? (p as any)[key] !== false : true;
+      };
+
+
       // ===== Daily digest at 09:00 local (5-min window) =====
       if (now.hh === 9 && now.mm < 5) {
         const { data: todays } = await supabase
@@ -110,6 +123,7 @@ Deno.serve(async (req) => {
           : "Your calendar is clear for today.";
 
         for (const uid of tokenUserIds) {
+          if (!wants(uid, "daily_digest")) continue;
           if (await alreadySent(uid, "daily_digest", now.date)) continue;
           await sendPush([uid], title, body, { type: "daily_digest", date: now.date });
           digestSent++;
@@ -135,6 +149,7 @@ Deno.serve(async (req) => {
         const title = `In 30 min: ${ev.title}`;
         const body = `${fmtTime12(ev.time)}${ev.location ? ` · ${ev.location}` : ""}`;
         for (const uid of tokenUserIds) {
+          if (!wants(uid, "event_reminders")) continue;
           if (await alreadySent(uid, "event_30min", ev.id)) continue;
           await sendPush([uid], title, body, { type: "event_30min", event_id: ev.id });
           reminderSent++;

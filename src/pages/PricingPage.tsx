@@ -15,7 +15,7 @@ import {
   restorePurchases,
   isNative,
   getNativePlatform,
-  BILLING_BUILD_LABEL,
+  
 } from "@/lib/revenuecat";
 
 type Interval = "monthly" | "yearly";
@@ -261,9 +261,11 @@ const PricingPage = () => {
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-2xl font-serif font-semibold mb-2">Choose your plan</h1>
           <p className="text-sm text-muted-foreground">Start with a 7-day free trial. Cancel anytime.</p>
-          <p className="mt-1 text-[10px] text-muted-foreground/70">
-            {BILLING_BUILD_LABEL}{nativePlatform ? ` · ${nativePlatform} store billing` : ""}
-          </p>
+          {nativePlatform && (
+            <p className="mt-1 text-[10px] text-muted-foreground/70">
+              Billed through {nativePlatform === "ios" ? "the App Store" : "Google Play"}
+            </p>
+          )}
           {household && !household.hasUsedTrial && (
             <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-semibold text-primary">
               <Sparkles className="w-3 h-3" /> 7-day free trial on any plan

@@ -5,7 +5,7 @@ import maiLogo from "@/assets/mai-logo.png";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, MessageSquare, Languages, Trash2, Bell } from "lucide-react";
+import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, Languages, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { PushNotificationCard } from "@/components/PushNotificationCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,8 +13,6 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Switch } from "@/components/ui/switch";
-import { getPushPreference, setPushPreference } from "@/lib/pushPreference";
 import { useAuth } from "@/lib/auth";
 import { isNative, restorePurchases } from "@/lib/revenuecat";
 
@@ -57,7 +55,7 @@ const SettingsPage = () => {
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
-  const [pushEnabled, setPushEnabled] = useState(() => getPushPreference());
+  
   const [searchParams, setSearchParams] = useSearchParams();
 
   const deleteAccount = async () => {
@@ -301,53 +299,6 @@ const SettingsPage = () => {
           </p>
         </div>
 
-        <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "120ms" }}>
-          <div className="flex items-center gap-2 mb-3">
-            <Bell className="w-4 h-4 text-primary" />
-            <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-              Push Notifications
-            </label>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">
-                {pushEnabled ? "Enabled" : "Disabled"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {pushEnabled
-                  ? "You'll receive alerts on this device."
-                  : "Turn on to get alerts on this device."}
-              </p>
-            </div>
-            <Switch
-              checked={pushEnabled}
-              onCheckedChange={() => {
-                const next = !pushEnabled;
-                setPushEnabled(next);
-                setPushPreference(next);
-                toast({
-                  title: next ? "Push notifications enabled" : "Push notifications disabled",
-                  description: next
-                    ? "You'll receive notifications on this device."
-                    : "You won't receive push notifications on this device anymore.",
-                });
-              }}
-            />
-          </div>
-          {pushEnabled && (
-            <div className="mt-3 pt-3 border-t border-border space-y-1 text-xs text-muted-foreground">
-              <p className="font-medium text-foreground text-[11px] mb-1">What you'll receive:</p>
-              <ul className="list-disc list-inside space-y-0.5">
-                <li>Task reminders and due-date alerts</li>
-                <li>Grocery list updates from family members</li>
-                <li>New calendar events and import completions</li>
-                <li>Household activity (invites, member joins)</li>
-                <li>Receipt scan updates</li>
-                <li>Voice usage limit warnings</li>
-              </ul>
-            </div>
-          )}
-        </div>
 
         <button
           onClick={save}
