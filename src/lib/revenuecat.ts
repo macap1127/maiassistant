@@ -17,7 +17,7 @@ export const ENTITLEMENTS = {
   family_plus: 'family_plus',
 } as const;
 
-export const BILLING_BUILD_LABEL = 'Billing build v15';
+
 
 export const getNativePlatform = (): 'android' | 'ios' | null => {
   const cap = (globalThis as any).Capacitor;
