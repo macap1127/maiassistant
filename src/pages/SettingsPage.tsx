@@ -263,7 +263,6 @@ const SettingsPage = () => {
         </div>
 
         <PushNotificationCard />
-        {/* Legacy SMS component stays out of the active settings UI. */}
 
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "80ms" }}>
           <div className="flex items-center gap-2 mb-3">
