@@ -93,6 +93,19 @@ Deno.serve(async (req) => {
       const tokenUserIds = [...new Set((tokens ?? []).map((t) => t.user_id))];
       if (!tokenUserIds.length) continue;
 
+      // Load preferences for these users (missing row = defaults ON)
+      const { data: prefRows } = await supabase
+        .from("push_preferences")
+        .select("user_id, daily_digest, event_reminders")
+        .in("user_id", tokenUserIds);
+      const prefMap = new Map<string, { daily_digest: boolean; event_reminders: boolean }>();
+      for (const p of prefRows ?? []) prefMap.set(p.user_id, p as any);
+      const wants = (uid: string, key: "daily_digest" | "event_reminders") => {
+        const p = prefMap.get(uid);
+        return p ? (p as any)[key] !== false : true;
+      };
+
+
       // ===== Daily digest at 09:00 local (5-min window) =====
       if (now.hh === 9 && now.mm < 5) {
         const { data: todays } = await supabase
