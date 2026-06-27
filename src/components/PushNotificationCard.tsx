@@ -1,41 +1,69 @@
 import { useEffect, useState } from "react";
 import { Bell, Loader2, Smartphone } from "lucide-react";
-import { Capacitor } from "@capacitor/core";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 import {
   isPushSupported,
   registerPushNotifications,
   unregisterPushNotifications,
 } from "@/lib/pushNotifications";
 
+type Prefs = {
+  daily_digest: boolean;
+  event_reminders: boolean;
+  family_activity: boolean;
+  account_billing: boolean;
+};
+
+const DEFAULT_PREFS: Prefs = {
+  daily_digest: true,
+  event_reminders: true,
+  family_activity: true,
+  account_billing: true,
+};
+
+const ROWS: { key: keyof Prefs; label: string; desc: string }[] = [
+  { key: "daily_digest", label: "Daily calendar digest", desc: "A 9 AM summary of today's events." },
+  { key: "event_reminders", label: "Event reminders", desc: "30 minutes before timed events." },
+  { key: "family_activity", label: "Family activity", desc: "When a member adds a task, grocery, or event." },
+  { key: "account_billing", label: "Account & billing", desc: "Trial ending, payment issues, plan changes." },
+];
+
 export function PushNotificationCard() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [enabled, setEnabled] = useState(false);
+  const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const supported = isPushSupported();
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase
-        .from("device_tokens")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(1);
-      setEnabled((data?.length ?? 0) > 0);
+      const [{ data: tokens }, { data: pref }] = await Promise.all([
+        supabase.from("device_tokens").select("id").eq("user_id", user.id).limit(1),
+        supabase.from("push_preferences" as any).select("*").eq("user_id", user.id).maybeSingle(),
+      ]);
+      setEnabled((tokens?.length ?? 0) > 0);
+      if (pref) {
+        setPrefs({
+          daily_digest: (pref as any).daily_digest,
+          event_reminders: (pref as any).event_reminders,
+          family_activity: (pref as any).family_activity,
+          account_billing: (pref as any).account_billing,
+        });
+      }
       setLoading(false);
     })();
   }, [user]);
 
-  const toggle = async () => {
+  const toggleMaster = async () => {
     if (!supported) {
       toast({
         title: "Mobile app required",
-        description:
-          "Push notifications work in the installed Android/iOS app. Open Mia on your phone to enable them.",
+        description: "Push notifications work in the installed Android/iOS app.",
       });
       return;
     }
@@ -51,6 +79,12 @@ export function PushNotificationCard() {
           });
         } else {
           setEnabled(true);
+          // ensure prefs row exists with defaults
+          if (user) {
+            await supabase
+              .from("push_preferences" as any)
+              .upsert({ user_id: user.id, ...prefs }, { onConflict: "user_id" });
+          }
           toast({ title: "Push notifications enabled" });
         }
       } else {
@@ -62,6 +96,19 @@ export function PushNotificationCard() {
       toast({ title: "Something went wrong", description: e?.message, variant: "destructive" });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const updatePref = async (key: keyof Prefs, value: boolean) => {
+    if (!user) return;
+    const next = { ...prefs, [key]: value };
+    setPrefs(next);
+    const { error } = await supabase
+      .from("push_preferences" as any)
+      .upsert({ user_id: user.id, ...next }, { onConflict: "user_id" });
+    if (error) {
+      setPrefs(prefs); // revert
+      toast({ title: "Couldn't save", description: error.message, variant: "destructive" });
     }
   };
 
@@ -87,7 +134,7 @@ export function PushNotificationCard() {
 
       <button
         type="button"
-        onClick={toggle}
+        onClick={toggleMaster}
         disabled={loading || saving}
         className={`w-full rounded-xl px-4 py-2.5 text-sm font-medium border transition ${
           enabled
@@ -105,6 +152,27 @@ export function PushNotificationCard() {
           "Enable push notifications"
         )}
       </button>
+
+      {enabled && (
+        <div className="mt-4 pt-4 border-t border-border space-y-3">
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
+            What you'll receive
+          </p>
+          {ROWS.map((r) => (
+            <div key={r.key} className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium">{r.label}</p>
+                <p className="text-xs text-muted-foreground">{r.desc}</p>
+              </div>
+              <Switch
+                checked={prefs[r.key]}
+                onCheckedChange={(v) => updatePref(r.key, v)}
+                disabled={saving}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
