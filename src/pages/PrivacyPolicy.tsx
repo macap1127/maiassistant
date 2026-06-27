@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
         <header>
           <h1 className="text-3xl font-bold">Privacy Policy</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Last updated: May 24, 2026
+            Last updated: June 27, 2026
           </p>
         </header>
 
@@ -13,10 +13,9 @@ const PrivacyPolicy = () => {
           <h2 className="text-xl font-semibold">1. Introduction</h2>
           <p>
             <strong>Mia Family Assistant (Sole Proprietor)</strong> ("Mia Family Assistant", "we", "us", "our") is the
-            operating entity and data controller for this service. We provide a household management
-            application that helps families coordinate groceries, tasks, and
-            calendar events. This Privacy Policy explains how Mia Family Assistant (Sole Proprietor) collects, uses,
-            and protects your information when you use our service.
+            operating entity and data controller for this service. Mia is a household management application that helps
+            families coordinate groceries, tasks, receipts, and calendar events. This Privacy Policy explains what
+            information we collect, how we use it, who we share it with, and the choices you have.
           </p>
         </section>
 
@@ -24,99 +23,149 @@ const PrivacyPolicy = () => {
           <h2 className="text-xl font-semibold">2. Information We Collect</h2>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Phone number:</strong> Collected only if you choose to save one for household member details.
+              <strong>Account info:</strong> Email address and authentication identifiers (Supabase / Google OAuth).
+              Password is never stored in plain text.
             </li>
             <li>
-              <strong>Household data:</strong> Grocery items, tasks, calendar
-              events, and household member information you create in the app.
+              <strong>Household content:</strong> Grocery items, tasks, calendar events, household and family member
+              names, and notes you create in the app.
             </li>
             <li>
-              <strong>Usage data:</strong> Basic technical information such as
-              device type and timestamps for security and reliability.
+              <strong>Phone numbers (optional):</strong> Only if you choose to save one on a household member profile.
+              Phone numbers are not used to send SMS.
+            </li>
+            <li>
+              <strong>Photos & files:</strong> Receipt images you upload for scanning, and calendar files (ICS, PDF,
+              images) you import for event extraction. Images are processed for text extraction and then stored in your
+              account's private storage bucket.
+            </li>
+            <li>
+              <strong>Voice/audio:</strong> If you use the voice assistant, microphone audio is streamed to our
+              speech-to-text and assistant provider (ElevenLabs) and is not retained by Mia after the conversation
+              ends.
+            </li>
+            <li>
+              <strong>Push notification token:</strong> A device push token issued by Firebase Cloud Messaging (FCM)
+              when you enable push notifications, used solely to deliver the reminders you opt in to.
+            </li>
+            <li>
+              <strong>Subscription & purchase info:</strong> Plan, status, and renewal dates. Payment card details are
+              handled by Stripe (web) or Apple/Google + RevenueCat (mobile). We never see or store full card numbers.
+            </li>
+            <li>
+              <strong>Usage & diagnostic data:</strong> Basic technical information such as device type, app version,
+              and timestamps for security and reliability.
             </li>
           </ul>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">3. How We Use Information</h2>
-          <p>We use your information to:</p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Authenticate you and keep your account secure.</li>
+            <li>Operate the household features (groceries, tasks, calendar, receipts, family members).</li>
             <li>Send push notification reminders and household activity alerts only when you opt in.</li>
-            <li>Provide and improve the household management features.</li>
-            <li>Comply with legal obligations.</li>
+            <li>Process subscriptions and renewals.</li>
+            <li>Improve reliability, prevent abuse, and comply with legal obligations.</li>
           </ul>
+          <p>We do not sell your personal information and we do not use it for advertising.</p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">4. Push Notifications & Consent</h2>
           <p>
-            Mia Family Assistant (Sole Proprietor) uses push notifications for one-way, opt-in reminders and household alerts. Members cannot use the Service to send SMS messages to each other:
+            Push notifications are strictly opt-in and OFF by default. When you enable them in Settings, you can
+            individually toggle:
           </p>
           <ul className="list-disc pl-6 space-y-2">
-            <li>
-              <strong>Daily event reminders:</strong> If you turn on push notifications in Settings, you consent to receive automated notifications with your household's calendar events, upcoming event reminders, and family activity alerts. This is strictly opt-in — the setting is off by default, and you can disable it at any time from Settings or your device notification settings.
-            </li>
+            <li><strong>Daily calendar digest</strong> — a morning summary of today's events.</li>
+            <li><strong>Event reminders</strong> — 30 minutes before timed events.</li>
+            <li><strong>Family activity</strong> — when a member adds a task, grocery item, or event.</li>
+            <li><strong>Account &amp; billing</strong> — trial ending, payment issues, plan changes.</li>
           </ul>
           <p>
-            <strong>Notification frequency:</strong> Notification frequency may vary based on reminder settings, scheduled events, and household activity.
+            You can turn any category off, or disable push entirely, from Settings or from your device notification
+            settings. Notification tokens and preferences are never shared with third parties for marketing. Members
+            cannot use Mia to send SMS or push notifications to each other.
           </p>
           <p>
-            <strong>Data rates may apply.</strong> Delivery may depend on device, network, and operating system settings.
-          </p>
-          <p>
-            <strong>Notification information sharing:</strong> Notification tokens and preferences are not shared with third parties or affiliates for marketing purposes. Information sharing to subcontractors in support of the services we provide is permitted only as required to operate the service.
-          </p>
-        </section>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">5. Sharing of Information</h2>
-          <p>
-            We do not sell your personal information. We share data only with
-            service providers required to operate the app (such as notification delivery,
-            payment processing, and cloud infrastructure) and only as
-            needed to deliver the service. As stated above, notification data is not shared, sold, or transferred to third parties or affiliates for marketing purposes.
+            <strong>Data rates may apply.</strong> Delivery depends on device, network, and operating system settings.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">6. Data Retention</h2>
+          <h2 className="text-xl font-semibold">5. Third-Party Service Providers</h2>
           <p>
-            We retain your account and household data for as long as your
-            account is active. You may request deletion of your data at any
-            time by contacting us.
+            We use the following processors strictly to operate the service. Each receives only the data needed for its
+            function and is contractually bound to protect it.
+          </p>
+          <ul className="list-disc pl-6 space-y-2">
+            <li><strong>Supabase</strong> — managed Postgres database, authentication, and storage (account data, household content, receipt images).</li>
+            <li><strong>Google Firebase Cloud Messaging (FCM)</strong> — push notification delivery (device token + notification payload).</li>
+            <li><strong>Google OAuth</strong> — optional sign-in (email and basic profile when you choose Google sign-in).</li>
+            <li><strong>ElevenLabs</strong> — voice assistant speech-to-text and text-to-speech (audio streams, not retained by Mia).</li>
+            <li><strong>OpenAI / Lovable AI Gateway</strong> — AI extraction from receipts and calendar files (image or text content of the file you upload).</li>
+            <li><strong>Stripe</strong> — payment processing on the web (billing details).</li>
+            <li><strong>RevenueCat + Apple App Store / Google Play Billing</strong> — payment processing in the mobile app (subscription state).</li>
+            <li><strong>Resend</strong> — transactional email (invites, password reset, billing).</li>
+          </ul>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">6. Data Sharing</h2>
+          <p>
+            We share data only with the processors listed above, and only as required to deliver the service. We do not
+            sell or rent personal information, and we do not share data with third parties for advertising or marketing.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">7. Security</h2>
+          <h2 className="text-xl font-semibold">7. Data Retention &amp; Deletion</h2>
           <p>
-            We use industry-standard safeguards to protect your data, including
-            encryption in transit and access controls. No method of transmission
-            over the internet is 100% secure.
+            We retain your account and household data for as long as your account is active. You may delete your
+            account at any time from Settings → Delete account. Deletion permanently removes your profile, household
+            content, receipts, device tokens, and notification preferences, and cancels any active subscription.
+            Backups are purged on a rolling 30-day schedule.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">8. Your Rights</h2>
+          <h2 className="text-xl font-semibold">8. Security</h2>
           <p>
-            You may access, correct, or delete your information at any time
-            from within the app or by contacting us.
+            Data is encrypted in transit (TLS) and at rest. Access to household content is enforced at the database
+            level via row-level security so members of one household cannot read another household's data.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">9. Changes to This Policy</h2>
+          <h2 className="text-xl font-semibold">9. Children</h2>
           <p>
-            We may update this Privacy Policy from time to time. Updates will be
-            posted on this page with a revised "Last updated" date.
+            Mia is not directed to children under 13. We do not knowingly collect personal information from children.
+            If you believe a child has provided us information, contact us and we will delete it.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">10. Contact</h2>
+          <h2 className="text-xl font-semibold">10. Your Rights</h2>
           <p>
-            Questions about this Privacy Policy? Contact us at{" "}
+            You can access, correct, export, or delete your information from inside the app. EU, UK, and California
+            residents may have additional rights (access, portability, erasure, objection). Contact us to exercise
+            them.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">11. Changes to This Policy</h2>
+          <p>
+            We may update this Privacy Policy from time to time. Updates will be posted here with a revised
+            "Last updated" date.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">12. Contact</h2>
+          <p>
+            Questions? Contact us at{" "}
             <a className="underline" href="mailto:support@miafamilyassistant.com">
               support@miafamilyassistant.com
             </a>
@@ -126,7 +175,7 @@ const PrivacyPolicy = () => {
 
         <div className="pt-6 border-t border-border text-sm text-muted-foreground">
           <a href="/terms" className="underline hover:text-foreground">
-            Terms & Conditions
+            Terms &amp; Conditions
           </a>
         </div>
       </div>
