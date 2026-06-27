@@ -149,6 +149,7 @@ Deno.serve(async (req) => {
         const title = `In 30 min: ${ev.title}`;
         const body = `${fmtTime12(ev.time)}${ev.location ? ` · ${ev.location}` : ""}`;
         for (const uid of tokenUserIds) {
+          if (!wants(uid, "event_reminders")) continue;
           if (await alreadySent(uid, "event_30min", ev.id)) continue;
           await sendPush([uid], title, body, { type: "event_30min", event_id: ev.id });
           reminderSent++;

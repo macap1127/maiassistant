@@ -55,7 +55,7 @@ const SettingsPage = () => {
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
-  const [pushEnabled, setPushEnabled] = useState(() => getPushPreference());
+  const [searchParams_unused] = [null];
   const [searchParams, setSearchParams] = useSearchParams();
 
   const deleteAccount = async () => {
