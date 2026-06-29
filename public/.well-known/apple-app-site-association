@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "<TEAM_ID>.com.aiblueribbon.mia",
+        "appID": "JV9VCCL5WK.com.aiblueribbon.mia",
         "paths": [
           "/reset-password",
           "/invite/*"
