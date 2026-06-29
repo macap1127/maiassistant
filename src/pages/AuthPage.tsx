@@ -280,14 +280,8 @@ const AuthPage = () => {
                 setError("");
                 setLoading(true);
                 try {
-                  const redirect = inviteCode
-                    ? `${window.location.origin}/invite/${inviteCode}`
-                    : `${window.location.origin}/`;
-                  const result = await lovable.auth.signInWithOAuth("apple", {
-                    redirect_uri: redirect,
-                  });
-                  if (result.error) throw new Error(result.error.message || "Apple sign-in failed");
-                  if (result.redirected) return;
+                  const { signInWithApple } = await import("@/lib/appleAuth");
+                  await signInWithApple(inviteCode);
                 } catch (err: any) {
                   console.error("Apple auth error:", err);
                   setError(err.message || "Apple sign-in failed. Try again.");
