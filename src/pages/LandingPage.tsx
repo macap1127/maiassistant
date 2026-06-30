@@ -1,6 +1,8 @@
+import { Navigate } from "react-router-dom";
 import { Sparkles, Mic, Users, CalendarDays, CheckSquare, Bell, ArrowRight, Smartphone, MessageSquare, Play } from "lucide-react";
 import maiLogo from "@/assets/mai-logo.png";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth";
 
 const steps = [
   {
