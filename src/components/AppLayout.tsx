@@ -98,7 +98,7 @@ const AppLayout = () => {
   }
 
   if (!user) {
-    return <AuthPage />;
+    return <Navigate to="/" replace />;
   }
 
   if (needsOnboarding) {
