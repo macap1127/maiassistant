@@ -64,13 +64,7 @@ const benefits = [
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Aurora background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120vw] h-[60vh] bg-[radial-gradient(ellipse_at_center,hsl(250_90%_66%_/_0.22),transparent_70%)]" />
-        <div className="absolute bottom-0 right-0 w-[80vw] h-[50vh] bg-[radial-gradient(ellipse_at_center,hsl(200_100%_60%_/_0.15),transparent_70%)]" />
-      </div>
-
+    <div className="min-h-screen bg-background relative">
       <div className="relative z-10 max-w-lg mx-auto px-5 py-16 md:py-24">
         {/* Hero */}
         <div className="flex flex-col items-center text-center mb-14 animate-fade-in">
@@ -88,7 +82,7 @@ const LandingPage = () => {
             The AI co-pilot that turns family chaos into calm. Voice, calendar, tasks, groceries, and reminders — all in one place.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <Button asChild size="lg" className="rounded-full px-8 shadow-glow bg-gradient-to-r from-cyan-500 via-violet-500 to-fuchsia-500 text-white hover:opacity-90 transition-opacity">
+            <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
               <a href="#join">
                 Join the Beta
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -114,7 +108,7 @@ const LandingPage = () => {
             {benefits.map(({ icon: Icon, title, body }, i) => (
               <div
                 key={title}
-                className="bg-card/80 border border-border/80 rounded-2xl p-4 backdrop-blur-sm animate-slide-up"
+                className="rounded-2xl p-4 border border-border/80 glass animate-slide-up"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
                 <div className="flex items-start gap-3">
@@ -147,14 +141,14 @@ const LandingPage = () => {
             {steps.map(({ number, icon: Icon, title, body, cta, href }, i) => (
               <div
                 key={title}
-                className="group relative bg-card/90 border border-border/80 rounded-2xl p-5 backdrop-blur-sm transition-all hover:border-primary/40 hover:shadow-card animate-slide-up"
+                className="group relative glass rounded-2xl p-5 transition-all hover:border-primary/40 hover:shadow-card animate-slide-up"
                 style={{ animationDelay: `${i * 80}ms` }}
               >
                 <div className="absolute top-4 right-4 text-[10px] font-mono-tech text-muted-foreground/50">
                   {number}
                 </div>
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                     <Icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
