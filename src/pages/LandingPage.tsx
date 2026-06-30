@@ -65,6 +65,18 @@ const benefits = [
 ];
 
 const LandingPage = () => {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-sm text-muted-foreground animate-pulse">Loading…</p>
+      </div>
+    );
+  }
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background relative">
       <div className="relative z-10 max-w-lg mx-auto px-5 py-16 md:py-24">
