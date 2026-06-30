@@ -24,7 +24,7 @@ const AuthPage = () => {
 
   // Redirect away from /auth once authenticated (unless mid-signup or handling invite)
   if (!authLoading && user && !signupSuccess && !inviteCode) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
 
