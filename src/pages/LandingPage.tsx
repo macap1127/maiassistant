@@ -1,5 +1,26 @@
 import { Navigate, Link } from "react-router-dom";
-import { Sparkles, Mic, Users, CalendarDays, CheckSquare, Bell, ArrowRight, Smartphone, MessageSquare, Play } from "lucide-react";
+import {
+  Sparkles,
+  Mic,
+  Users,
+  CalendarDays,
+  CheckSquare,
+  Bell,
+  ArrowRight,
+  Smartphone,
+  MessageSquare,
+  Play,
+  Check,
+  Star,
+  Quote,
+  Heart,
+  Home,
+  ShoppingCart,
+  Calendar,
+  ListTodo,
+  Bot,
+  Shield,
+} from "lucide-react";
 import maiLogo from "@/assets/mai-logo.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
@@ -8,9 +29,10 @@ const steps = [
   {
     number: "01",
     icon: MessageSquare,
-    title: "Join the Google Group",
-    body: "Join our private testers community to share feedback, report bugs, and get early access to new features before anyone else.",
-    cta: "Join Google Group",
+    title: "Join Our Beta Community",
+    subtitle: "Hosted through Google Groups",
+    body: "Share feedback, report bugs, and get early access to new features before anyone else.",
+    cta: "Join Community",
     href: "https://groups.google.com/g/mia-family-assistant-testers",
   },
   {
@@ -64,6 +86,42 @@ const benefits = [
   },
 ];
 
+const foundingPerks = [
+  "12 months free after launch",
+  "Early access to new features",
+  "Direct influence on future updates",
+  "Exclusive Founding Family badge",
+];
+
+const expectations = [
+  "Use MIA with your family for 3–4 weeks",
+  "Create grocery lists",
+  "Add reminders",
+  "Use shared tasks",
+  "Try the calendar",
+  "Report anything confusing or broken",
+];
+
+const screenshots = [
+  { label: "Dashboard", icon: Home, color: "from-cyan-500/20 to-blue-500/20" },
+  { label: "Grocery List", icon: ShoppingCart, color: "from-violet-500/20 to-fuchsia-500/20" },
+  { label: "Calendar", icon: Calendar, color: "from-emerald-500/20 to-teal-500/20" },
+  { label: "Voice Assistant", icon: Mic, color: "from-amber-500/20 to-orange-500/20" },
+  { label: "Shared Tasks", icon: ListTodo, color: "from-rose-500/20 to-pink-500/20" },
+  { label: "Notifications", icon: Bell, color: "from-sky-500/20 to-indigo-500/20" },
+];
+
+const testimonials = [
+  {
+    quote: "MIA finally got my whole family on the same page without the group-text chaos.",
+    family: "Beta family of 5",
+  },
+  {
+    quote: "The voice assistant is a game changer while I'm cooking with messy hands.",
+    family: "Beta family of 4",
+  },
+];
+
 const LandingPage = () => {
   const { user, loading } = useAuth();
   if (loading) {
@@ -87,18 +145,18 @@ const LandingPage = () => {
             <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
           </div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-3">
-            Private Beta Now Open
+            Limited Founding Family Beta
           </p>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-gradient leading-tight">
-            Mia Family Assistant
+            Spend less time organizing your family
           </h1>
           <p className="text-base text-muted-foreground mt-4 max-w-sm leading-relaxed">
-            The AI co-pilot that turns family chaos into calm. Voice, calendar, tasks, groceries, and reminders — all in one place.
+            —and more time enjoying it. Shared grocery lists, calendars, reminders, chores and AI assistance all in one app.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
               <a href="#join">
-                Join the Beta
+                Become a Founding Family
                 <ArrowRight className="w-4 h-4 ml-2" />
               </a>
             </Button>
@@ -108,14 +166,139 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Why join */}
+        {/* Founding Family */}
+        <div className="mb-16">
+          <div className="glass rounded-3xl p-6 md:p-8 border border-primary/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-brand opacity-20 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-3">
+                <Star className="w-4 h-4 text-primary fill-primary" />
+                <p className="text-[10px] uppercase tracking-[0.3em] text-primary font-mono-tech">
+                  Become a Founding Family
+                </p>
+              </div>
+              <h2 className="text-2xl font-display font-bold text-gradient mb-3">
+                Help us build the future of family organization
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                We're inviting 50 families to use MIA before public launch and help shape the app through real-world feedback.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {foundingPerks.map((perk) => (
+                  <div key={perk} className="flex items-start gap-3 text-sm">
+                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-primary" />
+                    </div>
+                    <span className="text-foreground/90">{perk}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Founder Story */}
+        <div className="mb-16">
+          <div className="flex flex-col sm:flex-row items-start gap-5">
+            <div className="relative shrink-0">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-brand flex items-center justify-center text-primary-foreground font-display font-bold text-xl">
+                M
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+                From our founder
+              </p>
+              <h2 className="text-xl font-display font-bold text-gradient mb-3">Hi, I'm Michael.</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                I'm a father of four who was constantly switching between grocery apps, shared calendars, reminder apps, and sticky notes. So I built MIA. Now I'm looking for a small group of families to help shape it before launch.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Why beta */}
+        <div className="mb-16 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border/60 mb-4">
+            <Shield className="w-3.5 h-3.5 text-primary" />
+            <span className="text-xs text-muted-foreground">Why we're in beta</span>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
+            We're in a limited beta because we want feedback from real families before launching publicly. MIA is already built and working — we're just making sure it fits the way families actually live.
+          </p>
+        </div>
+
+        {/* Screenshots */}
         <div className="mb-16">
           <div className="text-center mb-8">
             <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              Why join the beta
+              See the app
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
-              Shape the future of family AI
+              Built for the way families actually work
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {screenshots.map(({ label, icon: Icon, color }, i) => (
+              <div
+                key={label}
+                className="group relative aspect-[9/16] rounded-2xl overflow-hidden border border-border/80 bg-muted/50 animate-slide-up"
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-60 group-hover:opacity-80 transition-opacity`} />
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-background/80 backdrop-blur-sm flex items-center justify-center mb-3 shadow-sm">
+                    <Icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="text-xs font-display font-semibold text-foreground/90">{label}</p>
+                </div>
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded-full bg-foreground/10" />
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-center text-muted-foreground/60 mt-3">
+            App screenshots coming soon — previews shown above.
+          </p>
+        </div>
+
+        {/* What we ask */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+              What we ask
+            </p>
+            <h2 className="text-2xl font-display font-bold text-gradient">
+              During beta, we'd love for you to
+            </h2>
+          </div>
+          <div className="glass rounded-2xl p-5 border border-border/80">
+            <div className="space-y-3">
+              {expectations.map((item) => (
+                <div key={item} className="flex items-start gap-3 text-sm">
+                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-primary" />
+                  </div>
+                  <span className="text-foreground/90">{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 pt-4 border-t border-border/60">
+              <p className="text-xs text-muted-foreground flex items-center gap-2">
+                <Heart className="w-3.5 h-3.5 text-primary" />
+                You'll probably spend about 5–10 minutes a day.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Benefits */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+              Features
+            </p>
+            <h2 className="text-2xl font-display font-bold text-gradient">
+              Everything your family needs
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -141,6 +324,31 @@ const LandingPage = () => {
           </div>
         </div>
 
+        {/* Social proof */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+              Already helping families
+            </p>
+            <h2 className="text-2xl font-display font-bold text-gradient">
+              Join our growing community of beta families
+            </h2>
+          </div>
+          <div className="space-y-3">
+            {testimonials.map(({ quote, family }, i) => (
+              <div
+                key={i}
+                className="glass rounded-2xl p-5 border border-border/80 animate-slide-up"
+                style={{ animationDelay: `${i * 80}ms` }}
+              >
+                <Quote className="w-5 h-5 text-primary/40 mb-2" />
+                <p className="text-sm text-foreground/90 leading-relaxed mb-3">"{quote}"</p>
+                <p className="text-xs text-muted-foreground">{family}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Steps */}
         <div id="join" className="mb-16 scroll-mt-24">
           <div className="text-center mb-8">
@@ -152,7 +360,7 @@ const LandingPage = () => {
             </h2>
           </div>
           <div className="space-y-4">
-            {steps.map(({ number, icon: Icon, title, body, cta, href }, i) => (
+            {steps.map(({ number, icon: Icon, title, subtitle, body, cta, href }, i) => (
               <div
                 key={title}
                 className="group relative glass rounded-2xl p-5 transition-all hover:border-primary/40 hover:shadow-card animate-slide-up"
@@ -167,6 +375,9 @@ const LandingPage = () => {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-base font-display font-semibold mb-1">{title}</h3>
+                    {subtitle && (
+                      <p className="text-[10px] text-muted-foreground/80 font-mono-tech mb-1">{subtitle}</p>
+                    )}
                     <p className="text-sm text-muted-foreground leading-relaxed mb-4">{body}</p>
                     <Button asChild variant="outline" className="rounded-full px-5 border-border/80 hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors">
                       <a href={href} target="_blank" rel="noopener noreferrer">
@@ -178,6 +389,27 @@ const LandingPage = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Final CTA */}
+        <div className="mb-16 text-center">
+          <div className="glass rounded-3xl p-8 border border-primary/20 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-brand opacity-10" />
+            <div className="relative z-10">
+              <h2 className="text-2xl font-display font-bold text-gradient mb-3">
+                Ready to become a Founding Family?
+              </h2>
+              <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+                Spots are limited. Join the beta community today and help shape MIA before public launch.
+              </p>
+              <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
+                <a href="#join">
+                  Reserve My Spot
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
 
