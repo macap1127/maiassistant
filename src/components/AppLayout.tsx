@@ -175,7 +175,7 @@ const AppLayout = () => {
           </h1>
 
           {/* Logo on the right */}
-          <button onClick={() => navigate("/")} className="relative w-9 h-9 shrink-0">
+          <button onClick={() => navigate("/dashboard")} className="relative w-9 h-9 shrink-0">
             <img src={maiLogo} alt="MIA" className="w-9 h-9 rounded-lg relative z-10" />
             <div className="absolute inset-0 rounded-lg blur-md bg-gradient-brand opacity-50" />
           </button>
