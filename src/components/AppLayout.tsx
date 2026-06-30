@@ -33,7 +33,7 @@ const menuItems = [
 
 const titleFor = (path: string) => {
   const map: Record<string, string> = {
-    "/": "Home",
+    "/dashboard": "Home",
     "/grocery": "Grocery",
     "/tasks": "To Do",
     "/calendar": "Calendar",
