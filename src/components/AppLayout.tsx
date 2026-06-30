@@ -1,7 +1,6 @@
 import { Outlet, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt, Sparkles } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import AuthPage from "@/pages/AuthPage";
 import OnboardingPage from "@/pages/OnboardingPage";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
