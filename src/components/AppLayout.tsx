@@ -20,7 +20,7 @@ const navItems = [
 ];
 
 const menuItems = [
-  { path: "/", icon: Home, label: "Home" },
+  { path: "/dashboard", icon: Home, label: "Home" },
   { path: "/grocery", icon: ShoppingCart, label: "Grocery List" },
   { path: "/tasks", icon: CheckSquare, label: "To Do List" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
