@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/lib/auth";
 import AppLayout from "./components/AppLayout";
+import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import GroceryList from "./pages/GroceryList";
 import Tasks from "./pages/Tasks";
@@ -35,8 +36,9 @@ const App = () => (
         <BrowserRouter>
           <DeepLinkHandler />
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route element={<AppLayout />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/grocery" element={<GroceryList />} />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/calendar" element={<CalendarPage />} />

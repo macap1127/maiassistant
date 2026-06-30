@@ -1,7 +1,6 @@
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt, Sparkles } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import AuthPage from "@/pages/AuthPage";
 import OnboardingPage from "@/pages/OnboardingPage";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
@@ -12,7 +11,7 @@ import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 
 const navItems = [
-  { path: "/", icon: Home, label: "Home" },
+  { path: "/dashboard", icon: Home, label: "Home" },
   { path: "/grocery", icon: ShoppingCart, label: "Grocery" },
   { path: "/tasks", icon: CheckSquare, label: "To Do" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
@@ -20,7 +19,7 @@ const navItems = [
 ];
 
 const menuItems = [
-  { path: "/", icon: Home, label: "Home" },
+  { path: "/dashboard", icon: Home, label: "Home" },
   { path: "/grocery", icon: ShoppingCart, label: "Grocery List" },
   { path: "/tasks", icon: CheckSquare, label: "To Do List" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
@@ -33,7 +32,7 @@ const menuItems = [
 
 const titleFor = (path: string) => {
   const map: Record<string, string> = {
-    "/": "Home",
+    "/dashboard": "Home",
     "/grocery": "Grocery",
     "/tasks": "To Do",
     "/calendar": "Calendar",
@@ -98,7 +97,7 @@ const AppLayout = () => {
   }
 
   if (!user) {
-    return <AuthPage />;
+    return <Navigate to="/" replace />;
   }
 
   if (needsOnboarding) {
@@ -175,7 +174,7 @@ const AppLayout = () => {
           </h1>
 
           {/* Logo on the right */}
-          <button onClick={() => navigate("/")} className="relative w-9 h-9 shrink-0">
+          <button onClick={() => navigate("/dashboard")} className="relative w-9 h-9 shrink-0">
             <img src={maiLogo} alt="MIA" className="w-9 h-9 rounded-lg relative z-10" />
             <div className="absolute inset-0 rounded-lg blur-md bg-gradient-brand opacity-50" />
           </button>

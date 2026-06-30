@@ -70,7 +70,7 @@ const AcceptInvitePage = () => {
     }
 
     toast({ title: "Welcome!", description: `You've joined ${invite.household_name}.` });
-    navigate("/");
+    navigate("/dashboard");
   };
 
 
@@ -89,7 +89,7 @@ const AcceptInvitePage = () => {
           <X className="w-8 h-8 text-destructive mx-auto mb-3" />
           <h1 className="font-serif font-semibold text-lg mb-2">Invite unavailable</h1>
           <p className="text-sm text-muted-foreground mb-4">{error}</p>
-          <button onClick={() => navigate("/")} className="text-sm text-primary hover:underline">Go home</button>
+          <button onClick={() => navigate("/dashboard")} className="text-sm text-primary hover:underline">Go home</button>
         </div>
       </div>
     );
