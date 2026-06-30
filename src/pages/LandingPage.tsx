@@ -103,7 +103,7 @@ const LandingPage = () => {
               </a>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-full px-8 border-border/80 hover:bg-muted">
-              <a href="/auth">Sign in</a>
+              <Link to="/auth">Sign in</Link>
             </Button>
           </div>
         </div>
@@ -190,9 +190,9 @@ const LandingPage = () => {
             </a>
           </p>
           <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground/70">
-            <a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-            <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
+            <Link to="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
           </div>
           <p className="text-[10px] text-muted-foreground/50 mt-6">
             © 2026 Mia Family Assistant. All rights reserved.
