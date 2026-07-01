@@ -119,15 +119,12 @@ const screenshots = [
   { label: "Calendar", icon: Calendar, image: "/screenshots/calendar.png", color: "from-amber-500/20 to-orange-500/20" },
 ];
 
-const testimonials = [
-  {
-    quote: "MIA finally got my whole family on the same page without the group-text chaos.",
-    family: "Beta family of 5",
-  },
-  {
-    quote: "The voice assistant is a game changer while I'm cooking with messy hands.",
-    family: "Beta family of 4",
-  },
+const whatYoullTest = [
+  { label: "Grocery Lists", icon: ShoppingCart },
+  { label: "Shared Tasks", icon: ListTodo },
+  { label: "AI Voice Assistant", icon: Mic },
+  { label: "Calendar", icon: Calendar },
+  { label: "Family Reminders", icon: Bell },
 ];
 
 const LandingPage = () => {
