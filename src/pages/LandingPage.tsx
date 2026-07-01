@@ -106,9 +106,9 @@ const screenshots = [
   { label: "Dashboard", icon: Home, image: "/screenshots/dashboard.png", color: "from-cyan-500/20 to-blue-500/20" },
   { label: "Grocery List", icon: ShoppingCart, image: "/screenshots/grocery.png", color: "from-violet-500/20 to-fuchsia-500/20" },
   { label: "Calendar", icon: Calendar, image: "/screenshots/calendar.png", color: "from-emerald-500/20 to-teal-500/20" },
+  { label: "Receipts", icon: Receipt, image: "/screenshots/receipts.png", color: "from-amber-500/20 to-orange-500/20" },
   { label: "Shared Tasks", icon: ListTodo, image: "/screenshots/tasks.png", color: "from-rose-500/20 to-pink-500/20" },
-  { label: "Family", icon: Users, image: "/screenshots/family.png", color: "from-amber-500/20 to-orange-500/20" },
-  { label: "Voice Assistant", icon: Mic, image: undefined, color: "from-sky-500/20 to-indigo-500/20" },
+  { label: "Family", icon: Users, image: "/screenshots/family.png", color: "from-sky-500/20 to-indigo-500/20" },
 ];
 
 const testimonials = [
