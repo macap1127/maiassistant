@@ -41,6 +41,7 @@ const steps = [
     body: "Share feedback, report bugs, and get early access to new features before anyone else.",
     cta: "Join Community",
     href: "https://groups.google.com/g/mia-family-assistant-testers",
+    time: "30 seconds",
   },
   {
     number: "02",
@@ -49,6 +50,7 @@ const steps = [
     body: "Become an official beta tester on Google Play. Your opt-in lets us deliver beta builds directly to your device.",
     cta: "Opt into Beta",
     href: "https://play.google.com/apps/testing/com.aiblueribbon.mia",
+    time: "15 seconds",
   },
   {
     number: "03",
@@ -57,6 +59,7 @@ const steps = [
     body: "Once you're opted in, install Mia Family Assistant from the Play Store and start simplifying your family life today.",
     cta: "Install Now",
     href: "https://play.google.com/store/apps/details?id=com.aiblueribbon.mia",
+    time: "1 minute",
   },
 ];
 
