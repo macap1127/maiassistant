@@ -116,13 +116,15 @@ const screenshots = [
   { label: "Home", icon: Home, image: "/screenshots/dashboard.png", color: "from-cyan-500/20 to-blue-500/20" },
   { label: "Meet MIA", icon: Sparkles, image: "/screenshots/about.png", color: "from-violet-500/20 to-fuchsia-500/20" },
   { label: "Grocery List", icon: ShoppingCart, image: "/screenshots/grocery.png", color: "from-emerald-500/20 to-teal-500/20" },
+  { label: "Receipts", icon: Receipt, image: "/screenshots/receipts.png", color: "from-rose-500/20 to-pink-500/20" },
   { label: "Calendar", icon: Calendar, image: "/screenshots/calendar.png", color: "from-amber-500/20 to-orange-500/20" },
 ];
 
 const whatYoullTest = [
-  { label: "Grocery Lists", icon: ShoppingCart },
-  { label: "Shared Tasks", icon: ListTodo },
   { label: "AI Voice Assistant", icon: Mic },
+  { label: "Grocery Lists", icon: ShoppingCart },
+  { label: "Receipt Tracking", icon: Receipt },
+  { label: "Shared Tasks", icon: ListTodo },
   { label: "Calendar", icon: Calendar },
   { label: "Family Reminders", icon: Bell },
 ];
