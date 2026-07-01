@@ -414,7 +414,7 @@ const LandingPage = () => {
             </h2>
           </div>
           <div className="space-y-4">
-            {steps.map(({ number, icon: Icon, title, subtitle, body, cta, href }, i) => (
+            {steps.map(({ number, icon: Icon, title, subtitle, body, cta, href, time }, i) => (
               <div
                 key={title}
                 className="group relative glass rounded-2xl p-5 transition-all hover:border-primary/40 hover:shadow-card animate-slide-up"
