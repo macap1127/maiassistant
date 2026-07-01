@@ -295,9 +295,9 @@ const LandingPage = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="flex items-center justify-center gap-3 mt-5">
-              <CarouselPrevious className="static translate-y-0 -left-0 -top-0" />
-              <CarouselNext className="static translate-y-0 -right-0 -top-0" />
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <CarouselPrevious className="static translate-y-0 left-0 top-0 h-11 w-11 rounded-full bg-gradient-brand text-primary-foreground border-0 hover:opacity-90 shadow-glow" />
+              <CarouselNext className="static translate-y-0 right-0 top-0 h-11 w-11 rounded-full bg-gradient-brand text-primary-foreground border-0 hover:opacity-90 shadow-glow" />
             </div>
           </Carousel>
           <p className="text-[10px] text-center text-muted-foreground/60 mt-3">
