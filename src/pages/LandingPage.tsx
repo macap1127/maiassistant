@@ -209,9 +209,9 @@ const LandingPage = () => {
               <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
                 From our founder
               </p>
-              <h2 className="text-xl font-display font-bold text-gradient mb-3">Hi, I'm Michael.</h2>
+              <h2 className="text-xl font-display font-bold text-gradient mb-3">Hi, I'm the founder of MIA.</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                I'm a father of four who was constantly switching between grocery apps, shared calendars, reminder apps, and sticky notes. So I built MIA. Now I'm looking for a small group of families to help shape it before launch.
+                I built MIA because I was constantly switching between grocery apps, shared calendars, reminder apps, and sticky notes. So I created one place to keep the whole family in sync. Now I'm looking for a small group of families to help shape it before launch.
               </p>
             </div>
           </div>
