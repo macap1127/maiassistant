@@ -212,21 +212,21 @@ const LandingPage = () => {
 
         {/* Founder Story */}
         <div className="mb-16">
-          <div className="flex flex-col sm:flex-row items-start gap-5">
-            <div className="relative shrink-0">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-brand flex items-center justify-center text-primary-foreground font-display font-bold text-xl">
-                M
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-                From our founder
-              </p>
-              <h2 className="text-xl font-display font-bold text-gradient mb-3">Hi, I'm the founder of MIA.</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                I built MIA because I was constantly switching between grocery apps, shared calendars, reminder apps, and sticky notes. So I created one place to keep the whole family in sync. Now I'm looking for a small group of families to help shape it before launch.
-              </p>
-            </div>
+          <div className="text-center mb-5">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+              From the founder
+            </p>
+            <h2 className="text-2xl font-display font-bold text-gradient">
+              Built for families, by a parent who needed it.
+            </h2>
+          </div>
+          <div className="glass rounded-2xl p-6 border border-border/80">
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              Hi. I'm the founder of MIA. Like a lot of parents, I was juggling grocery apps, shared calendars, reminder lists, sticky notes, and group texts — and my family still felt out of sync. So I built one place where everything lives together: groceries, schedules, tasks, reminders, and an AI assistant that actually helps.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              MIA is already working. Now I'm looking for a small group of families to test it in the real world, share feedback, and help shape it before we launch publicly. If that sounds like you, I'd love to have you in the beta.
+            </p>
           </div>
         </div>
 
@@ -237,7 +237,7 @@ const LandingPage = () => {
             <span className="text-xs text-muted-foreground">Why we're in beta</span>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
-            We're in a limited beta because we want feedback from real families before launching publicly. MIA is already built and working — we're just making sure it fits the way families actually live.
+            MIA is fully functional — we're simply testing it with real families before public launch. Your feedback helps us get it right.
           </p>
         </div>
 
@@ -414,7 +414,7 @@ const LandingPage = () => {
             </h2>
           </div>
           <div className="space-y-4">
-            {steps.map(({ number, icon: Icon, title, subtitle, body, cta, href }, i) => (
+            {steps.map(({ number, icon: Icon, title, subtitle, body, cta, href, time }, i) => (
               <div
                 key={title}
                 className="group relative glass rounded-2xl p-5 transition-all hover:border-primary/40 hover:shadow-card animate-slide-up"
@@ -428,7 +428,12 @@ const LandingPage = () => {
                     <Icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-base font-display font-semibold mb-1">{title}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-base font-display font-semibold">{title}</h3>
+                      <span className="text-[10px] font-mono-tech text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                        {time}
+                      </span>
+                    </div>
                     {subtitle && (
                       <p className="text-[10px] text-muted-foreground/80 font-mono-tech mb-1">{subtitle}</p>
                     )}
@@ -452,17 +457,21 @@ const LandingPage = () => {
             <div className="absolute inset-0 bg-gradient-brand opacity-10" />
             <div className="relative z-10">
               <h2 className="text-2xl font-display font-bold text-gradient mb-3">
-                Ready to become a Founding Family?
+                Ready to start testing MIA?
               </h2>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-                Spots are limited. Join the beta community today and help shape MIA before public launch.
+                Join the beta free today and get 6 months of Premium after launch. Spots are limited.
               </p>
               <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
                 <a href="#join">
-                  Reserve My Spot
+                  Join the Beta Free
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </a>
               </Button>
+              <p className="text-xs text-muted-foreground/70 mt-4 flex items-center justify-center gap-1.5">
+                <Shield className="w-3.5 h-3.5" />
+                Your data is private. You can leave the beta at any time.
+              </p>
             </div>
           </div>
         </div>
