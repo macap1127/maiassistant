@@ -260,7 +260,7 @@ const LandingPage = () => {
                   className="pl-4 md:pl-6 basis-[85%] sm:basis-[70%] md:basis-[55%] lg:basis-[45%]"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
-                  <div className="group relative aspect-[9/16] rounded-3xl overflow-hidden border border-border/80 bg-muted/50 shadow-card">
+                  <div className="group relative aspect-[9/16] rounded-3xl overflow-hidden ring-1 ring-border/80 bg-muted/50 shadow-card">
                     {image ? (
                       <>
                         <img
@@ -269,7 +269,7 @@ const LandingPage = () => {
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           loading="lazy"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-background/95 via-background/50 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-background/80 backdrop-blur-sm flex items-center justify-center shadow-sm">
