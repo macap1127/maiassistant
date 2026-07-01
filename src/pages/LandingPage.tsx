@@ -20,6 +20,7 @@ import {
   ListTodo,
   Bot,
   Shield,
+  Receipt,
 } from "lucide-react";
 import maiLogo from "@/assets/mai-logo.png";
 import { Button } from "@/components/ui/button";
