@@ -103,12 +103,12 @@ const expectations = [
 ];
 
 const screenshots = [
-  { label: "Dashboard", icon: Home, color: "from-cyan-500/20 to-blue-500/20" },
-  { label: "Grocery List", icon: ShoppingCart, color: "from-violet-500/20 to-fuchsia-500/20" },
-  { label: "Calendar", icon: Calendar, color: "from-emerald-500/20 to-teal-500/20" },
-  { label: "Voice Assistant", icon: Mic, color: "from-amber-500/20 to-orange-500/20" },
-  { label: "Shared Tasks", icon: ListTodo, color: "from-rose-500/20 to-pink-500/20" },
-  { label: "Notifications", icon: Bell, color: "from-sky-500/20 to-indigo-500/20" },
+  { label: "Dashboard", icon: Home, image: "/screenshots/dashboard.png", color: "from-cyan-500/20 to-blue-500/20" },
+  { label: "Grocery List", icon: ShoppingCart, image: "/screenshots/grocery.png", color: "from-violet-500/20 to-fuchsia-500/20" },
+  { label: "Calendar", icon: Calendar, image: "/screenshots/calendar.png", color: "from-emerald-500/20 to-teal-500/20" },
+  { label: "Shared Tasks", icon: ListTodo, image: "/screenshots/tasks.png", color: "from-rose-500/20 to-pink-500/20" },
+  { label: "Family", icon: Users, image: "/screenshots/family.png", color: "from-amber-500/20 to-orange-500/20" },
+  { label: "Voice Assistant", icon: Mic, image: undefined, color: "from-sky-500/20 to-indigo-500/20" },
 ];
 
 const testimonials = [
@@ -239,25 +239,47 @@ const LandingPage = () => {
             </h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {screenshots.map(({ label, icon: Icon, color }, i) => (
+            {screenshots.map(({ label, icon: Icon, color, image }, i) => (
               <div
                 key={label}
                 className="group relative aspect-[9/16] rounded-2xl overflow-hidden border border-border/80 bg-muted/50 animate-slide-up"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-60 group-hover:opacity-80 transition-opacity`} />
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                  <div className="w-12 h-12 rounded-2xl bg-background/80 backdrop-blur-sm flex items-center justify-center mb-3 shadow-sm">
-                    <Icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <p className="text-xs font-display font-semibold text-foreground/90">{label}</p>
-                </div>
+                {image ? (
+                  <>
+                    <img
+                      src={image}
+                      alt={`MIA ${label} screenshot`}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-background/80 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                          <Icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <p className="text-xs font-display font-semibold text-foreground">{label}</p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-60 group-hover:opacity-80 transition-opacity`} />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                      <div className="w-12 h-12 rounded-2xl bg-background/80 backdrop-blur-sm flex items-center justify-center mb-3 shadow-sm">
+                        <Icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <p className="text-xs font-display font-semibold text-foreground/90">{label}</p>
+                    </div>
+                  </>
+                )}
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded-full bg-foreground/10" />
               </div>
             ))}
           </div>
           <p className="text-[10px] text-center text-muted-foreground/60 mt-3">
-            App screenshots coming soon — previews shown above.
+            Real app screenshots from MIA Family Assistant — voice features previewed.
           </p>
         </div>
 
