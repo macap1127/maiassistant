@@ -1,7 +1,6 @@
 import { Navigate, Link } from "react-router-dom";
 import {
   Sparkles,
-  Mic,
   Users,
   CalendarDays,
   CheckSquare,
@@ -12,7 +11,6 @@ import {
   Play,
   Check,
   Star,
-  Quote,
   Heart,
   Home,
   ShoppingCart,
@@ -20,6 +18,7 @@ import {
   ListTodo,
   Shield,
   Receipt,
+  Mic,
 } from "lucide-react";
 import maiLogo from "@/assets/mai-logo.png";
 import { Button } from "@/components/ui/button";
