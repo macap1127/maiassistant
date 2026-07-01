@@ -311,7 +311,46 @@ const LandingPage = () => {
           </p>
         </div>
 
-
+        {/* Voice Assistant Highlight */}
+        <div className="mt-16 mb-16">
+          <div className="text-center mb-8">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+              Voice powered
+            </p>
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-gradient">
+              Just say what your family needs
+            </h2>
+          </div>
+          <div className="glass rounded-3xl p-6 md:p-8 border border-primary/20 relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-56 h-56 bg-gradient-brand opacity-15 blur-3xl rounded-full" />
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center mb-5 ring-1 ring-primary/20">
+                <Mic className="w-10 h-10 text-primary" />
+              </div>
+              <h3 className="text-xl md:text-2xl font-display font-bold mb-3">
+                MIA listens, then gets it organized
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-sm mx-auto">
+                Tap the mic while you cook, drive, or pack the kids up. Add groceries, create calendar events, set tasks, and ask what's happening today — without typing a thing.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
+                {[
+                  "Add items to the grocery list",
+                  "Create calendar events by voice",
+                  "Set reminders and assign tasks",
+                  "Ask what's scheduled today",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3 text-sm">
+                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-primary" />
+                    </div>
+                    <span className="text-foreground/90">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* What we ask */}
         <div className="mb-16">
