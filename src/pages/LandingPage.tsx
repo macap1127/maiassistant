@@ -428,7 +428,12 @@ const LandingPage = () => {
                     <Icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-base font-display font-semibold mb-1">{title}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-base font-display font-semibold">{title}</h3>
+                      <span className="text-[10px] font-mono-tech text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                        {time}
+                      </span>
+                    </div>
                     {subtitle && (
                       <p className="text-[10px] text-muted-foreground/80 font-mono-tech mb-1">{subtitle}</p>
                     )}
