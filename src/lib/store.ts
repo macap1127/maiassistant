@@ -116,6 +116,7 @@ export function useFamilyData() {
     householdIdRef.current = householdId;
 
     const loadAll = async () => {
+      console.log("[useFamilyData] loadAll for household", householdId);
       const [hh, members, groceries, tasks, events] = await Promise.all([
         supabase.from("households").select("name").eq("id", householdId).maybeSingle(),
         supabase.from("family_members").select("*").eq("household_id", householdId),
@@ -123,6 +124,7 @@ export function useFamilyData() {
         supabase.from("tasks").select("*").eq("household_id", householdId),
         supabase.from("events").select("*").eq("household_id", householdId),
       ]);
+      console.log("[useFamilyData] results", { hhErr: hh.error, members: members.data?.length, membersErr: members.error, groceries: groceries.data?.length, gErr: groceries.error, tasks: tasks.data?.length, tErr: tasks.error, events: events.data?.length, eErr: events.error });
 
       setData({
         familyName: hh.data?.name || "My Family",
