@@ -87,7 +87,7 @@ const benefits = [
 ];
 
 const foundingPerks = [
-  "12 months free after launch",
+  "6 months free after launch",
   "Early access to new features",
   "Direct influence on future updates",
   "Exclusive Founding Family badge",
