@@ -149,19 +149,23 @@ const LandingPage = () => {
             <img src={maiLogo} alt="Mia Family Assistant" className="w-28 h-28 rounded-3xl relative z-10" />
             <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
           </div>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-5">
+            <Star className="w-3.5 h-3.5 text-primary fill-primary" />
+            <span className="text-xs font-medium text-primary">Early testers get 6 months of Premium free</span>
+          </div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-3">
             Limited Founding Family Beta
           </p>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-gradient leading-tight">
-            Spend less time organizing your family
+            One app for your family's groceries, calendar, tasks, and reminders
           </h1>
           <p className="text-base text-muted-foreground mt-4 max-w-sm leading-relaxed">
-            —and more time enjoying it. Shared grocery lists, calendars, reminders, chores and AI assistance all in one app.
+            Finally keep your whole family organized in one place. Shared lists, schedules, chores, and AI help — all working together.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
               <a href="#join">
-                Become a Founding Family
+                Join the Beta Free
                 <ArrowRight className="w-4 h-4 ml-2" />
               </a>
             </Button>
@@ -169,6 +173,10 @@ const LandingPage = () => {
               <Link to="/auth">Sign in</Link>
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground/70 mt-4 flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5" />
+            Your data stays private and is never sold.
+          </p>
         </div>
 
         {/* Founding Family */}
