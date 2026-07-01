@@ -257,7 +257,7 @@ const LandingPage = () => {
               {screenshots.map(({ label, icon: Icon, color, image }, i) => (
                 <CarouselItem
                   key={label}
-                  className="pl-4 md:pl-6 basis-[85%] sm:basis-[70%] md:basis-[55%] lg:basis-[45%]"
+                  className="pl-4 md:pl-6 basis-[100%] sm:basis-[90%] md:basis-[75%] lg:basis-[60%]"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
                   <div className="group relative aspect-[9/16] rounded-3xl overflow-hidden ring-1 ring-border/80 bg-muted/50 shadow-card">
