@@ -90,9 +90,9 @@ const benefits = [
     body: "Daily digests and 30-minute event reminders delivered straight to your phone.",
   },
   {
-    icon: Sparkles,
-    title: "AI inside",
-    body: "Powered by AI Blue Ribbon — premium intelligence tuned for busy families.",
+    icon: Receipt,
+    title: "Receipt tracking",
+    body: "Snap photos of receipts and keep spending records organized by household.",
   },
 ];
 
