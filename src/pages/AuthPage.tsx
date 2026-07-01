@@ -22,12 +22,6 @@ const AuthPage = () => {
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [resetSent, setResetSent] = useState(false);
 
-  // Redirect away from /auth once authenticated (unless mid-signup or handling invite)
-  if (!authLoading && user && !signupSuccess && !inviteCode) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("invite");
@@ -36,6 +30,12 @@ const AuthPage = () => {
       setMode("signup");
     }
   }, []);
+
+  // Redirect away from /auth once authenticated (unless mid-signup or handling invite)
+  if (!authLoading && user && !signupSuccess && !inviteCode) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
 
   const submit = async () => {
     if (mode === "forgot") {
