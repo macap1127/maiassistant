@@ -237,7 +237,7 @@ const LandingPage = () => {
             <span className="text-xs text-muted-foreground">Why we're in beta</span>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
-            We're in a limited beta because we want feedback from real families before launching publicly. MIA is already built and working — we're just making sure it fits the way families actually live.
+            MIA is fully functional — we're simply testing it with real families before public launch. Your feedback helps us get it right.
           </p>
         </div>
 
