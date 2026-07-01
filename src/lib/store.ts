@@ -97,8 +97,10 @@ export function useFamilyData() {
         return;
       }
       if (memberships && memberships.length > 0) {
+        console.log("[useFamilyData] household found:", memberships[0].household_id);
         setHouseholdId(memberships[0].household_id);
       } else {
+        console.log("[useFamilyData] no household membership");
         setLoading(false);
       }
     })();
