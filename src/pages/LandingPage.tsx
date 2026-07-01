@@ -366,28 +366,32 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Social proof */}
+        {/* What you'll help us test */}
         <div className="mb-16">
           <div className="text-center mb-8">
             <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              Already helping families
+              What you'll help us test
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
-              Join our growing community of beta families
+              Real features. Real feedback.
             </h2>
           </div>
-          <div className="space-y-3">
-            {testimonials.map(({ quote, family }, i) => (
-              <div
-                key={i}
-                className="glass rounded-2xl p-5 border border-border/80 animate-slide-up"
-                style={{ animationDelay: `${i * 80}ms` }}
-              >
-                <Quote className="w-5 h-5 text-primary/40 mb-2" />
-                <p className="text-sm text-foreground/90 leading-relaxed mb-3">"{quote}"</p>
-                <p className="text-xs text-muted-foreground">{family}</p>
-              </div>
-            ))}
+          <div className="glass rounded-2xl p-5 border border-border/80">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {whatYoullTest.map(({ label, icon: Icon }, i) => (
+                <div
+                  key={label}
+                  className="flex items-center gap-3 text-sm animate-slide-up"
+                  style={{ animationDelay: `${i * 60}ms` }}
+                >
+                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-primary" />
+                  </div>
+                  <Icon className="w-4 h-4 text-primary/70" />
+                  <span className="text-foreground/90">{label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
