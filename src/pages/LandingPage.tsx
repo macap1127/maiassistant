@@ -212,21 +212,21 @@ const LandingPage = () => {
 
         {/* Founder Story */}
         <div className="mb-16">
-          <div className="flex flex-col sm:flex-row items-start gap-5">
-            <div className="relative shrink-0">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-brand flex items-center justify-center text-primary-foreground font-display font-bold text-xl">
-                M
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-                From our founder
-              </p>
-              <h2 className="text-xl font-display font-bold text-gradient mb-3">Hi, I'm the founder of MIA.</h2>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                I built MIA because I was constantly switching between grocery apps, shared calendars, reminder apps, and sticky notes. So I created one place to keep the whole family in sync. Now I'm looking for a small group of families to help shape it before launch.
-              </p>
-            </div>
+          <div className="text-center mb-5">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+              From the founder
+            </p>
+            <h2 className="text-2xl font-display font-bold text-gradient">
+              Built for families, by a parent who needed it.
+            </h2>
+          </div>
+          <div className="glass rounded-2xl p-6 border border-border/80">
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              Hi. I'm the founder of MIA. Like a lot of parents, I was juggling grocery apps, shared calendars, reminder lists, sticky notes, and group texts — and my family still felt out of sync. So I built one place where everything lives together: groceries, schedules, tasks, reminders, and an AI assistant that actually helps.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              MIA is already working. Now I'm looking for a small group of families to test it in the real world, share feedback, and help shape it before we launch publicly. If that sounds like you, I'd love to have you in the beta.
+            </p>
           </div>
         </div>
 
