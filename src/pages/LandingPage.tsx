@@ -103,12 +103,12 @@ const expectations = [
 ];
 
 const screenshots = [
-  { label: "Dashboard", icon: Home, color: "from-cyan-500/20 to-blue-500/20" },
-  { label: "Grocery List", icon: ShoppingCart, color: "from-violet-500/20 to-fuchsia-500/20" },
-  { label: "Calendar", icon: Calendar, color: "from-emerald-500/20 to-teal-500/20" },
-  { label: "Voice Assistant", icon: Mic, color: "from-amber-500/20 to-orange-500/20" },
-  { label: "Shared Tasks", icon: ListTodo, color: "from-rose-500/20 to-pink-500/20" },
-  { label: "Notifications", icon: Bell, color: "from-sky-500/20 to-indigo-500/20" },
+  { label: "Dashboard", icon: Home, image: "/screenshots/dashboard.png", color: "from-cyan-500/20 to-blue-500/20" },
+  { label: "Grocery List", icon: ShoppingCart, image: "/screenshots/grocery.png", color: "from-violet-500/20 to-fuchsia-500/20" },
+  { label: "Calendar", icon: Calendar, image: "/screenshots/calendar.png", color: "from-emerald-500/20 to-teal-500/20" },
+  { label: "Shared Tasks", icon: ListTodo, image: "/screenshots/tasks.png", color: "from-rose-500/20 to-pink-500/20" },
+  { label: "Family", icon: Users, image: "/screenshots/family.png", color: "from-amber-500/20 to-orange-500/20" },
+  { label: "Voice Assistant", icon: Mic, image: undefined, color: "from-sky-500/20 to-indigo-500/20" },
 ];
 
 const testimonials = [
