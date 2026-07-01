@@ -18,13 +18,20 @@ import {
   ShoppingCart,
   Calendar,
   ListTodo,
-  Bot,
   Shield,
   Receipt,
 } from "lucide-react";
 import maiLogo from "@/assets/mai-logo.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
 
 const steps = [
   {
@@ -239,50 +246,65 @@ const LandingPage = () => {
               Built for the way families actually work
             </h2>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {screenshots.map(({ label, icon: Icon, color, image }, i) => (
-              <div
-                key={label}
-                className="group relative aspect-[9/16] rounded-2xl overflow-hidden border border-border/80 bg-muted/50 animate-slide-up"
-                style={{ animationDelay: `${i * 60}ms` }}
-              >
-                {image ? (
-                  <>
-                    <img
-                      src={image}
-                      alt={`MIA ${label} screenshot`}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-xl bg-background/80 backdrop-blur-sm flex items-center justify-center shadow-sm">
-                          <Icon className="w-4 h-4 text-primary" />
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4 md:-ml-6">
+              {screenshots.map(({ label, icon: Icon, color, image }, i) => (
+                <CarouselItem
+                  key={label}
+                  className="pl-4 md:pl-6 basis-[85%] sm:basis-[70%] md:basis-[55%] lg:basis-[45%]"
+                  style={{ animationDelay: `${i * 60}ms` }}
+                >
+                  <div className="group relative aspect-[9/16] rounded-3xl overflow-hidden border border-border/80 bg-muted/50 shadow-card">
+                    {image ? (
+                      <>
+                        <img
+                          src={image}
+                          alt={`MIA ${label} screenshot`}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-background/80 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                              <Icon className="w-5 h-5 text-primary" />
+                            </div>
+                            <p className="text-sm font-display font-semibold text-foreground">{label}</p>
+                          </div>
                         </div>
-                        <p className="text-xs font-display font-semibold text-foreground">{label}</p>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-60 group-hover:opacity-80 transition-opacity`} />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
-                      <div className="w-12 h-12 rounded-2xl bg-background/80 backdrop-blur-sm flex items-center justify-center mb-3 shadow-sm">
-                        <Icon className="w-6 h-6 text-primary" />
-                      </div>
-                      <p className="text-xs font-display font-semibold text-foreground/90">{label}</p>
-                    </div>
-                  </>
-                )}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded-full bg-foreground/10" />
-              </div>
-            ))}
-          </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-60 group-hover:opacity-80 transition-opacity`} />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                          <div className="w-14 h-14 rounded-2xl bg-background/80 backdrop-blur-sm flex items-center justify-center mb-3 shadow-sm">
+                            <Icon className="w-7 h-7 text-primary" />
+                          </div>
+                          <p className="text-sm font-display font-semibold text-foreground/90">{label}</p>
+                        </div>
+                      </>
+                    )}
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-1.5 rounded-full bg-foreground/10" />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <CarouselPrevious className="static translate-y-0 left-0 top-0 h-11 w-11 rounded-full bg-gradient-brand text-primary-foreground border-0 hover:opacity-90 shadow-glow" />
+              <CarouselNext className="static translate-y-0 right-0 top-0 h-11 w-11 rounded-full bg-gradient-brand text-primary-foreground border-0 hover:opacity-90 shadow-glow" />
+            </div>
+          </Carousel>
           <p className="text-[10px] text-center text-muted-foreground/60 mt-3">
-            Real app screenshots from MIA Family Assistant.
+            Swipe or use arrows to browse real screenshots from MIA Family Assistant.
           </p>
         </div>
+
 
         {/* What we ask */}
         <div className="mb-16">
