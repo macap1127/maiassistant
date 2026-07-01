@@ -279,7 +279,7 @@ const LandingPage = () => {
             ))}
           </div>
           <p className="text-[10px] text-center text-muted-foreground/60 mt-3">
-            Real app screenshots from MIA Family Assistant.
+            Real app screenshots from MIA Family Assistant — voice features previewed.
           </p>
         </div>
 
