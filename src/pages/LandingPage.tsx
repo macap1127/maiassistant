@@ -457,17 +457,21 @@ const LandingPage = () => {
             <div className="absolute inset-0 bg-gradient-brand opacity-10" />
             <div className="relative z-10">
               <h2 className="text-2xl font-display font-bold text-gradient mb-3">
-                Ready to become a Founding Family?
+                Ready to start testing MIA?
               </h2>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-                Spots are limited. Join the beta community today and help shape MIA before public launch.
+                Join the beta free today and get 6 months of Premium after launch. Spots are limited.
               </p>
               <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
                 <a href="#join">
-                  Reserve My Spot
+                  Join the Beta Free
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </a>
               </Button>
+              <p className="text-xs text-muted-foreground/70 mt-4 flex items-center justify-center gap-1.5">
+                <Shield className="w-3.5 h-3.5" />
+                Your data is private. You can leave the beta at any time.
+              </p>
             </div>
           </div>
         </div>
