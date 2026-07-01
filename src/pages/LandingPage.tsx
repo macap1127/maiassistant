@@ -260,7 +260,7 @@ const LandingPage = () => {
                   className="pl-4 md:pl-6 basis-[85%] sm:basis-[70%] md:basis-[55%] lg:basis-[45%]"
                   style={{ animationDelay: `${i * 60}ms` }}
                 >
-                  <div className="group relative aspect-[9/16] rounded-3xl overflow-hidden border border-border/80 bg-muted/50 shadow-card">
+                  <div className="group relative aspect-[2/3] rounded-3xl overflow-hidden ring-1 ring-border/80 bg-muted/50 shadow-card">
                     {image ? (
                       <>
                         <img
