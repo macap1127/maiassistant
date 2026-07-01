@@ -1,7 +1,6 @@
 import { Navigate, Link } from "react-router-dom";
 import {
   Sparkles,
-  Mic,
   Users,
   CalendarDays,
   CheckSquare,
@@ -12,7 +11,6 @@ import {
   Play,
   Check,
   Star,
-  Quote,
   Heart,
   Home,
   ShoppingCart,
@@ -20,6 +18,7 @@ import {
   ListTodo,
   Shield,
   Receipt,
+  Mic,
 } from "lucide-react";
 import maiLogo from "@/assets/mai-logo.png";
 import { Button } from "@/components/ui/button";
@@ -42,6 +41,7 @@ const steps = [
     body: "Share feedback, report bugs, and get early access to new features before anyone else.",
     cta: "Join Community",
     href: "https://groups.google.com/g/mia-family-assistant-testers",
+    time: "30 seconds",
   },
   {
     number: "02",
@@ -50,6 +50,7 @@ const steps = [
     body: "Become an official beta tester on Google Play. Your opt-in lets us deliver beta builds directly to your device.",
     cta: "Opt into Beta",
     href: "https://play.google.com/apps/testing/com.aiblueribbon.mia",
+    time: "15 seconds",
   },
   {
     number: "03",
@@ -58,6 +59,7 @@ const steps = [
     body: "Once you're opted in, install Mia Family Assistant from the Play Store and start simplifying your family life today.",
     cta: "Install Now",
     href: "https://play.google.com/store/apps/details?id=com.aiblueribbon.mia",
+    time: "1 minute",
   },
 ];
 
@@ -117,15 +119,12 @@ const screenshots = [
   { label: "Calendar", icon: Calendar, image: "/screenshots/calendar.png", color: "from-amber-500/20 to-orange-500/20" },
 ];
 
-const testimonials = [
-  {
-    quote: "MIA finally got my whole family on the same page without the group-text chaos.",
-    family: "Beta family of 5",
-  },
-  {
-    quote: "The voice assistant is a game changer while I'm cooking with messy hands.",
-    family: "Beta family of 4",
-  },
+const whatYoullTest = [
+  { label: "Grocery Lists", icon: ShoppingCart },
+  { label: "Shared Tasks", icon: ListTodo },
+  { label: "AI Voice Assistant", icon: Mic },
+  { label: "Calendar", icon: Calendar },
+  { label: "Family Reminders", icon: Bell },
 ];
 
 const LandingPage = () => {
@@ -150,19 +149,23 @@ const LandingPage = () => {
             <img src={maiLogo} alt="Mia Family Assistant" className="w-28 h-28 rounded-3xl relative z-10" />
             <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
           </div>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-5">
+            <Star className="w-3.5 h-3.5 text-primary fill-primary" />
+            <span className="text-xs font-medium text-primary">Early testers get 6 months of Premium free</span>
+          </div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-3">
             Limited Founding Family Beta
           </p>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-gradient leading-tight">
-            Spend less time organizing your family
+            One app for your family's groceries, calendar, tasks, and reminders
           </h1>
           <p className="text-base text-muted-foreground mt-4 max-w-sm leading-relaxed">
-            —and more time enjoying it. Shared grocery lists, calendars, reminders, chores and AI assistance all in one app.
+            Finally keep your whole family organized in one place. Shared lists, schedules, chores, and AI help — all working together.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
               <a href="#join">
-                Become a Founding Family
+                Join the Beta Free
                 <ArrowRight className="w-4 h-4 ml-2" />
               </a>
             </Button>
@@ -170,6 +173,10 @@ const LandingPage = () => {
               <Link to="/auth">Sign in</Link>
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground/70 mt-4 flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5" />
+            Your data stays private and is never sold.
+          </p>
         </div>
 
         {/* Founding Family */}
@@ -367,28 +374,32 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Social proof */}
+        {/* What you'll help us test */}
         <div className="mb-16">
           <div className="text-center mb-8">
             <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              Already helping families
+              What you'll help us test
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
-              Join our growing community of beta families
+              Real features. Real feedback.
             </h2>
           </div>
-          <div className="space-y-3">
-            {testimonials.map(({ quote, family }, i) => (
-              <div
-                key={i}
-                className="glass rounded-2xl p-5 border border-border/80 animate-slide-up"
-                style={{ animationDelay: `${i * 80}ms` }}
-              >
-                <Quote className="w-5 h-5 text-primary/40 mb-2" />
-                <p className="text-sm text-foreground/90 leading-relaxed mb-3">"{quote}"</p>
-                <p className="text-xs text-muted-foreground">{family}</p>
-              </div>
-            ))}
+          <div className="glass rounded-2xl p-5 border border-border/80">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {whatYoullTest.map(({ label, icon: Icon }, i) => (
+                <div
+                  key={label}
+                  className="flex items-center gap-3 text-sm animate-slide-up"
+                  style={{ animationDelay: `${i * 60}ms` }}
+                >
+                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-primary" />
+                  </div>
+                  <Icon className="w-4 h-4 text-primary/70" />
+                  <span className="text-foreground/90">{label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
