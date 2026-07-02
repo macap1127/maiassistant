@@ -144,7 +144,7 @@ export default function ReceiptsPage() {
               </div>
               <div className="p-2.5">
                 <p className="text-sm font-medium truncate">{r.store || "Unknown store"}</p>
-                <p className="text-[11px] text-muted-foreground">{fmtDate(r.purchase_date)}</p>
+                <p className="text-xs text-muted-foreground">{fmtDate(r.purchase_date)}</p>
                 <p className="text-xs font-semibold text-primary mt-0.5">{fmtMoney(r.total, r.currency)}</p>
               </div>
             </button>
@@ -176,16 +176,16 @@ export default function ReceiptsPage() {
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div><p className="text-[10px] uppercase text-muted-foreground">Date</p><p>{fmtDate(viewer.purchase_date)}</p></div>
-                <div><p className="text-[10px] uppercase text-muted-foreground">Total</p><p className="font-semibold">{fmtMoney(viewer.total, viewer.currency)}</p></div>
+                <div><p className="text-xs uppercase text-muted-foreground">Date</p><p>{fmtDate(viewer.purchase_date)}</p></div>
+                <div><p className="text-xs uppercase text-muted-foreground">Total</p><p className="font-semibold">{fmtMoney(viewer.total, viewer.currency)}</p></div>
               </div>
               {viewer.items_summary && (
-                <div><p className="text-[10px] uppercase text-muted-foreground">Items</p><p className="text-sm">{viewer.items_summary}</p></div>
+                <div><p className="text-xs uppercase text-muted-foreground">Items</p><p className="text-sm">{viewer.items_summary}</p></div>
               )}
               {viewer.notes && (
-                <div><p className="text-[10px] uppercase text-muted-foreground">Notes</p><p className="text-sm">{viewer.notes}</p></div>
+                <div><p className="text-xs uppercase text-muted-foreground">Notes</p><p className="text-sm">{viewer.notes}</p></div>
               )}
-              {viewer.added_by && <p className="text-[11px] text-muted-foreground">Added by {viewer.added_by}</p>}
+              {viewer.added_by && <p className="text-xs text-muted-foreground">Added by {viewer.added_by}</p>}
             </div>
           )}
           <DialogFooter className="sm:justify-between gap-2">
@@ -347,7 +347,7 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
                 <span className="text-sm font-medium">From library</span>
               </button>
             </div>
-            <p className="text-[11px] text-center text-muted-foreground flex items-center justify-center gap-1">
+            <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
               <Sparkles className="w-3 h-3" /> AI will fill in store, date, and total — you confirm.
             </p>
           </div>
@@ -368,25 +368,25 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
 
             <div className="space-y-2">
               <label className="block">
-                <span className="text-[10px] uppercase text-muted-foreground flex items-center gap-1"><Store className="w-3 h-3" />Store</span>
+                <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><Store className="w-3 h-3" />Store</span>
                 <input className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.store} onChange={(e) => setForm(f => ({ ...f, store: e.target.value }))} placeholder="Trader Joe's" />
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <label className="block">
-                  <span className="text-[10px] uppercase text-muted-foreground flex items-center gap-1"><CalIcon className="w-3 h-3" />Date</span>
+                  <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><CalIcon className="w-3 h-3" />Date</span>
                   <input type="date" className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.purchase_date} onChange={(e) => setForm(f => ({ ...f, purchase_date: e.target.value }))} />
                 </label>
                 <label className="block">
-                  <span className="text-[10px] uppercase text-muted-foreground flex items-center gap-1"><DollarSign className="w-3 h-3" />Total</span>
+                  <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><DollarSign className="w-3 h-3" />Total</span>
                   <input type="number" inputMode="decimal" step="0.01" className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.total} onChange={(e) => setForm(f => ({ ...f, total: e.target.value }))} placeholder="0.00" />
                 </label>
               </div>
               <label className="block">
-                <span className="text-[10px] uppercase text-muted-foreground">Items</span>
+                <span className="text-xs uppercase text-muted-foreground">Items</span>
                 <input className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.items_summary} onChange={(e) => setForm(f => ({ ...f, items_summary: e.target.value }))} placeholder="milk, eggs, bread" />
               </label>
               <label className="block">
-                <span className="text-[10px] uppercase text-muted-foreground">Notes</span>
+                <span className="text-xs uppercase text-muted-foreground">Notes</span>
                 <textarea rows={2} className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="Card ending 1234, gift for Sara…" />
               </label>
             </div>

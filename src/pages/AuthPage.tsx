@@ -21,6 +21,7 @@ const AuthPage = () => {
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -66,6 +67,10 @@ const AuthPage = () => {
     }
     if (!email || password.length < 6) {
       setError("Enter a valid email and password (min 6 chars)");
+      return;
+    }
+    if (mode === "signup" && !agreedToTerms) {
+      setError("Please agree to the Privacy Policy and Terms to continue.");
       return;
     }
     setLoading(true);
@@ -216,6 +221,22 @@ const AuthPage = () => {
               </button>
             </div>
           )}
+          {mode === "signup" && (
+            <label className="flex items-start gap-2.5 text-left text-sm text-muted-foreground cursor-pointer select-none px-1">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => { setAgreedToTerms(e.target.checked); setError(""); }}
+                className="mt-0.5 w-4 h-4 rounded border-border accent-primary shrink-0"
+              />
+              <span>
+                I agree to Mia's{" "}
+                <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+                {" "}and{" "}
+                <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>. I understand that Mia uses third-party AI services (voice and text) to process my requests.
+              </span>
+            </label>
+          )}
           {error && <p className="text-xs text-destructive">{error}</p>}
           <button
             onClick={submit}
@@ -236,7 +257,7 @@ const AuthPage = () => {
           <>
             <div className="flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-border" />
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or</span>
+              <span className="text-xs uppercase tracking-wider text-muted-foreground">or</span>
               <div className="flex-1 h-px bg-border" />
             </div>
 

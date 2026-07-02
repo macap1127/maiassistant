@@ -91,7 +91,7 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
             <img src={maiLogo} alt="MIA" className="w-20 h-20 rounded-2xl relative z-10" />
             <div className="absolute inset-0 rounded-2xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
           </div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
             Welcome
           </p>
           <h1 className="text-2xl font-display font-bold tracking-tight mt-1">
@@ -125,7 +125,7 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
             inputMode="tel"
             className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
-          <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
+          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
             Optional household detail only.
           </p>
         </div>

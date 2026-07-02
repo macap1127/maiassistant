@@ -1017,7 +1017,7 @@ const VoiceAssistantInner = () => {
         </div>
       )}
       {quota && (
-        <div className="text-[10px] text-muted-foreground bg-card/80 backdrop-blur border border-border rounded-full px-2 py-0.5">
+        <div className="text-xs text-muted-foreground bg-card/80 backdrop-blur border border-border rounded-full px-2 py-0.5">
           {Math.floor(quota.used / 60)}/{Math.floor(quota.limit / 60)} min
         </div>
       )}

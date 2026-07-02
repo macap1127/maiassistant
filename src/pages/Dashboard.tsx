@@ -199,7 +199,7 @@ const Dashboard = () => {
           <img src={maiLogo} alt="MIA" className="w-28 h-28 rounded-3xl relative z-10" />
           <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
         </div>
-        <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
           {greetingFor()}
         </p>
         <h1 className="text-3xl font-display font-bold tracking-tight mt-1">

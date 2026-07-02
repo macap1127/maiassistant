@@ -151,7 +151,7 @@ const SettingsPage = () => {
             <div className="flex items-center gap-2 mb-2">
               <CreditCard className="w-4 h-4 text-primary" />
               <h2 className="font-medium text-sm">Billing</h2>
-              <span className="ml-auto text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span className="ml-auto text-xs uppercase tracking-wider text-muted-foreground">
                 {STATUS_LABELS[household.subscriptionStatus] ?? household.subscriptionStatus}
               </span>
             </div>
@@ -189,13 +189,13 @@ const SettingsPage = () => {
 
             <div className="grid grid-cols-2 gap-2 text-sm mb-3">
               <div>
-                <p className="text-[10px] uppercase text-muted-foreground">Plan</p>
+                <p className="text-xs uppercase text-muted-foreground">Plan</p>
                 <p className="font-medium">
                   {household.isInTrial ? `Trial of ${tier.label}` : isLocked ? "No active plan" : `${tier.label} · $${tier.price.toFixed(2)}/mo`}
                 </p>
               </div>
               <div>
-                <p className="text-[10px] uppercase text-muted-foreground">
+                <p className="text-xs uppercase text-muted-foreground">
                   {isCanceledScheduled ? "Ends" : household.isInTrial ? "Trial ends" : "Renews"}
                 </p>
                 <p className="font-medium">
@@ -205,7 +205,7 @@ const SettingsPage = () => {
                 </p>
               </div>
               <div className="col-span-2">
-                <p className="text-[10px] uppercase text-muted-foreground mb-1">Voice usage</p>
+                <p className="text-xs uppercase text-muted-foreground mb-1">Voice usage</p>
                 <div className="h-2 bg-secondary rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary transition-all"
@@ -294,7 +294,7 @@ const SettingsPage = () => {
               ))}
             </SelectContent>
           </Select>
-          <p className="text-[11px] text-muted-foreground mt-2">
+          <p className="text-xs text-muted-foreground mt-2">
             Changes apply the next time you start a conversation with Mia.
           </p>
         </div>

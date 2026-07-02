@@ -116,6 +116,17 @@
 @layer utilities {
   .page-container {
     @apply px-5 pt-20 pb-28 max-w-lg mx-auto min-h-screen relative;
+    padding-top: calc(5rem + env(safe-area-inset-top));
+    padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+    padding-left: calc(1.25rem + env(safe-area-inset-left));
+    padding-right: calc(1.25rem + env(safe-area-inset-right));
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .glass {

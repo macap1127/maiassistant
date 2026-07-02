@@ -210,7 +210,7 @@ export default function HouseholdLogins() {
             <span className="flex-1 truncate font-mono text-xs">
               {m.user_id === user?.id ? "You" : m.user_id.slice(0, 8) + "…"}
             </span>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{m.role}</span>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground">{m.role}</span>
             {household.isOwner && m.user_id !== household.ownerUserId && (
               <button onClick={() => removeMember(m.user_id)} className="text-muted-foreground hover:text-destructive" aria-label="Remove">
                 <Trash2 className="w-3.5 h-3.5" />
@@ -222,7 +222,7 @@ export default function HouseholdLogins() {
 
       {familyMembers.length > 0 && (
         <div className="mb-3 pt-3 border-t border-border">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">
             I am…
           </p>
           <select
@@ -240,7 +240,7 @@ export default function HouseholdLogins() {
                 </option>
               ))}
           </select>
-          <p className="text-[11px] text-muted-foreground mt-1.5">
+          <p className="text-xs text-muted-foreground mt-1.5">
             Tells Mia which family member is talking when you use voice.
           </p>
         </div>
@@ -250,7 +250,7 @@ export default function HouseholdLogins() {
         <>
           {invites.length > 0 && (
             <div className="space-y-2 mb-3 pt-3 border-t border-border">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Pending invites</p>
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">Pending invites</p>
               {invites.map((inv) => (
                 <div key={inv.id} className="flex items-center gap-2 text-sm">
                   <code className="text-xs bg-secondary rounded px-2 py-1">{inv.invite_code}</code>
