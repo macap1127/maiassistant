@@ -370,3 +370,109 @@ const SettingsPage = () => {
 };
 
 export default SettingsPage;
+
+type FamilyData = ReturnType<typeof useFamilyData>["data"];
+type FamilyUpdate = ReturnType<typeof useFamilyData>["update"];
+
+function FamilyMembersCard({ data, update }: { data: FamilyData; update: FamilyUpdate }) {
+  const [showAdd, setShowAdd] = useState(false);
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("Member");
+  const [phone, setPhone] = useState("");
+
+  const add = () => {
+    const n = name.trim();
+    if (!n) return;
+    update((d) => ({
+      ...d,
+      members: [...d.members, { id: genId(), name: n, role, phone: phone.trim(), avatar: "👤" }],
+    }));
+    setName(""); setPhone(""); setRole("Member"); setShowAdd(false);
+  };
+
+  const remove = (id: string) =>
+    update((d) => ({ ...d, members: d.members.filter((m) => m.id !== id) }));
+
+  return (
+    <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "40ms" }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Users className="w-4 h-4 text-primary" />
+          <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+            Family Members
+          </label>
+        </div>
+        <button
+          onClick={() => setShowAdd((v) => !v)}
+          className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90"
+          aria-label="Add family member"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+
+      {showAdd && (
+        <div className="space-y-2 mb-3 pb-3 border-b border-border">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name"
+            className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          <div className="flex gap-2">
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              {["Parent","Child","Member","Caregiver","Other"].map((r) => <option key={r}>{r}</option>)}
+            </select>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone (optional)"
+              inputMode="tel"
+              className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <button
+            onClick={add}
+            disabled={!name.trim()}
+            className="w-full bg-primary text-primary-foreground rounded-xl py-2 text-xs font-medium hover:opacity-90 disabled:opacity-50"
+          >
+            Add member
+          </button>
+        </div>
+      )}
+
+      {data.members.length === 0 ? (
+        <p className="text-xs text-muted-foreground">No members yet. Tap + to add one.</p>
+      ) : (
+        <ul className="space-y-2">
+          {data.members.map((m, i) => (
+            <li key={m.id} className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-base">
+                {m.avatar || "👤"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm truncate">{m.name}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {m.role}{m.phone ? ` · ${m.phone}` : ""}
+                </p>
+              </div>
+              {i !== 0 && (
+                <button
+                  onClick={() => remove(m.id)}
+                  aria-label={`Remove ${m.name}`}
+                  className="text-muted-foreground hover:text-destructive p-1"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
