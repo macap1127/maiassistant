@@ -130,8 +130,8 @@ const AppLayout = () => {
                 <Menu className="w-5 h-5" />
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0 glass-strong border-r border-border">
-              <div className="flex items-center gap-3 p-5 border-b border-border">
+            <SheetContent side="left" className="w-72 p-0 glass-strong border-r border-border flex flex-col">
+              <div className="flex items-center gap-3 p-5 border-b border-border shrink-0">
                 <div className="relative">
                   <img src={maiLogo} alt="Mia" className="w-11 h-11 rounded-xl relative z-10" />
                   <div className="absolute inset-0 rounded-xl blur-lg bg-gradient-brand opacity-60" />
@@ -141,51 +141,53 @@ const AppLayout = () => {
                   <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">AI Assistant</p>
                 </div>
               </div>
-              <nav className="p-3 space-y-1">
-                {menuItems.map(({ path, icon: Icon, label }) => {
-                  const active = location.pathname === path;
-                  return (
-                    <button
-                      key={path}
-                      onClick={() => { navigate(path); setOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                        active
-                          ? "bg-primary/10 text-primary font-medium"
-                          : "text-foreground hover:bg-muted"
-                      }`}
-                    >
-                      <Icon className="w-4.5 h-4.5" strokeWidth={active ? 2.5 : 1.8} />
-                      {label}
-                    </button>
-                  );
-                })}
-              </nav>
-              <div className="mt-2 border-t border-border pt-3 px-3 space-y-1">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground/70 px-3 mb-1">Legal & Support</p>
-                <button
-                  onClick={() => { navigate("/privacy"); setOpen(false); }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  <Shield className="w-4.5 h-4.5" />
-                  Privacy Policy
-                </button>
-                <button
-                  onClick={() => { navigate("/terms"); setOpen(false); }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  <FileText className="w-4.5 h-4.5" />
-                  Terms & Conditions
-                </button>
-                <a
-                  href="mailto:support@miafamilyassistant.com"
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
-                >
-                  <Mail className="w-4.5 h-4.5" />
-                  Contact Support
-                </a>
+              <div className="flex-1 overflow-y-auto overscroll-contain">
+                <nav className="p-3 space-y-1">
+                  {menuItems.map(({ path, icon: Icon, label }) => {
+                    const active = location.pathname === path;
+                    return (
+                      <button
+                        key={path}
+                        onClick={() => { navigate(path); setOpen(false); }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                          active
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-foreground hover:bg-muted"
+                        }`}
+                      >
+                        <Icon className="w-4.5 h-4.5" strokeWidth={active ? 2.5 : 1.8} />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </nav>
+                <div className="border-t border-border pt-3 px-3 pb-3 space-y-1">
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground/70 px-3 mb-1">Legal & Support</p>
+                  <button
+                    onClick={() => { navigate("/privacy"); setOpen(false); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
+                  >
+                    <Shield className="w-4.5 h-4.5" />
+                    Privacy Policy
+                  </button>
+                  <button
+                    onClick={() => { navigate("/terms"); setOpen(false); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
+                  >
+                    <FileText className="w-4.5 h-4.5" />
+                    Terms & Conditions
+                  </button>
+                  <a
+                    href="mailto:support@miafamilyassistant.com"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
+                  >
+                    <Mail className="w-4.5 h-4.5" />
+                    Contact Support
+                  </a>
+                </div>
               </div>
               <div
-                className="absolute bottom-0 left-0 right-0 p-4 border-t border-border space-y-3"
+                className="shrink-0 p-4 border-t border-border space-y-3 bg-background/60"
                 style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
               >
                 <button
