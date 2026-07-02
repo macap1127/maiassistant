@@ -269,10 +269,11 @@ export default function HouseholdLogins() {
           {atLimit ? (
             <button
               onClick={() => navigate("/pricing")}
-              className="w-full bg-warning/15 text-warning-foreground rounded-xl py-2 text-xs font-medium hover:opacity-90"
+              className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-xs font-semibold hover:opacity-90"
             >
               Upgrade to add more logins
             </button>
+
           ) : (
             <div className="flex gap-2 pt-3 border-t border-border">
               <input
