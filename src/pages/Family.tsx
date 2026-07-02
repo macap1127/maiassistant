@@ -190,7 +190,7 @@ const Family = () => {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-1">
                 <button
                   onClick={() => startEdit(member)}
                   className="text-muted-foreground hover:text-foreground transition-colors p-1"
