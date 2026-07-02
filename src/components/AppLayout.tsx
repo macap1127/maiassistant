@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate, Navigate } from "react-router-dom";
-import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt, Sparkles } from "lucide-react";
+import { Home, ShoppingCart, CheckSquare, CalendarDays, Users, LogOut, Menu, Settings, CreditCard, Receipt, Sparkles, Shield, FileText, Mail } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import OnboardingPage from "@/pages/OnboardingPage";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -115,8 +115,15 @@ const AppLayout = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Top header bar */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-14 glass-strong border-b border-border">
-        <div className="max-w-lg mx-auto h-full flex items-center justify-between px-3">
+      <header
+        className="fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border"
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          paddingLeft: "env(safe-area-inset-left)",
+          paddingRight: "env(safe-area-inset-right)",
+        }}
+      >
+        <div className="max-w-lg mx-auto h-14 flex items-center justify-between px-3">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <button className="flex items-center justify-center w-10 h-10 rounded-xl text-foreground/80 hover:text-foreground hover:bg-muted transition-all">
