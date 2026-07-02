@@ -21,6 +21,7 @@ const AuthPage = () => {
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -66,6 +67,10 @@ const AuthPage = () => {
     }
     if (!email || password.length < 6) {
       setError("Enter a valid email and password (min 6 chars)");
+      return;
+    }
+    if (mode === "signup" && !agreedToTerms) {
+      setError("Please agree to the Privacy Policy and Terms to continue.");
       return;
     }
     setLoading(true);
