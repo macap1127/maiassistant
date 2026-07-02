@@ -13,7 +13,7 @@ import { usePushNotifications } from "@/hooks/usePushNotifications";
 const navItems = [
   { path: "/dashboard", icon: Home, label: "Home" },
   { path: "/grocery", icon: ShoppingCart, label: "Grocery" },
-  { path: "/tasks", icon: CheckSquare, label: "To Do" },
+  { path: "/tasks", icon: CheckSquare, label: "Tasks" },
   { path: "/calendar", icon: CalendarDays, label: "Calendar" },
   { path: "/receipts", icon: Receipt, label: "Receipts" },
 ];
