@@ -222,7 +222,7 @@ const AppLayout = () => {
         className="fixed left-3 right-3 z-50 glass-strong rounded-2xl ring-glow"
         style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
-        <div className="max-w-lg mx-auto flex items-center justify-around h-[var(--nav-height)] px-2">
+        <div className="max-w-lg mx-auto flex items-center justify-around h-[var(--nav-height)] px-1">
           {navItems.map(({ path, icon: Icon, label }) => {
             const active = location.pathname === path;
             return (
@@ -230,7 +230,7 @@ const AppLayout = () => {
                 key={path}
                 onClick={() => navigate(path)}
                 aria-label={label}
-                className={`relative flex flex-col items-center gap-1 px-3 py-2 min-h-11 min-w-11 rounded-xl transition-all ${
+                className={`relative flex flex-col items-center gap-1 px-1.5 py-2 min-h-11 rounded-xl transition-all ${
                   active
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -240,7 +240,7 @@ const AppLayout = () => {
                   <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gradient-brand shadow-[0_0_12px_hsl(var(--primary))]" />
                 )}
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 1.8} />
-                <span className="text-xs uppercase tracking-wider font-medium">{label}</span>
+                <span className="text-[11px] uppercase tracking-wide font-medium whitespace-nowrap">{label}</span>
               </button>
             );
           })}

@@ -1009,8 +1009,88 @@ const VoiceAssistantInner = () => {
     });
   }, [conversation.status, conversation.isSpeaking]);
 
+  return <DraggableVoiceButton
+    isConnected={isConnected}
+    connecting={connecting}
+    preparingVoice={preparingVoice}
+    voiceReady={voiceReady}
+    statusMessage={statusMessage}
+    quota={quota}
+    onToggle={isConnected ? stop : start}
+  />;
+};
+
+type DraggableProps = {
+  isConnected: boolean;
+  connecting: boolean;
+  preparingVoice: boolean;
+  voiceReady: boolean;
+  statusMessage: string | null;
+  quota: { used: number; limit: number; tier: string } | null;
+  onToggle: () => void;
+};
+
+const POS_KEY = "mia_voice_button_pos_v1";
+const BTN_SIZE = 68;
+
+const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceReady, statusMessage, quota, onToggle }: DraggableProps) => {
+  const navH = 76; // approx var(--nav-height) + gap
+  const safeBottom = navH + 16;
+  const [pos, setPos] = useState<{ x: number; y: number }>(() => {
+    try {
+      const raw = localStorage.getItem(POS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch { /* noop */ }
+    const w = typeof window !== "undefined" ? window.innerWidth : 400;
+    const h = typeof window !== "undefined" ? window.innerHeight : 800;
+    return { x: w - BTN_SIZE - 16, y: h - BTN_SIZE - safeBottom };
+  });
+  const draggingRef = useRef(false);
+  const movedRef = useRef(false);
+  const offsetRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const clamp = () => setPos((p) => ({
+      x: Math.min(Math.max(8, p.x), window.innerWidth - BTN_SIZE - 8),
+      y: Math.min(Math.max(8, p.y), window.innerHeight - BTN_SIZE - 8),
+    }));
+    window.addEventListener("resize", clamp);
+    return () => window.removeEventListener("resize", clamp);
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    draggingRef.current = true;
+    movedRef.current = false;
+    offsetRef.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    const nx = e.clientX - offsetRef.current.x;
+    const ny = e.clientY - offsetRef.current.y;
+    if (Math.abs(nx - pos.x) > 3 || Math.abs(ny - pos.y) > 3) movedRef.current = true;
+    setPos({
+      x: Math.min(Math.max(8, nx), window.innerWidth - BTN_SIZE - 8),
+      y: Math.min(Math.max(8, ny), window.innerHeight - BTN_SIZE - 8),
+    });
+  };
+  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    draggingRef.current = false;
+    try { (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId); } catch { /* noop */ }
+    if (movedRef.current) {
+      try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch { /* noop */ }
+    } else {
+      onToggle();
+    }
+  };
+
+  const onLeftHalf = pos.x < (typeof window !== "undefined" ? window.innerWidth : 400) / 2;
+
   return (
-    <div className="fixed bottom-[calc(var(--nav-height)+1rem)] right-4 z-40 flex flex-col items-end gap-2">
+    <div
+      className="fixed z-40 flex flex-col gap-2 touch-none select-none"
+      style={{ left: pos.x, top: pos.y, alignItems: onLeftHalf ? "flex-start" : "flex-end" }}
+    >
       {statusMessage && (
         <div className="max-w-64 rounded-md border border-border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-lg" role="status">
           {statusMessage}
@@ -1021,30 +1101,31 @@ const VoiceAssistantInner = () => {
           {Math.floor(quota.used / 60)}/{Math.floor(quota.limit / 60)} min
         </div>
       )}
-
-      <div className="flex items-center gap-2">
-        <button
-          onClick={isConnected ? stop : start}
-          disabled={connecting}
-          aria-label={isConnected ? "End conversation with Mia" : "Talk to Mia"}
-          className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
-            isConnected
-              ? "bg-destructive text-destructive-foreground animate-pulse"
-              : voiceReady
-                ? "bg-primary text-primary-foreground hover:scale-105"
-                : "bg-secondary text-secondary-foreground hover:scale-105"
-          }`}
-        >
-          {connecting ? (
-            <Loader2 className="w-6 h-6 animate-spin" />
-          ) : isConnected ? (
-            <MicOff className="w-6 h-6" />
-          ) : preparingVoice ? (
-            <Loader2 className="w-6 h-6 animate-spin" />
-          ) : (
-            <Mic className="w-6 h-6" />
-          )}
-        </button>
+      <div
+        role="button"
+        aria-label={isConnected ? "End conversation with Mia" : "Talk to Mia (drag to move)"}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        style={{ width: BTN_SIZE, height: BTN_SIZE, opacity: connecting ? 0.7 : 1 }}
+        className={`flex items-center justify-center rounded-full shadow-lg transition-colors cursor-grab active:cursor-grabbing ${
+          isConnected
+            ? "bg-destructive text-destructive-foreground animate-pulse"
+            : voiceReady
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary text-secondary-foreground"
+        }`}
+      >
+        {connecting ? (
+          <Loader2 className="w-7 h-7 animate-spin" />
+        ) : isConnected ? (
+          <MicOff className="w-7 h-7" />
+        ) : preparingVoice ? (
+          <Loader2 className="w-7 h-7 animate-spin" />
+        ) : (
+          <Mic className="w-7 h-7" />
+        )}
       </div>
     </div>
   );
