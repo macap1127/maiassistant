@@ -138,7 +138,7 @@ const AppLayout = () => {
                 </div>
                 <div>
                   <p className="font-display font-semibold text-base text-gradient">MIA</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">AI Assistant</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">AI Assistant</p>
                 </div>
               </div>
               <nav className="p-3 space-y-1">
@@ -161,7 +161,7 @@ const AppLayout = () => {
                 })}
               </nav>
               <div className="mt-2 border-t border-border pt-3 px-3 space-y-1">
-                <p className="text-[11px] uppercase tracking-wider text-muted-foreground/70 px-3 mb-1">Legal & Support</p>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground/70 px-3 mb-1">Legal & Support</p>
                 <button
                   onClick={() => { navigate("/privacy"); setOpen(false); }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
@@ -240,7 +240,7 @@ const AppLayout = () => {
                   <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gradient-brand shadow-[0_0_12px_hsl(var(--primary))]" />
                 )}
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 1.8} />
-                <span className="text-[11px] uppercase tracking-wider font-medium">{label}</span>
+                <span className="text-xs uppercase tracking-wider font-medium">{label}</span>
               </button>
             );
           })}

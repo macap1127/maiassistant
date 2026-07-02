@@ -168,7 +168,7 @@ const Family = () => {
                   <p className="font-medium truncate">{member.name}</p>
                   {isOwner && (
                     <span
-                      className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full bg-warning/15 text-warning-foreground"
+                      className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full bg-warning/15 text-warning-foreground"
                       title="Household owner"
                     >
                       <Crown className="w-2.5 h-2.5" />
@@ -176,7 +176,7 @@ const Family = () => {
                     </span>
                   )}
                   <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                    className={`text-xs px-1.5 py-0.5 rounded-full ${
                       ROLE_TONE[member.role] || ROLE_TONE.Other
                     }`}
                   >
@@ -245,7 +245,7 @@ function MemberForm({
 
       {/* Avatar picker */}
       <div>
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">
+        <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">
           Avatar
         </p>
         <div className="grid grid-cols-9 gap-1">

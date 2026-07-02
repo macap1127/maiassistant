@@ -43,7 +43,7 @@ const AboutPage = () => {
           <img src={maiLogo} alt="MIA" className="w-24 h-24 rounded-3xl relative z-10" />
           <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
         </div>
-        <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
           Meet MIA
         </p>
         <h1 className="text-3xl font-display font-bold tracking-tight text-gradient mt-1">
@@ -91,15 +91,15 @@ const AboutPage = () => {
       <div className="relative rounded-2xl p-5 text-center overflow-hidden border border-border">
         <div className="absolute inset-0 bg-gradient-brand opacity-15" />
         <div className="relative">
-          <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+          <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
             <Sparkles className="w-3 h-3 text-primary" />
             Powered by
           </div>
           <p className="text-lg font-display font-bold text-gradient">AI Blue Ribbon</p>
-          <p className="text-[11px] text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Premium intelligence, tuned for the people who matter most.
           </p>
-          <p className="text-[11px] text-muted-foreground mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             Questions? Email{" "}
             <a href="mailto:support@miafamilyassistant.com" className="text-primary hover:underline">
               support@miafamilyassistant.com
@@ -108,7 +108,7 @@ const AboutPage = () => {
         </div>
       </div>
 
-      <p className="text-[10px] text-center text-muted-foreground/70 mt-6">
+      <p className="text-xs text-center text-muted-foreground/70 mt-6">
         © 2026 Mia Family Assistant. All rights reserved.
       </p>
     </div>

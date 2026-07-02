@@ -205,7 +205,7 @@ const GroceryList = () => {
           {newStore && (
             <button
               onClick={() => setNewStore("")}
-              className="text-[10px] text-muted-foreground hover:text-foreground"
+              className="text-xs text-muted-foreground hover:text-foreground"
             >
               clear
             </button>
@@ -218,7 +218,7 @@ const GroceryList = () => {
         </div>
         <div className="flex items-center gap-1.5 px-3 pt-1 pb-1">
           <Sparkles className="w-3 h-3 text-primary" />
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Auto-sorted into categories with AI
           </p>
         </div>
@@ -312,13 +312,13 @@ const GroceryList = () => {
                         </span>
                       )}
                       {item.store && (
-                        <span className="inline-flex items-center gap-1 text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                        <span className="inline-flex items-center gap-1 text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
                           <StoreIcon className="w-2.5 h-2.5" />
                           {item.store}
                         </span>
                       )}
                       {item.addedBy && (
-                        <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full">
+                        <span className="text-xs text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-full">
                           {item.addedBy}
                         </span>
                       )}

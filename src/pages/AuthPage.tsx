@@ -257,7 +257,7 @@ const AuthPage = () => {
           <>
             <div className="flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-border" />
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or</span>
+              <span className="text-xs uppercase tracking-wider text-muted-foreground">or</span>
               <div className="flex-1 h-px bg-border" />
             </div>
 

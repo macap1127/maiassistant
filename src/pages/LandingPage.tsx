@@ -155,7 +155,7 @@ const LandingPage = () => {
             <Star className="w-3.5 h-3.5 text-primary fill-primary" />
             <span className="text-xs font-medium text-primary">Early testers get 6 months of Premium free</span>
           </div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-3">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-3">
             Limited Founding Family Beta
           </p>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-gradient leading-tight">
@@ -188,7 +188,7 @@ const LandingPage = () => {
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
                 <Star className="w-4 h-4 text-primary fill-primary" />
-                <p className="text-[10px] uppercase tracking-[0.3em] text-primary font-mono-tech">
+                <p className="text-xs uppercase tracking-[0.3em] text-primary font-mono-tech">
                   Become a Founding Family
                 </p>
               </div>
@@ -215,7 +215,7 @@ const LandingPage = () => {
         {/* Founder Story */}
         <div className="mb-16">
           <div className="text-center mb-5">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
               From the founder
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
@@ -246,7 +246,7 @@ const LandingPage = () => {
         {/* Screenshots */}
         <div className="mb-16 -mx-5">
           <div className="text-center mb-8 px-5">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
               See the app
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
@@ -306,7 +306,7 @@ const LandingPage = () => {
               <CarouselNext className="static translate-y-0 right-0 top-0 h-11 w-11 rounded-full bg-gradient-brand text-primary-foreground border-0 hover:opacity-90 shadow-glow" />
             </div>
           </Carousel>
-          <p className="text-[10px] text-center text-muted-foreground/60 mt-3 px-5">
+          <p className="text-xs text-center text-muted-foreground/60 mt-3 px-5">
             Swipe or use arrows to browse real screenshots from MIA Family Assistant.
           </p>
         </div>
@@ -314,7 +314,7 @@ const LandingPage = () => {
         {/* Voice Assistant Highlight */}
         <div className="mt-16 mb-16">
           <div className="text-center mb-8">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
               Voice powered
             </p>
             <h2 className="text-2xl md:text-3xl font-display font-bold text-gradient">
@@ -355,7 +355,7 @@ const LandingPage = () => {
         {/* What we ask */}
         <div className="mb-16">
           <div className="text-center mb-8">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
               What we ask
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
@@ -385,7 +385,7 @@ const LandingPage = () => {
         {/* Benefits */}
         <div className="mb-16">
           <div className="text-center mb-8">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
               Features
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
@@ -418,7 +418,7 @@ const LandingPage = () => {
         {/* What you'll help us test */}
         <div className="mb-16">
           <div className="text-center mb-8">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
               What you'll help us test
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
@@ -447,7 +447,7 @@ const LandingPage = () => {
         {/* Steps */}
         <div id="join" className="mb-16 scroll-mt-24">
           <div className="text-center mb-8">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
               Get started in 3 steps
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
@@ -461,7 +461,7 @@ const LandingPage = () => {
                 className="group relative glass rounded-2xl p-5 transition-all hover:border-primary/40 hover:shadow-card animate-slide-up"
                 style={{ animationDelay: `${i * 80}ms` }}
               >
-                <div className="absolute top-4 right-4 text-[10px] font-mono-tech text-muted-foreground/50">
+                <div className="absolute top-4 right-4 text-xs font-mono-tech text-muted-foreground/50">
                   {number}
                 </div>
                 <div className="flex items-start gap-4">
@@ -471,12 +471,12 @@ const LandingPage = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="text-base font-display font-semibold">{title}</h3>
-                      <span className="text-[10px] font-mono-tech text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                      <span className="text-xs font-mono-tech text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                         {time}
                       </span>
                     </div>
                     {subtitle && (
-                      <p className="text-[10px] text-muted-foreground/80 font-mono-tech mb-1">{subtitle}</p>
+                      <p className="text-xs text-muted-foreground/80 font-mono-tech mb-1">{subtitle}</p>
                     )}
                     <p className="text-sm text-muted-foreground leading-relaxed mb-4">{body}</p>
                     <Button asChild variant="outline" className="rounded-full px-5 border-border/80 hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors">
@@ -525,12 +525,12 @@ const LandingPage = () => {
               support@miafamilyassistant.com
             </a>
           </p>
-          <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground/70">
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground/70">
             <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
           </div>
-          <p className="text-[10px] text-muted-foreground/50 mt-6">
+          <p className="text-xs text-muted-foreground/50 mt-6">
             © 2026 Mia Family Assistant. All rights reserved.
           </p>
         </div>

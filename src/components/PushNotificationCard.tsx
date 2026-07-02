@@ -155,7 +155,7 @@ export function PushNotificationCard() {
 
       {enabled && (
         <div className="mt-4 pt-4 border-t border-border space-y-3">
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
             What you'll receive
           </p>
           {ROWS.map((r) => (
