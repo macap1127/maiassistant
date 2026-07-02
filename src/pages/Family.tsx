@@ -168,12 +168,13 @@ const Family = () => {
                   <p className="font-medium truncate">{member.name}</p>
                   {isOwner && (
                     <span
-                      className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full bg-warning/15 text-warning-foreground"
+                      className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full bg-primary/20 text-primary"
                       title="Household owner"
                     >
                       <Crown className="w-2.5 h-2.5" />
                       Owner
                     </span>
+
                   )}
                   <span
                     className={`text-xs px-1.5 py-0.5 rounded-full ${
