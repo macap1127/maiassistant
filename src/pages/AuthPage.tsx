@@ -82,7 +82,22 @@ const AuthPage = () => {
           password,
           options: { emailRedirectTo: inviteCode ? `${window.location.origin}/invite/${inviteCode}` : `${window.location.origin}/` },
         });
-        if (error) throw error;
+        if (error) {
+          // Supabase returns this when the email already exists (if enum protection disabled)
+          if (/registered|already/i.test(error.message)) {
+            setError("An account with this email already exists. Try signing in or resetting your password.");
+            setLoading(false);
+            return;
+          }
+          throw error;
+        }
+        // When Supabase's email-enumeration protection is on, existing accounts return
+        // a user with an empty identities array and no error. Detect and surface it.
+        if (data.user && Array.isArray((data.user as any).identities) && (data.user as any).identities.length === 0) {
+          setError("An account with this email already exists. Try signing in or resetting your password.");
+          setLoading(false);
+          return;
+        }
         if (data.user && !inviteCode) await ensureHousehold(data.user.id);
         if (data.user && inviteCode) {
           window.location.href = `/invite/${inviteCode}`;
@@ -93,6 +108,7 @@ const AuthPage = () => {
           setSignupSuccess(true);
           return;
         }
+
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
