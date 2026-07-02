@@ -25,6 +25,17 @@ const config: CapacitorConfig = {
     Keyboard: {
       resize: 'body',
     },
+    SplashScreen: {
+      // Keep the native splash on-screen until the JS bundle mounts and calls hide().
+      // This covers the "weird text loading screen" testers reported.
+      launchShowDuration: 3000,
+      launchAutoHide: false,
+      backgroundColor: '#0b0b1a',
+      androidScaleType: 'CENTER_CROP',
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true,
+    },
   },
 };
 
