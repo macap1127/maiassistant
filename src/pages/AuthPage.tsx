@@ -221,6 +221,22 @@ const AuthPage = () => {
               </button>
             </div>
           )}
+          {mode === "signup" && (
+            <label className="flex items-start gap-2.5 text-left text-sm text-muted-foreground cursor-pointer select-none px-1">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => { setAgreedToTerms(e.target.checked); setError(""); }}
+                className="mt-0.5 w-4 h-4 rounded border-border accent-primary shrink-0"
+              />
+              <span>
+                I agree to Mia's{" "}
+                <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+                {" "}and{" "}
+                <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>. I understand that Mia uses third-party AI services (voice and text) to process my requests.
+              </span>
+            </label>
+          )}
           {error && <p className="text-xs text-destructive">{error}</p>}
           <button
             onClick={submit}
