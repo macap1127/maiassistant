@@ -260,6 +260,8 @@ const SettingsPage = () => {
           />
         </div>
 
+        <FamilyMembersCard data={data} update={update} />
+
         <PushNotificationCard />
 
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "80ms" }}>
