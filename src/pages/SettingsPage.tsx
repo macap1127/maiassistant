@@ -1,11 +1,11 @@
-import { useFamilyData } from "@/lib/store";
+import { useFamilyData, genId } from "@/lib/store";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import maiLogo from "@/assets/mai-logo.png";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
-import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, Languages, Trash2 } from "lucide-react";
+import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, Languages, Trash2, Users, Plus, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { PushNotificationCard } from "@/components/PushNotificationCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
