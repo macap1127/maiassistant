@@ -160,7 +160,34 @@ const AppLayout = () => {
                   );
                 })}
               </nav>
-              <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border space-y-3">
+              <div className="mt-2 border-t border-border pt-3 px-3 space-y-1">
+                <p className="text-[11px] uppercase tracking-wider text-muted-foreground/70 px-3 mb-1">Legal & Support</p>
+                <button
+                  onClick={() => { navigate("/privacy"); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <Shield className="w-4.5 h-4.5" />
+                  Privacy Policy
+                </button>
+                <button
+                  onClick={() => { navigate("/terms"); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <FileText className="w-4.5 h-4.5" />
+                  Terms & Conditions
+                </button>
+                <a
+                  href="mailto:support@miafamilyassistant.com"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <Mail className="w-4.5 h-4.5" />
+                  Contact Support
+                </a>
+              </div>
+              <div
+                className="absolute bottom-0 left-0 right-0 p-4 border-t border-border space-y-3"
+                style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+              >
                 <button
                   onClick={() => { logout(); setOpen(false); }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
@@ -168,7 +195,7 @@ const AppLayout = () => {
                   <LogOut className="w-4.5 h-4.5" />
                   Sign out
                 </button>
-                <p className="text-[10px] text-center text-muted-foreground/70 leading-relaxed">
+                <p className="text-xs text-center text-muted-foreground/70 leading-relaxed">
                   © 2026 Mia Family Assistant.<br />All rights reserved.
                 </p>
               </div>
@@ -191,7 +218,10 @@ const AppLayout = () => {
       <Outlet />
       <VoiceAssistant />
 
-      <nav className="fixed bottom-3 left-3 right-3 z-50 glass-strong rounded-2xl ring-glow">
+      <nav
+        className="fixed left-3 right-3 z-50 glass-strong rounded-2xl ring-glow"
+        style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+      >
         <div className="max-w-lg mx-auto flex items-center justify-around h-[var(--nav-height)] px-2">
           {navItems.map(({ path, icon: Icon, label }) => {
             const active = location.pathname === path;
@@ -199,7 +229,8 @@ const AppLayout = () => {
               <button
                 key={path}
                 onClick={() => navigate(path)}
-                className={`relative flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
+                aria-label={label}
+                className={`relative flex flex-col items-center gap-1 px-3 py-2 min-h-11 min-w-11 rounded-xl transition-all ${
                   active
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -209,7 +240,7 @@ const AppLayout = () => {
                   <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gradient-brand shadow-[0_0_12px_hsl(var(--primary))]" />
                 )}
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 1.8} />
-                <span className="text-[10px] uppercase tracking-wider font-medium">{label}</span>
+                <span className="text-[11px] uppercase tracking-wider font-medium">{label}</span>
               </button>
             );
           })}
