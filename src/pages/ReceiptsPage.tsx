@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 type ReceiptRow = {
   id: string;
@@ -40,6 +41,7 @@ export default function ReceiptsPage() {
   const [adderOpen, setAdderOpen] = useState(false);
   const [viewer, setViewer] = useState<ReceiptRow | null>(null);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [receiptToDelete, setReceiptToDelete] = useState<ReceiptRow | null>(null);
 
   // Load household + receipts
   useEffect(() => {
@@ -94,13 +96,15 @@ export default function ReceiptsPage() {
   }, []);
 
   const deleteReceipt = useCallback(async (r: ReceiptRow) => {
-    if (!confirm(`Delete receipt from ${r.store || "this store"}?`)) return;
     await supabase.storage.from("receipts").remove([r.image_path]);
     await supabase.from("receipts").delete().eq("id", r.id);
-    setViewer(null);
-    setViewerUrl(null);
+    if (viewer?.id === r.id) {
+      setViewer(null);
+      setViewerUrl(null);
+    }
+    setReceiptToDelete(null);
     toast({ title: "Receipt deleted" });
-  }, []);
+  }, [viewer]);
 
   return (
     <div className="page-container pb-28">
@@ -129,25 +133,36 @@ export default function ReceiptsPage() {
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {receipts.map((r, i) => (
-            <button
+            <div
               key={r.id}
-              onClick={() => openViewer(r)}
-              className="group bg-card rounded-2xl border border-border overflow-hidden text-left animate-slide-up hover:border-primary/50 transition-colors"
+              className="group bg-card rounded-2xl border border-border overflow-hidden text-left animate-slide-up hover:border-primary/50 transition-colors relative"
               style={{ animationDelay: `${i * 40}ms` }}
             >
-              <div className="aspect-[3/4] bg-muted relative overflow-hidden">
-                {signedUrls[r.image_path] ? (
-                  <img src={signedUrls[r.image_path]} alt={r.store} className="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
-                )}
-              </div>
-              <div className="p-2.5">
-                <p className="text-sm font-medium truncate">{r.store || "Unknown store"}</p>
-                <p className="text-xs text-muted-foreground">{fmtDate(r.purchase_date)}</p>
-                <p className="text-xs font-semibold text-primary mt-0.5">{fmtMoney(r.total, r.currency)}</p>
-              </div>
-            </button>
+              <button
+                onClick={() => setReceiptToDelete(r)}
+                className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                aria-label="Delete receipt"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => openViewer(r)}
+                className="w-full text-left"
+              >
+                <div className="aspect-[3/4] bg-muted relative overflow-hidden">
+                  {signedUrls[r.image_path] ? (
+                    <img src={signedUrls[r.image_path]} alt={r.store} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
+                  )}
+                </div>
+                <div className="p-2.5">
+                  <p className="text-sm font-medium truncate">{r.store || "Unknown store"}</p>
+                  <p className="text-xs text-muted-foreground">{fmtDate(r.purchase_date)}</p>
+                  <p className="text-xs font-semibold text-primary mt-0.5">{fmtMoney(r.total, r.currency)}</p>
+                </div>
+              </button>
+            </div>
           ))}
         </div>
       )}
@@ -190,7 +205,7 @@ export default function ReceiptsPage() {
           )}
           <DialogFooter className="sm:justify-between gap-2">
             <button
-              onClick={() => viewer && deleteReceipt(viewer)}
+              onClick={() => viewer && setReceiptToDelete(viewer)}
               className="flex items-center gap-1.5 text-destructive text-sm px-3 py-2 rounded-xl hover:bg-destructive/10"
             >
               <Trash2 className="w-4 h-4" /> Delete
@@ -204,6 +219,26 @@ export default function ReceiptsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!receiptToDelete} onOpenChange={(o) => { if (!o) setReceiptToDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-serif">Delete receipt?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove the receipt from {receiptToDelete?.store || "this store"}. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setReceiptToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => receiptToDelete && void deleteReceipt(receiptToDelete)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
