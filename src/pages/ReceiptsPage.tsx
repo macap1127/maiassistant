@@ -133,25 +133,36 @@ export default function ReceiptsPage() {
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {receipts.map((r, i) => (
-            <button
+            <div
               key={r.id}
-              onClick={() => openViewer(r)}
-              className="group bg-card rounded-2xl border border-border overflow-hidden text-left animate-slide-up hover:border-primary/50 transition-colors"
+              className="group bg-card rounded-2xl border border-border overflow-hidden text-left animate-slide-up hover:border-primary/50 transition-colors relative"
               style={{ animationDelay: `${i * 40}ms` }}
             >
-              <div className="aspect-[3/4] bg-muted relative overflow-hidden">
-                {signedUrls[r.image_path] ? (
-                  <img src={signedUrls[r.image_path]} alt={r.store} className="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
-                )}
-              </div>
-              <div className="p-2.5">
-                <p className="text-sm font-medium truncate">{r.store || "Unknown store"}</p>
-                <p className="text-xs text-muted-foreground">{fmtDate(r.purchase_date)}</p>
-                <p className="text-xs font-semibold text-primary mt-0.5">{fmtMoney(r.total, r.currency)}</p>
-              </div>
-            </button>
+              <button
+                onClick={() => setReceiptToDelete(r)}
+                className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                aria-label="Delete receipt"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => openViewer(r)}
+                className="w-full text-left"
+              >
+                <div className="aspect-[3/4] bg-muted relative overflow-hidden">
+                  {signedUrls[r.image_path] ? (
+                    <img src={signedUrls[r.image_path]} alt={r.store} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center"><Loader2 className="w-4 h-4 animate-spin text-muted-foreground" /></div>
+                  )}
+                </div>
+                <div className="p-2.5">
+                  <p className="text-sm font-medium truncate">{r.store || "Unknown store"}</p>
+                  <p className="text-xs text-muted-foreground">{fmtDate(r.purchase_date)}</p>
+                  <p className="text-xs font-semibold text-primary mt-0.5">{fmtMoney(r.total, r.currency)}</p>
+                </div>
+              </button>
+            </div>
           ))}
         </div>
       )}
