@@ -41,6 +41,7 @@ export default function ReceiptsPage() {
   const [adderOpen, setAdderOpen] = useState(false);
   const [viewer, setViewer] = useState<ReceiptRow | null>(null);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [receiptToDelete, setReceiptToDelete] = useState<ReceiptRow | null>(null);
 
   // Load household + receipts
   useEffect(() => {
