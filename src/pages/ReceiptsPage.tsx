@@ -205,7 +205,7 @@ export default function ReceiptsPage() {
           )}
           <DialogFooter className="sm:justify-between gap-2">
             <button
-              onClick={() => viewer && deleteReceipt(viewer)}
+              onClick={() => viewer && setReceiptToDelete(viewer)}
               className="flex items-center gap-1.5 text-destructive text-sm px-3 py-2 rounded-xl hover:bg-destructive/10"
             >
               <Trash2 className="w-4 h-4" /> Delete
