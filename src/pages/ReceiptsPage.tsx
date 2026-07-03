@@ -96,13 +96,15 @@ export default function ReceiptsPage() {
   }, []);
 
   const deleteReceipt = useCallback(async (r: ReceiptRow) => {
-    if (!confirm(`Delete receipt from ${r.store || "this store"}?`)) return;
     await supabase.storage.from("receipts").remove([r.image_path]);
     await supabase.from("receipts").delete().eq("id", r.id);
-    setViewer(null);
-    setViewerUrl(null);
+    if (viewer?.id === r.id) {
+      setViewer(null);
+      setViewerUrl(null);
+    }
+    setReceiptToDelete(null);
     toast({ title: "Receipt deleted" });
-  }, []);
+  }, [viewer]);
 
   return (
     <div className="page-container pb-28">
