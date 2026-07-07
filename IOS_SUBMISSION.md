@@ -1,5 +1,8 @@
 # iOS App Store Submission Guide — Mia Family Assistant
 
+> **Want to use Xcode Cloud instead of archiving locally?** See `XCODE_CLOUD_SETUP.md` for the cloud-build workflow.
+
+
 App ID / Bundle ID: `com.aiblueribbon.mia` · App Name: `Mia Family Assistant`
 
 Backend is shared with Android — no separation needed. Lovable Cloud handles both.
