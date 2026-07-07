@@ -58,7 +58,7 @@ const CalendarPage = () => {
   const [uploadAssignedTo, setUploadAssignedTo] = useState("");
   const [importing, setImporting] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState({ title: "", time: "", location: "", notes: "", assignedTo: "" });
+  const [editDraft, setEditDraft] = useState({ title: "", date: "", time: "", location: "", notes: "", assignedTo: "" });
   const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(null);
   const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -120,6 +120,7 @@ const CalendarPage = () => {
     setEditingEventId(event.id);
     setEditDraft({
       title: event.title,
+      date: event.date,
       time: event.time || "",
       location: event.location || "",
       notes: event.notes || "",
@@ -131,6 +132,10 @@ const CalendarPage = () => {
     if (!editingEventId) return;
     const title = editDraft.title.trim();
     if (!title) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(editDraft.date)) {
+      toast.error("Please pick a valid date");
+      return;
+    }
     update((d) => ({
       ...d,
       events: d.events.map((e) =>
@@ -138,6 +143,7 @@ const CalendarPage = () => {
           ? {
               ...e,
               title,
+              date: editDraft.date,
               time: editDraft.time || undefined,
               location: editDraft.location.trim() || undefined,
               notes: editDraft.notes.trim() || undefined,
@@ -533,18 +539,24 @@ const CalendarPage = () => {
                       />
                       <div className="flex gap-2">
                         <input
+                          type="date"
+                          value={editDraft.date}
+                          onChange={(e) => setEditDraft((d) => ({ ...d, date: e.target.value }))}
+                          className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <input
                           type="time"
                           value={editDraft.time}
                           onChange={(e) => setEditDraft((d) => ({ ...d, time: e.target.value }))}
                           className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                         />
-                        <input
-                          value={editDraft.location}
-                          onChange={(e) => setEditDraft((d) => ({ ...d, location: e.target.value }))}
-                          placeholder="Location"
-                          className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
                       </div>
+                      <input
+                        value={editDraft.location}
+                        onChange={(e) => setEditDraft((d) => ({ ...d, location: e.target.value }))}
+                        placeholder="Location"
+                        className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
                       <input
                         value={editDraft.notes}
                         onChange={(e) => setEditDraft((d) => ({ ...d, notes: e.target.value }))}
