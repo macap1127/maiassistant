@@ -120,6 +120,7 @@ const CalendarPage = () => {
     setEditingEventId(event.id);
     setEditDraft({
       title: event.title,
+      date: event.date,
       time: event.time || "",
       location: event.location || "",
       notes: event.notes || "",
@@ -131,6 +132,10 @@ const CalendarPage = () => {
     if (!editingEventId) return;
     const title = editDraft.title.trim();
     if (!title) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(editDraft.date)) {
+      toast.error("Please pick a valid date");
+      return;
+    }
     update((d) => ({
       ...d,
       events: d.events.map((e) =>
@@ -138,6 +143,7 @@ const CalendarPage = () => {
           ? {
               ...e,
               title,
+              date: editDraft.date,
               time: editDraft.time || undefined,
               location: editDraft.location.trim() || undefined,
               notes: editDraft.notes.trim() || undefined,
