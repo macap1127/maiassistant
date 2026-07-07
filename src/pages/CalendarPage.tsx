@@ -58,7 +58,7 @@ const CalendarPage = () => {
   const [uploadAssignedTo, setUploadAssignedTo] = useState("");
   const [importing, setImporting] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [editDraft, setEditDraft] = useState({ title: "", time: "", location: "", notes: "", assignedTo: "" });
+  const [editDraft, setEditDraft] = useState({ title: "", date: "", time: "", location: "", notes: "", assignedTo: "" });
   const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(null);
   const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
