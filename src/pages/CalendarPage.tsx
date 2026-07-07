@@ -539,18 +539,24 @@ const CalendarPage = () => {
                       />
                       <div className="flex gap-2">
                         <input
+                          type="date"
+                          value={editDraft.date}
+                          onChange={(e) => setEditDraft((d) => ({ ...d, date: e.target.value }))}
+                          className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                        <input
                           type="time"
                           value={editDraft.time}
                           onChange={(e) => setEditDraft((d) => ({ ...d, time: e.target.value }))}
                           className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                         />
-                        <input
-                          value={editDraft.location}
-                          onChange={(e) => setEditDraft((d) => ({ ...d, location: e.target.value }))}
-                          placeholder="Location"
-                          className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
                       </div>
+                      <input
+                        value={editDraft.location}
+                        onChange={(e) => setEditDraft((d) => ({ ...d, location: e.target.value }))}
+                        placeholder="Location"
+                        className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      />
                       <input
                         value={editDraft.notes}
                         onChange={(e) => setEditDraft((d) => ({ ...d, notes: e.target.value }))}
