@@ -1,49 +1,41 @@
-## Feature Graphic — 1024 × 500 PNG
+## What happened
 
-Output: `/mnt/documents/mai-feature-graphic-1024x500.png`
+Everything worked except the final sync — Capacitor needs a built `./dist` folder (the compiled web app) before it can copy assets into the iOS project. You skipped `npm run build`, so `dist` doesn't exist yet. Xcode is now open but pointed at an empty web bundle.
 
-### Visual composition
+The vulnerability warnings from `npm install` are informational only and don't block the build. Ignore them for now.
 
-```
-┌────────────────────────────────────────────────────────────┐
-│  [aurora glow bg + faint grid]                             │
-│                                                            │
-│   ╭──────╮       MIA                                       │
-│   │ orb  │       Your Family Assistant                     │
-│   │ icon │       Groceries · Calendar · To-Dos · Receipts  │
-│   ╰──────╯                                                 │
-│                                  [● Voice-powered]         │
-└────────────────────────────────────────────────────────────┘
+## Steps to run in Terminal
+
+You should still be in `~/Desktop/maiassistant`. Run:
+
+```bash
+npm run build
+npx cap sync ios
 ```
 
-- **Background**: deep space navy `#0A0A1A` with radial auroras — cyan top-right, violet bottom-left, magenta bottom-right (same recipe as `body` in `index.css`)
-- **Faint grid overlay** at ~6% opacity for tech feel
-- **Left**: uploaded MIA orb icon (≈360px), with a soft cyan/violet glow halo
-- **Right column**:
-  - "MIA" — Space Grotesk Bold, ~140pt, cyan→violet→magenta gradient (matches `--gradient-brand`)
-  - "Your Family Assistant" — Space Grotesk Medium, ~44pt, white
-  - "Groceries · Calendar · To-Dos · Receipts" — DM Sans, ~24pt, muted gray
-- **Voice badge** (bottom-right pill): tiny glowing dot + "Voice-powered" in JetBrains Mono uppercase, glassy border — echoes the `.glass` utility
+Then reopen Xcode (or just press Run again if it's already open):
 
-### Build steps
+```bash
+npx cap open ios
+```
 
-1. `code--copy user-uploads://MIA_android_icon_centered_512x512_1.png /tmp/mia-icon.png`
-2. Download Space Grotesk Bold/Medium, DM Sans Regular, JetBrains Mono Medium from Google Fonts to `/tmp/fonts/`
-3. Write `/tmp/feature-graphic.py` using Pillow:
-   - Create 1024×500 canvas, paint navy + 3 radial gradient auroras
-   - Draw subtle 32px grid lines at low alpha
-   - Paste icon with a pre-blurred glow underlay
-   - Render "MIA" by drawing text to a mask, then filling with a horizontal cyan→violet→magenta gradient
-   - Render sub-headline + tagline in flat colors
-   - Draw rounded-rect voice badge with thin border + glow dot
-4. Save to `/mnt/documents/mai-feature-graphic-1024x500.png`
+## In Xcode
 
-### QA pass
+1. Left sidebar: click the top-level **App** project.
+2. Select the **App** target → **Signing & Capabilities** tab.
+3. Set **Team** to your Apple ID (add it via Xcode → Settings → Accounts if not listed).
+4. Pick a simulator (e.g. iPhone 15) from the device dropdown at the top.
+5. Press the ▶ Play button to build and launch.
 
-- Open the PNG, verify: nothing clipped at edges, text crisp at 100%, gradient on "MIA" reads left-to-right cleanly, icon glow not muddy, badge legible
-- If anything's off, iterate (`_v2.png`) until clean
-- Deliver via `<presentation-artifact>` tag
+## If you change code later
 
-### Memory cleanup
+Any time you pull new changes from GitHub, repeat:
 
-The `mem://design/aesthetic-direction` memory still says "sage green" but your real app is dark futuristic cyan/violet. I'll update it after the banner is built so future sessions don't drift.
+```bash
+git pull
+npm install
+npm run build
+npx cap sync ios
+```
+
+Then Run again in Xcode.
