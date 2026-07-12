@@ -83,8 +83,21 @@ const CalendarPage = () => {
     return s;
   }, [data.events, data.tasks]);
 
-  // All unique sources for color mapping
-  const allSources = [...new Set(data.events.map((e) => e.source).filter(Boolean))] as string[];
+  // All unique sources for color mapping (only sources with at least one event that hasn't passed yet)
+  const allSources = useMemo(() => {
+    const now = new Date();
+    const today = format(now, "yyyy-MM-dd");
+    const nowTime = format(now, "HH:mm");
+    const active = data.events.filter((e) => {
+      if (!e.source) return false;
+      if (e.date > today) return true;
+      if (e.date < today) return false;
+      // same day: if it has a time, only show if time hasn't passed
+      if (!e.time) return true;
+      return e.time >= nowTime;
+    });
+    return [...new Set(active.map((e) => e.source).filter(Boolean))] as string[];
+  }, [data.events]);
 
   const toggleTask = (id: string) =>
     update((d) => ({
