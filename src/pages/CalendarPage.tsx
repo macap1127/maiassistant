@@ -63,6 +63,7 @@ const CalendarPage = () => {
   const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
   const [managingSource, setManagingSource] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
+  const [sourceNewEvent, setSourceNewEvent] = useState({ title: "", date: "", time: "", location: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
