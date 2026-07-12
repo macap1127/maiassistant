@@ -61,6 +61,8 @@ const CalendarPage = () => {
   const [editDraft, setEditDraft] = useState({ title: "", date: "", time: "", location: "", notes: "", assignedTo: "" });
   const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(null);
   const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
+  const [managingSource, setManagingSource] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
@@ -115,6 +117,44 @@ const CalendarPage = () => {
 
   const removeEvent = (id: string) =>
     update((d) => ({ ...d, events: d.events.filter((e) => e.id !== id) }));
+
+  const openManageSource = (src: string) => {
+    setManagingSource(src);
+    setRenameDraft(src);
+  };
+
+  const renameSource = () => {
+    if (!managingSource) return;
+    const newName = renameDraft.trim();
+    if (!newName || newName === managingSource) {
+      setManagingSource(null);
+      return;
+    }
+    update((d) => ({
+      ...d,
+      events: d.events.map((e) => (e.source === managingSource ? { ...e, source: newName } : e)),
+    }));
+    toast.success(`Renamed to "${newName}"`);
+    setManagingSource(newName);
+  };
+
+  const deleteAllInSource = () => {
+    if (!managingSource) return;
+    if (!confirm(`Delete all events tagged "${managingSource}"? This can't be undone.`)) return;
+    update((d) => ({ ...d, events: d.events.filter((e) => e.source !== managingSource) }));
+    toast.success(`Removed all "${managingSource}" events`);
+    setManagingSource(null);
+  };
+
+  const eventsInManagedSource = useMemo(
+    () =>
+      managingSource
+        ? [...data.events]
+            .filter((e) => e.source === managingSource)
+            .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")))
+        : [],
+    [data.events, managingSource]
+  );
 
   const startEdit = (event: CalendarEvent) => {
     setEditingEventId(event.id);
@@ -501,17 +541,22 @@ const CalendarPage = () => {
           </div>
         )}
 
-        {/* Source filter chips */}
+        {/* Source filter chips - tap to manage */}
         {allSources.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
-            {allSources.map((src) => (
-              <span
-                key={src}
-                className={`text-xs font-medium px-2 py-0.5 rounded-full border ${getSourceColor(src, allSources)}`}
-              >
-                {src}
-              </span>
-            ))}
+            {allSources.map((src) => {
+              const count = data.events.filter((e) => e.source === src).length;
+              return (
+                <button
+                  key={src}
+                  onClick={() => openManageSource(src)}
+                  className={`text-xs font-medium px-2 py-0.5 rounded-full border hover:opacity-80 transition-opacity ${getSourceColor(src, allSources)}`}
+                  title={`Manage "${src}" (${count})`}
+                >
+                  {src} <span className="opacity-70">· {count}</span>
+                </button>
+              );
+            })}
           </div>
         )}
 
@@ -685,6 +730,93 @@ const CalendarPage = () => {
           Upload .ics files from schools, sports leagues, or any calendar app. Events are tagged by source so you always know where they came from.
         </p>
       </div>
+
+      {/* Manage source (tag) */}
+      <Dialog open={!!managingSource} onOpenChange={(o) => { if (!o) setManagingSource(null); }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Manage tag</DialogTitle>
+            <DialogDescription>
+              Rename this tag, remove events one by one, or delete the whole group.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Tag name</label>
+            <div className="flex gap-2">
+              <input
+                value={renameDraft}
+                onChange={(e) => setRenameDraft(e.target.value)}
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <button
+                onClick={renameSource}
+                disabled={!renameDraft.trim() || renameDraft.trim() === managingSource}
+                className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                Rename
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+              {eventsInManagedSource.length} event{eventsInManagedSource.length === 1 ? "" : "s"}
+            </p>
+            <div className="space-y-2">
+              {eventsInManagedSource.map((ev) => (
+                <div key={ev.id} className="border border-border rounded-xl p-3 bg-card flex items-start gap-2">
+                  <button
+                    onClick={() => {
+                      const [y, m, d] = ev.date.split("-").map(Number);
+                      const dt = new Date(y, m - 1, d);
+                      setSelectedDate(dt);
+                      setCurrentMonth(dt);
+                      startEdit(ev);
+                      setManagingSource(null);
+                    }}
+                    className="flex-1 min-w-0 text-left"
+                  >
+                    <p className="text-sm font-medium truncate">{ev.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {format(new Date(ev.date + "T00:00:00"), "MMM d, yyyy")}
+                      {ev.time ? ` · ${formatTime12h(ev.time)}` : ""}
+                      {ev.location ? ` · ${ev.location}` : ""}
+                    </p>
+                  </button>
+                  <button
+                    onClick={() => removeEvent(ev.id)}
+                    className="text-muted-foreground hover:text-destructive transition-colors p-1 shrink-0"
+                    aria-label="Delete event"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              {eventsInManagedSource.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No events left. Close to remove this tag.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <button
+              onClick={deleteAllInSource}
+              className="px-4 py-2 rounded-xl bg-destructive/10 text-destructive text-sm font-medium hover:bg-destructive/20 transition-colors"
+            >
+              Delete all
+            </button>
+            <button
+              onClick={() => setManagingSource(null)}
+              className="px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
+            >
+              Done
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Confirm scanned events */}
       <Dialog open={!!pendingEvents} onOpenChange={(o) => { if (!o) setPendingEvents(null); }}>
