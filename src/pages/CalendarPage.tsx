@@ -770,7 +770,7 @@ const CalendarPage = () => {
       </div>
 
       {/* Manage source (tag) */}
-      <Dialog open={!!managingSource} onOpenChange={(o) => { if (!o) setManagingSource(null); }}>
+      <Dialog open={!!managingSource} onOpenChange={(o) => { if (!o) { setManagingSource(null); setSourceNewEvent({ title: "", date: "", time: "", location: "" }); } }}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Manage tag</DialogTitle>
