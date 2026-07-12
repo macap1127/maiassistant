@@ -1,41 +1,31 @@
-## What happened
+Follow these steps exactly:
 
-Everything worked except the final sync — Capacitor needs a built `./dist` folder (the compiled web app) before it can copy assets into the iOS project. You skipped `npm run build`, so `dist` doesn't exist yet. Xcode is now open but pointed at an empty web bundle.
+1. **Switch back to the MacInCloud browser tab**
+   - In Safari, click the tab at the top that says **MacInCloud Portal** or **NY450**.
+   - Do not use the Xcode app currently open on your MacBook.
 
-The vulnerability warnings from `npm install` are informational only and don't block the build. Ignore them for now.
+2. **Find the remote desktop window**
+   - You should see a browser page with the remote Mac screen inside it.
+   - If it is gray, click once inside the gray area.
+   - Wait 30 seconds.
 
-## Steps to run in Terminal
+3. **Wake the remote Mac**
+   - Move your mouse inside the gray remote area.
+   - Press **Spacebar** once or twice.
+   - If nothing changes, press **Command + Tab** while your mouse is inside the remote screen.
 
-You should still be in `~/Desktop/maiassistant`. Run:
+4. **If the remote screen stays gray**
+   - Go back to the MacInCloud Portal page.
+   - Look for your server/session named something like **NY450**.
+   - Click **Connect**, **Launch**, or **Reconnect**.
+   - If there is a choice, choose the browser/HTML5 connection.
 
-```bash
-npm run build
-npx cap sync ios
-```
+5. **Once the remote Mac desktop appears**
+   - Use **Spotlight inside the remote Mac**: press **Command + Spacebar** while clicked inside the remote screen.
+   - Type **Xcode**.
+   - Press **Return**.
 
-Then reopen Xcode (or just press Run again if it's already open):
+6. **Send me a screenshot**
+   - I need to see the browser tab with the MacInCloud remote desktop visible, not the local MacBook Xcode window.
 
-```bash
-npx cap open ios
-```
-
-## In Xcode
-
-1. Left sidebar: click the top-level **App** project.
-2. Select the **App** target → **Signing & Capabilities** tab.
-3. Set **Team** to your Apple ID (add it via Xcode → Settings → Accounts if not listed).
-4. Pick a simulator (e.g. iPhone 15) from the device dropdown at the top.
-5. Press the ▶ Play button to build and launch.
-
-## If you change code later
-
-Any time you pull new changes from GitHub, repeat:
-
-```bash
-git pull
-npm install
-npm run build
-npx cap sync ios
-```
-
-Then Run again in Xcode.
+Important: The Xcode window in your screenshot is local. For App Store upload, we need Xcode running inside the MacInCloud remote session unless you plan to use your own Mac instead.
