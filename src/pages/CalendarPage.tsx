@@ -731,6 +731,93 @@ const CalendarPage = () => {
         </p>
       </div>
 
+      {/* Manage source (tag) */}
+      <Dialog open={!!managingSource} onOpenChange={(o) => { if (!o) setManagingSource(null); }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Manage tag</DialogTitle>
+            <DialogDescription>
+              Rename this tag, remove events one by one, or delete the whole group.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Tag name</label>
+            <div className="flex gap-2">
+              <input
+                value={renameDraft}
+                onChange={(e) => setRenameDraft(e.target.value)}
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <button
+                onClick={renameSource}
+                disabled={!renameDraft.trim() || renameDraft.trim() === managingSource}
+                className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                Rename
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+              {eventsInManagedSource.length} event{eventsInManagedSource.length === 1 ? "" : "s"}
+            </p>
+            <div className="space-y-2">
+              {eventsInManagedSource.map((ev) => (
+                <div key={ev.id} className="border border-border rounded-xl p-3 bg-card flex items-start gap-2">
+                  <button
+                    onClick={() => {
+                      const [y, m, d] = ev.date.split("-").map(Number);
+                      const dt = new Date(y, m - 1, d);
+                      setSelectedDate(dt);
+                      setCurrentMonth(dt);
+                      startEdit(ev);
+                      setManagingSource(null);
+                    }}
+                    className="flex-1 min-w-0 text-left"
+                  >
+                    <p className="text-sm font-medium truncate">{ev.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {format(new Date(ev.date + "T00:00:00"), "MMM d, yyyy")}
+                      {ev.time ? ` · ${formatTime12h(ev.time)}` : ""}
+                      {ev.location ? ` · ${ev.location}` : ""}
+                    </p>
+                  </button>
+                  <button
+                    onClick={() => removeEvent(ev.id)}
+                    className="text-muted-foreground hover:text-destructive transition-colors p-1 shrink-0"
+                    aria-label="Delete event"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+              {eventsInManagedSource.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No events left. Close to remove this tag.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <button
+              onClick={deleteAllInSource}
+              className="px-4 py-2 rounded-xl bg-destructive/10 text-destructive text-sm font-medium hover:bg-destructive/20 transition-colors"
+            >
+              Delete all
+            </button>
+            <button
+              onClick={() => setManagingSource(null)}
+              className="px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
+            >
+              Done
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Confirm scanned events */}
       <Dialog open={!!pendingEvents} onOpenChange={(o) => { if (!o) setPendingEvents(null); }}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
