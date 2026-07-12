@@ -61,6 +61,8 @@ const CalendarPage = () => {
   const [editDraft, setEditDraft] = useState({ title: "", date: "", time: "", location: "", notes: "", assignedTo: "" });
   const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(null);
   const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
+  const [managingSource, setManagingSource] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
