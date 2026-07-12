@@ -797,6 +797,44 @@ const CalendarPage = () => {
             </div>
           </div>
 
+          <div className="mt-2 space-y-2 border-t border-border pt-4">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Add event to this tag</label>
+            <input
+              value={sourceNewEvent.title}
+              onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, title: e.target.value })}
+              placeholder="Event title"
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={sourceNewEvent.date}
+                onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, date: e.target.value })}
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <input
+                type="time"
+                value={sourceNewEvent.time}
+                onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, time: e.target.value })}
+                className="w-32 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <input
+              value={sourceNewEvent.location}
+              onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, location: e.target.value })}
+              placeholder="Location (optional)"
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <button
+              onClick={addEventToSource}
+              disabled={!sourceNewEvent.title.trim() || !sourceNewEvent.date}
+              className="w-full px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              Add event
+            </button>
+          </div>
+
+
           <div className="mt-2">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
               {eventsInManagedSource.length} event{eventsInManagedSource.length === 1 ? "" : "s"}
