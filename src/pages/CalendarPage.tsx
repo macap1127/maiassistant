@@ -118,6 +118,44 @@ const CalendarPage = () => {
   const removeEvent = (id: string) =>
     update((d) => ({ ...d, events: d.events.filter((e) => e.id !== id) }));
 
+  const openManageSource = (src: string) => {
+    setManagingSource(src);
+    setRenameDraft(src);
+  };
+
+  const renameSource = () => {
+    if (!managingSource) return;
+    const newName = renameDraft.trim();
+    if (!newName || newName === managingSource) {
+      setManagingSource(null);
+      return;
+    }
+    update((d) => ({
+      ...d,
+      events: d.events.map((e) => (e.source === managingSource ? { ...e, source: newName } : e)),
+    }));
+    toast.success(`Renamed to "${newName}"`);
+    setManagingSource(newName);
+  };
+
+  const deleteAllInSource = () => {
+    if (!managingSource) return;
+    if (!confirm(`Delete all events tagged "${managingSource}"? This can't be undone.`)) return;
+    update((d) => ({ ...d, events: d.events.filter((e) => e.source !== managingSource) }));
+    toast.success(`Removed all "${managingSource}" events`);
+    setManagingSource(null);
+  };
+
+  const eventsInManagedSource = useMemo(
+    () =>
+      managingSource
+        ? [...data.events]
+            .filter((e) => e.source === managingSource)
+            .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")))
+        : [],
+    [data.events, managingSource]
+  );
+
   const startEdit = (event: CalendarEvent) => {
     setEditingEventId(event.id);
     setEditDraft({
