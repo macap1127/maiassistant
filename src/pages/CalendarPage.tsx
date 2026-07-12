@@ -63,6 +63,7 @@ const CalendarPage = () => {
   const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
   const [managingSource, setManagingSource] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
+  const [sourceNewEvent, setSourceNewEvent] = useState({ title: "", date: "", time: "", location: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
@@ -157,6 +158,30 @@ const CalendarPage = () => {
     update((d) => ({ ...d, events: d.events.filter((e) => e.source !== managingSource) }));
     toast.success(`Removed all "${managingSource}" events`);
     setManagingSource(null);
+  };
+
+  const addEventToSource = () => {
+    if (!managingSource) return;
+    const title = sourceNewEvent.title.trim();
+    const date = sourceNewEvent.date;
+    if (!title || !date) return;
+    update((d) => ({
+      ...d,
+      events: [
+        ...d.events,
+        {
+          id: genId(),
+          title,
+          date,
+          time: sourceNewEvent.time || undefined,
+          location: sourceNewEvent.location.trim() || undefined,
+          addedBy: "You",
+          source: managingSource,
+        },
+      ],
+    }));
+    setSourceNewEvent({ title: "", date: "", time: "", location: "" });
+    toast.success("Event added");
   };
 
   const eventsInManagedSource = useMemo(
@@ -745,7 +770,7 @@ const CalendarPage = () => {
       </div>
 
       {/* Manage source (tag) */}
-      <Dialog open={!!managingSource} onOpenChange={(o) => { if (!o) setManagingSource(null); }}>
+      <Dialog open={!!managingSource} onOpenChange={(o) => { if (!o) { setManagingSource(null); setSourceNewEvent({ title: "", date: "", time: "", location: "" }); } }}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Manage tag</DialogTitle>
@@ -771,6 +796,44 @@ const CalendarPage = () => {
               </button>
             </div>
           </div>
+
+          <div className="mt-2 space-y-2 border-t border-border pt-4">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Add event to this tag</label>
+            <input
+              value={sourceNewEvent.title}
+              onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, title: e.target.value })}
+              placeholder="Event title"
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={sourceNewEvent.date}
+                onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, date: e.target.value })}
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <input
+                type="time"
+                value={sourceNewEvent.time}
+                onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, time: e.target.value })}
+                className="w-32 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <input
+              value={sourceNewEvent.location}
+              onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, location: e.target.value })}
+              placeholder="Location (optional)"
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <button
+              onClick={addEventToSource}
+              disabled={!sourceNewEvent.title.trim() || !sourceNewEvent.date}
+              className="w-full px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              Add event
+            </button>
+          </div>
+
 
           <div className="mt-2">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
