@@ -541,17 +541,22 @@ const CalendarPage = () => {
           </div>
         )}
 
-        {/* Source filter chips */}
+        {/* Source filter chips - tap to manage */}
         {allSources.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
-            {allSources.map((src) => (
-              <span
-                key={src}
-                className={`text-xs font-medium px-2 py-0.5 rounded-full border ${getSourceColor(src, allSources)}`}
-              >
-                {src}
-              </span>
-            ))}
+            {allSources.map((src) => {
+              const count = data.events.filter((e) => e.source === src).length;
+              return (
+                <button
+                  key={src}
+                  onClick={() => openManageSource(src)}
+                  className={`text-xs font-medium px-2 py-0.5 rounded-full border hover:opacity-80 transition-opacity ${getSourceColor(src, allSources)}`}
+                  title={`Manage "${src}" (${count})`}
+                >
+                  {src} <span className="opacity-70">· {count}</span>
+                </button>
+              );
+            })}
           </div>
         )}
 
