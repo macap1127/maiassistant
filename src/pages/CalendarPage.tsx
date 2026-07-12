@@ -160,6 +160,30 @@ const CalendarPage = () => {
     setManagingSource(null);
   };
 
+  const addEventToSource = () => {
+    if (!managingSource) return;
+    const title = sourceNewEvent.title.trim();
+    const date = sourceNewEvent.date;
+    if (!title || !date) return;
+    update((d) => ({
+      ...d,
+      events: [
+        ...d.events,
+        {
+          id: genId(),
+          title,
+          date,
+          time: sourceNewEvent.time || undefined,
+          location: sourceNewEvent.location.trim() || undefined,
+          addedBy: "You",
+          source: managingSource,
+        },
+      ],
+    }));
+    setSourceNewEvent({ title: "", date: "", time: "", location: "" });
+    toast.success("Event added");
+  };
+
   const eventsInManagedSource = useMemo(
     () =>
       managingSource
