@@ -45,5 +45,17 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Mia uses your microphone so you can talk to your family assistant.</string>
+
+	<key>NSCameraUsageDescription</key>
+	<string>Mia uses the camera to scan grocery receipts and calendar screenshots.</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Mia needs photo access to import receipts and calendars from your library.</string>
+
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Mia saves processed receipts back to your photo library when you ask.</string>
 </dict>
 </plist>
