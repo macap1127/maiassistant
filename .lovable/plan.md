@@ -1,31 +1,22 @@
-Follow these steps exactly:
+## Next step in Xcode: Configure Signing
 
-1. **Switch back to the MacInCloud browser tab**
-   - In Safari, click the tab at the top that says **MacInCloud Portal** or **NY450**.
-   - Do not use the Xcode app currently open on your MacBook.
+You're in the project navigator with the App target expanded. To run on the simulator (and later a real device), you need to open project settings and set your Apple Developer team.
 
-2. **Find the remote desktop window**
-   - You should see a browser page with the remote Mac screen inside it.
-   - If it is gray, click once inside the gray area.
-   - Wait 30 seconds.
+### Steps
 
-3. **Wake the remote Mac**
-   - Move your mouse inside the gray remote area.
-   - Press **Spacebar** once or twice.
-   - If nothing changes, press **Command + Tab** while your mouse is inside the remote screen.
+1. Click the **blue "App" icon** at the very top of the left sidebar (the project root, above `debug` and the `App` folder).
+2. The center pane will show project settings with tabs across the top: **General | Signing & Capabilities | Resource Tags | Info | Build Settings | Build Phases | Build Rules**.
+3. Click **"Signing & Capabilities"**.
+4. Under **Team**, pick your Apple Developer team from the dropdown.
+   - If no team appears: Xcode menu → **Settings → Accounts → +** → sign in with your Apple ID, then return to Signing & Capabilities.
+5. Confirm **Bundle Identifier** is: `app.lovable.900ab33e726449beaa2455300941d738`
+6. "Automatically manage signing" should already be checked — leave it.
 
-4. **If the remote screen stays gray**
-   - Go back to the MacInCloud Portal page.
-   - Look for your server/session named something like **NY450**.
-   - Click **Connect**, **Launch**, or **Reconnect**.
-   - If there is a choice, choose the browser/HTML5 connection.
+### After signing is set
 
-5. **Once the remote Mac desktop appears**
-   - Use **Spotlight inside the remote Mac**: press **Command + Spacebar** while clicked inside the remote screen.
-   - Type **Xcode**.
-   - Press **Return**.
+- Verify the run destination at the top center says **iPhone 17 Pro** (simulator).
+- Hit the **▶ Play button** (top-left) to build and launch.
 
-6. **Send me a screenshot**
-   - I need to see the browser tab with the MacInCloud remote desktop visible, not the local MacBook Xcode window.
+### What to send next
 
-Important: The Xcode window in your screenshot is local. For App Store upload, we need Xcode running inside the MacInCloud remote session unless you plan to use your own Mac instead.
+Screenshot of the **Signing & Capabilities** tab after selecting your team, so I can confirm no red errors appear (common ones: "No account", provisioning profile issues, bundle ID conflict).
