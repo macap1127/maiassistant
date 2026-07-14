@@ -1,36 +1,32 @@
-## Same crash = plist exists on disk but Xcode isn't bundling it
+# Open the correct Xcode file and run
 
-The `git pull` brought the file to `ios/App/App/GoogleService-Info.plist`, but Xcode won't ship it into the app unless it's **registered in the project and added to the App target**. Right now it isn't, so Firebase still can't find it at launch → same crash.
+You're at the Xcode welcome screen with two recent "App" entries. We need to open the **workspace** (not the project), then clean and run.
 
-## Do this in Xcode (2 minutes)
+## Steps
 
-1. **Stop the running app** (⌘ + . or the red ■ button).
+1. **Pick the workspace file**
+   - In the recent files list on the right, the top entry (highlighted blue) should be `App.xcworkspace`.
+   - Double-click it to open.
+   - If you're not sure which is which, click **Open Existing Project…** at the bottom of the welcome screen, then navigate to:
+     ```text
+     Users/user935189/maiassistant/ios/App/App.xcworkspace
+     ```
+     Select it and click **Open**.
 
-2. In the left sidebar (Project Navigator, the folder icon at top-left), find the inner **App** group — the one that contains `AppDelegate.swift`, `Info.plist`, `Assets.xcassets`.
+2. **Why `.xcworkspace` matters**
+   - `.xcodeproj` opens the raw project — CocoaPods dependencies (Firebase, Capacitor plugins) won't load and the build will fail.
+   - `.xcworkspace` includes both the project and the Pods — this is what `pod install` set up.
 
-3. **Right-click that inner `App` group → "Add Files to "App"…"**
+3. **Once the workspace is open in Xcode**
+   - Wait for the "Indexing" / "Processing files" bar at the top to finish (can take 30–60s the first time).
+   - Menu bar: **Product → Clean Build Folder** (⇧⌘K).
+   - Make sure the run destination (top of window, next to the app name) is set to an iPhone simulator, e.g. **iPhone 17 Pro**.
+   - Click the **▶️ Run** button (or ⌘R).
 
-4. In the file picker:
-   - Navigate to `ios/App/App/`
-   - Select **`GoogleService-Info.plist`**
-   - At the bottom of the dialog:
-     - ✅ **Copy items if needed** — leave checked (harmless, file is already there)
-     - **Added folders:** "Create groups"
-     - ✅ **Add to targets: App** — this is the critical checkbox
-   - Click **Add**
+4. **Report back**
+   - If the app launches and stays open: 🎉 tell me and we'll move on to Apple submission.
+   - If it crashes again: open **View → Debug Area → Activate Console** in Xcode, tap the app to reproduce the crash, and paste the red error lines here so I can pinpoint the cause.
 
-5. Verify it's in the target: click `GoogleService-Info.plist` in the sidebar → open the **File Inspector** on the right (⌥⌘1) → under **Target Membership**, "App" must be checked.
+## Nothing to code
 
-6. **Clean build folder**: Product menu → **Clean Build Folder** (⇧⌘K).
-
-7. Press ▶️ **Run** again.
-
-The Firebase crash will be gone and you'll see Mia launch in the simulator.
-
-## Why the earlier drag-and-drop didn't stick
-
-You did `git pull` which puts the file on disk, but Xcode's `.pcbxproj` file (the project manifest) has no reference to it, so it isn't copied into the app bundle at build time. The "Add Files to…" step is what edits `.pbxproj` to register it.
-
-## After it launches
-
-Reply "it's running" and I'll walk through the remaining Apple submission steps (signing team, Push Notifications capability, App Store Connect metadata, screenshots).
+This is all manual Xcode work on your MacinCloud machine — no changes needed in the Lovable project right now.
