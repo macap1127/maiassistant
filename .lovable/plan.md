@@ -1,22 +1,29 @@
-## Next step in Xcode: Configure Signing
+Your git pull failed because you already have local `ios/` files from an earlier attempt that aren't tracked in git, so git refuses to overwrite them.
 
-You're in the project navigator with the App target expanded. To run on the simulator (and later a real device), you need to open project settings and set your Apple Developer team.
+## Fix: delete the local iOS folder, then pull
 
-### Steps
+In Terminal, from the `maiassistant` folder:
 
-1. Click the **blue "App" icon** at the very top of the left sidebar (the project root, above `debug` and the `App` folder).
-2. The center pane will show project settings with tabs across the top: **General | Signing & Capabilities | Resource Tags | Info | Build Settings | Build Phases | Build Rules**.
-3. Click **"Signing & Capabilities"**.
-4. Under **Team**, pick your Apple Developer team from the dropdown.
-   - If no team appears: Xcode menu → **Settings → Accounts → +** → sign in with your Apple ID, then return to Signing & Capabilities.
-5. Confirm **Bundle Identifier** is: `app.lovable.900ab33e726449beaa2455300941d738`
-6. "Automatically manage signing" should already be checked — leave it.
+```bash
+rm -rf ios
+rm -f ios/debug.xcconfig
+git pull
+```
 
-### After signing is set
+(The second line is harmless if `ios/` is already gone.)
 
-- Verify the run destination at the top center says **iPhone 17 Pro** (simulator).
-- Hit the **▶ Play button** (top-left) to build and launch.
+## Then rebuild the native project
 
-### What to send next
+```bash
+npm install
+npm run build
+npx cap sync ios
+```
 
-Screenshot of the **Signing & Capabilities** tab after selecting your team, so I can confirm no red errors appear (common ones: "No account", provisioning profile issues, bundle ID conflict).
+## Open in Xcode
+
+Open **`ios/App/App.xcworkspace`** (the `.xcworkspace`, NOT `.xcodeproj`) and press Run.
+
+## Why this happened
+
+Git's error `The following untracked working tree files would be overwritten by merge` means those files exist on your Mac but were never committed. Deleting them lets the pull bring down the fresh CocoaPods-based iOS project from the repo.
