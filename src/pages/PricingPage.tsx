@@ -280,6 +280,30 @@ const PricingPage = () => {
           )}
         </div>
 
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex items-center bg-secondary/60 border border-border rounded-full p-1">
+            <button
+              onClick={() => setInterval("monthly")}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all ${
+                interval === "monthly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setInterval("yearly")}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all flex items-center gap-1.5 ${
+                interval === "yearly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Yearly
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${interval === "yearly" ? "bg-primary-foreground/20" : "bg-primary/15 text-primary"}`}>
+                Save ~24%
+              </span>
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-4">
           {tiers.map((tier, i) => {
             const Icon = tier.icon;
