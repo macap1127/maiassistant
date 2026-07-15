@@ -31,6 +31,19 @@ async function resolveOrCreateCustomer(stripe: ReturnType<typeof createStripeCli
   return created.id;
 }
 
+async function subscriptionExistsInEnvironment(
+  stripe: ReturnType<typeof createStripeClient>,
+  subscriptionId: string,
+) {
+  try {
+    await stripe.subscriptions.retrieve(subscriptionId);
+    return true;
+  } catch (e: any) {
+    if (e?.code === "resource_missing" || e?.raw?.code === "resource_missing") return false;
+    throw e;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
@@ -56,11 +69,14 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!h) throw new Error("Household not found");
     if (h.owner_user_id !== user.id) throw new Error("Only the owner can subscribe");
+    const stripe = createStripeClient(environment as StripeEnv);
     if (h.stripe_subscription_id && ["active", "trialing", "past_due"].includes(h.subscription_status)) {
-      throw new Error("You already have an active subscription. Use 'Manage billing' to change plans.");
+      const hasSubscriptionHere = await subscriptionExistsInEnvironment(stripe, h.stripe_subscription_id);
+      if (hasSubscriptionHere) {
+        throw new Error("You already have an active subscription. Use 'Manage billing' to change plans.");
+      }
     }
 
-    const stripe = createStripeClient(environment as StripeEnv);
     const prices = await stripe.prices.list({ lookup_keys: [priceId] });
     if (!prices.data.length) throw new Error("Price not found");
     const stripePrice = prices.data[0];

@@ -104,6 +104,11 @@ const SettingsPage = () => {
       body: { environment: getStripeEnvironment(), returnUrl: window.location.href },
     });
     setLoadingPortal(false);
+    if (pdata?.error === "customer_not_found") {
+      toast({ title: "Choose a plan", description: "Your billing profile needs to be recreated for this payment environment." });
+      navigate("/pricing");
+      return;
+    }
     if (error || !pdata?.url) {
       toast({ variant: "destructive", title: "Couldn't open billing portal", description: error?.message || pdata?.error || "Try again." });
       return;
