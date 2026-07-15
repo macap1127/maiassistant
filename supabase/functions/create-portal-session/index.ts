@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       if (e?.code === "resource_missing" || e?.raw?.code === "resource_missing") {
         return new Response(
           JSON.stringify({ error: "customer_not_found", message: "No billing profile in this environment. Please subscribe again." }),
-          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
       throw e;
