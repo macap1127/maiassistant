@@ -150,7 +150,7 @@ const PricingPage = () => {
   const { user } = useAuth();
   const { household, refresh } = useHousehold();
   const [checkoutTier, setCheckoutTier] = useState<Tier | null>(null);
-  const [interval, setInterval] = useState<Interval>("monthly");
+  const [billingInterval, setBillingInterval] = useState<Interval>("monthly");
   const [nativePurchasing, setNativePurchasing] = useState<Tier | null>(null);
   const [restoring, setRestoring] = useState(false);
   const [nativePlatform, setNativePlatform] = useState<"android" | "ios" | null>(() => getNativePlatform());
@@ -187,7 +187,7 @@ const PricingPage = () => {
     try {
       const offering = await getOfferings();
       if (!offering) throw new Error("No subscription offerings configured. Try again later.");
-      const wantedProduct = PRICE_IDS[interval][tier];
+      const wantedProduct = PRICE_IDS[billingInterval][tier];
       // Match either by RC package identifier or store product identifier.
       const pkg = offering.availablePackages.find(
         (p: any) =>
@@ -283,21 +283,21 @@ const PricingPage = () => {
         <div className="flex justify-center mb-6">
           <div className="inline-flex items-center bg-secondary/60 border border-border rounded-full p-1">
             <button
-              onClick={() => setInterval("monthly")}
+              onClick={() => setBillingInterval("monthly")}
               className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all ${
-                interval === "monthly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                billingInterval === "monthly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Monthly
             </button>
             <button
-              onClick={() => setInterval("yearly")}
+              onClick={() => setBillingInterval("yearly")}
               className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all flex items-center gap-1.5 ${
-                interval === "yearly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                billingInterval === "yearly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Yearly
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${interval === "yearly" ? "bg-primary-foreground/20" : "bg-primary/15 text-primary"}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${billingInterval === "yearly" ? "bg-primary-foreground/20" : "bg-primary/15 text-primary"}`}>
                 Save ~24%
               </span>
             </button>
@@ -329,9 +329,9 @@ const PricingPage = () => {
                     <p className="text-xs text-muted-foreground">{tier.tagline}</p>
                   </div>
                   <div className="ml-auto text-right">
-                    <span className="text-xl font-bold">${interval === "monthly" ? tier.monthly : tier.yearly}</span>
-                    <span className="text-xs text-muted-foreground">/{interval === "monthly" ? "mo" : "yr"}</span>
-                    {interval === "yearly" && (
+                    <span className="text-xl font-bold">${billingInterval === "monthly" ? tier.monthly : tier.yearly}</span>
+                    <span className="text-xs text-muted-foreground">/{billingInterval === "monthly" ? "mo" : "yr"}</span>
+                    {billingInterval === "yearly" && (
                       <p className="text-xs text-muted-foreground mt-0.5">≈ ${(tier.yearly / 12).toFixed(2)}/mo</p>
                     )}
                   </div>
@@ -440,18 +440,18 @@ const PricingPage = () => {
 
             {(() => {
               const tier = tiers.find(t => t.id === checkoutTier)!;
-              const amount = interval === "monthly" ? tier.monthly : tier.yearly;
-              const period = interval === "monthly" ? "month" : "year";
+              const amount = billingInterval === "monthly" ? tier.monthly : tier.yearly;
+              const period = billingInterval === "monthly" ? "month" : "year";
               return (
                 <>
                   <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
                     {household && !household.hasUsedTrial ? (
                       <>
                         <p className="text-foreground font-medium mb-1">7-day free trial, then ${amount}/{period}.</p>
-                        <p>You won't be charged today. Your subscription auto-renews {interval} at the listed price until you cancel. Cancel anytime from Settings → Manage billing — no charge if you cancel before the trial ends.</p>
+                        <p>You won't be charged today. Your subscription auto-renews {billingInterval} at the listed price until you cancel. Cancel anytime from Settings → Manage billing — no charge if you cancel before the trial ends.</p>
                       </>
                     ) : (
-                      <p>Your subscription auto-renews {interval} at ${amount} until you cancel. Cancel anytime from Settings → Manage billing.</p>
+                      <p>Your subscription auto-renews {billingInterval} at ${amount} until you cancel. Cancel anytime from Settings → Manage billing.</p>
                     )}
                     <p className="mt-2">
                       By subscribing, you agree to our{" "}
@@ -461,7 +461,7 @@ const PricingPage = () => {
                   </div>
 
                   <StripeEmbeddedCheckout
-                    priceId={PRICE_IDS[interval][checkoutTier]}
+                    priceId={PRICE_IDS[billingInterval][checkoutTier]}
                     returnUrl={`${window.location.origin}/settings?checkout=success`}
                   />
                 </>
