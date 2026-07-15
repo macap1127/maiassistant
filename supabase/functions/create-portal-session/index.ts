@@ -25,10 +25,23 @@ Deno.serve(async (req) => {
     if (h.owner_user_id !== user.id) throw new Error("Only the owner can manage billing");
 
     const stripe = createStripeClient(environment as StripeEnv);
-    const portal = await stripe.billingPortal.sessions.create({
-      customer: h.stripe_customer_id,
-      ...(returnUrl && { return_url: returnUrl }),
-    });
+    let portal;
+    try {
+      portal = await stripe.billingPortal.sessions.create({
+        customer: h.stripe_customer_id,
+        ...(returnUrl && { return_url: returnUrl }),
+      });
+    } catch (e: any) {
+      // Customer id belongs to a different Stripe environment (sandbox vs live)
+      // or was deleted. Signal the client to fall back to a fresh checkout.
+      if (e?.code === "resource_missing" || e?.raw?.code === "resource_missing") {
+        return new Response(
+          JSON.stringify({ error: "customer_not_found", message: "No billing profile in this environment. Please subscribe again." }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+      throw e;
+    }
 
     return new Response(JSON.stringify({ url: portal.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -38,3 +51,4 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: (e as Error).message }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
+

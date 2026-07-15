@@ -240,15 +240,22 @@ const PricingPage = () => {
       const { data, error } = await supabase.functions.invoke("create-portal-session", {
         body: { environment: getStripeEnvironment(), returnUrl: window.location.href },
       });
-      if (error || !data?.url) {
-        toast({ variant: "destructive", title: "Couldn't open billing portal", description: error?.message || data?.error || "Try again." });
+      if (data?.url) {
+        window.open(data.url, "_blank");
         return;
       }
-      window.open(data.url, "_blank");
+      // Customer id belongs to a different Stripe env (e.g. sandbox customer,
+      // live site). Fall back to a fresh checkout so the user can subscribe.
+      if (data?.error === "customer_not_found") {
+        setCheckoutTier(tier);
+        return;
+      }
+      toast({ variant: "destructive", title: "Couldn't open billing portal", description: error?.message || data?.error || "Try again." });
       return;
     }
     setCheckoutTier(tier);
   };
+
 
   return (
     <>
