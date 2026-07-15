@@ -150,7 +150,7 @@ const PricingPage = () => {
   const { user } = useAuth();
   const { household, refresh } = useHousehold();
   const [checkoutTier, setCheckoutTier] = useState<Tier | null>(null);
-  const [interval, setInterval] = useState<Interval>("monthly");
+  const [billingInterval, setBillingInterval] = useState<Interval>("monthly");
   const [nativePurchasing, setNativePurchasing] = useState<Tier | null>(null);
   const [restoring, setRestoring] = useState(false);
   const [nativePlatform, setNativePlatform] = useState<"android" | "ios" | null>(() => getNativePlatform());
@@ -283,7 +283,7 @@ const PricingPage = () => {
         <div className="flex justify-center mb-6">
           <div className="inline-flex items-center bg-secondary/60 border border-border rounded-full p-1">
             <button
-              onClick={() => setInterval("monthly")}
+              onClick={() => setBillingInterval("monthly")}
               className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all ${
                 interval === "monthly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -291,7 +291,7 @@ const PricingPage = () => {
               Monthly
             </button>
             <button
-              onClick={() => setInterval("yearly")}
+              onClick={() => setBillingInterval("yearly")}
               className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all flex items-center gap-1.5 ${
                 interval === "yearly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
