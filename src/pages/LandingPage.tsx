@@ -1,4 +1,5 @@
 import { Navigate, Link } from "react-router-dom";
+import { Capacitor } from "@capacitor/core";
 import {
   Sparkles,
   Users,
@@ -131,6 +132,11 @@ const whatYoullTest = [
 
 const LandingPage = () => {
   const { user, loading } = useAuth();
+  const isApple =
+    Capacitor.getPlatform() === "ios" ||
+    (typeof navigator !== "undefined" &&
+      /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) &&
+      !/Android/.test(navigator.userAgent));
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -444,7 +450,8 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* Steps */}
+        {/* Steps — Play Store beta opt-in flow (Android testers only) */}
+        {!isApple && (
         <div id="join" className="mb-16 scroll-mt-24">
           <div className="text-center mb-8">
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
@@ -491,6 +498,11 @@ const LandingPage = () => {
             ))}
           </div>
         </div>
+        )}
+
+        {/* Anchor target for #join CTAs on iOS/Apple, points to sign-up */}
+        {isApple && <div id="join" className="scroll-mt-24" />}
+
 
         {/* Final CTA */}
         <div className="mb-16 text-center">
