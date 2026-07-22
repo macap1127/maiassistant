@@ -57,5 +57,8 @@
 
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Mia saves processed receipts back to your photo library when you ask.</string>
+
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
