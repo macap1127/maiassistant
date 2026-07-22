@@ -1,63 +1,34 @@
-# App Privacy — Answers to enter in App Store Connect
+# Plan: Resolve Apple Rejection (Submission cd656e92)
 
-This is a walkthrough, not a code change. Answers are derived from your live Privacy Policy and the integrations Mia actually uses (Lovable Cloud/Supabase, Firebase FCM, Google OAuth, ElevenLabs, OpenAI, Stripe, RevenueCat, Apple/Google Billing, Resend).
+## Issue 1 — Guideline 2.2 "beta / limited functionality"
+Reviewer likely landed on empty screens. Fix:
+- Seed the `appreview@miafamilyassistant.com` household with realistic content (family member, groceries, tasks already exist; add 4 upcoming calendar events).
+- Reviewer notes in App Store Connect must list the demo login and tell them to open Grocery, Tasks, Calendar, and tap the voice mic on Home.
 
-## Step 1 — First screen
+## Issue 2 — Guideline 1.2 "UGC / AI content moderation"
+Apple requires an in-app AI/UGC consent + moderation surface. Add `AIConsentModal`:
+- Shown once per user on first authenticated session.
+- Accept / Decline buttons.
+- Lists: content is processed by AI providers, objectionable content is filtered, users can report abuse via support@miafamilyassistant.com within 24 hours.
+- Links to Terms & Privacy.
 
-**"Do you or your third-party partners collect data from this app?"** → **Yes**
+## Issue 3 — Guideline 2.1 "iPad bottom nav clipping"
+Constrain the bottom nav to `max-w-lg` on tablets so it renders as a centered pill instead of edge-to-edge, matching the content column. Bottom nav stays (user requirement).
 
-## Step 2 — Data types to add
+## Bonus cleanup
+- Add `ITSAppUsesNonExemptEncryption=false` to `Info.plist` so the encryption compliance popup no longer appears for future builds.
 
-For each item below: **Collected → Yes**, **Linked to user → Yes**, **Used for tracking → No** (Mia does no cross-app/website tracking or advertising).
+## Files touched
+- `ios/App/App/Info.plist` — add encryption key.
+- `src/components/AIConsentModal.tsx` — new.
+- `src/components/AppLayout.tsx` — mount modal, iPad nav width fix.
+- DB seed — 4 events in appreview household.
 
-### Contact Info
-- **Email Address**
-  - Purposes: **App Functionality**, **Account Management**
-
-### User Content
-- **Photos or Videos** (receipt images, imported calendar images/PDFs)
-  - Purposes: **App Functionality**
-- **Audio Data** (voice assistant mic input, streamed to ElevenLabs, not retained)
-  - Purposes: **App Functionality**
-- **Other User Content** (groceries, tasks, calendar events, household/member names, notes)
-  - Purposes: **App Functionality**
-
-### Identifiers
-- **User ID** (Supabase auth ID, Google OAuth sub)
-  - Purposes: **App Functionality**, **Account Management**
-- **Device ID** — only if you want to be strict about FCM push tokens. Apple's questionnaire treats FCM tokens as device identifiers.
-  - Purposes: **App Functionality**
-
-### Purchases
-- **Purchase History** (plan, status, renewal dates via RevenueCat / Apple Billing)
-  - Purposes: **App Functionality**
-
-### Usage Data
-- **Product Interaction** (basic app usage, timestamps for reliability)
-  - Purposes: **Analytics**, **App Functionality**
-
-### Diagnostics
-- **Crash Data**, **Performance Data** (device type, app version, error logs)
-  - Purposes: **App Functionality**
-
-### Financial Info — **DO NOT declare**
-Stripe / Apple / Google Billing handle card data; Mia never sees it. Apple explicitly says not to declare data that only the payment processor sees.
-
-### Health, Location, Browsing History, Search History, Sensitive Info, Contacts — **Not collected**
-
-## Step 3 — For every item above, on the follow-up screen
-
-- **Is this data linked to the user's identity?** → **Yes** (everything ties to their account)
-- **Is this data used to track the user?** → **No**
-
-## Step 4 — Privacy Policy URL
-
-Enter: `https://www.miafamilyassistant.com/privacy`
-
-## After you save
-
-Apple shows a preview labels card ("Data Linked to You", "Data Not Linked to You", "Data Used to Track You"). Yours should show:
-- Data Linked to You: Contact Info, User Content, Identifiers, Purchases, Usage Data, Diagnostics
-- Data Used to Track You: **None**
-
-Reply **"done"** when saved and I'll walk you through **Pricing & Availability** next.
+## Next build steps
+1. Bump `CFBundleVersion` in Xcode (build number, e.g. 2).
+2. Archive → Upload to App Store Connect from your Mac.
+3. In the version page, reply to the rejection with:
+   - "Added AI content consent modal shown on first launch with Accept/Decline, moderation policy, and 24-hour abuse reporting to support@miafamilyassistant.com."
+   - "Demo household is now populated with family member, groceries, tasks, and calendar events."
+   - "Bottom navigation now renders as a centered pill on iPad and no longer clips content."
+4. Attach the new build and Submit for Review.

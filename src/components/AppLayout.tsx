@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import maiLogo from "@/assets/mai-logo.png";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
+import { AIConsentModal } from "@/components/AIConsentModal";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 
@@ -219,9 +220,10 @@ const AppLayout = () => {
 
       <Outlet />
       <VoiceAssistant />
+      <AIConsentModal />
 
       <nav
-        className="fixed left-3 right-3 z-50 glass-strong rounded-2xl ring-glow"
+        className="fixed left-3 right-3 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:w-[calc(100%-1.5rem)] sm:max-w-lg z-50 glass-strong rounded-2xl ring-glow"
         style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
         <div className="max-w-lg mx-auto flex items-center justify-around h-[var(--nav-height)] px-1">
