@@ -147,6 +147,12 @@ const LandingPage = () => {
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
+  // On the native iOS app, skip all marketing/beta copy and route straight to sign-in.
+  // The web landing page markets an early-access "Founding Family Beta" program that
+  // must not appear inside the shipped iOS binary (App Store Review Guideline 2.2).
+  if (Capacitor.getPlatform() === "ios") {
+    return <Navigate to="/auth" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-background relative">
