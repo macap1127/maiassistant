@@ -7,16 +7,10 @@ import {
   CheckSquare,
   Bell,
   ArrowRight,
-  Smartphone,
-  MessageSquare,
-  Play,
   Check,
-  Star,
-  Heart,
   Home,
   ShoppingCart,
   Calendar,
-  ListTodo,
   Shield,
   Receipt,
   Mic,
@@ -31,38 +25,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
-
-const steps = [
-  {
-    number: "01",
-    icon: MessageSquare,
-    title: "Join Our Beta Community",
-    subtitle: "Hosted through Google Groups",
-    body: "Share feedback, report bugs, and get early access to new features before anyone else.",
-    cta: "Join Community",
-    href: "https://groups.google.com/g/mia-family-assistant-testers",
-    time: "30 seconds",
-  },
-  {
-    number: "02",
-    icon: Smartphone,
-    title: "Opt into the Beta",
-    body: "Become an official beta tester on Google Play. Your opt-in lets us deliver beta builds directly to your device.",
-    cta: "Opt into Beta",
-    href: "https://play.google.com/apps/testing/com.aiblueribbon.mia",
-    time: "15 seconds",
-  },
-  {
-    number: "03",
-    icon: Play,
-    title: "Install from the Play Store",
-    body: "Once you're opted in, install Mia Family Assistant from the Play Store and start simplifying your family life today.",
-    cta: "Install Now",
-    href: "https://play.google.com/store/apps/details?id=com.aiblueribbon.mia",
-    time: "1 minute",
-  },
-];
 
 const benefits = [
   {
@@ -97,22 +59,6 @@ const benefits = [
   },
 ];
 
-const foundingPerks = [
-  "6 months free after launch",
-  "Early access to new features",
-  "Direct influence on future updates",
-  "Exclusive Founding Family badge",
-];
-
-const expectations = [
-  "Use MIA with your family for 3–4 weeks",
-  "Create grocery lists",
-  "Add reminders",
-  "Use shared tasks",
-  "Try the calendar",
-  "Report anything confusing or broken",
-];
-
 const screenshots = [
   { label: "Home", icon: Home, image: "/screenshots/dashboard.png", color: "from-cyan-500/20 to-blue-500/20" },
   { label: "Meet MIA", icon: Sparkles, image: "/screenshots/about.png", color: "from-violet-500/20 to-fuchsia-500/20" },
@@ -121,22 +67,8 @@ const screenshots = [
   { label: "Calendar", icon: Calendar, image: "/screenshots/calendar.png", color: "from-amber-500/20 to-orange-500/20" },
 ];
 
-const whatYoullTest = [
-  { label: "AI Voice Assistant", icon: Mic },
-  { label: "Grocery Lists", icon: ShoppingCart },
-  { label: "Receipt Tracking", icon: Receipt },
-  { label: "Shared Tasks", icon: ListTodo },
-  { label: "Calendar", icon: Calendar },
-  { label: "Family Reminders", icon: Bell },
-];
-
 const LandingPage = () => {
   const { user, loading } = useAuth();
-  const isApple =
-    Capacitor.getPlatform() === "ios" ||
-    (typeof navigator !== "undefined" &&
-      /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) &&
-      !/Android/.test(navigator.userAgent));
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -147,9 +79,7 @@ const LandingPage = () => {
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
-  // On the native iOS app, skip all marketing/beta copy and route straight to sign-in.
-  // The web landing page markets an early-access "Founding Family Beta" program that
-  // must not appear inside the shipped iOS binary (App Store Review Guideline 2.2).
+  // On the native iOS app, skip marketing and route straight to sign-in.
   if (Capacitor.getPlatform() === "ios") {
     return <Navigate to="/auth" replace />;
   }
@@ -163,12 +93,8 @@ const LandingPage = () => {
             <img src={maiLogo} alt="Mia Family Assistant" className="w-28 h-28 rounded-3xl relative z-10" />
             <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
           </div>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-5">
-            <Star className="w-3.5 h-3.5 text-primary fill-primary" />
-            <span className="text-xs font-medium text-primary">Early testers get 6 months of Premium free</span>
-          </div>
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-3">
-            Limited Founding Family Beta
+            Mia Family Assistant
           </p>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-gradient leading-tight">
             One app for your family's groceries, calendar, tasks, and reminders
@@ -178,10 +104,10 @@ const LandingPage = () => {
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
-              <a href="#join">
-                Join the Beta Free
+              <Link to="/auth">
+                Get Started Free
                 <ArrowRight className="w-4 h-4 ml-2" />
-              </a>
+              </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-full px-8 border-border/80 hover:bg-muted">
               <Link to="/auth">Sign in</Link>
@@ -190,68 +116,6 @@ const LandingPage = () => {
           <p className="text-xs text-muted-foreground/70 mt-4 flex items-center gap-1.5">
             <Shield className="w-3.5 h-3.5" />
             Your data stays private and is never sold.
-          </p>
-        </div>
-
-        {/* Founding Family */}
-        <div className="mb-16">
-          <div className="glass rounded-3xl p-6 md:p-8 border border-primary/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-brand opacity-20 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <Star className="w-4 h-4 text-primary fill-primary" />
-                <p className="text-xs uppercase tracking-[0.3em] text-primary font-mono-tech">
-                  Become a Founding Family
-                </p>
-              </div>
-              <h2 className="text-2xl font-display font-bold text-gradient mb-3">
-                Help us build the future of family organization
-              </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                We're inviting 50 families to use MIA before public launch and help shape the app through real-world feedback.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {foundingPerks.map((perk) => (
-                  <div key={perk} className="flex items-start gap-3 text-sm">
-                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 text-primary" />
-                    </div>
-                    <span className="text-foreground/90">{perk}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Founder Story */}
-        <div className="mb-16">
-          <div className="text-center mb-5">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              From the founder
-            </p>
-            <h2 className="text-2xl font-display font-bold text-gradient">
-              Built for families, by a parent who needed it.
-            </h2>
-          </div>
-          <div className="glass rounded-2xl p-6 border border-border/80">
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-              Hi. I'm the founder of MIA. Like a lot of parents, I was juggling grocery apps, shared calendars, reminder lists, sticky notes, and group texts — and my family still felt out of sync. So I built one place where everything lives together: groceries, schedules, tasks, reminders, and an AI assistant that actually helps.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              MIA is already working. Now I'm looking for a small group of families to test it in the real world, share feedback, and help shape it before we launch publicly. If that sounds like you, I'd love to have you in the beta.
-            </p>
-          </div>
-        </div>
-
-        {/* Why beta */}
-        <div className="mb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border/60 mb-4">
-            <Shield className="w-3.5 h-3.5 text-primary" />
-            <span className="text-xs text-muted-foreground">Why we're in beta</span>
-          </div>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
-            MIA is fully functional — we're simply testing it with real families before public launch. Your feedback helps us get it right.
           </p>
         </div>
 
@@ -265,13 +129,7 @@ const LandingPage = () => {
               Built for the way families actually work
             </h2>
           </div>
-          <Carousel
-            opts={{
-              align: "center",
-              loop: true,
-            }}
-            className="w-full"
-          >
+          <Carousel opts={{ align: "center", loop: true }} className="w-full">
             <CarouselContent className="-ml-4">
               {screenshots.map(({ label, icon: Icon, color, image }, i) => (
                 <CarouselItem
@@ -318,9 +176,6 @@ const LandingPage = () => {
               <CarouselNext className="static translate-y-0 right-0 top-0 h-11 w-11 rounded-full bg-gradient-brand text-primary-foreground border-0 hover:opacity-90 shadow-glow" />
             </div>
           </Carousel>
-          <p className="text-xs text-center text-muted-foreground/60 mt-3 px-5">
-            Swipe or use arrows to browse real screenshots from MIA Family Assistant.
-          </p>
         </div>
 
         {/* Voice Assistant Highlight */}
@@ -364,36 +219,6 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* What we ask */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              What we ask
-            </p>
-            <h2 className="text-2xl font-display font-bold text-gradient">
-              During beta, we'd love for you to
-            </h2>
-          </div>
-          <div className="glass rounded-2xl p-5 border border-border/80">
-            <div className="space-y-3">
-              {expectations.map((item) => (
-                <div key={item} className="flex items-start gap-3 text-sm">
-                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Check className="w-3 h-3 text-primary" />
-                  </div>
-                  <span className="text-foreground/90">{item}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-5 pt-4 border-t border-border/60">
-              <p className="text-xs text-muted-foreground flex items-center gap-2">
-                <Heart className="w-3.5 h-3.5 text-primary" />
-                You'll probably spend about 5–10 minutes a day.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Benefits */}
         <div className="mb-16">
           <div className="text-center mb-8">
@@ -427,109 +252,26 @@ const LandingPage = () => {
           </div>
         </div>
 
-        {/* What you'll help us test */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              What you'll help us test
-            </p>
-            <h2 className="text-2xl font-display font-bold text-gradient">
-              Real features. Real feedback.
-            </h2>
-          </div>
-          <div className="glass rounded-2xl p-5 border border-border/80">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {whatYoullTest.map(({ label, icon: Icon }, i) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-3 text-sm animate-slide-up"
-                  style={{ animationDelay: `${i * 60}ms` }}
-                >
-                  <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Check className="w-3 h-3 text-primary" />
-                  </div>
-                  <Icon className="w-4 h-4 text-primary/70" />
-                  <span className="text-foreground/90">{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Steps — Play Store beta opt-in flow (Android testers only) */}
-        {!isApple && (
-        <div id="join" className="mb-16 scroll-mt-24">
-          <div className="text-center mb-8">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              Get started in 3 steps
-            </p>
-            <h2 className="text-2xl font-display font-bold text-gradient">
-              Be the first to experience Mia
-            </h2>
-          </div>
-          <div className="space-y-4">
-            {steps.map(({ number, icon: Icon, title, subtitle, body, cta, href, time }, i) => (
-              <div
-                key={title}
-                className="group relative glass rounded-2xl p-5 transition-all hover:border-primary/40 hover:shadow-card animate-slide-up"
-                style={{ animationDelay: `${i * 80}ms` }}
-              >
-                <div className="absolute top-4 right-4 text-xs font-mono-tech text-muted-foreground/50">
-                  {number}
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-base font-display font-semibold">{title}</h3>
-                      <span className="text-xs font-mono-tech text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                        {time}
-                      </span>
-                    </div>
-                    {subtitle && (
-                      <p className="text-xs text-muted-foreground/80 font-mono-tech mb-1">{subtitle}</p>
-                    )}
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">{body}</p>
-                    <Button asChild variant="outline" className="rounded-full px-5 border-border/80 hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-colors">
-                      <a href={href} target="_blank" rel="noopener noreferrer">
-                        {cta}
-                        <ArrowRight className="w-3.5 h-3.5 ml-2" />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        )}
-
-        {/* Anchor target for #join CTAs on iOS/Apple, points to sign-up */}
-        {isApple && <div id="join" className="scroll-mt-24" />}
-
-
         {/* Final CTA */}
         <div className="mb-16 text-center">
           <div className="glass rounded-3xl p-8 border border-primary/20 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-brand opacity-10" />
             <div className="relative z-10">
               <h2 className="text-2xl font-display font-bold text-gradient mb-3">
-                Ready to start testing MIA?
+                Ready to get your family organized?
               </h2>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-                Join the beta free today and get 6 months of Premium after launch. Spots are limited.
+                Create your free account and invite your family in minutes.
               </p>
               <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
-                <a href="#join">
-                  Join the Beta Free
+                <Link to="/auth">
+                  Get Started Free
                   <ArrowRight className="w-4 h-4 ml-2" />
-                </a>
+                </Link>
               </Button>
               <p className="text-xs text-muted-foreground/70 mt-4 flex items-center justify-center gap-1.5">
                 <Shield className="w-3.5 h-3.5" />
-                Your data is private. You can leave the beta at any time.
+                Your data is private and never sold.
               </p>
             </div>
           </div>
