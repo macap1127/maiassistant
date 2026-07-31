@@ -93,7 +93,6 @@ const tiers: TierDef[] = [
       "240 shared voice minutes / month",
       "Everything in Family",
       "Priority support",
-      "Early access to new features",
     ],
   },
 ];
@@ -136,7 +135,6 @@ const featureMatrix: { group: string; rows: FeatureRow[] }[] = [
     rows: [
       { label: "Email support", basic: true, family: true, family_plus: true },
       { label: "Priority support", basic: false, family: false, family_plus: true },
-      { label: "Early access to new features", basic: false, family: false, family_plus: true },
     ],
   },
 ];

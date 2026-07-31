@@ -37,15 +37,10 @@ export interface HouseholdState {
 }
 
 function deriveAccess(h: any): { hasAccess: boolean; isInTrial: boolean; trialDaysLeft: number | null } {
-  // CLOSED-TEST OVERRIDE: grant full access to everyone during the closed beta.
-  // To restore paywall logic, remove this block and uncomment the original logic below.
   const now = Date.now();
   const trialEnd = h.trial_ends_at ? new Date(h.trial_ends_at).getTime() : null;
   const inTrial = !h.stripe_subscription_id && !!trialEnd && trialEnd > now;
   const trialDaysLeft = inTrial && trialEnd ? Math.max(0, Math.ceil((trialEnd - now) / 86400000)) : null;
-  return { hasAccess: true, isInTrial: inTrial, trialDaysLeft };
-
-  /* ORIGINAL PAYWALL LOGIC — re-enable after closed testing:
   const periodEnd = h.current_period_end ? new Date(h.current_period_end).getTime() : null;
   let hasAccess = false;
   if (!h.access_locked) {
@@ -54,7 +49,6 @@ function deriveAccess(h: any): { hasAccess: boolean; isInTrial: boolean; trialDa
     else if (inTrial) hasAccess = true;
   }
   return { hasAccess, isInTrial: inTrial, trialDaysLeft };
-  */
 }
 
 export const useHousehold = () => {
