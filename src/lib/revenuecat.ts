@@ -4,7 +4,6 @@ import { Capacitor } from '@capacitor/core';
 
 // RevenueCat API keys — these are PUBLISHABLE keys, safe to ship in client code.
 // Get them from app.revenuecat.com → Project settings → API keys.
-// Replace the placeholders below with your real keys.
 const REVENUECAT_ANDROID_KEY = 'goog_gXRwdrJEkRXwcdUmSLRUAraaJgR';
 const REVENUECAT_IOS_KEY = 'appl_DuMXcyAUpKQmQBWCQYbxHHOscLw';
 
@@ -17,7 +16,49 @@ export const ENTITLEMENTS = {
   family_plus: 'family_plus',
 } as const;
 
-
+// Candidate App Store / Google Play product identifiers for each internal plan.
+// RevenueCat will try these in order when purchasing directly by product ID.
+// Update these if your actual App Store Connect product IDs differ.
+export const PRODUCT_ID_CANDIDATES: Record<string, string[]> = {
+  mia_basic_monthly: [
+    'com.aiblueribbon.mia.basic.monthly',
+    'com.aiblueribbon.mia.basic_monthly',
+    'mia_basic_monthly',
+    'mia.basic.monthly',
+  ],
+  mia_basic_yearly: [
+    'com.aiblueribbon.mia.basic.yearly',
+    'com.aiblueribbon.mia.basic_yearly',
+    'mia_basic_yearly',
+    'mia.basic.yearly',
+  ],
+  mia_family_monthly: [
+    'com.aiblueribbon.mia.family.monthly',
+    'com.aiblueribbon.mia.family_monthly',
+    'mia_family_monthly',
+    'mia.family.monthly',
+  ],
+  mia_family_yearly: [
+    'com.aiblueribbon.mia.family.yearly',
+    'com.aiblueribbon.mia.family_yearly',
+    'mia_family_yearly',
+    'mia.family.yearly',
+  ],
+  mia_family_plus_monthly: [
+    'com.aiblueribbon.mia.familyplus.monthly',
+    'com.aiblueribbon.mia.family_plus.monthly',
+    'com.aiblueribbon.mia.family_plus_monthly',
+    'mia_family_plus_monthly',
+    'mia.familyplus.monthly',
+  ],
+  mia_family_plus_yearly: [
+    'com.aiblueribbon.mia.familyplus.yearly',
+    'com.aiblueribbon.mia.family_plus.yearly',
+    'com.aiblueribbon.mia.family_plus_yearly',
+    'mia_family_plus_yearly',
+    'mia.familyplus.yearly',
+  ],
+};
 
 export const getNativePlatform = (): 'android' | 'ios' | null => {
   const cap = (globalThis as any).Capacitor;
@@ -80,21 +121,27 @@ export async function purchaseProductById(productId: string) {
   if (!isNative()) throw new Error('Native purchases only available on device');
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   const candidates = Array.from(
-    new Set([productId, productId.replace(/_/g, '.'), `com.aiblueribbon.mia.${productId}`]),
+    new Set([
+      ...(PRODUCT_ID_CANDIDATES[productId] ?? [productId]),
+      productId.replace(/_/g, '.'),
+      `com.aiblueribbon.mia.${productId}`,
+    ]),
   );
+  console.log('[revenuecat] looking up products:', candidates);
   const { products } = await Purchases.getProducts({
     productIdentifiers: candidates,
     // @ts-expect-error type enum accepts string at runtime
     type: 'SUBS',
   });
+  console.log('[revenuecat] available products:', products.map((p: any) => p.identifier));
   const product =
     products.find((p: any) => candidates.includes(p.identifier)) ||
     products.find((p: any) => candidates.some((c) => p.identifier?.endsWith(c))) ||
     products[0];
   if (!product) throw new Error(`Product ${productId} is not available on this device yet.`);
+  console.log('[revenuecat] purchasing product:', product.identifier);
   return Purchases.purchaseStoreProduct({ product: product as any });
 }
-
 
 export async function getActiveEntitlements(): Promise<string[]> {
   if (!isNative()) return [];
