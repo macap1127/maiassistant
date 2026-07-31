@@ -184,29 +184,40 @@ const PricingPage = () => {
 
   const handleNativePurchase = async (tier: Tier) => {
     setNativePurchasing(tier);
+    const wantedProduct = PRICE_IDS[billingInterval][tier];
     try {
-      const offering = await getOfferings();
-      if (!offering) throw new Error("No subscription offerings configured. Try again later.");
-      const wantedProduct = PRICE_IDS[billingInterval][tier];
-      // Match either by RC package identifier or store product identifier.
-      const pkg = offering.availablePackages.find(
-        (p: any) =>
-          p.identifier === wantedProduct ||
-          p.product?.identifier === wantedProduct ||
-          p.product?.identifier?.endsWith(`.${wantedProduct}`),
-      );
-      if (!pkg) throw new Error(`Plan ${wantedProduct} not available on this device.`);
-      await purchasePackage(pkg);
+      let pkg: any = null;
+      try {
+        const offering = await getOfferings();
+        pkg = offering?.availablePackages?.find(
+          (p: any) =>
+            p.identifier === wantedProduct ||
+            p.product?.identifier === wantedProduct ||
+            p.product?.identifier?.endsWith(`.${wantedProduct}`),
+        );
+      } catch (offeringError) {
+        console.warn("[purchase] offerings unavailable, falling back to direct product", offeringError);
+      }
+
+      if (pkg) {
+        await purchasePackage(pkg);
+      } else {
+        // No Offering configured (or product missing from it) — purchase the
+        // store product directly so StoreKit still handles the transaction.
+        await purchaseProductById(wantedProduct);
+      }
+
       toast({ title: "Purchase complete", description: "Updating your plan…" });
       // Give RC webhook a moment to update Supabase, then refresh.
       setTimeout(() => refresh?.(), 2500);
     } catch (e: any) {
-      if (e?.userCancelled) return;
+      if (e?.userCancelled || e?.code === "1" || /cancel/i.test(e?.message ?? "")) return;
       toast({ variant: "destructive", title: "Purchase failed", description: e?.message ?? String(e) });
     } finally {
       setNativePurchasing(null);
     }
   };
+
 
   const handleRestore = async () => {
     setRestoring(true);
