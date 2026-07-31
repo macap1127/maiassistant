@@ -74,6 +74,28 @@ export async function purchasePackage(rcPackage: any) {
   return Purchases.purchasePackage({ aPackage: rcPackage });
 }
 
+// Fallback path: buy a StoreKit / Play product directly by identifier when no
+// RevenueCat Offering is configured (or the package is missing from it).
+export async function purchaseProductById(productId: string) {
+  if (!isNative()) throw new Error('Native purchases only available on device');
+  const { Purchases } = await import('@revenuecat/purchases-capacitor');
+  const candidates = Array.from(
+    new Set([productId, productId.replace(/_/g, '.'), `com.aiblueribbon.mia.${productId}`]),
+  );
+  const { products } = await Purchases.getProducts({
+    productIdentifiers: candidates,
+    // @ts-expect-error type enum accepts string at runtime
+    type: 'SUBS',
+  });
+  const product =
+    products.find((p: any) => candidates.includes(p.identifier)) ||
+    products.find((p: any) => candidates.some((c) => p.identifier?.endsWith(c))) ||
+    products[0];
+  if (!product) throw new Error(`Product ${productId} is not available on this device yet.`);
+  return Purchases.purchaseStoreProduct({ product: product as any });
+}
+
+
 export async function getActiveEntitlements(): Promise<string[]> {
   if (!isNative()) return [];
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
