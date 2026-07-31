@@ -12,6 +12,8 @@ import {
   initRevenueCat,
   getOfferings,
   purchasePackage,
+  purchaseProductById,
+
   restorePurchases,
   isNative,
   getNativePlatform,
