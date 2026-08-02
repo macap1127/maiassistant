@@ -47,7 +47,7 @@ In Android Studio:
 
 ## 4. Upload to Google Play Console
 
-1. Go to **Google Play Console → Mia Family Assistant → Test and release → Production** (or Internal testing / Closed testing).
+1. Go to **Google Play Console → Mia Family Assistant → Production**.
 2. Click **Create new release**.
 3. Upload the `.aab` file.
 4. Fill in the release notes:
