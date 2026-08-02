@@ -1,6 +1,6 @@
-# Google Play Testing Changelog
+# Release Changelog
 
-A running log of changes made in response to issues found during Google Play closed testing. Share this with Google Play review if asked what was changed between builds.
+A running log of changes made between app releases. Share this with app store review if asked what was changed between builds.
 
 ---
 
