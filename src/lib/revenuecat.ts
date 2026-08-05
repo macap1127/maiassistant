@@ -91,27 +91,72 @@ export const getNativePlatform = (): 'android' | 'ios' | null => {
 export const isNative = () => getNativePlatform() !== null;
 
 let initialized = false;
+let initPromise: Promise<void> | null = null;
+let currentAppUserId: string | undefined;
 
-export async function initRevenueCat(appUserId?: string) {
-  if (!isNative() || initialized) return;
+async function doInit(appUserId?: string) {
   const { Purchases, LOG_LEVEL } = await import('@revenuecat/purchases-capacitor');
-  await Purchases.setLogLevel({ level: LOG_LEVEL.WARN });
+  await Purchases.setLogLevel({ level: LOG_LEVEL.INFO });
   const platform = getNativePlatform();
   const apiKey = platform === 'ios' ? REVENUECAT_IOS_KEY : REVENUECAT_ANDROID_KEY;
   await Purchases.configure({ apiKey, appUserID: appUserId });
+  currentAppUserId = appUserId;
   initialized = true;
+  console.log('[revenuecat] configured', { platform, appUserId: appUserId ?? '(anonymous)' });
+}
+
+/**
+ * Configures RevenueCat exactly once. Safe to call from anywhere; concurrent
+ * callers share the same in-flight promise so no purchase can ever run against
+ * an unconfigured SDK. If a previous attempt failed, the next call retries.
+ */
+export async function initRevenueCat(appUserId?: string): Promise<void> {
+  if (!isNative()) return;
+  if (initialized) {
+    // Identify the signed-in user if we configured anonymously earlier.
+    if (appUserId && appUserId !== currentAppUserId) {
+      try {
+        const { Purchases } = await import('@revenuecat/purchases-capacitor');
+        await Purchases.logIn({ appUserID: appUserId });
+        currentAppUserId = appUserId;
+      } catch (e) {
+        console.warn('[revenuecat] logIn failed', e);
+      }
+    }
+    return;
+  }
+  if (!initPromise) {
+    initPromise = doInit(appUserId).catch((e) => {
+      initPromise = null;
+      throw e;
+    });
+  }
+  return initPromise;
+}
+
+/** Guarantees the SDK is configured before any billing call. */
+async function ensureConfigured() {
+  if (!initialized) await initRevenueCat(currentAppUserId);
 }
 
 export async function getOfferings() {
   if (!isNative()) return null;
+  await ensureConfigured();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   const offerings = await Purchases.getOfferings();
+  console.log(
+    '[revenuecat] offerings',
+    offerings.current?.identifier,
+    offerings.current?.availablePackages?.map((p: any) => `${p.identifier}:${p.product?.identifier}`),
+  );
   return offerings.current;
 }
 
 export async function purchasePackage(rcPackage: any) {
   if (!isNative()) throw new Error('Native purchases only available on device');
+  await ensureConfigured();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
+  console.log('[revenuecat] purchasing package', rcPackage?.identifier, rcPackage?.product?.identifier);
   return Purchases.purchasePackage({ aPackage: rcPackage });
 }
 
@@ -119,32 +164,49 @@ export async function purchasePackage(rcPackage: any) {
 // RevenueCat Offering is configured (or the package is missing from it).
 export async function purchaseProductById(productId: string) {
   if (!isNative()) throw new Error('Native purchases only available on device');
+  await ensureConfigured();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   const candidates = Array.from(
     new Set([
       ...(PRODUCT_ID_CANDIDATES[productId] ?? [productId]),
+      productId,
       productId.replace(/_/g, '.'),
       `com.aiblueribbon.mia.${productId}`,
     ]),
   );
   console.log('[revenuecat] looking up products:', candidates);
-  const { products } = await Purchases.getProducts({
-    productIdentifiers: candidates,
-    // @ts-expect-error type enum accepts string at runtime
-    type: 'SUBS',
-  });
+  let products: any[] = [];
+  try {
+    const res = await Purchases.getProducts({
+      productIdentifiers: candidates,
+      // @ts-expect-error type enum accepts string at runtime
+      type: 'SUBS',
+    });
+    products = res.products ?? [];
+  } catch (e) {
+    console.warn('[revenuecat] getProducts(SUBS) failed, retrying without type', e);
+  }
+  if (products.length === 0) {
+    const res = await Purchases.getProducts({ productIdentifiers: candidates });
+    products = res.products ?? [];
+  }
   console.log('[revenuecat] available products:', products.map((p: any) => p.identifier));
   const product =
     products.find((p: any) => candidates.includes(p.identifier)) ||
     products.find((p: any) => candidates.some((c) => p.identifier?.endsWith(c))) ||
     products[0];
-  if (!product) throw new Error(`Product ${productId} is not available on this device yet.`);
+  if (!product) {
+    throw new Error(
+      `This subscription isn't available from the store right now (${productId}). Please try again in a moment.`,
+    );
+  }
   console.log('[revenuecat] purchasing product:', product.identifier);
   return Purchases.purchaseStoreProduct({ product: product as any });
 }
 
 export async function getActiveEntitlements(): Promise<string[]> {
   if (!isNative()) return [];
+  await ensureConfigured();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   const info = await Purchases.getCustomerInfo();
   return Object.keys(info.customerInfo.entitlements.active);
@@ -152,6 +214,7 @@ export async function getActiveEntitlements(): Promise<string[]> {
 
 export async function restorePurchases() {
   if (!isNative()) return;
+  await ensureConfigured();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   return Purchases.restorePurchases();
 }
@@ -164,7 +227,7 @@ export async function logoutRevenueCat() {
   } catch (e) {
     console.warn('[revenuecat] logout failed', e);
   }
-  initialized = false;
+  currentAppUserId = undefined;
 }
 
 // Map a RevenueCat Offering's packages to our internal price IDs.

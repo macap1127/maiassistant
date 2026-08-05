@@ -186,6 +186,11 @@ const PricingPage = () => {
     setNativePurchasing(tier);
     const wantedProduct = PRICE_IDS[billingInterval][tier];
     try {
+      // Always make sure the SDK is configured before touching billing —
+      // tapping a plan immediately after the paywall mounts used to race the
+      // background init and fail with "singleton instance not configured".
+      await initRevenueCat(user?.id);
+
       let pkg: any = null;
       try {
         const offering = await getOfferings();
@@ -193,7 +198,8 @@ const PricingPage = () => {
           (p: any) =>
             p.identifier === wantedProduct ||
             p.product?.identifier === wantedProduct ||
-            p.product?.identifier?.endsWith(`.${wantedProduct}`),
+            p.product?.identifier?.endsWith(`.${wantedProduct}`) ||
+            p.product?.identifier?.replace(/\./g, "_").endsWith(wantedProduct),
         );
       } catch (offeringError) {
         console.warn("[purchase] offerings unavailable, falling back to direct product", offeringError);
@@ -211,8 +217,10 @@ const PricingPage = () => {
       // Give RC webhook a moment to update Supabase, then refresh.
       setTimeout(() => refresh?.(), 2500);
     } catch (e: any) {
-      if (e?.userCancelled || e?.code === "1" || /cancel/i.test(e?.message ?? "")) return;
-      toast({ variant: "destructive", title: "Purchase failed", description: e?.message ?? String(e) });
+      const message = e?.message ?? String(e);
+      if (e?.userCancelled || e?.code === "1" || /cancel/i.test(message)) return;
+      console.error("[purchase] failed", e);
+      toast({ variant: "destructive", title: "Purchase failed", description: message });
     } finally {
       setNativePurchasing(null);
     }
