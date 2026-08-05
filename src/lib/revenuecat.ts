@@ -164,32 +164,49 @@ export async function purchasePackage(rcPackage: any) {
 // RevenueCat Offering is configured (or the package is missing from it).
 export async function purchaseProductById(productId: string) {
   if (!isNative()) throw new Error('Native purchases only available on device');
+  await ensureConfigured();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   const candidates = Array.from(
     new Set([
       ...(PRODUCT_ID_CANDIDATES[productId] ?? [productId]),
+      productId,
       productId.replace(/_/g, '.'),
       `com.aiblueribbon.mia.${productId}`,
     ]),
   );
   console.log('[revenuecat] looking up products:', candidates);
-  const { products } = await Purchases.getProducts({
-    productIdentifiers: candidates,
-    // @ts-expect-error type enum accepts string at runtime
-    type: 'SUBS',
-  });
+  let products: any[] = [];
+  try {
+    const res = await Purchases.getProducts({
+      productIdentifiers: candidates,
+      // @ts-expect-error type enum accepts string at runtime
+      type: 'SUBS',
+    });
+    products = res.products ?? [];
+  } catch (e) {
+    console.warn('[revenuecat] getProducts(SUBS) failed, retrying without type', e);
+  }
+  if (products.length === 0) {
+    const res = await Purchases.getProducts({ productIdentifiers: candidates });
+    products = res.products ?? [];
+  }
   console.log('[revenuecat] available products:', products.map((p: any) => p.identifier));
   const product =
     products.find((p: any) => candidates.includes(p.identifier)) ||
     products.find((p: any) => candidates.some((c) => p.identifier?.endsWith(c))) ||
     products[0];
-  if (!product) throw new Error(`Product ${productId} is not available on this device yet.`);
+  if (!product) {
+    throw new Error(
+      `This subscription isn't available from the store right now (${productId}). Please try again in a moment.`,
+    );
+  }
   console.log('[revenuecat] purchasing product:', product.identifier);
   return Purchases.purchaseStoreProduct({ product: product as any });
 }
 
 export async function getActiveEntitlements(): Promise<string[]> {
   if (!isNative()) return [];
+  await ensureConfigured();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   const info = await Purchases.getCustomerInfo();
   return Object.keys(info.customerInfo.entitlements.active);
@@ -197,6 +214,7 @@ export async function getActiveEntitlements(): Promise<string[]> {
 
 export async function restorePurchases() {
   if (!isNative()) return;
+  await ensureConfigured();
   const { Purchases } = await import('@revenuecat/purchases-capacitor');
   return Purchases.restorePurchases();
 }
@@ -209,7 +227,7 @@ export async function logoutRevenueCat() {
   } catch (e) {
     console.warn('[revenuecat] logout failed', e);
   }
-  initialized = false;
+  currentAppUserId = undefined;
 }
 
 // Map a RevenueCat Offering's packages to our internal price IDs.
