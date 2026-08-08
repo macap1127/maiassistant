@@ -205,9 +205,14 @@ const Dashboard = () => {
           {t(greetingKeyFor())}
         </p>
         <h1 className="text-3xl font-display font-bold tracking-tight mt-1">
-          <span dangerouslySetInnerHTML={{ __html: "" }} />
-          {t("dash.welcomeBack", { name: "" }).replace("{{name}}", "")}
-          <span className="text-gradient">{displayName}</span>
+          {t("dash.welcomeBack", { name: "\u0000" })
+            .split("\u0000")
+            .map((part, i) => (
+              <span key={i}>
+                {part}
+                {i === 0 && <span className="text-gradient">{displayName}</span>}
+              </span>
+            ))}
         </h1>
         <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
           {t("dash.tagline", { family: data.familyName })}
