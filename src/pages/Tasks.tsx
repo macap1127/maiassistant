@@ -2,11 +2,13 @@ import { useState, useMemo } from "react";
 import { Plus, Check, Trash2, X, ChevronDown } from "lucide-react";
 import { useFamilyData, genId } from "@/lib/store";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 type FilterMode = "all" | "mine" | string;
 
 const Tasks = () => {
   const { data, update } = useFamilyData();
+  const { t } = useTranslation();
   const [newTitle, setNewTitle] = useState("");
   const [newAssignee, setNewAssignee] = useState("");
   const [filter, setFilter] = useState<FilterMode>("all");
@@ -49,7 +51,7 @@ const Tasks = () => {
     const count = data.tasks.filter((t) => t.completed).length;
     if (!count) return;
     update((d) => ({ ...d, tasks: d.tasks.filter((t) => !t.completed) }));
-    toast.success(`Cleared ${count} item${count === 1 ? "" : "s"}`);
+    toast.success(t("tasks.cleared", { count }));
   };
 
   const filtered = useMemo(() => {
@@ -69,21 +71,21 @@ const Tasks = () => {
   return (
     <div className="page-container">
       <div className="flex items-baseline justify-between mb-1 animate-fade-in">
-        <h1 className="text-2xl font-serif font-semibold">To Do List</h1>
+        <h1 className="text-2xl font-serif font-semibold">{t("tasks.title")}</h1>
         {completed.length > 0 && (
           <button
             onClick={clearDone}
             className="text-xs text-muted-foreground hover:text-destructive transition-colors"
           >
-            Clear done
+            {t("tasks.clearDone")}
           </button>
         )}
       </div>
       <p className="text-sm text-muted-foreground mb-5 animate-fade-in">
-        {pending.length} to do
+        {t("tasks.count", { count: pending.length })}
       </p>
       <p className="text-xs text-muted-foreground mb-3 -mt-3 animate-fade-in">
-        Items with a date or time go on the calendar.
+        {t("tasks.calendarHint")}
       </p>
 
       {/* Add card */}
@@ -92,7 +94,7 @@ const Tasks = () => {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addTask()}
-          placeholder="What needs doing?"
+          placeholder={t("tasks.placeholder")}
           className="w-full bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus:outline-none"
         />
         <div className="flex gap-2 items-center">
@@ -101,8 +103,8 @@ const Tasks = () => {
             onChange={(e) => setNewAssignee(e.target.value)}
             className="flex-1 bg-background border border-border rounded-xl px-2 py-1.5 text-xs focus:outline-none"
           >
-            <option value="">Assign to…</option>
-            <option value="You">You</option>
+            <option value="">{t("tasks.assignTo")}</option>
+            <option value="You">{t("common.you")}</option>
             {memberNames.map((n) => (
               <option key={n} value={n}>
                 {n}
@@ -122,13 +124,13 @@ const Tasks = () => {
       {/* Filter chips */}
       <div className="flex gap-1.5 overflow-x-auto pb-3 mb-2 -mx-1 px-1 scrollbar-none">
         <FilterChip active={filter === "all"} onClick={() => setFilter("all")}>
-          All
+          {t("tasks.all")}
         </FilterChip>
         <FilterChip
           active={filter === "mine"}
           onClick={() => setFilter("mine")}
         >
-          Mine
+          {t("tasks.mine")}
         </FilterChip>
         {memberNames.map((n) => (
           <FilterChip
@@ -146,7 +148,7 @@ const Tasks = () => {
         <div className="text-center py-12 animate-fade-in">
           <div className="text-5xl mb-3">✅</div>
           <p className="text-sm text-muted-foreground">
-            All clear. Add an item above to get started.
+            {t("tasks.allClear")}
           </p>
         </div>
       )}
@@ -162,7 +164,7 @@ const Tasks = () => {
               <button
                 onClick={() => toggle(task.id)}
                 className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0 transition-colors hover:bg-primary/10"
-                aria-label="Mark done"
+                aria-label={t("tasks.markDone")}
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{task.title}</p>
@@ -170,7 +172,7 @@ const Tasks = () => {
                   <span className="text-xs flex items-center gap-1">
                     <span>{memberAvatar(task.assignedTo)}</span>
                     <span className="text-muted-foreground">
-                      {task.assignedTo}
+                      {task.assignedTo === "You" ? t("common.you") : task.assignedTo}
                     </span>
                   </span>
                 </div>
@@ -196,7 +198,7 @@ const Tasks = () => {
             <ChevronDown
               className={`w-3 h-3 transition-transform ${collapsedDone ? "-rotate-90" : ""}`}
             />
-            Done ({completed.length})
+            {t("tasks.done")} ({completed.length})
           </button>
           {!collapsedDone && (
             <div className="space-y-2">

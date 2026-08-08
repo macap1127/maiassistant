@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/auth";
 import { isNative, restorePurchases } from "@/lib/revenuecat";
+import { useTranslation } from "react-i18next";
+import { UI_LANGUAGES, setUiLanguage } from "@/i18n";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
   { value: "en", label: "English" },
@@ -49,6 +51,7 @@ const SettingsPage = () => {
   const { data, update } = useFamilyData();
   const { household, refresh } = useHousehold();
   const { logout } = useAuth();
+  const { t, i18n } = useTranslation();
   const [familyName, setFamilyName] = useState(data.familyName);
   const [saved, setSaved] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
@@ -142,12 +145,12 @@ const SettingsPage = () => {
 
   return (
     <div className="page-container">
-      <h1 className="text-2xl font-serif font-semibold mb-6 animate-fade-in">Settings</h1>
+      <h1 className="text-2xl font-serif font-semibold mb-6 animate-fade-in">{t("settings.title")}</h1>
 
       <div className="flex flex-col items-center mb-8 animate-slide-up">
         <img src={maiLogo} alt="Mia" className="w-20 h-20 rounded-3xl shadow-sm mb-3" />
         <p className="text-lg font-serif font-semibold">Mia</p>
-        <p className="text-xs text-muted-foreground">Your Family Assistant</p>
+        <p className="text-xs text-muted-foreground">{t("settings.subtitle")}</p>
       </div>
 
       <div className="space-y-4">
@@ -256,7 +259,7 @@ const SettingsPage = () => {
 
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up">
           <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-            Family Name
+            {t("settings.familyName")}
           </label>
           <input
             value={familyName}
@@ -269,11 +272,39 @@ const SettingsPage = () => {
 
         <PushNotificationCard />
 
+        <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "60ms" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Languages className="w-4 h-4 text-primary" />
+            <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+              {t("settings.appLanguage")}
+            </label>
+          </div>
+          <Select
+            value={i18n.resolvedLanguage ?? "en"}
+            onValueChange={async (val) => {
+              await setUiLanguage(val);
+              toast({ title: t("settings.languageUpdated"), description: t("settings.languageUpdatedDesc") });
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {UI_LANGUAGES.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground mt-2">
+            {t("settings.appLanguageHint")}
+          </p>
+        </div>
+
         <div className="bg-card rounded-2xl p-4 border border-border animate-slide-up" style={{ animationDelay: "80ms" }}>
           <div className="flex items-center gap-2 mb-3">
             <Languages className="w-4 h-4 text-primary" />
             <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-              Assistant Language
+              {t("settings.assistantLanguage")}
             </label>
           </div>
           <Select
@@ -302,7 +333,7 @@ const SettingsPage = () => {
             </SelectContent>
           </Select>
           <p className="text-xs text-muted-foreground mt-2">
-            Changes apply the next time you start a conversation with Mia.
+            {t("settings.assistantLanguageHint")}
           </p>
         </div>
 
@@ -312,7 +343,7 @@ const SettingsPage = () => {
           className="w-full bg-primary text-primary-foreground rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity animate-slide-up"
           style={{ animationDelay: "160ms" }}
         >
-          {saved ? "✓ Saved!" : "Save Changes"}
+          {saved ? t("common.saved") : t("common.saveChanges")}
         </button>
 
         <div className="flex flex-col items-center gap-2 pt-2 text-xs text-muted-foreground animate-slide-up" style={{ animationDelay: "200ms" }}>
@@ -380,6 +411,7 @@ type FamilyData = ReturnType<typeof useFamilyData>["data"];
 type FamilyUpdate = ReturnType<typeof useFamilyData>["update"];
 
 function FamilyMembersCard({ data, update }: { data: FamilyData; update: FamilyUpdate }) {
+  const { t } = useTranslation();
   const [showAdd, setShowAdd] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("Member");
@@ -404,7 +436,7 @@ function FamilyMembersCard({ data, update }: { data: FamilyData; update: FamilyU
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-primary" />
           <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-            Family Members
+            {t("settings.familyMembers")}
           </label>
         </div>
         <button

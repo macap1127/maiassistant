@@ -9,47 +9,49 @@ import maiLogo from "@/assets/mai-logo.png";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
 import { AIConsentModal } from "@/components/AIConsentModal";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useTranslation } from "react-i18next";
 
 
 const navItems = [
-  { path: "/dashboard", icon: Home, label: "Home" },
-  { path: "/grocery", icon: ShoppingCart, label: "Grocery" },
-  { path: "/tasks", icon: CheckSquare, label: "Tasks" },
-  { path: "/calendar", icon: CalendarDays, label: "Calendar" },
-  { path: "/receipts", icon: Receipt, label: "Receipts" },
+  { path: "/dashboard", icon: Home, labelKey: "nav.home" },
+  { path: "/grocery", icon: ShoppingCart, labelKey: "nav.grocery" },
+  { path: "/tasks", icon: CheckSquare, labelKey: "nav.tasks" },
+  { path: "/calendar", icon: CalendarDays, labelKey: "nav.calendar" },
+  { path: "/receipts", icon: Receipt, labelKey: "nav.receipts" },
 ];
 
 const menuItems = [
-  { path: "/dashboard", icon: Home, label: "Home" },
-  { path: "/grocery", icon: ShoppingCart, label: "Grocery List" },
-  { path: "/tasks", icon: CheckSquare, label: "To Do List" },
-  { path: "/calendar", icon: CalendarDays, label: "Calendar" },
-  { path: "/receipts", icon: Receipt, label: "Receipts" },
-  { path: "/family", icon: Users, label: "Family" },
-  { path: "/about", icon: Sparkles, label: "About MIA" },
-  { path: "/settings", icon: Settings, label: "Settings" },
-  { path: "/pricing", icon: CreditCard, label: "Pricing" },
+  { path: "/dashboard", icon: Home, labelKey: "nav.home" },
+  { path: "/grocery", icon: ShoppingCart, labelKey: "nav.groceryList" },
+  { path: "/tasks", icon: CheckSquare, labelKey: "nav.todoList" },
+  { path: "/calendar", icon: CalendarDays, labelKey: "nav.calendar" },
+  { path: "/receipts", icon: Receipt, labelKey: "nav.receipts" },
+  { path: "/family", icon: Users, labelKey: "nav.family" },
+  { path: "/about", icon: Sparkles, labelKey: "nav.aboutMia" },
+  { path: "/settings", icon: Settings, labelKey: "nav.settings" },
+  { path: "/pricing", icon: CreditCard, labelKey: "nav.pricing" },
 ];
 
-const titleFor = (path: string) => {
+const titleKeyFor = (path: string) => {
   const map: Record<string, string> = {
-    "/dashboard": "Home",
-    "/grocery": "Grocery",
-    "/tasks": "To Do",
-    "/calendar": "Calendar",
-    "/receipts": "Receipts",
-    "/family": "Family",
-    "/about": "About",
-    "/settings": "Settings",
-    "/pricing": "Pricing",
+    "/dashboard": "nav.home",
+    "/grocery": "nav.grocery",
+    "/tasks": "nav.todo",
+    "/calendar": "nav.calendar",
+    "/receipts": "nav.receipts",
+    "/family": "nav.family",
+    "/about": "nav.about",
+    "/settings": "nav.settings",
+    "/pricing": "nav.pricing",
   };
-  return map[path] ?? "MIA";
+  return map[path];
 };
 
 const AppLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading, logout } = useAuth();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState<null | { householdId: string }>(null);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
@@ -92,7 +94,7 @@ const AppLayout = () => {
   if (loading || (user && checkingOnboarding)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-sm text-muted-foreground animate-pulse">Loading…</p>
+        <p className="text-sm text-muted-foreground animate-pulse">{t("common.loading")}</p>
       </div>
     );
   }
@@ -110,7 +112,8 @@ const AppLayout = () => {
     );
   }
 
-  const pageTitle = titleFor(location.pathname);
+  const titleKey = titleKeyFor(location.pathname);
+  const pageTitle = titleKey ? t(titleKey) : "MIA";
 
 
   return (
@@ -139,12 +142,12 @@ const AppLayout = () => {
                 </div>
                 <div>
                   <p className="font-display font-semibold text-base text-gradient">MIA</p>
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">AI Assistant</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{t("nav.aiAssistant")}</p>
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto overscroll-contain">
                 <nav className="p-3 space-y-1">
-                  {menuItems.map(({ path, icon: Icon, label }) => {
+                  {menuItems.map(({ path, icon: Icon, labelKey }) => {
                     const active = location.pathname === path;
                     return (
                       <button
@@ -157,33 +160,33 @@ const AppLayout = () => {
                         }`}
                       >
                         <Icon className="w-4.5 h-4.5" strokeWidth={active ? 2.5 : 1.8} />
-                        {label}
+                        {t(labelKey)}
                       </button>
                     );
                   })}
                 </nav>
                 <div className="border-t border-border pt-3 px-3 pb-3 space-y-1">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground/70 px-3 mb-1">Legal & Support</p>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground/70 px-3 mb-1">{t("nav.legalSupport")}</p>
                   <button
                     onClick={() => { navigate("/privacy"); setOpen(false); }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
                   >
                     <Shield className="w-4.5 h-4.5" />
-                    Privacy Policy
+                    {t("nav.privacy")}
                   </button>
                   <button
                     onClick={() => { navigate("/terms"); setOpen(false); }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
                   >
                     <FileText className="w-4.5 h-4.5" />
-                    Terms & Conditions
+                    {t("nav.terms")}
                   </button>
                   <a
                     href="mailto:support@miafamilyassistant.com"
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-foreground hover:bg-muted transition-colors"
                   >
                     <Mail className="w-4.5 h-4.5" />
-                    Contact Support
+                    {t("nav.contactSupport")}
                   </a>
                 </div>
               </div>
@@ -196,10 +199,10 @@ const AppLayout = () => {
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                 >
                   <LogOut className="w-4.5 h-4.5" />
-                  Sign out
+                  {t("nav.signOut")}
                 </button>
                 <p className="text-xs text-center text-muted-foreground/70 leading-relaxed">
-                  © 2026 Mia Family Assistant.<br />All rights reserved.
+                  © 2026 Mia Family Assistant.<br />{t("nav.rights")}
                 </p>
               </div>
             </SheetContent>
@@ -227,13 +230,13 @@ const AppLayout = () => {
         style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
         <div className="max-w-lg mx-auto flex items-center justify-around h-[var(--nav-height)] px-1">
-          {navItems.map(({ path, icon: Icon, label }) => {
+          {navItems.map(({ path, icon: Icon, labelKey }) => {
             const active = location.pathname === path;
             return (
               <button
                 key={path}
                 onClick={() => navigate(path)}
-                aria-label={label}
+                aria-label={t(labelKey)}
                 className={`relative flex flex-col items-center gap-1 px-1.5 py-2 min-h-11 rounded-xl transition-all ${
                   active
                     ? "text-primary"
@@ -244,7 +247,7 @@ const AppLayout = () => {
                   <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gradient-brand shadow-[0_0_12px_hsl(var(--primary))]" />
                 )}
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 1.8} />
-                <span className="text-[11px] uppercase tracking-wide font-medium whitespace-nowrap">{label}</span>
+                <span className="text-[11px] uppercase tracking-wide font-medium whitespace-nowrap">{t(labelKey)}</span>
               </button>
             );
           })}
