@@ -450,5 +450,236 @@
     "title": "404",
     "message": "哎呀！页面未找到",
     "returnHome": "返回主页"
+  },
+  "landing": {
+    "brand": "Mia 家庭助手",
+    "loading": "加载中…",
+    "hero": {
+      "title": "一个应用管理您家庭的购物、日历、任务和提醒",
+      "subtitle": "终于可以在一个地方管理好整个家庭。共享列表、日程、家务和 AI 帮助——一切协同运作。",
+      "startTrial": "开始 7 天免费试用",
+      "signIn": "登录",
+      "privacyNote": "您的数据保持私密，绝不出售。"
+    },
+    "screenshotsSection": {
+      "eyebrow": "查看应用",
+      "title": "为家庭真实的运作方式而设计"
+    },
+    "benefits": {
+      "voiceFirst": {
+        "title": "语音优先",
+        "body": "添加购物清单、安排活动、查看您的一天——只需说话即可。"
+      },
+      "households": {
+        "title": "为家庭而生",
+        "body": "整个家庭共享一个大脑，人人保持同步。"
+      },
+      "calendar": {
+        "title": "智能日历",
+        "body": "AI 从截图和 PDF 中导入活动，并在开始前提醒您。"
+      },
+      "todos": {
+        "title": "共享待办事项",
+        "body": "分配任务、跟踪进度，共同减轻心理负担。"
+      },
+      "push": {
+        "title": "推送通知",
+        "body": "每日摘要和提前30分钟的活动提醒直接送达您的手机。"
+      },
+      "receipts": {
+        "title": "收据跟踪",
+        "body": "拍摄收据照片，按家庭整理支出记录。"
+      }
+    },
+    "screenshots": {
+      "home": "主页",
+      "meetMia": "认识 MIA",
+      "groceryList": "购物清单",
+      "receipts": "收据",
+      "calendar": "日历"
+    },
+    "voiceSection": {
+      "eyebrow": "语音驱动",
+      "title": "只需说出您家庭的需求",
+      "subtitle": "MIA 倾听，然后帮您安排好一切",
+      "description": "在做饭、开车或收拾孩子时轻点麦克风。添加购物清单、创建日历活动、设置任务、询问今天的安排——无需打字。",
+      "items": [
+        "向购物清单添加项目",
+        "通过语音创建日历活动",
+        "设置提醒并分配任务",
+        "询问今天的日程安排"
+      ]
+    },
+    "featuresSection": {
+      "eyebrow": "功能",
+      "title": "您家庭所需的一切"
+    },
+    "ctaSection": {
+      "title": "准备好让您的家庭井井有条了吗？",
+      "subtitle": "创建您的免费账户，几分钟内邀请您的家人加入。",
+      "privacyNote": "您的数据是私密的，绝不出售。"
+    },
+    "footer": {
+      "questions": "有疑问？发送邮件至",
+      "privacyPolicy": "隐私政策",
+      "terms": "服务条款",
+      "copyright": "© 2026 Mia 家庭助手。保留所有权利。"
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "认识 MIA",
+      "title": "您家庭的 AI 副驾驶",
+      "subtitle": "MIA 是全天候在线的助手，将家庭生活的混乱悄然转变为轻松美好的体验。与它交谈，信任它，重新找回您的周末。"
+    },
+    "features": {
+      "talkToMia": {
+        "title": "与 MIA 对话",
+        "body": "只需说话——添加购物清单、安排活动或查看当天情况。MIA 倾听、理解并在几秒钟内采取行动。"
+      },
+      "groceryList": {
+        "title": "共享购物清单",
+        "body": "一个智能列表，家中每个人都可以随时随地更新——通过语音或点击。"
+      },
+      "todos": {
+        "title": "待办事项，搞定",
+        "body": "分配任务、跟踪进度，最终摆脱心理负担。MIA 让全家保持同步。"
+      },
+      "calendar": {
+        "title": "家庭日历",
+        "body": "双向语音同步、AI 从 PDF 和截图导入，以及真正准时送达的温和提醒。"
+      },
+      "receipts": {
+        "title": "收据，一目了然",
+        "body": "拍张照——MIA 提取商品、总额和类别。告别鞋盒堆积。"
+      },
+      "households": {
+        "title": "为家庭而生",
+        "body": "邀请全家人。人人通过一个共享的大脑保持联系——以及一个安静的声音。"
+      }
+    },
+    "privacyCallout": "您家庭的数据始终归您所有。传输加密，按家庭隔离，绝不出售。",
+    "poweredBy": {
+      "label": "技术支持",
+      "tagline": "为最重要的人量身定制的顶级智能。",
+      "questions": "有疑问？发送邮件至"
+    },
+    "copyright": "© 2026 Mia 家庭助手。保留所有权利。"
+  },
+  "aiConsent": {
+    "title": "AI 功能与您的数据",
+    "subtitle": "继续之前请查看",
+    "intro": "MIA 使用第三方 AI 服务来支持语音助手、收据扫描、日历导入和智能建议。在向这些服务发送您的任何内容之前，我们需要您的许可。",
+    "whatWeSend": {
+      "title": "我们发送的内容",
+      "voice": "您点击麦克风时录制的语音音频",
+      "photos": "您上传的收据、日历或笔记照片",
+      "text": "您输入的文本提示、购物项目、任务和活动"
+    },
+    "whoReceives": {
+      "title": "谁会接收数据",
+      "google": "（Gemini AI 模型，通过 Lovable AI Gateway 传输）— 文本、图像、分类",
+      "elevenLabs": "— 语音助手的语音转文本和文本转语音"
+    },
+    "processingNote": "这些提供商仅为向 MIA 返回 AI 响应而处理您的数据，并依合同义务保护数据。我们绝不出售您的数据。",
+    "contentModeration": "令人反感、非法或滥用性内容将被过滤且不予容忍。",
+    "reportAbusePrefix": "通过以下方式举报滥用或屏蔽用户",
+    "reportAbuseSuffix": "。举报将在 24 小时内审核。",
+    "detailsPrefix": "完整详情请参阅我们的",
+    "privacyPolicy": "隐私政策",
+    "and": "和",
+    "terms": "条款",
+    "declineNote": "。如果您拒绝，MIA 将为您退出登录，因为其功能依赖于这些 AI 服务。",
+    "decline": "拒绝并退出登录",
+    "accept": "接受并继续"
+  },
+  "logins": {
+    "title": "登录账户",
+    "memberCountOnTier": "{{count}} / {{limit}}（{{label}} 套餐）",
+    "description": "可以登录此家庭账户的人员。",
+    "you": "您",
+    "aFamilyMember": "一位家庭成员",
+    "iAm": "我是…",
+    "chooseProfile": "选择您的档案…",
+    "linkHint": "在您使用语音时告诉 Mia 是哪位家庭成员在说话。",
+    "pendingInvites": "待处理的邀请",
+    "anyEmail": "任意邮箱",
+    "upgradeToAddMore": "升级以添加更多登录账户",
+    "emailPlaceholder": "邮箱（可选）",
+    "invite": "邀请",
+    "aria": {
+      "remove": "移除",
+      "copyLink": "复制链接",
+      "revoke": "撤销"
+    },
+    "toast": {
+      "limitReachedTitle": "已达到登录账户上限",
+      "limitReachedDesc": "您的 {{label}} 套餐允许 {{count}} 个登录账户。升级以添加更多。",
+      "couldntCreateInviteTitle": "无法创建邀请",
+      "emailFailedTitle": "邀请已创建，但邮件发送失败",
+      "emailFailedDesc": "{{message}}。链接已改为复制到剪贴板。",
+      "inviteSentTitle": "邀请已发送",
+      "inviteSentDesc": "邮件已发送至 {{email}}。",
+      "inviteLinkCopiedTitle": "邀请链接已复制",
+      "couldntLinkProfileTitle": "无法关联档案",
+      "profileLinkedTitle": "档案已关联",
+      "profileLinkedDesc": "现在当您说话时，Mia 会知道是您。",
+      "linkCopiedTitle": "链接已复制"
+    }
+  },
+  "push": {
+    "title": "推送通知",
+    "description": "将任务和活动提醒直接发送到您的手机。",
+    "mobileOnlyNote": "仅在已安装的移动应用中可用。请在您的 Android 或 iOS 设备上打开 Mia 以启用。",
+    "working": "处理中…",
+    "disable": "禁用推送通知",
+    "enable": "启用推送通知",
+    "whatYoullReceive": "您将收到的内容",
+    "toast": {
+      "mobileRequiredTitle": "需要移动应用",
+      "mobileRequiredDesc": "推送通知在已安装的 Android/iOS 应用中生效。",
+      "permissionNeededTitle": "需要权限",
+      "permissionNeededDesc": "请在手机设置中允许 Mia 发送通知，然后重试。",
+      "enabledTitle": "推送通知已启用",
+      "disabledTitle": "推送通知已禁用",
+      "errorTitle": "出了点问题",
+      "couldntSaveTitle": "无法保存"
+    }
+  },
+  "voice": {
+    "tapToPrepare": "点击麦克风以准备 Mia。",
+    "status": {
+      "listening": "正在聆听…",
+      "preparing": "正在准备 Mia…请稍后再次点击麦克风。",
+      "readyTapAgain": "Mia 已准备好。再次点击麦克风开始交谈。",
+      "connecting": "正在连接 Mia…",
+      "noAccess": "您目前无法使用语音功能。"
+    },
+    "quota": {
+      "minutes": "{{used}}/{{limit}} 分钟"
+    },
+    "aria": {
+      "endConversation": "结束与 Mia 的对话",
+      "talkToMia": "与 Mia 交谈（拖动以移动）"
+    },
+    "toast": {
+      "couldntAddTodoTitle": "无法添加待办事项",
+      "addedToTodoTitle": "已添加到待办清单",
+      "addedIngredientsTitle": "已添加 {{dish}} 的食材",
+      "couldntAddEventTitle": "无法添加活动",
+      "eventAddedTitle": "活动已添加",
+      "connectedTitle": "已连接到 Mia",
+      "connectedDesc": "开始说话…",
+      "disconnectedTitle": "Mia 已断开连接",
+      "disconnectedDroppedDesc": "{{seconds}} 秒后断开。点击麦克风重新连接。",
+      "disconnectedReconnectDesc": "点击麦克风重新连接。",
+      "conversationEnded": "对话已结束",
+      "connectionErrorTitle": "连接错误",
+      "voiceUnavailableTitle": "语音功能不可用",
+      "readyTitle": "Mia 已准备好",
+      "readyDesc": "再次点击麦克风开始交谈。",
+      "couldntPrepareTitle": "无法准备 Mia",
+      "couldntStartTitle": "无法启动 Mia"
+    }
   }
 }

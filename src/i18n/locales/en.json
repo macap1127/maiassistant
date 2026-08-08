@@ -457,5 +457,236 @@
     "title": "404",
     "message": "Oops! Page not found",
     "returnHome": "Return to Home"
+  },
+  "landing": {
+    "brand": "Mia Family Assistant",
+    "loading": "Loading…",
+    "hero": {
+      "title": "One app for your family's groceries, calendar, tasks, and reminders",
+      "subtitle": "Finally keep your whole family organized in one place. Shared lists, schedules, chores, and AI help — all working together.",
+      "startTrial": "Start 7-Day Free Trial",
+      "signIn": "Sign in",
+      "privacyNote": "Your data stays private and is never sold."
+    },
+    "screenshotsSection": {
+      "eyebrow": "See the app",
+      "title": "Built for the way families actually work"
+    },
+    "benefits": {
+      "voiceFirst": {
+        "title": "Voice-first",
+        "body": "Add groceries, schedule events, and check your day — just by talking."
+      },
+      "households": {
+        "title": "Built for households",
+        "body": "One shared brain for the whole family. Everyone stays in sync."
+      },
+      "calendar": {
+        "title": "Smart calendar",
+        "body": "AI imports events from screenshots and PDFs, then reminds you before they start."
+      },
+      "todos": {
+        "title": "Shared to-do's",
+        "body": "Assign tasks, track progress, and clear the mental load together."
+      },
+      "push": {
+        "title": "Push notifications",
+        "body": "Daily digests and 30-minute event reminders delivered straight to your phone."
+      },
+      "receipts": {
+        "title": "Receipt tracking",
+        "body": "Snap photos of receipts and keep spending records organized by household."
+      }
+    },
+    "screenshots": {
+      "home": "Home",
+      "meetMia": "Meet MIA",
+      "groceryList": "Grocery List",
+      "receipts": "Receipts",
+      "calendar": "Calendar"
+    },
+    "voiceSection": {
+      "eyebrow": "Voice powered",
+      "title": "Just say what your family needs",
+      "subtitle": "MIA listens, then gets it organized",
+      "description": "Tap the mic while you cook, drive, or pack the kids up. Add groceries, create calendar events, set tasks, and ask what's happening today — without typing a thing.",
+      "items": [
+        "Add items to the grocery list",
+        "Create calendar events by voice",
+        "Set reminders and assign tasks",
+        "Ask what's scheduled today"
+      ]
+    },
+    "featuresSection": {
+      "eyebrow": "Features",
+      "title": "Everything your family needs"
+    },
+    "ctaSection": {
+      "title": "Ready to get your family organized?",
+      "subtitle": "Create your free account and invite your family in minutes.",
+      "privacyNote": "Your data is private and never sold."
+    },
+    "footer": {
+      "questions": "Questions? Email",
+      "privacyPolicy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "copyright": "© 2026 Mia Family Assistant. All rights reserved."
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "Meet MIA",
+      "title": "Your Family's AI Co-Pilot",
+      "subtitle": "MIA is the always-on assistant that turns the chaos of family life into something quietly, beautifully effortless. Speak to it. Trust it. Reclaim your weekends."
+    },
+    "features": {
+      "talkToMia": {
+        "title": "Talk to MIA",
+        "body": "Just speak — add groceries, schedule events, or check in on the day. MIA listens, understands, and acts in seconds."
+      },
+      "groceryList": {
+        "title": "Shared Grocery List",
+        "body": "A single, smart list that everyone in the household can update from anywhere — voice or tap."
+      },
+      "todos": {
+        "title": "To-Do, Done",
+        "body": "Assign tasks, track progress, and finally clear the mental load. MIA keeps the family in sync."
+      },
+      "calendar": {
+        "title": "Family Calendar",
+        "body": "Two-way voice sync, AI imports from PDFs and screenshots, and gentle reminders that actually land on time."
+      },
+      "receipts": {
+        "title": "Receipts, Decoded",
+        "body": "Snap a photo — MIA extracts the items, totals, and categories. Goodbye shoebox."
+      },
+      "households": {
+        "title": "Built for Households",
+        "body": "Invite the whole family. Everyone stays connected with one shared brain — and one quiet voice."
+      }
+    },
+    "privacyCallout": "Your family's data stays yours. Encrypted in transit, isolated by household, and never sold.",
+    "poweredBy": {
+      "label": "Powered by",
+      "tagline": "Premium intelligence, tuned for the people who matter most.",
+      "questions": "Questions? Email"
+    },
+    "copyright": "© 2026 Mia Family Assistant. All rights reserved."
+  },
+  "aiConsent": {
+    "title": "AI features & your data",
+    "subtitle": "Please review before continuing",
+    "intro": "MIA uses third-party AI services to power the voice assistant, receipt scanning, calendar imports and smart suggestions. We need your permission before sending any of your content to those services.",
+    "whatWeSend": {
+      "title": "What we send",
+      "voice": "The voice audio you record when you tap the microphone",
+      "photos": "Photos of receipts, calendars, or notes you upload",
+      "text": "Text prompts, grocery items, tasks and events you type"
+    },
+    "whoReceives": {
+      "title": "Who receives it",
+      "google": "(Gemini AI models, routed through the Lovable AI Gateway) — text, images, categorization",
+      "elevenLabs": "— voice assistant speech-to-text and text-to-speech"
+    },
+    "processingNote": "These providers process your data only to return an AI response to MIA and are contractually required to protect it. We never sell your data.",
+    "contentModeration": "Objectionable, illegal, or abusive content is filtered and not tolerated.",
+    "reportAbusePrefix": "Report abuse or block users via",
+    "reportAbuseSuffix": ". Reports are reviewed within 24 hours.",
+    "detailsPrefix": "Full details are in our",
+    "privacyPolicy": "Privacy Policy",
+    "and": "and",
+    "terms": "Terms",
+    "declineNote": ". If you decline, MIA will sign you out because its features rely on these AI services.",
+    "decline": "Decline & sign out",
+    "accept": "Accept & Continue"
+  },
+  "logins": {
+    "title": "Logins",
+    "memberCountOnTier": "{{count}} / {{limit}} on {{label}}",
+    "description": "People who can sign in to this household.",
+    "you": "You",
+    "aFamilyMember": "A family member",
+    "iAm": "I am…",
+    "chooseProfile": "Choose your profile…",
+    "linkHint": "Tells Mia which family member is talking when you use voice.",
+    "pendingInvites": "Pending invites",
+    "anyEmail": "any email",
+    "upgradeToAddMore": "Upgrade to add more logins",
+    "emailPlaceholder": "Email (optional)",
+    "invite": "Invite",
+    "aria": {
+      "remove": "Remove",
+      "copyLink": "Copy link",
+      "revoke": "Revoke"
+    },
+    "toast": {
+      "limitReachedTitle": "Login limit reached",
+      "limitReachedDesc": "Your {{label}} plan allows {{count}} login(s). Upgrade to add more.",
+      "couldntCreateInviteTitle": "Couldn't create invite",
+      "emailFailedTitle": "Invite created, but email failed",
+      "emailFailedDesc": "{{message}}. Link copied to clipboard instead.",
+      "inviteSentTitle": "Invite sent",
+      "inviteSentDesc": "Email sent to {{email}}.",
+      "inviteLinkCopiedTitle": "Invite link copied",
+      "couldntLinkProfileTitle": "Couldn't link profile",
+      "profileLinkedTitle": "Profile linked",
+      "profileLinkedDesc": "Mia will now know it's you when you talk.",
+      "linkCopiedTitle": "Link copied"
+    }
+  },
+  "push": {
+    "title": "Push Notifications",
+    "description": "Get reminders for tasks and events delivered straight to your phone.",
+    "mobileOnlyNote": "Available in the installed mobile app. Open Mia on your Android or iOS device to enable.",
+    "working": "Working…",
+    "disable": "Disable push notifications",
+    "enable": "Enable push notifications",
+    "whatYoullReceive": "What you'll receive",
+    "toast": {
+      "mobileRequiredTitle": "Mobile app required",
+      "mobileRequiredDesc": "Push notifications work in the installed Android/iOS app.",
+      "permissionNeededTitle": "Permission needed",
+      "permissionNeededDesc": "Allow notifications for Mia in your phone settings, then try again.",
+      "enabledTitle": "Push notifications enabled",
+      "disabledTitle": "Push notifications disabled",
+      "errorTitle": "Something went wrong",
+      "couldntSaveTitle": "Couldn't save"
+    }
+  },
+  "voice": {
+    "tapToPrepare": "Tap the microphone to prepare Mia.",
+    "status": {
+      "listening": "Listening…",
+      "preparing": "Preparing Mia… tap the microphone again in a moment.",
+      "readyTapAgain": "Mia is ready. Tap the microphone again to start talking.",
+      "connecting": "Connecting to Mia…",
+      "noAccess": "You don't have access to voice right now."
+    },
+    "quota": {
+      "minutes": "{{used}}/{{limit}} min"
+    },
+    "aria": {
+      "endConversation": "End conversation with Mia",
+      "talkToMia": "Talk to Mia (drag to move)"
+    },
+    "toast": {
+      "couldntAddTodoTitle": "Couldn't add to-do",
+      "addedToTodoTitle": "Added to To Do List",
+      "addedIngredientsTitle": "Added {{dish}} ingredients",
+      "couldntAddEventTitle": "Couldn't add event",
+      "eventAddedTitle": "Event added",
+      "connectedTitle": "Connected to Mia",
+      "connectedDesc": "Start speaking…",
+      "disconnectedTitle": "Mia disconnected",
+      "disconnectedDroppedDesc": "Dropped after {{seconds}}s. Tap the mic to reconnect.",
+      "disconnectedReconnectDesc": "Tap the microphone to reconnect.",
+      "conversationEnded": "Conversation ended",
+      "connectionErrorTitle": "Connection error",
+      "voiceUnavailableTitle": "Voice unavailable",
+      "readyTitle": "Mia is ready",
+      "readyDesc": "Tap the microphone again to start talking.",
+      "couldntPrepareTitle": "Couldn't prepare Mia",
+      "couldntStartTitle": "Couldn't start Mia"
+    }
   }
 }

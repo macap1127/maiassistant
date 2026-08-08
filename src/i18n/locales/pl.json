@@ -457,5 +457,236 @@
     "title": "404",
     "message": "Ups! Strona nie została znaleziona",
     "returnHome": "Wróć do strony głównej"
+  },
+  "landing": {
+    "brand": "Mia Asystent Rodzinny",
+    "loading": "Ładowanie…",
+    "hero": {
+      "title": "Jedna aplikacja na zakupy, kalendarz, zadania i przypomnienia Twojej rodziny",
+      "subtitle": "Wreszcie zorganizuj całą rodzinę w jednym miejscu. Wspólne listy, harmonogramy, obowiązki domowe i pomoc AI — wszystko działa razem.",
+      "startTrial": "Rozpocznij 7-dniowy bezpłatny okres próbny",
+      "signIn": "Zaloguj się",
+      "privacyNote": "Twoje dane pozostają prywatne i nigdy nie są sprzedawane."
+    },
+    "screenshotsSection": {
+      "eyebrow": "Zobacz aplikację",
+      "title": "Stworzona dla sposobu, w jaki naprawdę funkcjonują rodziny"
+    },
+    "benefits": {
+      "voiceFirst": {
+        "title": "Najpierw głos",
+        "body": "Dodawaj zakupy, planuj wydarzenia i sprawdzaj swój dzień — po prostu mówiąc."
+      },
+      "households": {
+        "title": "Stworzone dla gospodarstw domowych",
+        "body": "Jeden wspólny mózg dla całej rodziny. Wszyscy pozostają zsynchronizowani."
+      },
+      "calendar": {
+        "title": "Inteligentny kalendarz",
+        "body": "AI importuje wydarzenia ze zrzutów ekranu i plików PDF, a następnie przypomina o nich, zanim się zaczną."
+      },
+      "todos": {
+        "title": "Wspólne listy zadań",
+        "body": "Przydzielaj zadania, śledź postępy i wspólnie odciążajcie umysł."
+      },
+      "push": {
+        "title": "Powiadomienia push",
+        "body": "Codzienne podsumowania i przypomnienia o wydarzeniach 30 minut wcześniej, prosto na telefon."
+      },
+      "receipts": {
+        "title": "Śledzenie paragonów",
+        "body": "Rób zdjęcia paragonów i utrzymuj wydatki uporządkowane według gospodarstwa domowego."
+      }
+    },
+    "screenshots": {
+      "home": "Strona główna",
+      "meetMia": "Poznaj MIA",
+      "groceryList": "Lista zakupów",
+      "receipts": "Paragony",
+      "calendar": "Kalendarz"
+    },
+    "voiceSection": {
+      "eyebrow": "Napędzane głosem",
+      "title": "Po prostu powiedz, czego potrzebuje Twoja rodzina",
+      "subtitle": "MIA słucha, a potem to organizuje",
+      "description": "Stuknij mikrofon podczas gotowania, jazdy samochodem lub pakowania dzieci. Dodawaj zakupy, twórz wydarzenia w kalendarzu, ustawiaj zadania i pytaj, co się dzisiaj dzieje — bez pisania.",
+      "items": [
+        "Dodawaj produkty do listy zakupów",
+        "Twórz wydarzenia w kalendarzu za pomocą głosu",
+        "Ustawiaj przypomnienia i przydzielaj zadania",
+        "Pytaj, co jest zaplanowane na dziś"
+      ]
+    },
+    "featuresSection": {
+      "eyebrow": "Funkcje",
+      "title": "Wszystko, czego potrzebuje Twoja rodzina"
+    },
+    "ctaSection": {
+      "title": "Gotowy, aby zorganizować swoją rodzinę?",
+      "subtitle": "Załóż bezpłatne konto i zaproś rodzinę w kilka minut.",
+      "privacyNote": "Twoje dane są prywatne i nigdy nie są sprzedawane."
+    },
+    "footer": {
+      "questions": "Pytania? Napisz na",
+      "privacyPolicy": "Polityka prywatności",
+      "terms": "Warunki korzystania z usługi",
+      "copyright": "© 2026 Mia Asystent Rodzinny. Wszelkie prawa zastrzeżone."
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "Poznaj MIA",
+      "title": "Cyfrowy Copilot Twojej rodziny",
+      "subtitle": "MIA to zawsze aktywny asystent, który zamienia chaos życia rodzinnego w coś cicho i pięknie bezwysiłkowego. Rozmawiaj z nim. Zaufaj mu. Odzyskaj swoje weekendy."
+    },
+    "features": {
+      "talkToMia": {
+        "title": "Porozmawiaj z MIA",
+        "body": "Po prostu mów — dodawaj zakupy, planuj wydarzenia lub sprawdzaj dzień. MIA słucha, rozumie i działa w kilka sekund."
+      },
+      "groceryList": {
+        "title": "Wspólna lista zakupów",
+        "body": "Jedna, inteligentna lista, którą każdy w gospodarstwie domowym może aktualizować z dowolnego miejsca — głosem lub dotykiem."
+      },
+      "todos": {
+        "title": "Zadania zrobione",
+        "body": "Przydzielaj zadania, śledź postępy i wreszcie odciąż umysł. MIA utrzymuje synchronizację rodziny."
+      },
+      "calendar": {
+        "title": "Kalendarz rodzinny",
+        "body": "Dwukierunkowa synchronizacja głosowa, importy AI z plików PDF i zrzutów ekranu oraz delikatne przypomnienia, które docierają na czas."
+      },
+      "receipts": {
+        "title": "Paragony rozszyfrowane",
+        "body": "Zrób zdjęcie — MIA wyodrębnia produkty, sumy i kategorie. Żegnaj, pudełko po butach."
+      },
+      "households": {
+        "title": "Stworzone dla gospodarstw domowych",
+        "body": "Zaproś całą rodzinę. Wszyscy pozostają połączeni jednym wspólnym mózgiem — i jednym cichym głosem."
+      }
+    },
+    "privacyCallout": "Dane Twojej rodziny pozostają Twoje. Szyfrowane w trakcie przesyłania, izolowane według gospodarstwa domowego i nigdy nie sprzedawane.",
+    "poweredBy": {
+      "label": "Napędzane przez",
+      "tagline": "Najwyższej klasy inteligencja, dostrojona dla osób, na których zależy Ci najbardziej.",
+      "questions": "Pytania? Napisz na"
+    },
+    "copyright": "© 2026 Mia Asystent Rodzinny. Wszelkie prawa zastrzeżone."
+  },
+  "aiConsent": {
+    "title": "Funkcje AI i Twoje dane",
+    "subtitle": "Prosimy o zapoznanie się przed kontynuowaniem",
+    "intro": "MIA korzysta z usług AI stron trzecich, aby zasilać asystenta głosowego, skanowanie paragonów, importy kalendarza i inteligentne sugestie. Potrzebujemy Twojej zgody przed wysłaniem jakiejkolwiek treści do tych usług.",
+    "whatWeSend": {
+      "title": "Co wysyłamy",
+      "voice": "Nagranie głosu, które rejestrujesz po stuknięciu mikrofonu",
+      "photos": "Zdjęcia paragonów, kalendarzy lub notatek, które przesyłasz",
+      "text": "Tekstowe polecenia, produkty na liście zakupów, zadania i wydarzenia, które wpisujesz"
+    },
+    "whoReceives": {
+      "title": "Kto to otrzymuje",
+      "google": "(modele AI Gemini, przekazywane przez Lovable AI Gateway) — tekst, obrazy, kategoryzacja",
+      "elevenLabs": "— zamiana mowy na tekst i tekstu na mowę dla asystenta głosowego"
+    },
+    "processingNote": "Ci dostawcy przetwarzają Twoje dane wyłącznie w celu zwrócenia odpowiedzi AI do MIA i są umownie zobowiązani do ich ochrony. Nigdy nie sprzedajemy Twoich danych.",
+    "contentModeration": "Treści obraźliwe, nielegalne lub nadużywające są filtrowane i niedopuszczalne.",
+    "reportAbusePrefix": "Zgłoś nadużycie lub zablokuj użytkowników za pomocą",
+    "reportAbuseSuffix": ". Zgłoszenia są rozpatrywane w ciągu 24 godzin.",
+    "detailsPrefix": "Pełne szczegóły znajdziesz w naszej",
+    "privacyPolicy": "Polityce prywatności",
+    "and": "i",
+    "terms": "Warunkach",
+    "declineNote": ". Jeśli odmówisz, MIA wyloguje Cię, ponieważ jej funkcje opierają się na tych usługach AI.",
+    "decline": "Odmów i wyloguj się",
+    "accept": "Zaakceptuj i kontynuuj"
+  },
+  "logins": {
+    "title": "Loginy",
+    "memberCountOnTier": "{{count}} / {{limit}} w planie {{label}}",
+    "description": "Osoby, które mogą się zalogować do tego gospodarstwa domowego.",
+    "you": "Ty",
+    "aFamilyMember": "Członek rodziny",
+    "iAm": "Jestem…",
+    "chooseProfile": "Wybierz swój profil…",
+    "linkHint": "Informuje Mia, który członek rodziny mówi, gdy używasz głosu.",
+    "pendingInvites": "Oczekujące zaproszenia",
+    "anyEmail": "dowolny e-mail",
+    "upgradeToAddMore": "Ulepsz plan, aby dodać więcej loginów",
+    "emailPlaceholder": "E-mail (opcjonalnie)",
+    "invite": "Zaproś",
+    "aria": {
+      "remove": "Usuń",
+      "copyLink": "Kopiuj link",
+      "revoke": "Odwołaj"
+    },
+    "toast": {
+      "limitReachedTitle": "Osiągnięto limit logowań",
+      "limitReachedDesc": "Twój plan {{label}} pozwala na {{count}} login(ów). Ulepsz plan, aby dodać więcej.",
+      "couldntCreateInviteTitle": "Nie udało się utworzyć zaproszenia",
+      "emailFailedTitle": "Zaproszenie utworzone, ale e-mail się nie powiódł",
+      "emailFailedDesc": "{{message}}. Zamiast tego skopiowano link do schowka.",
+      "inviteSentTitle": "Zaproszenie wysłane",
+      "inviteSentDesc": "E-mail wysłany do {{email}}.",
+      "inviteLinkCopiedTitle": "Link zaproszenia skopiowany",
+      "couldntLinkProfileTitle": "Nie udało się połączyć profilu",
+      "profileLinkedTitle": "Profil połączony",
+      "profileLinkedDesc": "Mia będzie teraz wiedziała, że to Ty, gdy mówisz.",
+      "linkCopiedTitle": "Link skopiowany"
+    }
+  },
+  "push": {
+    "title": "Powiadomienia push",
+    "description": "Otrzymuj przypomnienia o zadaniach i wydarzeniach prosto na telefon.",
+    "mobileOnlyNote": "Dostępne w zainstalowanej aplikacji mobilnej. Otwórz Mia na urządzeniu Android lub iOS, aby włączyć.",
+    "working": "Przetwarzanie…",
+    "disable": "Wyłącz powiadomienia push",
+    "enable": "Włącz powiadomienia push",
+    "whatYoullReceive": "Co otrzymasz",
+    "toast": {
+      "mobileRequiredTitle": "Wymagana aplikacja mobilna",
+      "mobileRequiredDesc": "Powiadomienia push działają w zainstalowanej aplikacji Android/iOS.",
+      "permissionNeededTitle": "Wymagane uprawnienie",
+      "permissionNeededDesc": "Zezwól na powiadomienia dla Mia w ustawieniach telefonu, a następnie spróbuj ponownie.",
+      "enabledTitle": "Powiadomienia push włączone",
+      "disabledTitle": "Powiadomienia push wyłączone",
+      "errorTitle": "Coś poszło nie tak",
+      "couldntSaveTitle": "Nie udało się zapisać"
+    }
+  },
+  "voice": {
+    "tapToPrepare": "Stuknij mikrofon, aby przygotować Mia.",
+    "status": {
+      "listening": "Słucham…",
+      "preparing": "Przygotowuję Mia… stuknij mikrofon ponownie za chwilę.",
+      "readyTapAgain": "Mia jest gotowa. Stuknij mikrofon ponownie, aby zacząć mówić.",
+      "connecting": "Łączenie z Mia…",
+      "noAccess": "Nie masz teraz dostępu do głosu."
+    },
+    "quota": {
+      "minutes": "{{used}}/{{limit}} min"
+    },
+    "aria": {
+      "endConversation": "Zakończ rozmowę z Mia",
+      "talkToMia": "Porozmawiaj z Mia (przeciągnij, aby przesunąć)"
+    },
+    "toast": {
+      "couldntAddTodoTitle": "Nie udało się dodać zadania",
+      "addedToTodoTitle": "Dodano do listy zadań",
+      "addedIngredientsTitle": "Dodano składniki dla {{dish}}",
+      "couldntAddEventTitle": "Nie udało się dodać wydarzenia",
+      "eventAddedTitle": "Wydarzenie dodane",
+      "connectedTitle": "Połączono z Mia",
+      "connectedDesc": "Zacznij mówić…",
+      "disconnectedTitle": "Mia rozłączona",
+      "disconnectedDroppedDesc": "Rozłączono po {{seconds}}s. Stuknij mikrofon, aby połączyć ponownie.",
+      "disconnectedReconnectDesc": "Stuknij mikrofon, aby połączyć ponownie.",
+      "conversationEnded": "Rozmowa zakończona",
+      "connectionErrorTitle": "Błąd połączenia",
+      "voiceUnavailableTitle": "Głos niedostępny",
+      "readyTitle": "Mia jest gotowa",
+      "readyDesc": "Stuknij mikrofon ponownie, aby zacząć mówić.",
+      "couldntPrepareTitle": "Nie udało się przygotować Mia",
+      "couldntStartTitle": "Nie udało się uruchomić Mia"
+    }
   }
 }

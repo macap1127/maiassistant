@@ -450,5 +450,236 @@
     "title": "404",
     "message": "이런! 페이지를 찾을 수 없습니다",
     "returnHome": "홈으로 돌아가기"
+  },
+  "landing": {
+    "brand": "Mia 가족 어시스턴트",
+    "loading": "로딩 중…",
+    "hero": {
+      "title": "가족의 장보기, 캘린더, 할 일, 알림을 위한 하나의 앱",
+      "subtitle": "이제 온 가족을 한 곳에서 정리할 수 있습니다. 공유 목록, 일정, 집안일, AI 도움까지 모두 함께 작동합니다.",
+      "startTrial": "7일 무료 체험 시작하기",
+      "signIn": "로그인",
+      "privacyNote": "회원님의 데이터는 비공개로 유지되며 절대 판매되지 않습니다."
+    },
+    "screenshotsSection": {
+      "eyebrow": "앱 살펴보기",
+      "title": "가족이 실제로 생활하는 방식을 위해 만들어졌습니다"
+    },
+    "benefits": {
+      "voiceFirst": {
+        "title": "음성 우선",
+        "body": "말만 하면 장보기 목록을 추가하고, 일정을 잡고, 하루를 확인할 수 있습니다."
+      },
+      "households": {
+        "title": "가정을 위해 만들어짐",
+        "body": "온 가족을 위한 하나의 공유된 두뇌. 모두가 동기화된 상태를 유지합니다."
+      },
+      "calendar": {
+        "title": "스마트 캘린더",
+        "body": "AI가 스크린샷과 PDF에서 일정을 가져오고, 시작 전에 알려드립니다."
+      },
+      "todos": {
+        "title": "공유 할 일 목록",
+        "body": "업무를 배정하고, 진행 상황을 추적하며, 함께 마음의 부담을 덜어보세요."
+      },
+      "push": {
+        "title": "푸시 알림",
+        "body": "일일 요약과 일정 30분 전 알림을 휴대폰으로 바로 전달합니다."
+      },
+      "receipts": {
+        "title": "영수증 관리",
+        "body": "영수증 사진을 찍어 가정별로 지출 기록을 정리하세요."
+      }
+    },
+    "screenshots": {
+      "home": "홈",
+      "meetMia": "MIA 만나보기",
+      "groceryList": "장보기 목록",
+      "receipts": "영수증",
+      "calendar": "캘린더"
+    },
+    "voiceSection": {
+      "eyebrow": "음성 지원",
+      "title": "가족에게 필요한 것을 말만 하세요",
+      "subtitle": "MIA가 듣고 정리해줍니다",
+      "description": "요리하거나, 운전하거나, 아이들을 챙길 때 마이크를 탭하세요. 타이핑 없이 장보기 목록을 추가하고, 캘린더 일정을 만들고, 할 일을 설정하고, 오늘 무슨 일이 있는지 물어볼 수 있습니다.",
+      "items": [
+        "장보기 목록에 항목 추가",
+        "음성으로 캘린더 일정 만들기",
+        "알림 설정 및 할 일 배정",
+        "오늘 예정된 일정 물어보기"
+      ]
+    },
+    "featuresSection": {
+      "eyebrow": "기능",
+      "title": "가족에게 필요한 모든 것"
+    },
+    "ctaSection": {
+      "title": "가족을 정리할 준비가 되셨나요?",
+      "subtitle": "무료 계정을 만들고 몇 분 만에 가족을 초대하세요.",
+      "privacyNote": "회원님의 데이터는 비공개이며 절대 판매되지 않습니다."
+    },
+    "footer": {
+      "questions": "궁금한 점이 있나요? 이메일 주세요",
+      "privacyPolicy": "개인정보 처리방침",
+      "terms": "서비스 약관",
+      "copyright": "© 2026 Mia Family Assistant. All rights reserved."
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "MIA 만나보기",
+      "title": "가족을 위한 AI 코파일럿",
+      "subtitle": "MIA는 가족 생활의 혼돈을 조용하고 아름답게, 힘들이지 않고 처리해주는 항상 켜져 있는 어시스턴트입니다. 말해보세요. 믿어보세요. 주말을 되찾으세요."
+    },
+    "features": {
+      "talkToMia": {
+        "title": "MIA와 대화하기",
+        "body": "그냥 말하세요. 장보기 목록을 추가하거나, 일정을 잡거나, 오늘 하루를 확인해보세요. MIA는 몇 초 만에 듣고, 이해하고, 실행합니다."
+      },
+      "groceryList": {
+        "title": "공유 장보기 목록",
+        "body": "가정 내 누구나 음성이나 탭으로 어디서든 업데이트할 수 있는 하나의 스마트한 목록입니다."
+      },
+      "todos": {
+        "title": "할 일, 완료",
+        "body": "업무를 배정하고, 진행 상황을 추적하고, 마침내 마음의 부담을 덜어보세요. MIA가 가족을 동기화된 상태로 유지합니다."
+      },
+      "calendar": {
+        "title": "가족 캘린더",
+        "body": "양방향 음성 동기화, PDF와 스크린샷에서의 AI 가져오기, 그리고 실제로 제때 도착하는 부드러운 알림."
+      },
+      "receipts": {
+        "title": "영수증, 해독 완료",
+        "body": "사진을 찍으면 MIA가 항목, 총액, 카테고리를 추출합니다. 신발 상자 영수증 보관은 이제 안녕."
+      },
+      "households": {
+        "title": "가정을 위해 만들어짐",
+        "body": "온 가족을 초대하세요. 하나의 공유된 두뇌와 하나의 조용한 목소리로 모두가 연결된 상태를 유지합니다."
+      }
+    },
+    "privacyCallout": "가족의 데이터는 여전히 회원님의 것입니다. 전송 중 암호화되고, 가정별로 격리되며, 절대 판매되지 않습니다.",
+    "poweredBy": {
+      "label": "제공",
+      "tagline": "가장 소중한 사람들을 위해 조정된 프리미엄 인텔리전스.",
+      "questions": "궁금한 점이 있나요? 이메일 주세요"
+    },
+    "copyright": "© 2026 Mia Family Assistant. All rights reserved."
+  },
+  "aiConsent": {
+    "title": "AI 기능 및 회원님의 데이터",
+    "subtitle": "계속하기 전에 검토해 주세요",
+    "intro": "MIA는 음성 어시스턴트, 영수증 스캔, 캘린더 가져오기, 스마트 제안을 위해 타사 AI 서비스를 사용합니다. 콘텐츠를 해당 서비스로 전송하기 전에 회원님의 허락이 필요합니다.",
+    "whatWeSend": {
+      "title": "전송하는 정보",
+      "voice": "마이크를 탭할 때 녹음되는 음성 오디오",
+      "photos": "업로드하는 영수증, 캘린더 또는 메모 사진",
+      "text": "입력하는 텍스트 프롬프트, 장보기 항목, 할 일 및 일정"
+    },
+    "whoReceives": {
+      "title": "수신 대상",
+      "google": "(Gemini AI 모델, Lovable AI Gateway를 통해 라우팅됨) — 텍스트, 이미지, 분류",
+      "elevenLabs": "— 음성 어시스턴트의 음성-텍스트 및 텍스트-음성 변환"
+    },
+    "processingNote": "이러한 제공업체는 MIA에 AI 응답을 반환하기 위해서만 회원님의 데이터를 처리하며 계약상 이를 보호할 의무가 있습니다. 저희는 회원님의 데이터를 절대 판매하지 않습니다.",
+    "contentModeration": "불쾌하거나 불법적이거나 학대적인 콘텐츠는 필터링되며 허용되지 않습니다.",
+    "reportAbusePrefix": "악용 신고 또는 사용자 차단은 여기에서",
+    "reportAbuseSuffix": ". 신고는 24시간 이내에 검토됩니다.",
+    "detailsPrefix": "자세한 내용은 저희",
+    "privacyPolicy": "개인정보 처리방침",
+    "and": "및",
+    "terms": "약관",
+    "declineNote": "에서 확인하실 수 있습니다. 거부하시면 MIA의 기능이 이러한 AI 서비스에 의존하기 때문에 로그아웃됩니다.",
+    "decline": "거부하고 로그아웃",
+    "accept": "동의하고 계속하기"
+  },
+  "logins": {
+    "title": "로그인",
+    "memberCountOnTier": "{{label}}에서 {{count}} / {{limit}}",
+    "description": "이 가정에 로그인할 수 있는 사람들입니다.",
+    "you": "회원님",
+    "aFamilyMember": "가족 구성원",
+    "iAm": "저는…",
+    "chooseProfile": "프로필을 선택하세요…",
+    "linkHint": "음성을 사용할 때 어떤 가족 구성원이 말하고 있는지 Mia에게 알려줍니다.",
+    "pendingInvites": "대기 중인 초대",
+    "anyEmail": "모든 이메일",
+    "upgradeToAddMore": "업그레이드하여 로그인을 더 추가하세요",
+    "emailPlaceholder": "이메일 (선택 사항)",
+    "invite": "초대",
+    "aria": {
+      "remove": "제거",
+      "copyLink": "링크 복사",
+      "revoke": "취소"
+    },
+    "toast": {
+      "limitReachedTitle": "로그인 한도에 도달했습니다",
+      "limitReachedDesc": "{{label}} 요금제는 {{count}}개의 로그인을 허용합니다. 더 추가하려면 업그레이드하세요.",
+      "couldntCreateInviteTitle": "초대를 만들 수 없습니다",
+      "emailFailedTitle": "초대는 생성되었지만 이메일 전송에 실패했습니다",
+      "emailFailedDesc": "{{message}}. 대신 링크가 클립보드에 복사되었습니다.",
+      "inviteSentTitle": "초대를 보냈습니다",
+      "inviteSentDesc": "{{email}}로 이메일을 보냈습니다.",
+      "inviteLinkCopiedTitle": "초대 링크가 복사되었습니다",
+      "couldntLinkProfileTitle": "프로필을 연결할 수 없습니다",
+      "profileLinkedTitle": "프로필이 연결되었습니다",
+      "profileLinkedDesc": "이제 회원님이 말할 때 Mia가 알아볼 수 있습니다.",
+      "linkCopiedTitle": "링크가 복사되었습니다"
+    }
+  },
+  "push": {
+    "title": "푸시 알림",
+    "description": "할 일과 일정에 대한 알림을 휴대폰으로 바로 받아보세요.",
+    "mobileOnlyNote": "설치된 모바일 앱에서 사용할 수 있습니다. Android 또는 iOS 기기에서 Mia를 열어 활성화하세요.",
+    "working": "처리 중…",
+    "disable": "푸시 알림 비활성화",
+    "enable": "푸시 알림 활성화",
+    "whatYoullReceive": "받게 될 내용",
+    "toast": {
+      "mobileRequiredTitle": "모바일 앱이 필요합니다",
+      "mobileRequiredDesc": "푸시 알림은 설치된 Android/iOS 앱에서 작동합니다.",
+      "permissionNeededTitle": "권한이 필요합니다",
+      "permissionNeededDesc": "휴대폰 설정에서 Mia의 알림을 허용한 후 다시 시도하세요.",
+      "enabledTitle": "푸시 알림이 활성화되었습니다",
+      "disabledTitle": "푸시 알림이 비활성화되었습니다",
+      "errorTitle": "문제가 발생했습니다",
+      "couldntSaveTitle": "저장할 수 없습니다"
+    }
+  },
+  "voice": {
+    "tapToPrepare": "마이크를 탭하여 Mia를 준비하세요.",
+    "status": {
+      "listening": "듣고 있어요…",
+      "preparing": "Mia를 준비하고 있어요… 잠시 후 마이크를 다시 탭하세요.",
+      "readyTapAgain": "Mia가 준비되었습니다. 마이크를 다시 탭하여 말하기를 시작하세요.",
+      "connecting": "Mia에 연결하는 중…",
+      "noAccess": "현재 음성 기능에 접근할 수 없습니다."
+    },
+    "quota": {
+      "minutes": "{{used}}/{{limit}} 분"
+    },
+    "aria": {
+      "endConversation": "Mia와의 대화 종료",
+      "talkToMia": "Mia와 대화하기 (드래그하여 이동)"
+    },
+    "toast": {
+      "couldntAddTodoTitle": "할 일을 추가할 수 없습니다",
+      "addedToTodoTitle": "할 일 목록에 추가되었습니다",
+      "addedIngredientsTitle": "{{dish}} 재료가 추가되었습니다",
+      "couldntAddEventTitle": "일정을 추가할 수 없습니다",
+      "eventAddedTitle": "일정이 추가되었습니다",
+      "connectedTitle": "Mia에 연결되었습니다",
+      "connectedDesc": "말씀하기 시작하세요…",
+      "disconnectedTitle": "Mia 연결이 끊겼습니다",
+      "disconnectedDroppedDesc": "{{seconds}}초 후 연결이 끊겼습니다. 마이크를 탭하여 다시 연결하세요.",
+      "disconnectedReconnectDesc": "마이크를 탭하여 다시 연결하세요.",
+      "conversationEnded": "대화가 종료되었습니다",
+      "connectionErrorTitle": "연결 오류",
+      "voiceUnavailableTitle": "음성 기능을 사용할 수 없습니다",
+      "readyTitle": "Mia가 준비되었습니다",
+      "readyDesc": "마이크를 다시 탭하여 말하기를 시작하세요.",
+      "couldntPrepareTitle": "Mia를 준비할 수 없습니다",
+      "couldntStartTitle": "Mia를 시작할 수 없습니다"
+    }
   }
 }

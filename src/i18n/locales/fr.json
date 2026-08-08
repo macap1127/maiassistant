@@ -457,5 +457,236 @@
     "title": "404",
     "message": "Oups ! Page introuvable",
     "returnHome": "Retour à l'accueil"
+  },
+  "landing": {
+    "brand": "Mia, l'assistant familial",
+    "loading": "Chargement…",
+    "hero": {
+      "title": "Une seule appli pour les courses, le calendrier, les tâches et les rappels de votre famille",
+      "subtitle": "Gardez enfin toute votre famille organisée au même endroit. Listes partagées, plannings, tâches ménagères et aide de l'IA — tout fonctionne ensemble.",
+      "startTrial": "Essai gratuit de 7 jours",
+      "signIn": "Se connecter",
+      "privacyNote": "Vos données restent privées et ne sont jamais vendues."
+    },
+    "screenshotsSection": {
+      "eyebrow": "Découvrez l'appli",
+      "title": "Conçue pour la vraie vie de famille"
+    },
+    "benefits": {
+      "voiceFirst": {
+        "title": "Priorité à la voix",
+        "body": "Ajoutez des courses, planifiez des événements et suivez votre journée — juste en parlant."
+      },
+      "households": {
+        "title": "Pensée pour les foyers",
+        "body": "Un cerveau partagé pour toute la famille. Tout le monde reste synchronisé."
+      },
+      "calendar": {
+        "title": "Calendrier intelligent",
+        "body": "L'IA importe les événements depuis des captures d'écran et des PDF, puis vous rappelle avant qu'ils commencent."
+      },
+      "todos": {
+        "title": "Tâches partagées",
+        "body": "Assignez des tâches, suivez la progression et allégez ensemble la charge mentale."
+      },
+      "push": {
+        "title": "Notifications push",
+        "body": "Résumés quotidiens et rappels d'événements 30 minutes avant, directement sur votre téléphone."
+      },
+      "receipts": {
+        "title": "Suivi des tickets de caisse",
+        "body": "Prenez en photo vos tickets et gardez les dépenses organisées par foyer."
+      }
+    },
+    "screenshots": {
+      "home": "Accueil",
+      "meetMia": "Découvrez MIA",
+      "groceryList": "Liste de courses",
+      "receipts": "Tickets de caisse",
+      "calendar": "Calendrier"
+    },
+    "voiceSection": {
+      "eyebrow": "Propulsé par la voix",
+      "title": "Dites simplement ce dont votre famille a besoin",
+      "subtitle": "MIA écoute, puis organise tout",
+      "description": "Appuyez sur le micro pendant que vous cuisinez, conduisez ou préparez les enfants. Ajoutez des courses, créez des événements de calendrier, définissez des tâches et demandez ce qui se passe aujourd'hui — sans rien taper.",
+      "items": [
+        "Ajouter des articles à la liste de courses",
+        "Créer des événements de calendrier à la voix",
+        "Définir des rappels et assigner des tâches",
+        "Demander ce qui est prévu aujourd'hui"
+      ]
+    },
+    "featuresSection": {
+      "eyebrow": "Fonctionnalités",
+      "title": "Tout ce dont votre famille a besoin"
+    },
+    "ctaSection": {
+      "title": "Prêt à organiser votre famille ?",
+      "subtitle": "Créez votre compte gratuit et invitez votre famille en quelques minutes.",
+      "privacyNote": "Vos données sont privées et ne sont jamais vendues."
+    },
+    "footer": {
+      "questions": "Des questions ? Écrivez à",
+      "privacyPolicy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation",
+      "copyright": "© 2026 Mia Family Assistant. Tous droits réservés."
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "Découvrez MIA",
+      "title": "Le copilote IA de votre famille",
+      "subtitle": "MIA est l'assistant toujours actif qui transforme le chaos de la vie de famille en quelque chose de calme et sans effort. Parlez-lui. Faites-lui confiance. Reprenez vos week-ends."
+    },
+    "features": {
+      "talkToMia": {
+        "title": "Parlez à MIA",
+        "body": "Parlez simplement — ajoutez des courses, planifiez des événements ou faites le point sur la journée. MIA écoute, comprend et agit en quelques secondes."
+      },
+      "groceryList": {
+        "title": "Liste de courses partagée",
+        "body": "Une seule liste intelligente que tous les membres du foyer peuvent mettre à jour de n'importe où — à la voix ou du bout du doigt."
+      },
+      "todos": {
+        "title": "Tâches accomplies",
+        "body": "Assignez des tâches, suivez la progression et allégez enfin la charge mentale. MIA garde la famille synchronisée."
+      },
+      "calendar": {
+        "title": "Calendrier familial",
+        "body": "Synchronisation vocale bidirectionnelle, imports IA depuis PDF et captures d'écran, et rappels discrets qui arrivent réellement à temps."
+      },
+      "receipts": {
+        "title": "Tickets de caisse décryptés",
+        "body": "Prenez une photo — MIA extrait les articles, les totaux et les catégories. Adieu la boîte à chaussures."
+      },
+      "households": {
+        "title": "Pensée pour les foyers",
+        "body": "Invitez toute la famille. Tout le monde reste connecté grâce à un cerveau partagé — et une voix discrète."
+      }
+    },
+    "privacyCallout": "Les données de votre famille restent les vôtres. Chiffrées en transit, isolées par foyer et jamais vendues.",
+    "poweredBy": {
+      "label": "Propulsé par",
+      "tagline": "Une intelligence premium, ajustée pour les personnes qui comptent le plus.",
+      "questions": "Des questions ? Écrivez à"
+    },
+    "copyright": "© 2026 Mia Family Assistant. Tous droits réservés."
+  },
+  "aiConsent": {
+    "title": "Fonctionnalités IA et vos données",
+    "subtitle": "Veuillez lire attentivement avant de continuer",
+    "intro": "MIA utilise des services d'IA tiers pour alimenter l'assistant vocal, la numérisation des tickets de caisse, l'import de calendriers et les suggestions intelligentes. Nous avons besoin de votre autorisation avant d'envoyer votre contenu à ces services.",
+    "whatWeSend": {
+      "title": "Ce que nous envoyons",
+      "voice": "L'audio vocal que vous enregistrez en appuyant sur le micro",
+      "photos": "Les photos de tickets de caisse, calendriers ou notes que vous téléversez",
+      "text": "Les invites textuelles, articles de courses, tâches et événements que vous saisissez"
+    },
+    "whoReceives": {
+      "title": "Qui les reçoit",
+      "google": "(modèles d'IA Gemini, acheminés via la Lovable AI Gateway) — texte, images, catégorisation",
+      "elevenLabs": "— reconnaissance vocale et synthèse vocale de l'assistant"
+    },
+    "processingNote": "Ces fournisseurs traitent vos données uniquement pour renvoyer une réponse de l'IA à MIA et sont contractuellement tenus de les protéger. Nous ne vendons jamais vos données.",
+    "contentModeration": "Le contenu répréhensible, illégal ou abusif est filtré et n'est pas toléré.",
+    "reportAbusePrefix": "Signalez un abus ou bloquez des utilisateurs via",
+    "reportAbuseSuffix": ". Les signalements sont examinés sous 24 heures.",
+    "detailsPrefix": "Tous les détails figurent dans notre",
+    "privacyPolicy": "Politique de confidentialité",
+    "and": "et",
+    "terms": "Conditions",
+    "declineNote": ". Si vous refusez, MIA vous déconnectera car ses fonctionnalités dépendent de ces services d'IA.",
+    "decline": "Refuser et se déconnecter",
+    "accept": "Accepter et continuer"
+  },
+  "logins": {
+    "title": "Connexions",
+    "memberCountOnTier": "{{count}} / {{limit}} sur {{label}}",
+    "description": "Personnes pouvant se connecter à ce foyer.",
+    "you": "Vous",
+    "aFamilyMember": "Un membre de la famille",
+    "iAm": "Je suis…",
+    "chooseProfile": "Choisissez votre profil…",
+    "linkHint": "Indique à Mia quel membre de la famille parle lorsque vous utilisez la voix.",
+    "pendingInvites": "Invitations en attente",
+    "anyEmail": "n'importe quel e-mail",
+    "upgradeToAddMore": "Passez à un forfait supérieur pour ajouter d'autres connexions",
+    "emailPlaceholder": "E-mail (facultatif)",
+    "invite": "Inviter",
+    "aria": {
+      "remove": "Supprimer",
+      "copyLink": "Copier le lien",
+      "revoke": "Révoquer"
+    },
+    "toast": {
+      "limitReachedTitle": "Limite de connexions atteinte",
+      "limitReachedDesc": "Votre forfait {{label}} autorise {{count}} connexion(s). Passez à un forfait supérieur pour en ajouter.",
+      "couldntCreateInviteTitle": "Impossible de créer l'invitation",
+      "emailFailedTitle": "Invitation créée, mais l'e-mail a échoué",
+      "emailFailedDesc": "{{message}}. Le lien a été copié dans le presse-papiers à la place.",
+      "inviteSentTitle": "Invitation envoyée",
+      "inviteSentDesc": "E-mail envoyé à {{email}}.",
+      "inviteLinkCopiedTitle": "Lien d'invitation copié",
+      "couldntLinkProfileTitle": "Impossible de lier le profil",
+      "profileLinkedTitle": "Profil lié",
+      "profileLinkedDesc": "Mia saura désormais que c'est vous qui parlez.",
+      "linkCopiedTitle": "Lien copié"
+    }
+  },
+  "push": {
+    "title": "Notifications push",
+    "description": "Recevez des rappels pour vos tâches et événements directement sur votre téléphone.",
+    "mobileOnlyNote": "Disponible dans l'application mobile installée. Ouvrez Mia sur votre appareil Android ou iOS pour l'activer.",
+    "working": "Chargement…",
+    "disable": "Désactiver les notifications push",
+    "enable": "Activer les notifications push",
+    "whatYoullReceive": "Ce que vous recevrez",
+    "toast": {
+      "mobileRequiredTitle": "Application mobile requise",
+      "mobileRequiredDesc": "Les notifications push fonctionnent dans l'application Android/iOS installée.",
+      "permissionNeededTitle": "Autorisation requise",
+      "permissionNeededDesc": "Autorisez les notifications pour Mia dans les paramètres de votre téléphone, puis réessayez.",
+      "enabledTitle": "Notifications push activées",
+      "disabledTitle": "Notifications push désactivées",
+      "errorTitle": "Une erreur s'est produite",
+      "couldntSaveTitle": "Impossible d'enregistrer"
+    }
+  },
+  "voice": {
+    "tapToPrepare": "Appuyez sur le micro pour préparer Mia.",
+    "status": {
+      "listening": "Écoute en cours…",
+      "preparing": "Préparation de Mia… appuyez de nouveau sur le micro dans un instant.",
+      "readyTapAgain": "Mia est prête. Appuyez de nouveau sur le micro pour commencer à parler.",
+      "connecting": "Connexion à Mia…",
+      "noAccess": "Vous n'avez pas accès à la voix pour le moment."
+    },
+    "quota": {
+      "minutes": "{{used}}/{{limit}} min"
+    },
+    "aria": {
+      "endConversation": "Terminer la conversation avec Mia",
+      "talkToMia": "Parler à Mia (glisser pour déplacer)"
+    },
+    "toast": {
+      "couldntAddTodoTitle": "Impossible d'ajouter la tâche",
+      "addedToTodoTitle": "Ajouté à la liste de tâches",
+      "addedIngredientsTitle": "Ingrédients de {{dish}} ajoutés",
+      "couldntAddEventTitle": "Impossible d'ajouter l'événement",
+      "eventAddedTitle": "Événement ajouté",
+      "connectedTitle": "Connecté à Mia",
+      "connectedDesc": "Commencez à parler…",
+      "disconnectedTitle": "Mia déconnectée",
+      "disconnectedDroppedDesc": "Connexion perdue après {{seconds}} s. Appuyez sur le micro pour vous reconnecter.",
+      "disconnectedReconnectDesc": "Appuyez sur le micro pour vous reconnecter.",
+      "conversationEnded": "Conversation terminée",
+      "connectionErrorTitle": "Erreur de connexion",
+      "voiceUnavailableTitle": "Voix indisponible",
+      "readyTitle": "Mia est prête",
+      "readyDesc": "Appuyez de nouveau sur le micro pour commencer à parler.",
+      "couldntPrepareTitle": "Impossible de préparer Mia",
+      "couldntStartTitle": "Impossible de démarrer Mia"
+    }
   }
 }

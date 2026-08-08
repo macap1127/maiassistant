@@ -450,5 +450,236 @@
     "title": "404",
     "message": "おっと！ページが見つかりません",
     "returnHome": "ホームに戻る"
+  },
+  "landing": {
+    "brand": "Mia ファミリーアシスタント",
+    "loading": "読み込み中…",
+    "hero": {
+      "title": "家族の買い物、カレンダー、タスク、リマインダーを一つにまとめるアプリ",
+      "subtitle": "ようやく家族全員をひとつの場所でまとめて整理できます。共有リスト、スケジュール、家事、AIサポートがすべて連携して動作します。",
+      "startTrial": "7日間無料トライアルを開始",
+      "signIn": "サインイン",
+      "privacyNote": "あなたのデータはプライベートに保たれ、決して販売されません。"
+    },
+    "screenshotsSection": {
+      "eyebrow": "アプリを見る",
+      "title": "実際の家族の暮らし方のために作られました"
+    },
+    "benefits": {
+      "voiceFirst": {
+        "title": "音声ファースト",
+        "body": "話すだけで買い物を追加し、予定を組み、一日を確認できます。"
+      },
+      "households": {
+        "title": "家庭のために設計",
+        "body": "家族全員のための共有の頭脳。みんなが同期し続けます。"
+      },
+      "calendar": {
+        "title": "スマートカレンダー",
+        "body": "AIがスクリーンショットやPDFからイベントを取り込み、開始前に通知します。"
+      },
+      "todos": {
+        "title": "共有のToDo",
+        "body": "タスクを割り当て、進捗を追跡し、一緒に心の負担を軽減しましょう。"
+      },
+      "push": {
+        "title": "プッシュ通知",
+        "body": "毎日のダイジェストとイベントの30分前リマインダーをスマートフォンに直接届けます。"
+      },
+      "receipts": {
+        "title": "レシート管理",
+        "body": "レシートの写真を撮って、世帯ごとに支出記録を整理しましょう。"
+      }
+    },
+    "screenshots": {
+      "home": "ホーム",
+      "meetMia": "MIAを紹介",
+      "groceryList": "買い物リスト",
+      "receipts": "レシート",
+      "calendar": "カレンダー"
+    },
+    "voiceSection": {
+      "eyebrow": "音声搭載",
+      "title": "家族が必要なことをただ話すだけ",
+      "subtitle": "MIAが聞いて、整理してくれます",
+      "description": "料理中や運転中、子供の準備をしている時にマイクをタップ。買い物を追加し、カレンダーの予定を作成し、タスクを設定し、今日の予定を確認できます。何も入力する必要はありません。",
+      "items": [
+        "買い物リストに項目を追加",
+        "音声でカレンダーの予定を作成",
+        "リマインダーの設定とタスクの割り当て",
+        "今日の予定を確認"
+      ]
+    },
+    "featuresSection": {
+      "eyebrow": "機能",
+      "title": "家族に必要なすべて"
+    },
+    "ctaSection": {
+      "title": "家族の整理を始める準備はできましたか？",
+      "subtitle": "無料アカウントを作成し、数分で家族を招待しましょう。",
+      "privacyNote": "あなたのデータはプライベートで、決して販売されません。"
+    },
+    "footer": {
+      "questions": "ご質問は？メールはこちら",
+      "privacyPolicy": "プライバシーポリシー",
+      "terms": "利用規約",
+      "copyright": "© 2026 Mia Family Assistant. All rights reserved."
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "MIAを紹介",
+      "title": "あなたの家族のAIコパイロット",
+      "subtitle": "MIAは、家庭生活の混沌を静かで美しく手間のかからないものに変える常時稼働のアシスタントです。話しかけてください。信頼してください。週末を取り戻しましょう。"
+    },
+    "features": {
+      "talkToMia": {
+        "title": "MIAと話す",
+        "body": "話すだけで、買い物を追加したり、予定を組んだり、その日の状況を確認できます。MIAは数秒で聞き取り、理解し、行動します。"
+      },
+      "groceryList": {
+        "title": "共有買い物リスト",
+        "body": "家庭内の誰もが、音声でもタップでも、どこからでも更新できる一つのスマートなリストです。"
+      },
+      "todos": {
+        "title": "ToDo、完了",
+        "body": "タスクを割り当て、進捗を追跡し、ついに心の負担を解消。MIAが家族を同期させ続けます。"
+      },
+      "calendar": {
+        "title": "家族カレンダー",
+        "body": "双方向の音声同期、PDFやスクリーンショットからのAI取り込み、時間通りに届く優しいリマインダー。"
+      },
+      "receipts": {
+        "title": "レシート、解読済み",
+        "body": "写真を撮るだけで、MIAが品目、合計金額、カテゴリーを抽出します。もう靴箱は不要です。"
+      },
+      "households": {
+        "title": "家庭のために設計",
+        "body": "家族全員を招待しましょう。ひとつの共有の頭脳と、一つの静かな声で、みんながつながり続けます。"
+      }
+    },
+    "privacyCallout": "あなたの家族のデータはあなたのものです。転送中は暗号化され、世帯ごとに分離され、決して販売されません。",
+    "poweredBy": {
+      "label": "提供元",
+      "tagline": "最も大切な人々のために調整された、プレミアムなインテリジェンス。",
+      "questions": "ご質問は？メールはこちら"
+    },
+    "copyright": "© 2026 Mia Family Assistant. All rights reserved."
+  },
+  "aiConsent": {
+    "title": "AI機能とあなたのデータ",
+    "subtitle": "続行する前にご確認ください",
+    "intro": "MIAは、音声アシスタント、レシートスキャン、カレンダーの取り込み、スマート提案を実現するためにサードパーティのAIサービスを使用しています。これらのサービスにコンテンツを送信する前に、あなたの許可が必要です。",
+    "whatWeSend": {
+      "title": "送信する内容",
+      "voice": "マイクをタップしたときに録音される音声データ",
+      "photos": "アップロードするレシート、カレンダー、メモの写真",
+      "text": "入力したテキストプロンプト、買い物項目、タスク、イベント"
+    },
+    "whoReceives": {
+      "title": "受信者",
+      "google": "（Gemini AIモデル、Lovable AI Gateway経由でルーティング）— テキスト、画像、分類",
+      "elevenLabs": "— 音声アシスタントの音声からテキスト、テキストから音声への変換"
+    },
+    "processingNote": "これらのプロバイダーは、MIAにAIの応答を返すためだけにあなたのデータを処理し、契約上その保護が義務付けられています。私たちはあなたのデータを決して販売しません。",
+    "contentModeration": "不適切、違法、または虐待的なコンテンツはフィルタリングされ、許容されません。",
+    "reportAbusePrefix": "不正利用の報告やユーザーのブロックはこちらから",
+    "reportAbuseSuffix": "。報告は24時間以内に確認されます。",
+    "detailsPrefix": "詳細については、こちらをご覧ください",
+    "privacyPolicy": "プライバシーポリシー",
+    "and": "および",
+    "terms": "利用規約",
+    "declineNote": "。拒否した場合、MIAの機能はこれらのAIサービスに依存しているため、サインアウトされます。",
+    "decline": "拒否してサインアウト",
+    "accept": "同意して続行"
+  },
+  "logins": {
+    "title": "ログイン",
+    "memberCountOnTier": "{{label}}で{{count}} / {{limit}}",
+    "description": "この世帯にサインインできる人。",
+    "you": "あなた",
+    "aFamilyMember": "家族の一員",
+    "iAm": "私は…",
+    "chooseProfile": "プロフィールを選択…",
+    "linkHint": "音声を使用する際、話している家族が誰かをMiaに伝えます。",
+    "pendingInvites": "保留中の招待",
+    "anyEmail": "任意のメール",
+    "upgradeToAddMore": "アップグレードしてさらにログインを追加",
+    "emailPlaceholder": "メール（任意）",
+    "invite": "招待",
+    "aria": {
+      "remove": "削除",
+      "copyLink": "リンクをコピー",
+      "revoke": "取り消す"
+    },
+    "toast": {
+      "limitReachedTitle": "ログイン数の上限に達しました",
+      "limitReachedDesc": "{{label}}プランでは{{count}}件のログインが許可されています。追加するにはアップグレードしてください。",
+      "couldntCreateInviteTitle": "招待を作成できませんでした",
+      "emailFailedTitle": "招待は作成されましたが、メール送信に失敗しました",
+      "emailFailedDesc": "{{message}}。代わりにリンクをクリップボードにコピーしました。",
+      "inviteSentTitle": "招待を送信しました",
+      "inviteSentDesc": "{{email}}にメールを送信しました。",
+      "inviteLinkCopiedTitle": "招待リンクをコピーしました",
+      "couldntLinkProfileTitle": "プロフィールをリンクできませんでした",
+      "profileLinkedTitle": "プロフィールをリンクしました",
+      "profileLinkedDesc": "これで、あなたが話すとMiaが認識できるようになります。",
+      "linkCopiedTitle": "リンクをコピーしました"
+    }
+  },
+  "push": {
+    "title": "プッシュ通知",
+    "description": "タスクやイベントのリマインダーをスマートフォンに直接届けます。",
+    "mobileOnlyNote": "インストールされたモバイルアプリで利用可能です。AndroidまたはiOSデバイスでMiaを開いて有効にしてください。",
+    "working": "処理中…",
+    "disable": "プッシュ通知を無効にする",
+    "enable": "プッシュ通知を有効にする",
+    "whatYoullReceive": "受け取る内容",
+    "toast": {
+      "mobileRequiredTitle": "モバイルアプリが必要です",
+      "mobileRequiredDesc": "プッシュ通知は、インストールされたAndroid/iOSアプリで機能します。",
+      "permissionNeededTitle": "許可が必要です",
+      "permissionNeededDesc": "スマートフォンの設定でMiaの通知を許可してから、もう一度お試しください。",
+      "enabledTitle": "プッシュ通知が有効になりました",
+      "disabledTitle": "プッシュ通知が無効になりました",
+      "errorTitle": "問題が発生しました",
+      "couldntSaveTitle": "保存できませんでした"
+    }
+  },
+  "voice": {
+    "tapToPrepare": "マイクをタップしてMiaを準備してください。",
+    "status": {
+      "listening": "聞いています…",
+      "preparing": "Miaを準備中…もう少ししたらもう一度マイクをタップしてください。",
+      "readyTapAgain": "Miaの準備ができました。マイクを再度タップして話し始めてください。",
+      "connecting": "Miaに接続中…",
+      "noAccess": "現在、音声機能へのアクセス権がありません。"
+    },
+    "quota": {
+      "minutes": "{{used}}/{{limit}} 分"
+    },
+    "aria": {
+      "endConversation": "Miaとの会話を終了",
+      "talkToMia": "Miaと話す（ドラッグして移動）"
+    },
+    "toast": {
+      "couldntAddTodoTitle": "ToDoを追加できませんでした",
+      "addedToTodoTitle": "ToDoリストに追加しました",
+      "addedIngredientsTitle": "{{dish}}の材料を追加しました",
+      "couldntAddEventTitle": "イベントを追加できませんでした",
+      "eventAddedTitle": "イベントを追加しました",
+      "connectedTitle": "Miaに接続しました",
+      "connectedDesc": "話し始めてください…",
+      "disconnectedTitle": "Miaが切断されました",
+      "disconnectedDroppedDesc": "{{seconds}}秒後に切断されました。マイクをタップして再接続してください。",
+      "disconnectedReconnectDesc": "マイクをタップして再接続してください。",
+      "conversationEnded": "会話が終了しました",
+      "connectionErrorTitle": "接続エラー",
+      "voiceUnavailableTitle": "音声機能を利用できません",
+      "readyTitle": "Miaの準備ができました",
+      "readyDesc": "マイクを再度タップして話し始めてください。",
+      "couldntPrepareTitle": "Miaを準備できませんでした",
+      "couldntStartTitle": "Miaを開始できませんでした"
+    }
   }
 }

@@ -457,5 +457,236 @@
     "title": "404",
     "message": "Oeps! Pagina niet gevonden",
     "returnHome": "Terug naar Home"
+  },
+  "landing": {
+    "brand": "Mia Family Assistant",
+    "loading": "Laden…",
+    "hero": {
+      "title": "Eén app voor de boodschappen, agenda, taken en herinneringen van je gezin",
+      "subtitle": "Houd eindelijk je hele gezin op één plek georganiseerd. Gedeelde lijsten, schema's, klusjes en AI-hulp — alles werkt samen.",
+      "startTrial": "Start 7-daagse gratis proefperiode",
+      "signIn": "Inloggen",
+      "privacyNote": "Je gegevens blijven privé en worden nooit verkocht."
+    },
+    "screenshotsSection": {
+      "eyebrow": "Bekijk de app",
+      "title": "Gemaakt voor hoe gezinnen echt werken"
+    },
+    "benefits": {
+      "voiceFirst": {
+        "title": "Stem voorop",
+        "body": "Voeg boodschappen toe, plan afspraken en check je dag — gewoon door te praten."
+      },
+      "households": {
+        "title": "Gemaakt voor huishoudens",
+        "body": "Eén gedeeld brein voor het hele gezin. Iedereen blijft synchroon."
+      },
+      "calendar": {
+        "title": "Slimme agenda",
+        "body": "AI importeert afspraken uit screenshots en pdf's, en herinnert je eraan voordat ze beginnen."
+      },
+      "todos": {
+        "title": "Gedeelde taken",
+        "body": "Wijs taken toe, volg de voortgang en verdeel samen de mentale belasting."
+      },
+      "push": {
+        "title": "Pushmeldingen",
+        "body": "Dagelijkse overzichten en herinneringen 30 minuten voor afspraken, rechtstreeks op je telefoon."
+      },
+      "receipts": {
+        "title": "Bonnetjes bijhouden",
+        "body": "Maak foto's van bonnetjes en houd uitgaven per huishouden overzichtelijk."
+      }
+    },
+    "screenshots": {
+      "home": "Start",
+      "meetMia": "Maak kennis met MIA",
+      "groceryList": "Boodschappenlijst",
+      "receipts": "Bonnetjes",
+      "calendar": "Agenda"
+    },
+    "voiceSection": {
+      "eyebrow": "Aangedreven door spraak",
+      "title": "Zeg gewoon wat je gezin nodig heeft",
+      "subtitle": "MIA luistert en regelt het dan",
+      "description": "Tik op de microfoon terwijl je kookt, rijdt of de kinderen klaarmaakt. Voeg boodschappen toe, maak agenda-items, stel taken in en vraag wat er vandaag speelt — zonder iets te typen.",
+      "items": [
+        "Items toevoegen aan de boodschappenlijst",
+        "Agenda-items maken met je stem",
+        "Herinneringen instellen en taken toewijzen",
+        "Vragen wat er vandaag gepland staat"
+      ]
+    },
+    "featuresSection": {
+      "eyebrow": "Functies",
+      "title": "Alles wat je gezin nodig heeft"
+    },
+    "ctaSection": {
+      "title": "Klaar om je gezin te organiseren?",
+      "subtitle": "Maak je gratis account aan en nodig je gezin in enkele minuten uit.",
+      "privacyNote": "Je gegevens zijn privé en worden nooit verkocht."
+    },
+    "footer": {
+      "questions": "Vragen? Mail naar",
+      "privacyPolicy": "Privacybeleid",
+      "terms": "Servicevoorwaarden",
+      "copyright": "© 2026 Mia Family Assistant. Alle rechten voorbehouden."
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "Maak kennis met MIA",
+      "title": "De AI-copiloot van je gezin",
+      "subtitle": "MIA is de altijd actieve assistent die de chaos van het gezinsleven verandert in iets rustigs en moeiteloos. Praat ermee. Vertrouw erop. Krijg je weekends terug."
+    },
+    "features": {
+      "talkToMia": {
+        "title": "Praat met MIA",
+        "body": "Praat gewoon — voeg boodschappen toe, plan afspraken of check de dag. MIA luistert, begrijpt en handelt binnen seconden."
+      },
+      "groceryList": {
+        "title": "Gedeelde boodschappenlijst",
+        "body": "Eén slimme lijst die iedereen thuis van overal kan bijwerken — met stem of een tik."
+      },
+      "todos": {
+        "title": "Taken, afgerond",
+        "body": "Wijs taken toe, volg de voortgang en verlicht eindelijk de mentale belasting. MIA houdt het gezin synchroon."
+      },
+      "calendar": {
+        "title": "Familieagenda",
+        "body": "Tweewegs spraaksynchronisatie, AI-importen van pdf's en screenshots, en zachte herinneringen die echt op tijd aankomen."
+      },
+      "receipts": {
+        "title": "Bonnetjes ontcijferd",
+        "body": "Maak een foto — MIA haalt de items, totalen en categorieën eruit. Weg met de schoenendoos."
+      },
+      "households": {
+        "title": "Gemaakt voor huishoudens",
+        "body": "Nodig het hele gezin uit. Iedereen blijft verbonden met één gedeeld brein — en één rustige stem."
+      }
+    },
+    "privacyCallout": "De gegevens van je gezin blijven van jou. Versleuteld tijdens verzending, geïsoleerd per huishouden en nooit verkocht.",
+    "poweredBy": {
+      "label": "Mogelijk gemaakt door",
+      "tagline": "Premium intelligentie, afgestemd op de mensen die er het meest toe doen.",
+      "questions": "Vragen? Mail naar"
+    },
+    "copyright": "© 2026 Mia Family Assistant. Alle rechten voorbehouden."
+  },
+  "aiConsent": {
+    "title": "AI-functies en je gegevens",
+    "subtitle": "Lees dit eerst voordat je verdergaat",
+    "intro": "MIA gebruikt AI-diensten van derden voor de spraakassistent, bonnetjes scannen, agenda-imports en slimme suggesties. We hebben je toestemming nodig voordat we je content naar deze diensten sturen.",
+    "whatWeSend": {
+      "title": "Wat we versturen",
+      "voice": "De spraakopname die je maakt wanneer je op de microfoon tikt",
+      "photos": "Foto's van bonnetjes, agenda's of notities die je uploadt",
+      "text": "Tekstprompts, boodschappenitems, taken en afspraken die je typt"
+    },
+    "whoReceives": {
+      "title": "Wie het ontvangt",
+      "google": "(Gemini AI-modellen, via de Lovable AI Gateway) — tekst, afbeeldingen, categorisering",
+      "elevenLabs": "— spraak-naar-tekst en tekst-naar-spraak van de spraakassistent"
+    },
+    "processingNote": "Deze aanbieders verwerken je gegevens alleen om een AI-reactie aan MIA terug te geven en zijn contractueel verplicht deze te beschermen. We verkopen je gegevens nooit.",
+    "contentModeration": "Aanstootgevende, illegale of misbruikende content wordt gefilterd en niet getolereerd.",
+    "reportAbusePrefix": "Meld misbruik of blokkeer gebruikers via",
+    "reportAbuseSuffix": ". Meldingen worden binnen 24 uur beoordeeld.",
+    "detailsPrefix": "Volledige details staan in ons",
+    "privacyPolicy": "Privacybeleid",
+    "and": "en",
+    "terms": "Voorwaarden",
+    "declineNote": ". Als je weigert, meldt MIA je af omdat de functies afhankelijk zijn van deze AI-diensten.",
+    "decline": "Weigeren en afmelden",
+    "accept": "Accepteren en doorgaan"
+  },
+  "logins": {
+    "title": "Logins",
+    "memberCountOnTier": "{{count}} / {{limit}} bij {{label}}",
+    "description": "Mensen die kunnen inloggen bij dit huishouden.",
+    "you": "Jij",
+    "aFamilyMember": "Een gezinslid",
+    "iAm": "Ik ben…",
+    "chooseProfile": "Kies je profiel…",
+    "linkHint": "Vertelt Mia welk gezinslid spreekt wanneer je spraak gebruikt.",
+    "pendingInvites": "Openstaande uitnodigingen",
+    "anyEmail": "elk e-mailadres",
+    "upgradeToAddMore": "Upgrade om meer logins toe te voegen",
+    "emailPlaceholder": "E-mail (optioneel)",
+    "invite": "Uitnodigen",
+    "aria": {
+      "remove": "Verwijderen",
+      "copyLink": "Link kopiëren",
+      "revoke": "Intrekken"
+    },
+    "toast": {
+      "limitReachedTitle": "Loginlimiet bereikt",
+      "limitReachedDesc": "Je {{label}}-abonnement staat {{count}} login(s) toe. Upgrade om er meer toe te voegen.",
+      "couldntCreateInviteTitle": "Kon uitnodiging niet aanmaken",
+      "emailFailedTitle": "Uitnodiging aangemaakt, maar e-mail mislukt",
+      "emailFailedDesc": "{{message}}. In plaats daarvan is de link naar het klembord gekopieerd.",
+      "inviteSentTitle": "Uitnodiging verzonden",
+      "inviteSentDesc": "E-mail verzonden naar {{email}}.",
+      "inviteLinkCopiedTitle": "Uitnodigingslink gekopieerd",
+      "couldntLinkProfileTitle": "Kon profiel niet koppelen",
+      "profileLinkedTitle": "Profiel gekoppeld",
+      "profileLinkedDesc": "Mia weet nu dat jij het bent wanneer je praat.",
+      "linkCopiedTitle": "Link gekopieerd"
+    }
+  },
+  "push": {
+    "title": "Pushmeldingen",
+    "description": "Ontvang herinneringen voor taken en afspraken rechtstreeks op je telefoon.",
+    "mobileOnlyNote": "Beschikbaar in de geïnstalleerde mobiele app. Open Mia op je Android- of iOS-toestel om te activeren.",
+    "working": "Bezig…",
+    "disable": "Pushmeldingen uitschakelen",
+    "enable": "Pushmeldingen inschakelen",
+    "whatYoullReceive": "Wat je ontvangt",
+    "toast": {
+      "mobileRequiredTitle": "Mobiele app vereist",
+      "mobileRequiredDesc": "Pushmeldingen werken in de geïnstalleerde Android/iOS-app.",
+      "permissionNeededTitle": "Toestemming vereist",
+      "permissionNeededDesc": "Sta meldingen voor Mia toe in je telefooninstellingen en probeer het opnieuw.",
+      "enabledTitle": "Pushmeldingen ingeschakeld",
+      "disabledTitle": "Pushmeldingen uitgeschakeld",
+      "errorTitle": "Er is iets misgegaan",
+      "couldntSaveTitle": "Kon niet opslaan"
+    }
+  },
+  "voice": {
+    "tapToPrepare": "Tik op de microfoon om Mia voor te bereiden.",
+    "status": {
+      "listening": "Luistert…",
+      "preparing": "Mia wordt voorbereid… tik zo weer op de microfoon.",
+      "readyTapAgain": "Mia is klaar. Tik opnieuw op de microfoon om te beginnen met praten.",
+      "connecting": "Verbinden met Mia…",
+      "noAccess": "Je hebt op dit moment geen toegang tot spraak."
+    },
+    "quota": {
+      "minutes": "{{used}}/{{limit}} min"
+    },
+    "aria": {
+      "endConversation": "Gesprek met Mia beëindigen",
+      "talkToMia": "Praat met Mia (sleep om te verplaatsen)"
+    },
+    "toast": {
+      "couldntAddTodoTitle": "Kon taak niet toevoegen",
+      "addedToTodoTitle": "Toegevoegd aan takenlijst",
+      "addedIngredientsTitle": "Ingrediënten van {{dish}} toegevoegd",
+      "couldntAddEventTitle": "Kon afspraak niet toevoegen",
+      "eventAddedTitle": "Afspraak toegevoegd",
+      "connectedTitle": "Verbonden met Mia",
+      "connectedDesc": "Begin met praten…",
+      "disconnectedTitle": "Mia verbroken",
+      "disconnectedDroppedDesc": "Verbinding verbroken na {{seconds}}s. Tik op de microfoon om opnieuw te verbinden.",
+      "disconnectedReconnectDesc": "Tik op de microfoon om opnieuw te verbinden.",
+      "conversationEnded": "Gesprek beëindigd",
+      "connectionErrorTitle": "Verbindingsfout",
+      "voiceUnavailableTitle": "Spraak niet beschikbaar",
+      "readyTitle": "Mia is klaar",
+      "readyDesc": "Tik opnieuw op de microfoon om te beginnen met praten.",
+      "couldntPrepareTitle": "Kon Mia niet voorbereiden",
+      "couldntStartTitle": "Kon Mia niet starten"
+    }
   }
 }

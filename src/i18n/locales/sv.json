@@ -457,5 +457,236 @@
     "title": "404",
     "message": "Hoppsan! Sidan hittades inte",
     "returnHome": "Återgå till startsidan"
+  },
+  "landing": {
+    "brand": "Mia Familjeassistent",
+    "loading": "Laddar…",
+    "hero": {
+      "title": "En app för din familjs matinköp, kalender, uppgifter och påminnelser",
+      "subtitle": "Håll äntligen hela din familj organiserad på ett ställe. Delade listor, scheman, sysslor och AI-hjälp — allt samverkar.",
+      "startTrial": "Starta 7 dagars gratis provperiod",
+      "signIn": "Logga in",
+      "privacyNote": "Dina uppgifter förblir privata och säljs aldrig."
+    },
+    "screenshotsSection": {
+      "eyebrow": "Se appen",
+      "title": "Byggd för hur familjer faktiskt fungerar"
+    },
+    "benefits": {
+      "voiceFirst": {
+        "title": "Röst först",
+        "body": "Lägg till matvaror, schemalägg händelser och kolla din dag — bara genom att prata."
+      },
+      "households": {
+        "title": "Byggd för hushåll",
+        "body": "En gemensam hjärna för hela familjen. Alla hålls synkade."
+      },
+      "calendar": {
+        "title": "Smart kalender",
+        "body": "AI importerar händelser från skärmbilder och PDF-filer och påminner dig innan de börjar."
+      },
+      "todos": {
+        "title": "Delade att-göra-listor",
+        "body": "Fördela uppgifter, följ framsteg och avlasta den mentala belastningen tillsammans."
+      },
+      "push": {
+        "title": "Push-notiser",
+        "body": "Dagliga sammanfattningar och påminnelser om händelser 30 minuter innan, direkt till din telefon."
+      },
+      "receipts": {
+        "title": "Kvittospårning",
+        "body": "Fotografera kvitton och håll utgifterna organiserade per hushåll."
+      }
+    },
+    "screenshots": {
+      "home": "Hem",
+      "meetMia": "Möt MIA",
+      "groceryList": "Inköpslista",
+      "receipts": "Kvitton",
+      "calendar": "Kalender"
+    },
+    "voiceSection": {
+      "eyebrow": "Röststyrd",
+      "title": "Säg bara vad din familj behöver",
+      "subtitle": "MIA lyssnar och organiserar det sedan",
+      "description": "Tryck på mikrofonen medan du lagar mat, kör bil eller packar barnen. Lägg till matvaror, skapa kalenderhändelser, sätt upp uppgifter och fråga vad som händer idag — utan att skriva något.",
+      "items": [
+        "Lägg till varor i inköpslistan",
+        "Skapa kalenderhändelser med rösten",
+        "Ställ in påminnelser och tilldela uppgifter",
+        "Fråga vad som är schemalagt idag"
+      ]
+    },
+    "featuresSection": {
+      "eyebrow": "Funktioner",
+      "title": "Allt din familj behöver"
+    },
+    "ctaSection": {
+      "title": "Redo att organisera din familj?",
+      "subtitle": "Skapa ditt gratis konto och bjud in din familj på några minuter.",
+      "privacyNote": "Dina uppgifter är privata och säljs aldrig."
+    },
+    "footer": {
+      "questions": "Frågor? Maila",
+      "privacyPolicy": "Integritetspolicy",
+      "terms": "Användarvillkor",
+      "copyright": "© 2026 Mia Familjeassistent. Alla rättigheter förbehållna."
+    }
+  },
+  "about": {
+    "hero": {
+      "eyebrow": "Möt MIA",
+      "title": "Din familjs AI-kopilot",
+      "subtitle": "MIA är den alltid aktiva assistenten som förvandlar familjelivets kaos till något tyst, vackert enkelt. Prata med den. Lita på den. Ta tillbaka dina helger."
+    },
+    "features": {
+      "talkToMia": {
+        "title": "Prata med MIA",
+        "body": "Prata bara — lägg till matvaror, schemalägg händelser eller kolla in dagen. MIA lyssnar, förstår och agerar på några sekunder."
+      },
+      "groceryList": {
+        "title": "Delad inköpslista",
+        "body": "En enda smart lista som alla i hushållet kan uppdatera var som helst — med rösten eller genom att trycka."
+      },
+      "todos": {
+        "title": "Att-göra, klart",
+        "body": "Fördela uppgifter, följ framsteg och avlasta äntligen den mentala belastningen. MIA håller familjen synkad."
+      },
+      "calendar": {
+        "title": "Familjekalender",
+        "body": "Tvåvägs röstsynkronisering, AI-import från PDF-filer och skärmbilder, samt vänliga påminnelser som faktiskt kommer i tid."
+      },
+      "receipts": {
+        "title": "Kvitton, avkodade",
+        "body": "Ta en bild — MIA extraherar varor, summor och kategorier. Adjö, skokartong."
+      },
+      "households": {
+        "title": "Byggd för hushåll",
+        "body": "Bjud in hela familjen. Alla förblir uppkopplade med en gemensam hjärna — och en tyst röst."
+      }
+    },
+    "privacyCallout": "Din familjs data förblir din. Krypterad under överföring, isolerad per hushåll och säljs aldrig.",
+    "poweredBy": {
+      "label": "Drivs av",
+      "tagline": "Premiumintelligens, anpassad för de människor som betyder mest.",
+      "questions": "Frågor? Maila"
+    },
+    "copyright": "© 2026 Mia Familjeassistent. Alla rättigheter förbehållna."
+  },
+  "aiConsent": {
+    "title": "AI-funktioner och dina uppgifter",
+    "subtitle": "Vänligen granska innan du fortsätter",
+    "intro": "MIA använder AI-tjänster från tredje part för att driva röstassistenten, kvittoskanning, kalenderimporter och smarta förslag. Vi behöver ditt tillstånd innan vi skickar något av ditt innehåll till dessa tjänster.",
+    "whatWeSend": {
+      "title": "Vad vi skickar",
+      "voice": "Röstinspelningen du gör när du trycker på mikrofonen",
+      "photos": "Foton av kvitton, kalendrar eller anteckningar du laddar upp",
+      "text": "Textprompter, matvaror, uppgifter och händelser du skriver"
+    },
+    "whoReceives": {
+      "title": "Vem tar emot det",
+      "google": "(Gemini AI-modeller, dirigerade via Lovable AI Gateway) — text, bilder, kategorisering",
+      "elevenLabs": "— röstassistentens tal-till-text och text-till-tal"
+    },
+    "processingNote": "Dessa leverantörer bearbetar dina uppgifter enbart för att returnera ett AI-svar till MIA och är kontraktsmässigt skyldiga att skydda dem. Vi säljer aldrig dina uppgifter.",
+    "contentModeration": "Anstötligt, olagligt eller kränkande innehåll filtreras och tolereras inte.",
+    "reportAbusePrefix": "Rapportera missbruk eller blockera användare via",
+    "reportAbuseSuffix": ". Rapporter granskas inom 24 timmar.",
+    "detailsPrefix": "Fullständiga detaljer finns i vår",
+    "privacyPolicy": "Integritetspolicy",
+    "and": "och",
+    "terms": "Villkor",
+    "declineNote": ". Om du avböjer loggar MIA ut dig eftersom dess funktioner bygger på dessa AI-tjänster.",
+    "decline": "Avböj och logga ut",
+    "accept": "Acceptera och fortsätt"
+  },
+  "logins": {
+    "title": "Inloggningar",
+    "memberCountOnTier": "{{count}} / {{limit}} på {{label}}",
+    "description": "Personer som kan logga in i detta hushåll.",
+    "you": "Du",
+    "aFamilyMember": "En familjemedlem",
+    "iAm": "Jag är…",
+    "chooseProfile": "Välj din profil…",
+    "linkHint": "Talar om för Mia vilken familjemedlem som pratar när du använder rösten.",
+    "pendingInvites": "Väntande inbjudningar",
+    "anyEmail": "valfri e-post",
+    "upgradeToAddMore": "Uppgradera för att lägga till fler inloggningar",
+    "emailPlaceholder": "E-post (valfritt)",
+    "invite": "Bjud in",
+    "aria": {
+      "remove": "Ta bort",
+      "copyLink": "Kopiera länk",
+      "revoke": "Återkalla"
+    },
+    "toast": {
+      "limitReachedTitle": "Inloggningsgräns nådd",
+      "limitReachedDesc": "Din {{label}}-plan tillåter {{count}} inloggning(ar). Uppgradera för att lägga till fler.",
+      "couldntCreateInviteTitle": "Kunde inte skapa inbjudan",
+      "emailFailedTitle": "Inbjudan skapad, men e-post misslyckades",
+      "emailFailedDesc": "{{message}}. Länk kopierad till urklipp istället.",
+      "inviteSentTitle": "Inbjudan skickad",
+      "inviteSentDesc": "E-post skickad till {{email}}.",
+      "inviteLinkCopiedTitle": "Inbjudningslänk kopierad",
+      "couldntLinkProfileTitle": "Kunde inte länka profil",
+      "profileLinkedTitle": "Profil länkad",
+      "profileLinkedDesc": "Mia vet nu att det är du när du pratar.",
+      "linkCopiedTitle": "Länk kopierad"
+    }
+  },
+  "push": {
+    "title": "Push-notiser",
+    "description": "Få påminnelser om uppgifter och händelser direkt till din telefon.",
+    "mobileOnlyNote": "Tillgängligt i den installerade mobilappen. Öppna Mia på din Android- eller iOS-enhet för att aktivera.",
+    "working": "Arbetar…",
+    "disable": "Inaktivera push-notiser",
+    "enable": "Aktivera push-notiser",
+    "whatYoullReceive": "Vad du kommer att få",
+    "toast": {
+      "mobileRequiredTitle": "Mobilapp krävs",
+      "mobileRequiredDesc": "Push-notiser fungerar i den installerade Android/iOS-appen.",
+      "permissionNeededTitle": "Behörighet krävs",
+      "permissionNeededDesc": "Tillåt notiser för Mia i din telefons inställningar och försök sedan igen.",
+      "enabledTitle": "Push-notiser aktiverade",
+      "disabledTitle": "Push-notiser inaktiverade",
+      "errorTitle": "Något gick fel",
+      "couldntSaveTitle": "Kunde inte spara"
+    }
+  },
+  "voice": {
+    "tapToPrepare": "Tryck på mikrofonen för att förbereda Mia.",
+    "status": {
+      "listening": "Lyssnar…",
+      "preparing": "Förbereder Mia… tryck på mikrofonen igen om ett ögonblick.",
+      "readyTapAgain": "Mia är redo. Tryck på mikrofonen igen för att börja prata.",
+      "connecting": "Ansluter till Mia…",
+      "noAccess": "Du har inte tillgång till rösten just nu."
+    },
+    "quota": {
+      "minutes": "{{used}}/{{limit}} min"
+    },
+    "aria": {
+      "endConversation": "Avsluta samtalet med Mia",
+      "talkToMia": "Prata med Mia (dra för att flytta)"
+    },
+    "toast": {
+      "couldntAddTodoTitle": "Kunde inte lägga till uppgift",
+      "addedToTodoTitle": "Tillagd i att-göra-listan",
+      "addedIngredientsTitle": "Lade till ingredienser för {{dish}}",
+      "couldntAddEventTitle": "Kunde inte lägga till händelse",
+      "eventAddedTitle": "Händelse tillagd",
+      "connectedTitle": "Ansluten till Mia",
+      "connectedDesc": "Börja prata…",
+      "disconnectedTitle": "Mia frånkopplad",
+      "disconnectedDroppedDesc": "Tappades efter {{seconds}}s. Tryck på mikrofonen för att återansluta.",
+      "disconnectedReconnectDesc": "Tryck på mikrofonen för att återansluta.",
+      "conversationEnded": "Samtal avslutat",
+      "connectionErrorTitle": "Anslutningsfel",
+      "voiceUnavailableTitle": "Röst otillgänglig",
+      "readyTitle": "Mia är redo",
+      "readyDesc": "Tryck på mikrofonen igen för att börja prata.",
+      "couldntPrepareTitle": "Kunde inte förbereda Mia",
+      "couldntStartTitle": "Kunde inte starta Mia"
+    }
   }
 }
