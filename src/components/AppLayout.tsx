@@ -9,6 +9,7 @@ import maiLogo from "@/assets/mai-logo.png";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
 import { AIConsentModal } from "@/components/AIConsentModal";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useHousehold } from "@/lib/useHousehold";
 import { useTranslation } from "react-i18next";
 
 
@@ -56,6 +57,7 @@ const AppLayout = () => {
   const [needsOnboarding, setNeedsOnboarding] = useState<null | { householdId: string }>(null);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
   usePushNotifications(user?.id);
+  const { household, loading: householdLoading } = useHousehold();
 
   useEffect(() => {
     if (!user) {
@@ -91,7 +93,7 @@ const AppLayout = () => {
     };
   }, [user]);
 
-  if (loading || (user && checkingOnboarding)) {
+  if (loading || (user && (checkingOnboarding || householdLoading))) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-sm text-muted-foreground animate-pulse">{t("common.loading")}</p>
@@ -103,7 +105,13 @@ const AppLayout = () => {
     return <Navigate to="/" replace />;
   }
 
-  if (needsOnboarding) {
+  // A plan is required to use the app — every plan includes a 7-day free trial.
+  const needsPlan = !!household && !household.hasAccess;
+  if (needsPlan && location.pathname !== "/pricing" && location.pathname !== "/settings") {
+    return <Navigate to="/pricing" replace />;
+  }
+
+  if (needsOnboarding && !needsPlan) {
     return (
       <OnboardingPage
         householdId={needsOnboarding.householdId}
@@ -111,6 +119,7 @@ const AppLayout = () => {
       />
     );
   }
+
 
   const titleKey = titleKeyFor(location.pathname);
   const pageTitle = titleKey ? t(titleKey) : "MIA";

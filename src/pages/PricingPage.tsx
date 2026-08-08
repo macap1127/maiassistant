@@ -280,13 +280,20 @@ const PricingPage = () => {
     <>
       <PaymentTestModeBanner />
       <div className="page-container pb-28">
-        <button onClick={() => navigate(-1)} className="text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
-          ← Back
-        </button>
+        {household?.hasAccess !== false && (
+          <button onClick={() => navigate(-1)} className="text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
+            ← Back
+          </button>
+        )}
 
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-2xl font-serif font-semibold mb-2">Choose your plan</h1>
-          <p className="text-sm text-muted-foreground">Start with a 7-day free trial. Cancel anytime.</p>
+          <p className="text-sm text-muted-foreground">
+            {household?.hasAccess === false
+              ? "Select a plan to activate your account. All plans include a 7-day free trial — cancel anytime."
+              : "Start with a 7-day free trial. Cancel anytime."}
+          </p>
+
           {nativePlatform && (
             <p className="mt-1 text-xs text-muted-foreground/70">
               Billed through {nativePlatform === "ios" ? "the App Store" : "Google Play"}
