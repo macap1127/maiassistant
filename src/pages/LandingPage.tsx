@@ -105,7 +105,7 @@ const LandingPage = () => {
           <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
               <Link to="/auth">
-                Get Started Free
+                Start 7-Day Free Trial
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>
@@ -265,7 +265,7 @@ const LandingPage = () => {
               </p>
               <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
                 <Link to="/auth">
-                  Get Started Free
+                  Start 7-Day Free Trial
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
