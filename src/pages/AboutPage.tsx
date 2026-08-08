@@ -1,40 +1,17 @@
 import { Sparkles, Mic, ShoppingCart, CheckSquare, CalendarDays, Receipt, Users, ShieldCheck } from "lucide-react";
 import maiLogo from "@/assets/mai-logo.png";
+import { useTranslation } from "react-i18next";
 
-const features = [
-  {
-    icon: Mic,
-    title: "Talk to MIA",
-    body: "Just speak — add groceries, schedule events, or check in on the day. MIA listens, understands, and acts in seconds.",
-  },
-  {
-    icon: ShoppingCart,
-    title: "Shared Grocery List",
-    body: "A single, smart list that everyone in the household can update from anywhere — voice or tap.",
-  },
-  {
-    icon: CheckSquare,
-    title: "To-Do, Done",
-    body: "Assign tasks, track progress, and finally clear the mental load. MIA keeps the family in sync.",
-  },
-  {
-    icon: CalendarDays,
-    title: "Family Calendar",
-    body: "Two-way voice sync, AI imports from PDFs and screenshots, and gentle reminders that actually land on time.",
-  },
-  {
-    icon: Receipt,
-    title: "Receipts, Decoded",
-    body: "Snap a photo — MIA extracts the items, totals, and categories. Goodbye shoebox.",
-  },
-  {
-    icon: Users,
-    title: "Built for Households",
-    body: "Invite the whole family. Everyone stays connected with one shared brain — and one quiet voice.",
-  },
-];
+const FEATURE_ICONS = [Mic, ShoppingCart, CheckSquare, CalendarDays, Receipt, Users];
+const FEATURE_KEYS = ["talkToMia", "groceryList", "todos", "calendar", "receipts", "households"] as const;
 
 const AboutPage = () => {
+  const { t } = useTranslation();
+  const features = FEATURE_KEYS.map((key, i) => ({
+    icon: FEATURE_ICONS[i],
+    title: t(`about.features.${key}.title`),
+    body: t(`about.features.${key}.body`),
+  }));
   return (
     <div className="page-container">
       {/* Hero */}
@@ -44,14 +21,13 @@ const AboutPage = () => {
           <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
         </div>
         <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
-          Meet MIA
+          {t("about.hero.eyebrow")}
         </p>
         <h1 className="text-3xl font-display font-bold tracking-tight text-gradient mt-1">
-          Your Family's AI Co-Pilot
+          {t("about.hero.title")}
         </h1>
         <p className="text-sm text-muted-foreground mt-3 max-w-sm leading-relaxed">
-          MIA is the always-on assistant that turns the chaos of family life into something quietly, beautifully effortless.
-          Speak to it. Trust it. Reclaim your weekends.
+          {t("about.hero.subtitle")}
         </p>
       </div>
 
@@ -83,7 +59,7 @@ const AboutPage = () => {
       <div className="bg-card border border-border rounded-2xl p-4 mb-8 flex items-center gap-3">
         <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Your family's data stays yours. Encrypted in transit, isolated by household, and never sold.
+          {t("about.privacyCallout")}
         </p>
       </div>
 
@@ -93,14 +69,14 @@ const AboutPage = () => {
         <div className="relative">
           <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
             <Sparkles className="w-3 h-3 text-primary" />
-            Powered by
+            {t("about.poweredBy.label")}
           </div>
           <p className="text-lg font-display font-bold text-gradient">AI Blue Ribbon</p>
           <p className="text-xs text-muted-foreground mt-1">
-            Premium intelligence, tuned for the people who matter most.
+            {t("about.poweredBy.tagline")}
           </p>
           <p className="text-xs text-muted-foreground mt-3">
-            Questions? Email{" "}
+            {t("about.poweredBy.questions")}{" "}
             <a href="mailto:support@miafamilyassistant.com" className="text-primary hover:underline">
               support@miafamilyassistant.com
             </a>
@@ -109,7 +85,7 @@ const AboutPage = () => {
       </div>
 
       <p className="text-xs text-center text-muted-foreground/70 mt-6">
-        © 2026 Mia Family Assistant. All rights reserved.
+        {t("about.copyright")}
       </p>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   registerPushNotifications,
   unregisterPushNotifications,
 } from "@/lib/pushNotifications";
+import { useTranslation } from "react-i18next";
 
 type Prefs = {
   daily_digest: boolean;
@@ -24,14 +25,15 @@ const DEFAULT_PREFS: Prefs = {
   account_billing: true,
 };
 
-const ROWS: { key: keyof Prefs; label: string; desc: string }[] = [
-  { key: "daily_digest", label: "Daily calendar digest", desc: "A 9 AM summary of today's events." },
-  { key: "event_reminders", label: "Event reminders", desc: "30 minutes before timed events." },
-  { key: "family_activity", label: "Family activity", desc: "When a member adds a task, grocery, or event." },
-  { key: "account_billing", label: "Account & billing", desc: "Trial ending, payment issues, plan changes." },
-];
+const ROW_KEYS: (keyof Prefs)[] = ["daily_digest", "event_reminders", "family_activity", "account_billing"];
 
 export function PushNotificationCard() {
+  const { t } = useTranslation();
+  const ROWS = ROW_KEYS.map((key) => ({
+    key,
+    label: t(`push.rows.${key}.label`),
+    desc: t(`push.rows.${key}.desc`),
+  }));
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -62,8 +64,8 @@ export function PushNotificationCard() {
   const toggleMaster = async () => {
     if (!supported) {
       toast({
-        title: "Mobile app required",
-        description: "Push notifications work in the installed Android/iOS app.",
+        title: t("push.toast.mobileRequiredTitle"),
+        description: t("push.toast.mobileRequiredDesc"),
       });
       return;
     }
@@ -73,8 +75,8 @@ export function PushNotificationCard() {
         const token = await registerPushNotifications();
         if (!token) {
           toast({
-            title: "Permission needed",
-            description: "Allow notifications for Mia in your phone settings, then try again.",
+            title: t("push.toast.permissionNeededTitle"),
+            description: t("push.toast.permissionNeededDesc"),
             variant: "destructive",
           });
         } else {
@@ -85,15 +87,15 @@ export function PushNotificationCard() {
               .from("push_preferences" as any)
               .upsert({ user_id: user.id, ...prefs }, { onConflict: "user_id" });
           }
-          toast({ title: "Push notifications enabled" });
+          toast({ title: t("push.toast.enabledTitle") });
         }
       } else {
         await unregisterPushNotifications();
         setEnabled(false);
-        toast({ title: "Push notifications disabled" });
+        toast({ title: t("push.toast.disabledTitle") });
       }
     } catch (e: any) {
-      toast({ title: "Something went wrong", description: e?.message, variant: "destructive" });
+      toast({ title: t("push.toast.errorTitle"), description: e?.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -108,7 +110,7 @@ export function PushNotificationCard() {
       .upsert({ user_id: user.id, ...next }, { onConflict: "user_id" });
     if (error) {
       setPrefs(prefs); // revert
-      toast({ title: "Couldn't save", description: error.message, variant: "destructive" });
+      toast({ title: t("push.toast.couldntSaveTitle"), description: error.message, variant: "destructive" });
     }
   };
 
@@ -117,18 +119,18 @@ export function PushNotificationCard() {
       <div className="flex items-center gap-2 mb-3">
         <Bell className="w-4 h-4 text-primary" />
         <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-          Push Notifications
+          {t("push.title")}
         </label>
       </div>
 
       <p className="text-sm text-muted-foreground mb-3">
-        Get reminders for tasks and events delivered straight to your phone.
+        {t("push.description")}
       </p>
 
       {!supported && (
         <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/40 border border-border rounded-lg p-2.5 mb-3">
           <Smartphone className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-          <span>Available in the installed mobile app. Open Mia on your Android or iOS device to enable.</span>
+          <span>{t("push.mobileOnlyNote")}</span>
         </div>
       )}
 
@@ -144,19 +146,19 @@ export function PushNotificationCard() {
       >
         {loading || saving ? (
           <span className="inline-flex items-center gap-2">
-            <Loader2 className="w-4 h-4 animate-spin" /> Working…
+            <Loader2 className="w-4 h-4 animate-spin" /> {t("push.working")}
           </span>
         ) : enabled ? (
-          "Disable push notifications"
+          t("push.disable")
         ) : (
-          "Enable push notifications"
+          t("push.enable")
         )}
       </button>
 
       {enabled && (
         <div className="mt-4 pt-4 border-t border-border space-y-3">
           <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-            What you'll receive
+            {t("push.whatYoullReceive")}
           </p>
           {ROWS.map((r) => (
             <div key={r.key} className="flex items-start justify-between gap-3">

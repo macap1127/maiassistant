@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import maiLogo from "@/assets/mai-logo.png";
+import { useTranslation } from "react-i18next";
 
 interface Row {
   name: string;
@@ -21,6 +22,7 @@ const firstNameFrom = (s?: string | null) => {
 };
 
 const OnboardingPage = ({ householdId, onDone }: Props) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [ownerName, setOwnerName] = useState("");
   const [ownerPhone, setOwnerPhone] = useState("");
@@ -47,7 +49,7 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
   const handleSubmit = async (skipExtras = false) => {
     if (!user) return;
     if (!ownerName.trim()) {
-      toast({ variant: "destructive", title: "Please enter your name" });
+      toast({ variant: "destructive", title: t("onboarding.enterYourNameToast") });
       return;
     }
     setSaving(true);
@@ -73,11 +75,11 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
       ];
       const { error } = await supabase.from("family_members").insert(rows);
       if (error) throw error;
-      toast({ title: "All set!", description: "Welcome to MIA." });
+      toast({ title: t("onboarding.allSetToast"), description: t("onboarding.welcomeToMia") });
       onDone();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Could not save";
-      toast({ variant: "destructive", title: "Something went wrong", description: msg });
+      const msg = e instanceof Error ? e.message : t("onboarding.couldNotSave");
+      toast({ variant: "destructive", title: t("onboarding.somethingWentWrong"), description: msg });
     } finally {
       setSaving(false);
     }
@@ -92,13 +94,13 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
             <div className="absolute inset-0 rounded-2xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
           </div>
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
-            Welcome
+            {t("onboarding.welcome")}
           </p>
           <h1 className="text-2xl font-display font-bold tracking-tight mt-1">
-            Let's set up your <span className="text-gradient">family</span>
+            {t("onboarding.letsSetUpPrefix")} <span className="text-gradient">{t("onboarding.family")}</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
-            Tell MIA who's in your household so she can assign tasks and groceries by name.
+            {t("onboarding.subtitle")}
           </p>
         </div>
 
@@ -106,17 +108,17 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
         <div className="bg-card border border-border rounded-2xl p-4 mb-4">
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-4 h-4 text-primary" />
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">You</p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">{t("onboarding.you")}</p>
           </div>
-          <label className="block text-xs text-muted-foreground mb-1">Your name</label>
+          <label className="block text-xs text-muted-foreground mb-1">{t("onboarding.yourName")}</label>
           <input
             value={ownerName}
             onChange={(e) => setOwnerName(e.target.value)}
-            placeholder="e.g. Michael"
+            placeholder={t("onboarding.yourNamePlaceholder")}
             className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
           <label className="block text-xs text-muted-foreground mb-1">
-            Phone number <span className="opacity-60">(optional)</span>
+            {t("onboarding.phoneNumber")} <span className="opacity-60">({t("onboarding.optional")})</span>
           </label>
           <input
             value={ownerPhone}
@@ -126,26 +128,26 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
             className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
           <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-            Optional household detail only.
+            {t("onboarding.optionalDetailHint")}
           </p>
         </div>
 
         {/* Extra members */}
         <div className="bg-card border border-border rounded-2xl p-4 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">Family members</p>
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">{t("onboarding.familyMembers")}</p>
             <button
               type="button"
               onClick={addRow}
               className="text-xs text-primary hover:underline flex items-center gap-1"
             >
-              <Plus className="w-3 h-3" /> Add
+              <Plus className="w-3 h-3" /> {t("onboarding.add")}
             </button>
           </div>
 
           {extras.length === 0 ? (
             <p className="text-xs text-muted-foreground">
-              Add a partner, kids, or anyone else MIA should know about. You can do this later too.
+              {t("onboarding.emptyMembersHint")}
             </p>
           ) : (
             <div className="space-y-3">
@@ -155,7 +157,7 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
                     <input
                       value={row.name}
                       onChange={(e) => updateRow(i, { name: e.target.value })}
-                      placeholder="Name"
+                      placeholder={t("onboarding.name")}
                       className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
                     />
                     <button
@@ -169,7 +171,7 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
                   <input
                     value={row.phone}
                     onChange={(e) => updateRow(i, { phone: e.target.value })}
-                    placeholder="Phone (optional)"
+                    placeholder={t("onboarding.phoneOptional")}
                     inputMode="tel"
                     className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
                   />
@@ -184,14 +186,14 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
           disabled={saving}
           className="w-full h-12 rounded-2xl bg-gradient-brand text-primary-foreground font-medium text-sm shadow-glow disabled:opacity-50 mb-2"
         >
-          {saving ? "Saving…" : "Continue"}
+          {saving ? t("onboarding.saving") : t("onboarding.continue")}
         </button>
         <button
           onClick={() => handleSubmit(true)}
           disabled={saving}
           className="w-full h-10 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
-          Skip family members for now
+          {t("onboarding.skipMembers")}
         </button>
       </div>
     </div>

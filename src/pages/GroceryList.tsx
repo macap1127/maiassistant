@@ -3,6 +3,7 @@ import { Plus, Check, Trash2, Sparkles, ChevronDown, Trash, Store as StoreIcon }
 import { useFamilyData, genId, type GroceryItem } from "@/lib/store";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const CATEGORY_ORDER = [
   "Produce",
@@ -29,6 +30,7 @@ const CATEGORY_EMOJI: Record<string, string> = {
 };
 
 const GroceryList = () => {
+  const { t } = useTranslation();
   const { data, update } = useFamilyData();
   const [newItem, setNewItem] = useState("");
   const [newQty, setNewQty] = useState("");
@@ -36,6 +38,18 @@ const GroceryList = () => {
   const [storeFilter, setStoreFilter] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [collapsedDone, setCollapsedDone] = useState(true);
+
+  const CATEGORY_LABEL: Record<string, string> = {
+    Produce: t("grocery.categories.produce"),
+    Dairy: t("grocery.categories.dairy"),
+    Meat: t("grocery.categories.meat"),
+    Bakery: t("grocery.categories.bakery"),
+    Pantry: t("grocery.categories.pantry"),
+    Frozen: t("grocery.categories.frozen"),
+    Beverages: t("grocery.categories.beverages"),
+    Household: t("grocery.categories.household"),
+    Other: t("grocery.categories.other"),
+  };
 
   const addItem = async () => {
     const name = newItem.trim();
@@ -117,7 +131,7 @@ const GroceryList = () => {
       ...d,
       groceryList: d.groceryList.filter((g) => !ids.has(g.id)),
     }));
-    toast.success(`Cleared ${count} item${count === 1 ? "" : "s"}`);
+    toast.success(t("grocery.clearedToast", { count }));
   };
 
   const pending = data.groceryList.filter((g) => !g.completed && matchesStore(g));
@@ -151,20 +165,20 @@ const GroceryList = () => {
   return (
     <div className="page-container">
       <div className="flex items-center justify-between mb-1 animate-fade-in gap-3">
-        <h1 className="text-2xl font-serif font-semibold">Grocery List</h1>
+        <h1 className="text-2xl font-serif font-semibold">{t("grocery.title")}</h1>
         {completed.length > 0 && (
           <button
             onClick={clearCompleted}
             className="inline-flex items-center gap-1.5 text-xs font-medium bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors px-3 py-1.5 rounded-full border border-destructive/20"
           >
             <Trash className="w-3.5 h-3.5" />
-            Remove purchased ({completed.length})
+            {t("grocery.removePurchased", { count: completed.length })}
           </button>
         )}
       </div>
       <p className="text-sm text-muted-foreground mb-6 animate-fade-in">
-        {pending.length} {pending.length === 1 ? "item" : "items"} to get
-        {completed.length > 0 && ` · ${completed.length} done`}
+        {t("grocery.itemsToGet", { count: pending.length })}
+        {completed.length > 0 && ` · ${t("grocery.doneCount", { count: completed.length })}`}
       </p>
 
       {/* Add input */}
@@ -174,14 +188,14 @@ const GroceryList = () => {
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addItem()}
-            placeholder="Add an item..."
+            placeholder={t("grocery.addItemPlaceholder")}
             className="flex-1 bg-transparent px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none"
           />
           <input
             value={newQty}
             onChange={(e) => setNewQty(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addItem()}
-            placeholder="Qty"
+            placeholder={t("grocery.qtyPlaceholder")}
             className="w-16 bg-transparent px-2 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none border-l border-border"
           />
           <button
@@ -199,7 +213,7 @@ const GroceryList = () => {
             value={newStore}
             onChange={(e) => setNewStore(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addItem()}
-            placeholder="Store (optional, e.g. Costco)"
+            placeholder={t("grocery.storePlaceholder")}
             className="flex-1 bg-transparent text-xs placeholder:text-muted-foreground focus:outline-none py-1"
           />
           {newStore && (
@@ -207,7 +221,7 @@ const GroceryList = () => {
               onClick={() => setNewStore("")}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              clear
+              {t("grocery.clear")}
             </button>
           )}
           <datalist id="store-suggestions">
@@ -219,7 +233,7 @@ const GroceryList = () => {
         <div className="flex items-center gap-1.5 px-3 pt-1 pb-1">
           <Sparkles className="w-3 h-3 text-primary" />
           <p className="text-xs text-muted-foreground">
-            Auto-sorted into categories with AI
+            {t("grocery.autoSorted")}
           </p>
         </div>
       </div>
@@ -235,7 +249,7 @@ const GroceryList = () => {
                 : "bg-card text-foreground border-border hover:bg-secondary"
             }`}
           >
-            All stores
+            {t("grocery.allStores")}
           </button>
           {stores.map((s) => (
             <button
@@ -259,7 +273,7 @@ const GroceryList = () => {
                   : "bg-card text-muted-foreground border-border hover:bg-secondary"
               }`}
             >
-              No store
+              {t("grocery.noStore")}
             </button>
           )}
         </div>
@@ -270,7 +284,7 @@ const GroceryList = () => {
         <div className="text-center py-12 animate-fade-in">
           <div className="text-5xl mb-3">🛒</div>
           <p className="text-sm text-muted-foreground">
-            Your list is empty. Add the first item above.
+            {t("grocery.emptyState")}
           </p>
         </div>
       )}
@@ -286,7 +300,7 @@ const GroceryList = () => {
             <div className="flex items-center gap-2 mb-2 px-1">
               <span className="text-base">{CATEGORY_EMOJI[category]}</span>
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {category}
+                {CATEGORY_LABEL[category]}
               </p>
               <span className="text-xs text-muted-foreground">
                 {items.length}
@@ -301,7 +315,7 @@ const GroceryList = () => {
                   <button
                     onClick={() => toggle(item.id)}
                     className="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0 transition-colors hover:bg-primary/10"
-                    aria-label="Mark complete"
+                    aria-label={t("grocery.markComplete")}
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{item.name}</p>
@@ -327,7 +341,7 @@ const GroceryList = () => {
                   <button
                     onClick={() => remove(item.id)}
                     className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                    aria-label="Delete"
+                    aria-label={t("grocery.delete")}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -348,7 +362,7 @@ const GroceryList = () => {
             <ChevronDown
               className={`w-3 h-3 transition-transform ${collapsedDone ? "-rotate-90" : ""}`}
             />
-            Completed ({completed.length})
+            {t("grocery.completedCount", { count: completed.length })}
           </button>
           {!collapsedDone && (
             <div className="space-y-2">

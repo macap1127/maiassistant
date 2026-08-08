@@ -1,4 +1,5 @@
 import { useConversation, ConversationProvider } from "@elevenlabs/react";
+import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -198,6 +199,7 @@ const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
@@ -392,7 +394,7 @@ const VoiceAssistantInner = () => {
   useEffect(() => {
     void prepareVoiceConnection().catch((error) => {
       console.error("[Mia] voice connection prepare failed", error);
-      setStatusMessage("Tap the microphone to prepare Mia.");
+      setStatusMessage(t("voice.tapToPrepare"));
     });
   }, [prepareVoiceConnection]);
 
@@ -513,10 +515,10 @@ const VoiceAssistantInner = () => {
           });
           if (error) {
             console.error("[Mia] addTask insert error", error);
-            toast({ variant: "destructive", title: "Couldn't add to-do", description: error.message });
+            toast({ variant: "destructive", title: t("voice.toast.couldntAddTodoTitle"), description: error.message });
             return `Failed to add: ${error.message}`;
           }
-          toast({ title: "Added to To Do List", description: params.title });
+          toast({ title: t("voice.toast.addedToTodoTitle"), description: params.title });
           return `Added to your to-do list: ${params.title}.`;
         } catch (e: unknown) {
           console.error("[Mia] addTask threw", e);
@@ -587,7 +589,7 @@ const VoiceAssistantInner = () => {
             ingredients.map((i) => ({ name: i.name, quantity: i.quantity, store: params.store }))
           );
           if (added.length === 0) return `All ingredients for ${dish} were already on the list.`;
-          toast({ title: `Added ${dish} ingredients`, description: added.join(", ") });
+          toast({ title: t("voice.toast.addedIngredientsTitle", { dish }), description: added.join(", ") });
           return `Added ${added.length} ingredient${added.length === 1 ? "" : "s"} for ${dish}: ${added.join(", ")}.`;
         } catch (e) {
           return `Failed to add recipe: ${getErrorMessage(e)}`;
@@ -631,10 +633,10 @@ const VoiceAssistantInner = () => {
           });
           if (error) {
             console.error("[Mia] addEvent insert error", error);
-            toast({ variant: "destructive", title: "Couldn't add event", description: error.message });
+            toast({ variant: "destructive", title: t("voice.toast.couldntAddEventTitle"), description: error.message });
             return `Failed to add: ${error.message}`;
           }
-          toast({ title: "Event added", description: `${params.title} — ${params.date}${params.time ? " " + params.time : ""}` });
+          toast({ title: t("voice.toast.eventAddedTitle"), description: `${params.title} — ${params.date}${params.time ? " " + params.time : ""}` });
           return `Added event: ${params.title} on ${params.date}.`;
         } catch (e: unknown) {
           console.error("[Mia] addEvent threw", e);
@@ -769,8 +771,8 @@ const VoiceAssistantInner = () => {
       });
       setConnecting(false);
       wasConnectedRef.current = true;
-      setStatusMessage("Listening…");
-      toast({ title: "Connected to Mia", description: "Start speaking…" });
+      setStatusMessage(t("voice.status.listening"));
+      toast({ title: t("voice.toast.connectedTitle"), description: t("voice.toast.connectedDesc") });
     },
     onDisconnect: (...args: unknown[]) => {
       const disconnectedAt = Date.now();
@@ -805,11 +807,11 @@ const VoiceAssistantInner = () => {
       if (wasConnectedRef.current && !userEndedSessionRef.current) {
         toast({
           variant: "destructive",
-          title: "Mia disconnected",
-          description: lifetimeMs != null ? `Dropped after ${(lifetimeMs / 1000).toFixed(1)}s. Tap the mic to reconnect.` : "Tap the microphone to reconnect.",
+          title: t("voice.toast.disconnectedTitle"),
+          description: lifetimeMs != null ? t("voice.toast.disconnectedDroppedDesc", { seconds: (lifetimeMs / 1000).toFixed(1) }) : t("voice.toast.disconnectedReconnectDesc"),
         });
       } else if (userEndedSessionRef.current) {
-        toast({ title: "Conversation ended" });
+        toast({ title: t("voice.toast.conversationEnded") });
       }
       wasConnectedRef.current = false;
       userEndedSessionRef.current = false;
@@ -827,7 +829,7 @@ const VoiceAssistantInner = () => {
       setConnecting(false);
       const message = getStartErrorMessage(error, rest[0]);
       setStatusMessage(message);
-      toast({ variant: "destructive", title: "Connection error", description: message });
+      toast({ variant: "destructive", title: t("voice.toast.connectionErrorTitle"), description: message });
     },
     onStatusChange: (status: unknown) => {
       console.log("[Mia] ℹ️ onStatusChange", { at: new Date().toISOString(), status });
@@ -879,31 +881,31 @@ const VoiceAssistantInner = () => {
     const access = voiceAccessRef.current;
     if (!access || Date.now() - access.checkedAt >= VOICE_ACCESS_MAX_AGE_MS) {
       setConnecting(true);
-      setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
+      setStatusMessage(t("voice.status.preparing"));
       void getVoiceAccess()
         .then((result) => {
           if (!result.ok) {
-            const msg = result.reason || "You don't have access to voice right now.";
+            const msg = result.reason || t("voice.status.noAccess");
             setStatusMessage(msg);
-            toast({ variant: "destructive", title: "Voice unavailable", description: msg });
+            toast({ variant: "destructive", title: t("voice.toast.voiceUnavailableTitle"), description: msg });
             return;
           }
-          setStatusMessage("Mia is ready. Tap the microphone again to start talking.");
-          toast({ title: "Mia is ready", description: "Tap the microphone again to start talking." });
+          setStatusMessage(t("voice.status.readyTapAgain"));
+          toast({ title: t("voice.toast.readyTitle"), description: t("voice.toast.readyDesc") });
         })
         .catch((error) => {
           console.error("[Mia] start: voice access check failed", error);
           const message = getStartErrorMessage(error);
           setStatusMessage(message);
-          toast({ variant: "destructive", title: "Voice unavailable", description: message });
+          toast({ variant: "destructive", title: t("voice.toast.voiceUnavailableTitle"), description: message });
         })
         .finally(() => setConnecting(false));
       return;
     }
     if (!access.ok) {
-      const msg = access.reason || "You don't have access to voice right now.";
+      const msg = access.reason || t("voice.status.noAccess");
       setStatusMessage(msg);
-      toast({ variant: "destructive", title: "Voice unavailable", description: msg });
+      toast({ variant: "destructive", title: t("voice.toast.voiceUnavailableTitle"), description: msg });
       return;
     }
 
@@ -915,22 +917,22 @@ const VoiceAssistantInner = () => {
       conversationStatus: conversation.status,
     });
     setConnecting(true);
-    setStatusMessage("Connecting to Mia…");
+    setStatusMessage(t("voice.status.connecting"));
     try {
       if (!cached || Date.now() - cached.createdAt >= VOICE_CONNECTION_MAX_AGE_MS) {
         console.log("[Mia] start: no fresh signed URL, preparing…");
-        setStatusMessage("Preparing Mia… tap the microphone again in a moment.");
+        setStatusMessage(t("voice.status.preparing"));
         setConnecting(false);
         void prepareVoiceConnection()
           .then(() => {
             console.log("[Mia] start: prepare complete, awaiting next tap");
-            toast({ title: "Mia is ready", description: "Tap the microphone again to start talking." });
+            toast({ title: t("voice.toast.readyTitle"), description: t("voice.toast.readyDesc") });
           })
           .catch((error) => {
             console.error("[Mia] start: prepare failed", error);
             const message = getStartErrorMessage(error);
             setStatusMessage(message);
-            toast({ variant: "destructive", title: "Couldn't prepare Mia", description: message });
+            toast({ variant: "destructive", title: t("voice.toast.couldntPrepareTitle"), description: message });
           });
         return;
       }
@@ -986,7 +988,7 @@ const VoiceAssistantInner = () => {
       setStatusMessage(message);
       toast({
         variant: "destructive",
-        title: "Couldn't start Mia",
+        title: t("voice.toast.couldntStartTitle"),
         description: message,
       });
     } finally {
@@ -1034,6 +1036,7 @@ const POS_KEY = "mia_voice_button_pos_v1";
 const BTN_SIZE = 68;
 
 const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceReady, statusMessage, quota, onToggle }: DraggableProps) => {
+  const { t } = useTranslation();
   const navH = 76; // approx var(--nav-height) + gap
   const safeBottom = navH + 16;
   const [pos, setPos] = useState<{ x: number; y: number }>(() => {
@@ -1098,12 +1101,12 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
       )}
       {quota && (
         <div className="text-xs text-muted-foreground bg-card/80 backdrop-blur border border-border rounded-full px-2 py-0.5">
-          {Math.floor(quota.used / 60)}/{Math.floor(quota.limit / 60)} min
+          {t("voice.quota.minutes", { used: Math.floor(quota.used / 60), limit: Math.floor(quota.limit / 60) })}
         </div>
       )}
       <div
         role="button"
-        aria-label={isConnected ? "End conversation with Mia" : "Talk to Mia (drag to move)"}
+        aria-label={isConnected ? t("voice.aria.endConversation") : t("voice.aria.talkToMia")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}

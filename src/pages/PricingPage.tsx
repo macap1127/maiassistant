@@ -8,6 +8,7 @@ import { StripeEmbeddedCheckout, PaymentTestModeBanner } from "@/components/Stri
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 import {
   initRevenueCat,
   getOfferings,
@@ -37,115 +38,117 @@ const PRICE_IDS: Record<Interval, Record<Tier, string>> = {
 
 type TierDef = {
   id: Tier;
-  name: string;
-  tagline: string;
+  nameKey: string;
+  taglineKey: string;
   monthly: number;
   yearly: number;
   icon: typeof Zap;
   popular?: boolean;
-  highlights: string[];
+  highlightKeys: string[];
 };
 
 const tiers: TierDef[] = [
   {
     id: "basic",
-    name: "Basic",
-    tagline: "For one person",
+    nameKey: "pricing.tier.basic.name",
+    taglineKey: "pricing.tier.basic.tagline",
     monthly: 7.99,
     yearly: 70.99,
     icon: Zap,
-    highlights: [
-      "1 login",
-      "30 voice minutes / month",
-      "Tasks, groceries & calendar",
-      "Voice assistant (15 languages)",
-      "10 receipt scans / month",
-      "5 AI calendar imports / month",
+    highlightKeys: [
+      "pricing.highlight.oneLogin",
+      "pricing.highlight.voiceMinutes30",
+      "pricing.highlight.tasksGroceriesCalendar",
+      "pricing.highlight.voiceAssistant15",
+      "pricing.highlight.receiptScans10",
+      "pricing.highlight.calendarImports5",
     ],
   },
   {
     id: "family",
-    name: "Family",
-    tagline: "Most popular",
+    nameKey: "pricing.tier.family.name",
+    taglineKey: "pricing.tier.family.tagline",
     monthly: 22.99,
     yearly: 220.99,
     icon: Crown,
     popular: true,
-    highlights: [
-      "Up to 4 logins",
-      "120 shared voice minutes / month",
-      "Everything in Basic",
-      "Shared family workspace & invites",
-      "Daily push reminders",
-      "Unlimited receipt scanning",
-      "AI calendar import (PDF & images)",
+    highlightKeys: [
+      "pricing.highlight.upTo4Logins",
+      "pricing.highlight.voiceMinutes120",
+      "pricing.highlight.everythingInBasic",
+      "pricing.highlight.sharedWorkspace",
+      "pricing.highlight.dailyPush",
+      "pricing.highlight.unlimitedReceipts",
+      "pricing.highlight.aiCalendarImport",
     ],
   },
   {
     id: "family_plus",
-    name: "Family Plus",
-    tagline: "For larger households",
+    nameKey: "pricing.tier.familyPlus.name",
+    taglineKey: "pricing.tier.familyPlus.tagline",
     monthly: 35.99,
     yearly: 350.99,
     icon: Sparkles,
-    highlights: [
-      "Up to 6 logins",
-      "240 shared voice minutes / month",
-      "Everything in Family",
-      "Priority support",
+    highlightKeys: [
+      "pricing.highlight.upTo6Logins",
+      "pricing.highlight.voiceMinutes240",
+      "pricing.highlight.everythingInFamily",
+      "pricing.highlight.prioritySupport",
     ],
   },
 ];
 
 type FeatureRow = {
-  label: string;
+  labelKey: string;
   basic: string | boolean;
   family: string | boolean;
   family_plus: string | boolean;
 };
 
-const featureMatrix: { group: string; rows: FeatureRow[] }[] = [
+const featureMatrix: { groupKey: string; rows: FeatureRow[] }[] = [
   {
-    group: "Household",
+    groupKey: "pricing.group.household",
     rows: [
-      { label: "Logins included", basic: "1", family: "4", family_plus: "6" },
-      { label: "Shared family workspace", basic: false, family: true, family_plus: true },
-      { label: "Invite household members", basic: false, family: true, family_plus: true },
+      { labelKey: "pricing.feature.loginsIncluded", basic: "1", family: "4", family_plus: "6" },
+      { labelKey: "pricing.feature.sharedWorkspace", basic: false, family: true, family_plus: true },
+      { labelKey: "pricing.feature.inviteMembers", basic: false, family: true, family_plus: true },
     ],
   },
   {
-    group: "Mia voice assistant",
+    groupKey: "pricing.group.voiceAssistant",
     rows: [
-      { label: "Voice minutes / month", basic: "30", family: "120", family_plus: "240" },
-      { label: "15 supported languages", basic: true, family: true, family_plus: true },
-      { label: "Bidirectional calendar sync", basic: true, family: true, family_plus: true },
+      { labelKey: "pricing.feature.voiceMinutesPerMonth", basic: "30", family: "120", family_plus: "240" },
+      { labelKey: "pricing.feature.languages15", basic: true, family: true, family_plus: true },
+      { labelKey: "pricing.feature.bidirectionalSync", basic: true, family: true, family_plus: true },
     ],
   },
   {
-    group: "Everyday tools",
+    groupKey: "pricing.group.everydayTools",
     rows: [
-      { label: "Tasks, groceries & calendar", basic: true, family: true, family_plus: true },
-      { label: "Daily push reminders", basic: false, family: true, family_plus: true },
-      { label: "Receipt scanning (OCR)", basic: "10 / mo", family: "Unlimited", family_plus: "Unlimited" },
-      { label: "AI calendar import (PDF / image)", basic: "5 / mo", family: "Unlimited", family_plus: "Unlimited" },
+      { labelKey: "pricing.feature.tasksGroceriesCalendar", basic: true, family: true, family_plus: true },
+      { labelKey: "pricing.feature.dailyPushReminders", basic: false, family: true, family_plus: true },
+      { labelKey: "pricing.feature.receiptScanningOcr", basic: "pricing.value.tenPerMo", family: "pricing.value.unlimited", family_plus: "pricing.value.unlimited" },
+      { labelKey: "pricing.feature.aiCalendarImportPdf", basic: "pricing.value.fivePerMo", family: "pricing.value.unlimited", family_plus: "pricing.value.unlimited" },
     ],
   },
   {
-    group: "Support",
+    groupKey: "pricing.group.support",
     rows: [
-      { label: "Email support", basic: true, family: true, family_plus: true },
-      { label: "Priority support", basic: false, family: false, family_plus: true },
+      { labelKey: "pricing.feature.emailSupport", basic: true, family: true, family_plus: true },
+      { labelKey: "pricing.feature.prioritySupport", basic: false, family: false, family_plus: true },
     ],
   },
 ];
 
-function Cell({ value }: { value: string | boolean }) {
+function Cell({ value, t }: { value: string | boolean; t: (k: string) => string }) {
   if (value === true) return <Check className="w-3.5 h-3.5 text-primary mx-auto" />;
   if (value === false) return <Minus className="w-3.5 h-3.5 text-muted-foreground/50 mx-auto" />;
-  return <span className="text-xs font-medium">{value}</span>;
+  const display = value.startsWith("pricing.") ? t(value) : value;
+  return <span className="text-xs font-medium">{display}</span>;
 }
 
 const PricingPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { household, refresh } = useHousehold();
@@ -213,14 +216,14 @@ const PricingPage = () => {
         await purchaseProductById(wantedProduct);
       }
 
-      toast({ title: "Purchase complete", description: "Updating your plan…" });
+      toast({ title: t("pricing.purchaseComplete"), description: t("pricing.updatingPlan") });
       // Give RC webhook a moment to update Supabase, then refresh.
       setTimeout(() => refresh?.(), 2500);
     } catch (e: any) {
       const message = e?.message ?? String(e);
       if (e?.userCancelled || e?.code === "1" || /cancel/i.test(message)) return;
       console.error("[purchase] failed", e);
-      toast({ variant: "destructive", title: "Purchase failed", description: message });
+      toast({ variant: "destructive", title: t("pricing.purchaseFailed"), description: message });
     } finally {
       setNativePurchasing(null);
     }
@@ -231,10 +234,10 @@ const PricingPage = () => {
     setRestoring(true);
     try {
       await restorePurchases();
-      toast({ title: "Purchases restored", description: "Refreshing your plan…" });
+      toast({ title: t("pricing.purchasesRestored"), description: t("pricing.refreshingPlan") });
       setTimeout(() => refresh?.(), 1500);
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Restore failed", description: e?.message ?? String(e) });
+      toast({ variant: "destructive", title: t("pricing.restoreFailed"), description: e?.message ?? String(e) });
     } finally {
       setRestoring(false);
     }
@@ -246,7 +249,7 @@ const PricingPage = () => {
       return;
     }
     if (household && !household.isOwner) {
-      toast({ variant: "destructive", title: "Owner only", description: "Only the household owner can change the plan." });
+      toast({ variant: "destructive", title: t("pricing.ownerOnly"), description: t("pricing.ownerOnlyDesc") });
       return;
     }
     const runtimeNativePlatform = getNativePlatform();
@@ -269,7 +272,7 @@ const PricingPage = () => {
         setCheckoutTier(tier);
         return;
       }
-      toast({ variant: "destructive", title: "Couldn't open billing portal", description: error?.message || data?.error || "Try again." });
+      toast({ variant: "destructive", title: t("pricing.couldntOpenPortal"), description: error?.message || data?.error || t("pricing.tryAgain") });
       return;
     }
     setCheckoutTier(tier);
@@ -282,26 +285,26 @@ const PricingPage = () => {
       <div className="page-container pb-28">
         {household?.hasAccess !== false && (
           <button onClick={() => navigate(-1)} className="text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
-            ← Back
+            ← {t("pricing.back")}
           </button>
         )}
 
         <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-2xl font-serif font-semibold mb-2">Choose your plan</h1>
+          <h1 className="text-2xl font-serif font-semibold mb-2">{t("pricing.chooseYourPlan")}</h1>
           <p className="text-sm text-muted-foreground">
             {household?.hasAccess === false
-              ? "Select a plan to activate your account. All plans include a 7-day free trial — cancel anytime."
-              : "Start with a 7-day free trial. Cancel anytime."}
+              ? t("pricing.selectPlanToActivate")
+              : t("pricing.startFreeTrial")}
           </p>
 
           {nativePlatform && (
             <p className="mt-1 text-xs text-muted-foreground/70">
-              Billed through {nativePlatform === "ios" ? "the App Store" : "Google Play"}
+              {t("pricing.billedThrough", { store: nativePlatform === "ios" ? t("pricing.appStore") : t("pricing.googlePlay") })}
             </p>
           )}
           {household && !household.hasUsedTrial && (
             <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
-              <Sparkles className="w-3 h-3" /> 7-day free trial on any plan
+              <Sparkles className="w-3 h-3" /> {t("pricing.sevenDayTrialBadge")}
             </div>
           )}
         </div>
@@ -314,7 +317,7 @@ const PricingPage = () => {
                 billingInterval === "monthly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Monthly
+              {t("pricing.monthly")}
             </button>
             <button
               onClick={() => setBillingInterval("yearly")}
@@ -322,9 +325,9 @@ const PricingPage = () => {
                 billingInterval === "yearly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Yearly
+              {t("pricing.yearly")}
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${billingInterval === "yearly" ? "bg-primary-foreground/20" : "bg-primary/15 text-primary"}`}>
-                Save ~24%
+                {t("pricing.save24")}
               </span>
             </button>
           </div>
@@ -334,6 +337,7 @@ const PricingPage = () => {
           {tiers.map((tier, i) => {
             const Icon = tier.icon;
             const isCurrent = household?.subscriptionTier === tier.id && household?.subscriptionStatus === "active";
+            const tierName = t(tier.nameKey);
             return (
               <div
                 key={tier.id}
@@ -342,7 +346,7 @@ const PricingPage = () => {
               >
                 {tier.popular && (
                   <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold uppercase tracking-wider px-3 py-0.5 rounded-full">
-                    Most Popular
+                    {t("pricing.mostPopular")}
                   </span>
                 )}
 
@@ -351,23 +355,23 @@ const PricingPage = () => {
                     <Icon className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <h2 className="font-semibold text-sm">{tier.name}</h2>
-                    <p className="text-xs text-muted-foreground">{tier.tagline}</p>
+                    <h2 className="font-semibold text-sm">{tierName}</h2>
+                    <p className="text-xs text-muted-foreground">{t(tier.taglineKey)}</p>
                   </div>
                   <div className="ml-auto text-right">
                     <span className="text-xl font-bold">${billingInterval === "monthly" ? tier.monthly : tier.yearly}</span>
-                    <span className="text-xs text-muted-foreground">/{billingInterval === "monthly" ? "mo" : "yr"}</span>
+                    <span className="text-xs text-muted-foreground">/{billingInterval === "monthly" ? t("pricing.mo") : t("pricing.yr")}</span>
                     {billingInterval === "yearly" && (
-                      <p className="text-xs text-muted-foreground mt-0.5">≈ ${(tier.yearly / 12).toFixed(2)}/mo</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">≈ ${(tier.yearly / 12).toFixed(2)}/{t("pricing.mo")}</p>
                     )}
                   </div>
                 </div>
 
                 <ul className="space-y-1.5 mb-4">
-                  {tier.highlights.map((f) => (
+                  {tier.highlightKeys.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm">
                       <Check className="w-3.5 h-3.5 mt-0.5 text-primary shrink-0" />
-                      <span>{f}</span>
+                      <span>{t(f)}</span>
                     </li>
                   ))}
                 </ul>
@@ -379,14 +383,14 @@ const PricingPage = () => {
                 >
                   {nativePurchasing === tier.id && <Loader2 className="w-4 h-4 animate-spin" />}
                   {isCurrent
-                    ? "Current plan"
+                    ? t("pricing.currentPlan")
                     : nativePurchasing === tier.id
-                    ? "Opening store…"
+                    ? t("pricing.openingStore")
                     : household && hasActiveSub
-                    ? `Switch to ${tier.name}`
+                    ? t("pricing.switchTo", { name: tierName })
                     : household && !household.hasUsedTrial
-                    ? `Start 7-day free trial`
-                    : `Get ${tier.name}`}
+                    ? t("pricing.start7DayTrial")
+                    : t("pricing.get", { name: tierName })}
                 </button>
               </div>
             );
@@ -400,32 +404,32 @@ const PricingPage = () => {
               disabled={restoring}
               className="text-xs text-muted-foreground hover:text-foreground underline disabled:opacity-50"
             >
-              {restoring ? "Restoring…" : "Restore purchases"}
+              {restoring ? t("pricing.restoring") : t("pricing.restorePurchases")}
             </button>
           </div>
         )}
 
         {/* Compare features table */}
         <div className="mt-10">
-          <h2 className="font-serif text-lg font-semibold mb-3 text-center">Compare plans</h2>
+          <h2 className="font-serif text-lg font-semibold mb-3 text-center">{t("pricing.comparePlans")}</h2>
           <div className="bg-card border border-border rounded-2xl overflow-hidden">
             <div className="grid grid-cols-[1.4fr_repeat(3,1fr)] bg-secondary/50 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              <div className="px-3 py-2">Feature</div>
-              <div className="px-2 py-2 text-center">Basic</div>
-              <div className="px-2 py-2 text-center text-primary">Family</div>
-              <div className="px-2 py-2 text-center">Family+</div>
+              <div className="px-3 py-2">{t("pricing.feature")}</div>
+              <div className="px-2 py-2 text-center">{t("pricing.tier.basic.name")}</div>
+              <div className="px-2 py-2 text-center text-primary">{t("pricing.tier.family.name")}</div>
+              <div className="px-2 py-2 text-center">{t("pricing.tier.familyPlusShort")}</div>
             </div>
             {featureMatrix.map((section) => (
-              <div key={section.group}>
+              <div key={section.groupKey}>
                 <div className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground bg-secondary/20 border-t border-border">
-                  {section.group}
+                  {t(section.groupKey)}
                 </div>
                 {section.rows.map((row) => (
-                  <div key={row.label} className="grid grid-cols-[1.4fr_repeat(3,1fr)] items-center border-t border-border text-xs">
-                    <div className="px-3 py-2.5">{row.label}</div>
-                    <div className="px-2 py-2.5 text-center"><Cell value={row.basic} /></div>
-                    <div className="px-2 py-2.5 text-center"><Cell value={row.family} /></div>
-                    <div className="px-2 py-2.5 text-center"><Cell value={row.family_plus} /></div>
+                  <div key={row.labelKey} className="grid grid-cols-[1.4fr_repeat(3,1fr)] items-center border-t border-border text-xs">
+                    <div className="px-3 py-2.5">{t(row.labelKey)}</div>
+                    <div className="px-2 py-2.5 text-center"><Cell value={row.basic} t={t} /></div>
+                    <div className="px-2 py-2.5 text-center"><Cell value={row.family} t={t} /></div>
+                    <div className="px-2 py-2.5 text-center"><Cell value={row.family_plus} t={t} /></div>
                   </div>
                 ))}
               </div>
@@ -434,22 +438,22 @@ const PricingPage = () => {
         </div>
 
         <div className="mt-10 space-y-4 text-sm">
-          <h2 className="font-serif text-lg font-semibold">FAQ</h2>
+          <h2 className="font-serif text-lg font-semibold">{t("pricing.faq")}</h2>
           <div>
-            <p className="font-medium">What happens if I run out of voice minutes?</p>
-            <p className="text-muted-foreground text-xs mt-1">You can still use tasks, groceries, and calendar by hand. Upgrade to keep talking to Mia.</p>
+            <p className="font-medium">{t("pricing.faq1Q")}</p>
+            <p className="text-muted-foreground text-xs mt-1">{t("pricing.faq1A")}</p>
           </div>
           <div>
-            <p className="font-medium">Can I switch plans later?</p>
-            <p className="text-muted-foreground text-xs mt-1">Yes — change anytime from Settings. You'll be pro-rated automatically.</p>
+            <p className="font-medium">{t("pricing.faq2Q")}</p>
+            <p className="text-muted-foreground text-xs mt-1">{t("pricing.faq2A")}</p>
           </div>
           <div>
-            <p className="font-medium">When do voice minutes & receipt scans reset?</p>
-            <p className="text-muted-foreground text-xs mt-1">On the 1st of each month.</p>
+            <p className="font-medium">{t("pricing.faq3Q")}</p>
+            <p className="text-muted-foreground text-xs mt-1">{t("pricing.faq3A")}</p>
           </div>
           <div>
-            <p className="font-medium">Do voice minutes share across the family?</p>
-            <p className="text-muted-foreground text-xs mt-1">Yes — Family and Family Plus minutes are pooled across all logins in the household.</p>
+            <p className="font-medium">{t("pricing.faq4Q")}</p>
+            <p className="text-muted-foreground text-xs mt-1">{t("pricing.faq4A")}</p>
           </div>
         </div>
       </div>
@@ -458,31 +462,31 @@ const PricingPage = () => {
         <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur overflow-y-auto p-4">
           <div className="max-w-lg mx-auto">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-serif text-lg font-semibold">Subscribe to {tiers.find(t => t.id === checkoutTier)?.name}</h2>
-              <button onClick={() => setCheckoutTier(null)} className="p-2 rounded-full hover:bg-secondary" aria-label="Close">
+              <h2 className="font-serif text-lg font-semibold">{t("pricing.subscribeTo", { name: tiers.find(t2 => t2.id === checkoutTier)?.nameKey ? t(tiers.find(t2 => t2.id === checkoutTier)!.nameKey) : "" })}</h2>
+              <button onClick={() => setCheckoutTier(null)} className="p-2 rounded-full hover:bg-secondary" aria-label={t("pricing.close")}>
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {(() => {
-              const tier = tiers.find(t => t.id === checkoutTier)!;
+              const tier = tiers.find(t2 => t2.id === checkoutTier)!;
               const amount = billingInterval === "monthly" ? tier.monthly : tier.yearly;
-              const period = billingInterval === "monthly" ? "month" : "year";
+              const period = billingInterval === "monthly" ? t("pricing.month") : t("pricing.year");
               return (
                 <>
                   <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
                     {household && !household.hasUsedTrial ? (
                       <>
-                        <p className="text-foreground font-medium mb-1">7-day free trial, then ${amount}/{period}.</p>
-                        <p>You won't be charged today. Your subscription auto-renews {billingInterval} at the listed price until you cancel. Cancel anytime from Settings → Manage billing — no charge if you cancel before the trial ends.</p>
+                        <p className="text-foreground font-medium mb-1">{t("pricing.trialThenPrice", { amount, period })}</p>
+                        <p>{t("pricing.trialTerms", { interval: billingInterval })}</p>
                       </>
                     ) : (
-                      <p>Your subscription auto-renews {billingInterval} at ${amount} until you cancel. Cancel anytime from Settings → Manage billing.</p>
+                      <p>{t("pricing.renewsTerms", { interval: billingInterval, amount })}</p>
                     )}
                     <p className="mt-2">
-                      By subscribing, you agree to our{" "}
-                      <Link to="/terms" className="underline hover:text-foreground" target="_blank">Terms</Link> and{" "}
-                      <Link to="/privacy" className="underline hover:text-foreground" target="_blank">Privacy Policy</Link>.
+                      {t("pricing.bySubscribingPrefix")}{" "}
+                      <Link to="/terms" className="underline hover:text-foreground" target="_blank">{t("pricing.terms")}</Link> {t("pricing.and")}{" "}
+                      <Link to="/privacy" className="underline hover:text-foreground" target="_blank">{t("pricing.privacyPolicy")}</Link>.
                     </p>
                   </div>
 

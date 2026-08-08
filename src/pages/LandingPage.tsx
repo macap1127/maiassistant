@@ -16,6 +16,7 @@ import {
   Mic,
 } from "lucide-react";
 import maiLogo from "@/assets/mai-logo.png";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import {
@@ -26,53 +27,36 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-const benefits = [
-  {
-    icon: Mic,
-    title: "Voice-first",
-    body: "Add groceries, schedule events, and check your day — just by talking.",
-  },
-  {
-    icon: Users,
-    title: "Built for households",
-    body: "One shared brain for the whole family. Everyone stays in sync.",
-  },
-  {
-    icon: CalendarDays,
-    title: "Smart calendar",
-    body: "AI imports events from screenshots and PDFs, then reminds you before they start.",
-  },
-  {
-    icon: CheckSquare,
-    title: "Shared to-do's",
-    body: "Assign tasks, track progress, and clear the mental load together.",
-  },
-  {
-    icon: Bell,
-    title: "Push notifications",
-    body: "Daily digests and 30-minute event reminders delivered straight to your phone.",
-  },
-  {
-    icon: Receipt,
-    title: "Receipt tracking",
-    body: "Snap photos of receipts and keep spending records organized by household.",
-  },
-];
+const BENEFIT_ICONS = [Mic, Users, CalendarDays, CheckSquare, Bell, Receipt];
+const BENEFIT_KEYS = ["voiceFirst", "households", "calendar", "todos", "push", "receipts"] as const;
 
-const screenshots = [
-  { label: "Home", icon: Home, image: "/screenshots/dashboard.png", color: "from-cyan-500/20 to-blue-500/20" },
-  { label: "Meet MIA", icon: Sparkles, image: "/screenshots/about.png", color: "from-violet-500/20 to-fuchsia-500/20" },
-  { label: "Grocery List", icon: ShoppingCart, image: "/screenshots/grocery.png", color: "from-emerald-500/20 to-teal-500/20" },
-  { label: "Receipts", icon: Receipt, image: "/screenshots/receipts.png", color: "from-rose-500/20 to-pink-500/20" },
-  { label: "Calendar", icon: Calendar, image: "/screenshots/calendar.png", color: "from-amber-500/20 to-orange-500/20" },
+const SCREENSHOT_ICONS = [Home, Sparkles, ShoppingCart, Receipt, Calendar];
+const SCREENSHOT_KEYS = ["home", "meetMia", "groceryList", "receipts", "calendar"] as const;
+const SCREENSHOT_META = [
+  { image: "/screenshots/dashboard.png", color: "from-cyan-500/20 to-blue-500/20" },
+  { image: "/screenshots/about.png", color: "from-violet-500/20 to-fuchsia-500/20" },
+  { image: "/screenshots/grocery.png", color: "from-emerald-500/20 to-teal-500/20" },
+  { image: "/screenshots/receipts.png", color: "from-rose-500/20 to-pink-500/20" },
+  { image: "/screenshots/calendar.png", color: "from-amber-500/20 to-orange-500/20" },
 ];
 
 const LandingPage = () => {
+  const { t } = useTranslation();
+  const benefits = BENEFIT_KEYS.map((key, i) => ({
+    icon: BENEFIT_ICONS[i],
+    title: t(`landing.benefits.${key}.title`),
+    body: t(`landing.benefits.${key}.body`),
+  }));
+  const screenshots = SCREENSHOT_KEYS.map((key, i) => ({
+    label: t(`landing.screenshots.${key}`),
+    icon: SCREENSHOT_ICONS[i],
+    ...SCREENSHOT_META[i],
+  }));
   const { user, loading } = useAuth();
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-sm text-muted-foreground animate-pulse">Loading…</p>
+        <p className="text-sm text-muted-foreground animate-pulse">{t("landing.loading")}</p>
       </div>
     );
   }
@@ -94,28 +78,28 @@ const LandingPage = () => {
             <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
           </div>
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-3">
-            Mia Family Assistant
+            {t("landing.brand")}
           </p>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-gradient leading-tight">
-            One app for your family's groceries, calendar, tasks, and reminders
+            {t("landing.hero.title")}
           </h1>
           <p className="text-base text-muted-foreground mt-4 max-w-sm leading-relaxed">
-            Finally keep your whole family organized in one place. Shared lists, schedules, chores, and AI help — all working together.
+            {t("landing.hero.subtitle")}
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
               <Link to="/auth">
-                Start 7-Day Free Trial
+                {t("landing.hero.startTrial")}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-full px-8 border-border/80 hover:bg-muted">
-              <Link to="/auth">Sign in</Link>
+              <Link to="/auth">{t("landing.hero.signIn")}</Link>
             </Button>
           </div>
           <p className="text-xs text-muted-foreground/70 mt-4 flex items-center gap-1.5">
             <Shield className="w-3.5 h-3.5" />
-            Your data stays private and is never sold.
+            {t("landing.hero.privacyNote")}
           </p>
         </div>
 
@@ -123,10 +107,10 @@ const LandingPage = () => {
         <div className="mb-16 -mx-5">
           <div className="text-center mb-8 px-5">
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              See the app
+              {t("landing.screenshotsSection.eyebrow")}
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
-              Built for the way families actually work
+              {t("landing.screenshotsSection.title")}
             </h2>
           </div>
           <Carousel opts={{ align: "center", loop: true }} className="w-full">
@@ -182,10 +166,10 @@ const LandingPage = () => {
         <div className="mt-16 mb-16">
           <div className="text-center mb-8">
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              Voice powered
+              {t("landing.voiceSection.eyebrow")}
             </p>
             <h2 className="text-2xl md:text-3xl font-display font-bold text-gradient">
-              Just say what your family needs
+              {t("landing.voiceSection.title")}
             </h2>
           </div>
           <div className="glass rounded-3xl p-6 md:p-8 border border-primary/20 relative overflow-hidden">
@@ -195,18 +179,13 @@ const LandingPage = () => {
                 <Mic className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-xl md:text-2xl font-display font-bold mb-3">
-                MIA listens, then gets it organized
+                {t("landing.voiceSection.subtitle")}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-sm mx-auto">
-                Tap the mic while you cook, drive, or pack the kids up. Add groceries, create calendar events, set tasks, and ask what's happening today — without typing a thing.
+                {t("landing.voiceSection.description")}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
-                {[
-                  "Add items to the grocery list",
-                  "Create calendar events by voice",
-                  "Set reminders and assign tasks",
-                  "Ask what's scheduled today",
-                ].map((item) => (
+                {(t("landing.voiceSection.items", { returnObjects: true }) as string[]).map((item) => (
                   <div key={item} className="flex items-start gap-3 text-sm">
                     <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                       <Check className="w-3 h-3 text-primary" />
@@ -223,10 +202,10 @@ const LandingPage = () => {
         <div className="mb-16">
           <div className="text-center mb-8">
             <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech mb-2">
-              Features
+              {t("landing.featuresSection.eyebrow")}
             </p>
             <h2 className="text-2xl font-display font-bold text-gradient">
-              Everything your family needs
+              {t("landing.featuresSection.title")}
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -258,20 +237,20 @@ const LandingPage = () => {
             <div className="absolute inset-0 bg-gradient-brand opacity-10" />
             <div className="relative z-10">
               <h2 className="text-2xl font-display font-bold text-gradient mb-3">
-                Ready to get your family organized?
+                {t("landing.ctaSection.title")}
               </h2>
               <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
-                Create your free account and invite your family in minutes.
+                {t("landing.ctaSection.subtitle")}
               </p>
               <Button asChild size="lg" className="rounded-full px-8 bg-gradient-brand text-primary-foreground hover:opacity-90 transition-opacity glow">
                 <Link to="/auth">
-                  Start 7-Day Free Trial
+                  {t("landing.hero.startTrial")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
               <p className="text-xs text-muted-foreground/70 mt-4 flex items-center justify-center gap-1.5">
                 <Shield className="w-3.5 h-3.5" />
-                Your data is private and never sold.
+                {t("landing.ctaSection.privacyNote")}
               </p>
             </div>
           </div>
@@ -280,18 +259,18 @@ const LandingPage = () => {
         {/* Footer */}
         <div className="text-center border-t border-border/60 pt-8">
           <p className="text-xs text-muted-foreground mb-4">
-            Questions? Email{" "}
+            {t("landing.footer.questions")}{" "}
             <a href="mailto:support@miafamilyassistant.com" className="text-primary hover:underline">
               support@miafamilyassistant.com
             </a>
           </p>
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground/70">
-            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">{t("landing.footer.privacyPolicy")}</Link>
             <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-            <Link to="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">{t("landing.footer.terms")}</Link>
           </div>
           <p className="text-xs text-muted-foreground/50 mt-6">
-            © 2026 Mia Family Assistant. All rights reserved.
+            {t("landing.footer.copyright")}
           </p>
         </div>
       </div>

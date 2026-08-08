@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface InviteRow {
   id: string;
@@ -27,6 +28,7 @@ interface FamilyMemberRow {
 }
 
 export default function HouseholdLogins() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { household, refresh } = useHousehold();
   const navigate = useNavigate();
@@ -72,7 +74,7 @@ export default function HouseholdLogins() {
   const createInvite = async () => {
     if (!household.isOwner || !user) return;
     if (atLimit) {
-      toast({ variant: "destructive", title: "Login limit reached", description: `Your ${tier.label} plan allows ${tier.logins} login${tier.logins === 1 ? "" : "s"}. Upgrade to add more.` });
+      toast({ variant: "destructive", title: t("logins.toast.limitReachedTitle"), description: t("logins.toast.limitReachedDesc", { count: tier.logins, label: tier.label }) });
       return;
     }
     setCreating(true);
@@ -88,7 +90,7 @@ export default function HouseholdLogins() {
       .single();
     setCreating(false);
     if (error) {
-      toast({ variant: "destructive", title: "Couldn't create invite", description: error.message });
+      toast({ variant: "destructive", title: t("logins.toast.couldntCreateInviteTitle"), description: error.message });
       return;
     }
     setEmail("");
@@ -100,7 +102,7 @@ export default function HouseholdLogins() {
         (user.user_metadata as any)?.full_name ||
         (user.user_metadata as any)?.name ||
         user.email?.split("@")[0] ||
-        "A family member";
+        t("logins.aFamilyMember");
       const expiresAt = new Date(data.expires_at).toLocaleDateString(undefined, {
         year: "numeric",
         month: "long",
@@ -127,18 +129,18 @@ export default function HouseholdLogins() {
         void navigator.clipboard.writeText(link).catch(() => {});
         toast({
           variant: "destructive",
-          title: "Invite created, but email failed",
-          description: `${emailError.message}. Link copied to clipboard instead.`,
+          title: t("logins.toast.emailFailedTitle"),
+          description: t("logins.toast.emailFailedDesc", { message: emailError.message }),
         });
       } else {
         toast({
-          title: "Invite sent",
-          description: `Email sent to ${trimmedEmail}.`,
+          title: t("logins.toast.inviteSentTitle"),
+          description: t("logins.toast.inviteSentDesc", { email: trimmedEmail }),
         });
       }
     } else {
       void navigator.clipboard.writeText(link).catch(() => {});
-      toast({ title: "Invite link copied", description: link });
+      toast({ title: t("logins.toast.inviteLinkCopiedTitle"), description: link });
     }
   };
 
@@ -171,20 +173,20 @@ export default function HouseholdLogins() {
         .update({ user_id: user.id })
         .eq("id", familyMemberId);
       if (error) {
-        toast({ variant: "destructive", title: "Couldn't link profile", description: error.message });
+        toast({ variant: "destructive", title: t("logins.toast.couldntLinkProfileTitle"), description: error.message });
         setLinking(false);
         return;
       }
     }
     await loadAll();
     setLinking(false);
-    toast({ title: "Profile linked", description: "Mia will now know it's you when you talk." });
+    toast({ title: t("logins.toast.profileLinkedTitle"), description: t("logins.toast.profileLinkedDesc") });
   };
 
   const copyLink = (code: string) => {
     const link = `${window.location.origin}/invite/${code}`;
     void navigator.clipboard.writeText(link);
-    toast({ title: "Link copied", description: link });
+    toast({ title: t("logins.toast.linkCopiedTitle"), description: link });
   };
 
 
@@ -192,13 +194,13 @@ export default function HouseholdLogins() {
     <div className="bg-card rounded-2xl border border-border p-4 mb-4 animate-slide-up">
       <div className="flex items-center gap-2 mb-1">
         <Users className="w-4 h-4 text-primary" />
-        <h2 className="font-medium text-sm">Logins</h2>
+        <h2 className="font-medium text-sm">{t("logins.title")}</h2>
         <span className="ml-auto text-xs text-muted-foreground">
-          {household.memberCount} / {tier.logins} on {tier.label}
+          {t("logins.memberCountOnTier", { count: household.memberCount, limit: tier.logins, label: tier.label })}
         </span>
       </div>
       <p className="text-xs text-muted-foreground mb-3">
-        People who can sign in to this household.
+        {t("logins.description")}
       </p>
 
       <div className="space-y-2 mb-3">
@@ -208,11 +210,11 @@ export default function HouseholdLogins() {
               {m.user_id === household.ownerUserId ? <Crown className="w-3.5 h-3.5 text-warning" /> : "👤"}
             </div>
             <span className="flex-1 truncate font-mono text-xs">
-              {m.user_id === user?.id ? "You" : m.user_id.slice(0, 8) + "…"}
+              {m.user_id === user?.id ? t("logins.you") : m.user_id.slice(0, 8) + "…"}
             </span>
             <span className="text-xs uppercase tracking-wider text-muted-foreground">{m.role}</span>
             {household.isOwner && m.user_id !== household.ownerUserId && (
-              <button onClick={() => removeMember(m.user_id)} className="text-muted-foreground hover:text-destructive" aria-label="Remove">
+              <button onClick={() => removeMember(m.user_id)} className="text-muted-foreground hover:text-destructive" aria-label={t("logins.aria.remove")}>
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             )}
@@ -223,7 +225,7 @@ export default function HouseholdLogins() {
       {familyMembers.length > 0 && (
         <div className="mb-3 pt-3 border-t border-border">
           <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">
-            I am…
+            {t("logins.iAm")}
           </p>
           <select
             value={myFamilyMember?.id ?? ""}
@@ -231,7 +233,7 @@ export default function HouseholdLogins() {
             disabled={linking}
             className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
           >
-            <option value="">Choose your profile…</option>
+            <option value="">{t("logins.chooseProfile")}</option>
             {familyMembers
               .filter((f) => !f.user_id || f.user_id === user?.id)
               .map((f) => (
@@ -241,7 +243,7 @@ export default function HouseholdLogins() {
               ))}
           </select>
           <p className="text-xs text-muted-foreground mt-1.5">
-            Tells Mia which family member is talking when you use voice.
+            {t("logins.linkHint")}
           </p>
         </div>
       )}
@@ -250,15 +252,15 @@ export default function HouseholdLogins() {
         <>
           {invites.length > 0 && (
             <div className="space-y-2 mb-3 pt-3 border-t border-border">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">Pending invites</p>
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">{t("logins.pendingInvites")}</p>
               {invites.map((inv) => (
                 <div key={inv.id} className="flex items-center gap-2 text-sm">
                   <code className="text-xs bg-secondary rounded px-2 py-1">{inv.invite_code}</code>
-                  <span className="flex-1 truncate text-xs text-muted-foreground">{inv.email || "any email"}</span>
-                  <button onClick={() => copyLink(inv.invite_code)} className="text-muted-foreground hover:text-primary" aria-label="Copy link">
+                  <span className="flex-1 truncate text-xs text-muted-foreground">{inv.email || t("logins.anyEmail")}</span>
+                  <button onClick={() => copyLink(inv.invite_code)} className="text-muted-foreground hover:text-primary" aria-label={t("logins.aria.copyLink")}>
                     <Copy className="w-3.5 h-3.5" />
                   </button>
-                  <button onClick={() => revoke(inv.id)} className="text-muted-foreground hover:text-destructive" aria-label="Revoke">
+                  <button onClick={() => revoke(inv.id)} className="text-muted-foreground hover:text-destructive" aria-label={t("logins.aria.revoke")}>
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -271,7 +273,7 @@ export default function HouseholdLogins() {
               onClick={() => navigate("/pricing")}
               className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-xs font-semibold hover:opacity-90"
             >
-              Upgrade to add more logins
+              {t("logins.upgradeToAddMore")}
             </button>
 
           ) : (
@@ -279,7 +281,7 @@ export default function HouseholdLogins() {
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email (optional)"
+                placeholder={t("logins.emailPlaceholder")}
                 className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
               <button
@@ -288,7 +290,7 @@ export default function HouseholdLogins() {
                 className="bg-primary text-primary-foreground rounded-xl px-3 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
               >
                 <UserPlus className="w-3.5 h-3.5" />
-                Invite
+                {t("logins.invite")}
               </button>
             </div>
           )}
