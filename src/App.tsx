@@ -53,6 +53,8 @@ const App = () => (
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/auth/confirmed" element={<AuthConfirmedPage />} />
+
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/invite/:code" element={<AcceptInvitePage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
