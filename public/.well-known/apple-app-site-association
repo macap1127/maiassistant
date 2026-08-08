@@ -6,6 +6,7 @@
         "appID": "JV9VCCL5WK.com.aiblueribbon.mia",
         "paths": [
           "/reset-password",
+          "/auth/confirmed",
           "/invite/*"
         ]
       }

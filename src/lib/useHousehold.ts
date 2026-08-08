@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 
@@ -55,6 +55,10 @@ export const useHousehold = () => {
   const { user } = useAuth();
   const [household, setHousehold] = useState<HouseholdState | null>(null);
   const [loading, setLoading] = useState(true);
+  // Unique per hook instance — several components mount useHousehold() at the
+  // same time, and reusing one Supabase channel topic throws
+  // "cannot add `postgres_changes` callbacks ... after `subscribe()`".
+  const channelIdRef = useRef(Math.random().toString(36).slice(2));
 
   const refresh = useCallback(async () => {
     if (!user) {
@@ -118,7 +122,7 @@ export const useHousehold = () => {
   useEffect(() => {
     if (!household?.id) return;
     const channel = supabase
-      .channel(`household-billing-${household.id}`)
+      .channel(`household-billing-${household.id}-${channelIdRef.current}`)
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "households", filter: `id=eq.${household.id}` },
