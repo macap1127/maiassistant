@@ -9,6 +9,7 @@ import maiLogo from "@/assets/mai-logo.png";
 import { VoiceAssistant } from "@/components/VoiceAssistant";
 import { AIConsentModal } from "@/components/AIConsentModal";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useHousehold } from "@/lib/useHousehold";
 import { useTranslation } from "react-i18next";
 
 
