@@ -79,10 +79,8 @@ export const getNativePlatform = (): 'android' | 'ios' | null => {
     const isAndroidWebView = /Android/i.test(ua) && (/\bwv\b/i.test(ua) || /Version\/\d+(?:\.\d+)*.*Chrome/i.test(ua));
     const isIosWebView = /iPad|iPhone|iPod/i.test(ua) && !/Safari/i.test(ua);
     const isCapacitorScheme = ['capacitor:', 'ionic:'].includes(window.location.protocol);
-    const isCapacitorLocalhost = !!cap && window.location.hostname === 'localhost';
     if (isAndroidWebView) return 'android';
     if (isCapacitorScheme || isIosWebView) return 'ios';
-    if (isCapacitorLocalhost) return /Android/i.test(ua) ? 'android' : 'ios';
   }
 
   return null;
