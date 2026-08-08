@@ -79,10 +79,20 @@ const AuthPage = () => {
     setError("");
     try {
       if (mode === "signup") {
+        // On native, window.location.origin is `http(s)://localhost`, which
+        // makes the confirmation link dead. Always point at the public domain —
+        // it's registered as a Universal / App Link, so tapping it reopens the
+        // native app (where plans are purchased through the App Store / Google
+        // Play) instead of stranding the user on the Stripe web checkout.
+        const confirmOrigin = isWeb ? window.location.origin : "https://miafamilyassistant.com";
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: inviteCode ? `${window.location.origin}/invite/${inviteCode}` : `${window.location.origin}/` },
+          options: {
+            emailRedirectTo: inviteCode
+              ? `${confirmOrigin}/invite/${inviteCode}`
+              : `${confirmOrigin}/auth/confirmed`,
+          },
         });
         if (error) {
           // Supabase returns this when the email already exists (if enum protection disabled)
