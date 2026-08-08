@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Loader2, Users, Check, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const AcceptInvitePage = () => {
+  const { t } = useTranslation();
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -23,21 +25,21 @@ const AcceptInvitePage = () => {
       });
       const row = Array.isArray(data) ? data[0] : data;
       if (error || !row) {
-        setError("This invite link is invalid.");
+        setError(t("invite.invalidLink"));
       } else if (row.accepted_at) {
-        setError("This invite has already been used.");
+        setError(t("invite.alreadyUsed"));
       } else if (new Date(row.expires_at) < new Date()) {
-        setError("This invite has expired.");
+        setError(t("invite.expired"));
       } else {
         setInvite({
           household_id: row.household_id,
-          household_name: row.household_name ?? "a family",
+          household_name: row.household_name ?? t("invite.aFamily"),
           expires_at: row.expires_at,
         });
       }
       setLoading(false);
     })();
-  }, [code]);
+  }, [code, t]);
 
   const accept = async () => {
     if (!invite || !user || !code) return;
@@ -46,7 +48,7 @@ const AcceptInvitePage = () => {
     const { error: rpcErr } = await supabase.rpc("accept_invite", { _code: code });
     if (rpcErr) {
       setAccepting(false);
-      toast({ variant: "destructive", title: "Couldn't join", description: rpcErr.message });
+      toast({ variant: "destructive", title: t("invite.couldntJoin"), description: rpcErr.message });
       return;
     }
 
@@ -69,7 +71,7 @@ const AcceptInvitePage = () => {
       }
     }
 
-    toast({ title: "Welcome!", description: `You've joined ${invite.household_name}.` });
+    toast({ title: t("invite.welcomeToast"), description: t("invite.joinedToast", { name: invite.household_name }) });
     navigate("/dashboard");
   };
 
@@ -87,9 +89,9 @@ const AcceptInvitePage = () => {
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="bg-card rounded-2xl border border-border p-6 max-w-sm w-full text-center">
           <X className="w-8 h-8 text-destructive mx-auto mb-3" />
-          <h1 className="font-serif font-semibold text-lg mb-2">Invite unavailable</h1>
+          <h1 className="font-serif font-semibold text-lg mb-2">{t("invite.inviteUnavailable")}</h1>
           <p className="text-sm text-muted-foreground mb-4">{error}</p>
-          <button onClick={() => navigate("/dashboard")} className="text-sm text-primary hover:underline">Go home</button>
+          <button onClick={() => navigate("/dashboard")} className="text-sm text-primary hover:underline">{t("invite.goHome")}</button>
         </div>
       </div>
     );
@@ -99,9 +101,9 @@ const AcceptInvitePage = () => {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="bg-card rounded-2xl border border-border p-6 max-w-sm w-full text-center">
         <Users className="w-8 h-8 text-primary mx-auto mb-3" />
-        <h1 className="font-serif font-semibold text-lg mb-1">You've been invited</h1>
+        <h1 className="font-serif font-semibold text-lg mb-1">{t("invite.youveBeenInvited")}</h1>
         <p className="text-sm text-muted-foreground mb-5">
-          Join <span className="font-medium text-foreground">{invite?.household_name}</span> on Mia.
+          {t("invite.joinPrefix")} <span className="font-medium text-foreground">{invite?.household_name}</span> {t("invite.joinSuffix")}
         </p>
 
         {!user ? (
@@ -109,7 +111,7 @@ const AcceptInvitePage = () => {
             onClick={() => navigate(`/auth?invite=${code}`)}
             className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90"
           >
-            Sign in or create an account
+            {t("invite.signInOrCreate")}
           </button>
         ) : (
           <button
@@ -118,7 +120,7 @@ const AcceptInvitePage = () => {
             className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {accepting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-            Accept invite
+            {t("invite.acceptInvite")}
           </button>
         )}
       </div>

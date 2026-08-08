@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useTranslation } from "react-i18next";
 
 type ReceiptRow = {
   id: string;
@@ -26,13 +27,14 @@ const fmtMoney = (n: number | null, currency = "USD") => {
   catch { return `${currency} ${n.toFixed(2)}`; }
 };
 
-const fmtDate = (s: string | null) => {
-  if (!s) return "Date unknown";
+const fmtDate = (s: string | null, unknownLabel = "Date unknown") => {
+  if (!s) return unknownLabel;
   const [y, m, d] = s.split("-").map(Number);
   return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 };
 
 export default function ReceiptsPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [receipts, setReceipts] = useState<ReceiptRow[]>([]);
@@ -103,22 +105,22 @@ export default function ReceiptsPage() {
       setViewerUrl(null);
     }
     setReceiptToDelete(null);
-    toast({ title: "Receipt deleted" });
+    toast({ title: t("receipts.receiptDeletedToast") });
   }, [viewer]);
 
   return (
     <div className="page-container pb-28">
       <div className="flex items-center justify-between mb-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-serif font-semibold">Receipts</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">Snap, store, and find any receipt later</p>
+          <h1 className="text-2xl font-serif font-semibold">{t("receipts.title")}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">{t("receipts.subtitle")}</p>
         </div>
         <button
           onClick={() => setAdderOpen(true)}
           disabled={!householdId}
           className="flex items-center gap-1.5 bg-primary text-primary-foreground rounded-xl px-3 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
         >
-          <Plus className="w-4 h-4" /> Add
+          <Plus className="w-4 h-4" /> {t("receipts.add")}
         </button>
       </div>
 
@@ -127,8 +129,8 @@ export default function ReceiptsPage() {
       ) : receipts.length === 0 ? (
         <div className="text-center py-16 animate-fade-in">
           <Receipt className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">No receipts yet.</p>
-          <p className="text-xs text-muted-foreground mt-1">Tap Add to snap your first receipt.</p>
+          <p className="text-sm text-muted-foreground">{t("receipts.noReceiptsYet")}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("receipts.tapAddHint")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
@@ -141,7 +143,7 @@ export default function ReceiptsPage() {
               <button
                 onClick={() => setReceiptToDelete(r)}
                 className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-black/50 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                aria-label="Delete receipt"
+                aria-label={t("receipts.deleteReceiptAria")}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -157,8 +159,8 @@ export default function ReceiptsPage() {
                   )}
                 </div>
                 <div className="p-2.5">
-                  <p className="text-sm font-medium truncate">{r.store || "Unknown store"}</p>
-                  <p className="text-xs text-muted-foreground">{fmtDate(r.purchase_date)}</p>
+                  <p className="text-sm font-medium truncate">{r.store || t("receipts.unknownStore")}</p>
+                  <p className="text-xs text-muted-foreground">{fmtDate(r.purchase_date, t("receipts.dateUnknown"))}</p>
                   <p className="text-xs font-semibold text-primary mt-0.5">{fmtMoney(r.total, r.currency)}</p>
                 </div>
               </button>
@@ -179,7 +181,7 @@ export default function ReceiptsPage() {
       <Dialog open={!!viewer} onOpenChange={(o) => { if (!o) { setViewer(null); setViewerUrl(null); } }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-serif">{viewer?.store || "Receipt"}</DialogTitle>
+            <DialogTitle className="font-serif">{viewer?.store || t("receipts.receiptSingular")}</DialogTitle>
           </DialogHeader>
           {viewer && (
             <div className="space-y-3">
@@ -191,16 +193,16 @@ export default function ReceiptsPage() {
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div><p className="text-xs uppercase text-muted-foreground">Date</p><p>{fmtDate(viewer.purchase_date)}</p></div>
-                <div><p className="text-xs uppercase text-muted-foreground">Total</p><p className="font-semibold">{fmtMoney(viewer.total, viewer.currency)}</p></div>
+                <div><p className="text-xs uppercase text-muted-foreground">{t("receipts.date")}</p><p>{fmtDate(viewer.purchase_date, t("receipts.dateUnknown"))}</p></div>
+                <div><p className="text-xs uppercase text-muted-foreground">{t("receipts.total")}</p><p className="font-semibold">{fmtMoney(viewer.total, viewer.currency)}</p></div>
               </div>
               {viewer.items_summary && (
-                <div><p className="text-xs uppercase text-muted-foreground">Items</p><p className="text-sm">{viewer.items_summary}</p></div>
+                <div><p className="text-xs uppercase text-muted-foreground">{t("receipts.items")}</p><p className="text-sm">{viewer.items_summary}</p></div>
               )}
               {viewer.notes && (
-                <div><p className="text-xs uppercase text-muted-foreground">Notes</p><p className="text-sm">{viewer.notes}</p></div>
+                <div><p className="text-xs uppercase text-muted-foreground">{t("receipts.notes")}</p><p className="text-sm">{viewer.notes}</p></div>
               )}
-              {viewer.added_by && <p className="text-xs text-muted-foreground">Added by {viewer.added_by}</p>}
+              {viewer.added_by && <p className="text-xs text-muted-foreground">{t("receipts.addedBy", { name: viewer.added_by })}</p>}
             </div>
           )}
           <DialogFooter className="sm:justify-between gap-2">
@@ -208,13 +210,13 @@ export default function ReceiptsPage() {
               onClick={() => viewer && setReceiptToDelete(viewer)}
               className="flex items-center gap-1.5 text-destructive text-sm px-3 py-2 rounded-xl hover:bg-destructive/10"
             >
-              <Trash2 className="w-4 h-4" /> Delete
+              <Trash2 className="w-4 h-4" /> {t("receipts.delete")}
             </button>
             <button
               onClick={() => { setViewer(null); setViewerUrl(null); }}
               className="bg-secondary text-secondary-foreground rounded-xl px-4 py-2 text-sm"
             >
-              Close
+              {t("receipts.close")}
             </button>
           </DialogFooter>
         </DialogContent>
@@ -223,18 +225,18 @@ export default function ReceiptsPage() {
       <AlertDialog open={!!receiptToDelete} onOpenChange={(o) => { if (!o) setReceiptToDelete(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-serif">Delete receipt?</AlertDialogTitle>
+            <AlertDialogTitle className="font-serif">{t("receipts.deleteReceiptTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove the receipt from {receiptToDelete?.store || "this store"}. This action cannot be undone.
+              {t("receipts.deleteReceiptDescription", { store: receiptToDelete?.store || t("receipts.thisStore") })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setReceiptToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setReceiptToDelete(null)}>{t("receipts.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => receiptToDelete && void deleteReceipt(receiptToDelete)}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t("receipts.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -267,6 +269,7 @@ async function compressImage(file: File): Promise<{ blob: Blob; dataUrl: string 
 }
 
 function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; onClose: () => void; householdId: string; addedBy: string }) {
+  const { t } = useTranslation();
   const cameraInput = useRef<HTMLInputElement>(null);
   const libraryInput = useRef<HTMLInputElement>(null);
   const [stage, setStage] = useState<"pick" | "review">("pick");
@@ -293,7 +296,7 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
       const { data, error } = await supabase.functions.invoke("extract-receipt", { body: { imageDataUrl: dataUrl } });
       setAnalyzing(false);
       if (error) {
-        toast({ title: "Couldn't read receipt", description: "Fill the details manually." });
+        toast({ title: t("receipts.couldntReadReceipt"), description: t("receipts.fillManually") });
         return;
       }
       setForm({
@@ -306,7 +309,7 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
       });
     } catch (e) {
       console.error(e);
-      toast({ title: "Couldn't process image", variant: "destructive" });
+      toast({ title: t("receipts.couldntProcessImage"), variant: "destructive" });
     }
   };
 
@@ -331,12 +334,12 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
         image_path: path,
       });
       if (insErr) throw insErr;
-      toast({ title: "Receipt saved" });
+      toast({ title: t("receipts.receiptSaved") });
       reset();
       onClose();
     } catch (e: any) {
       console.error(e);
-      toast({ title: "Couldn't save receipt", description: e.message, variant: "destructive" });
+      toast({ title: t("receipts.couldntSaveReceipt"), description: e.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -346,7 +349,7 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
     <Dialog open={open} onOpenChange={(o) => { if (!o) { reset(); onClose(); } }}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-serif">Add receipt</DialogTitle>
+          <DialogTitle className="font-serif">{t("receipts.addReceipt")}</DialogTitle>
         </DialogHeader>
 
         {stage === "pick" && (
@@ -372,18 +375,18 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
                 className="flex flex-col items-center justify-center gap-2 bg-primary text-primary-foreground rounded-2xl py-8 hover:opacity-90"
               >
                 <Camera className="w-7 h-7" />
-                <span className="text-sm font-medium">Take photo</span>
+                <span className="text-sm font-medium">{t("receipts.takePhoto")}</span>
               </button>
               <button
                 onClick={() => libraryInput.current?.click()}
                 className="flex flex-col items-center justify-center gap-2 bg-secondary text-secondary-foreground rounded-2xl py-8 hover:opacity-90 border border-border"
               >
                 <ImageIcon className="w-7 h-7" />
-                <span className="text-sm font-medium">From library</span>
+                <span className="text-sm font-medium">{t("receipts.fromLibrary")}</span>
               </button>
             </div>
             <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
-              <Sparkles className="w-3 h-3" /> AI will fill in store, date, and total — you confirm.
+              <Sparkles className="w-3 h-3" /> {t("receipts.aiFillHint")}
             </p>
           </div>
         )}
@@ -397,32 +400,32 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
             )}
             {analyzing && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/5 border border-primary/20 rounded-xl p-2.5">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Reading receipt with AI…
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> {t("receipts.readingWithAi")}
               </div>
             )}
 
             <div className="space-y-2">
               <label className="block">
-                <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><Store className="w-3 h-3" />Store</span>
-                <input className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.store} onChange={(e) => setForm(f => ({ ...f, store: e.target.value }))} placeholder="Trader Joe's" />
+                <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><Store className="w-3 h-3" />{t("receipts.store")}</span>
+                <input className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.store} onChange={(e) => setForm(f => ({ ...f, store: e.target.value }))} placeholder={t("receipts.storePlaceholder")} />
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <label className="block">
-                  <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><CalIcon className="w-3 h-3" />Date</span>
+                  <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><CalIcon className="w-3 h-3" />{t("receipts.date")}</span>
                   <input type="date" className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.purchase_date} onChange={(e) => setForm(f => ({ ...f, purchase_date: e.target.value }))} />
                 </label>
                 <label className="block">
-                  <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><DollarSign className="w-3 h-3" />Total</span>
+                  <span className="text-xs uppercase text-muted-foreground flex items-center gap-1"><DollarSign className="w-3 h-3" />{t("receipts.total")}</span>
                   <input type="number" inputMode="decimal" step="0.01" className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.total} onChange={(e) => setForm(f => ({ ...f, total: e.target.value }))} placeholder="0.00" />
                 </label>
               </div>
               <label className="block">
-                <span className="text-xs uppercase text-muted-foreground">Items</span>
-                <input className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.items_summary} onChange={(e) => setForm(f => ({ ...f, items_summary: e.target.value }))} placeholder="milk, eggs, bread" />
+                <span className="text-xs uppercase text-muted-foreground">{t("receipts.items")}</span>
+                <input className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.items_summary} onChange={(e) => setForm(f => ({ ...f, items_summary: e.target.value }))} placeholder={t("receipts.itemsPlaceholder")} />
               </label>
               <label className="block">
-                <span className="text-xs uppercase text-muted-foreground">Notes</span>
-                <textarea rows={2} className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="Card ending 1234, gift for Sara…" />
+                <span className="text-xs uppercase text-muted-foreground">{t("receipts.notes")}</span>
+                <textarea rows={2} className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm mt-1" value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} placeholder={t("receipts.notesPlaceholder")} />
               </label>
             </div>
           </div>
@@ -430,9 +433,9 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
 
         <DialogFooter className="gap-2">
           {stage === "review" && (
-            <button onClick={reset} className="bg-secondary text-secondary-foreground rounded-xl px-3 py-2 text-sm">Retake</button>
+            <button onClick={reset} className="bg-secondary text-secondary-foreground rounded-xl px-3 py-2 text-sm">{t("receipts.retake")}</button>
           )}
-          <button onClick={() => { reset(); onClose(); }} className="rounded-xl px-3 py-2 text-sm hover:bg-muted">Cancel</button>
+          <button onClick={() => { reset(); onClose(); }} className="rounded-xl px-3 py-2 text-sm hover:bg-muted">{t("receipts.cancel")}</button>
           {stage === "review" && (
             <button
               onClick={save}
@@ -440,7 +443,7 @@ function ReceiptAdder({ open, onClose, householdId, addedBy }: { open: boolean; 
               className="bg-primary text-primary-foreground rounded-xl px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
             >
               {saving && <Loader2 className="w-3 h-3 animate-spin" />}
-              Save receipt
+              {t("receipts.saveReceipt")}
             </button>
           )}
         </DialogFooter>

@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Lock, Loader2, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import maiLogo from "@/assets/mai-logo.png";
+import { useTranslation } from "react-i18next";
 
 const ResetPasswordPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -30,11 +32,11 @@ const ResetPasswordPage = () => {
 
   const submit = async () => {
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError(t("resetPassword.minLengthError"));
       return;
     }
     if (password !== confirm) {
-      setError("Passwords don't match");
+      setError(t("resetPassword.passwordsDontMatch"));
       return;
     }
     setLoading(true);
@@ -45,7 +47,7 @@ const ResetPasswordPage = () => {
       setSuccess(true);
       setTimeout(() => navigate("/", { replace: true }), 1500);
     } catch (err: any) {
-      setError(err.message || "Could not update password");
+      setError(err.message || t("resetPassword.couldNotUpdate"));
     } finally {
       setLoading(false);
     }
@@ -55,15 +57,15 @@ const ResetPasswordPage = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-sm text-center animate-fade-in">
         <img src={maiLogo} alt="Mia Family Assistant" className="w-28 h-28 rounded-2xl shadow-sm mx-auto mb-6" />
-        <h1 className="text-2xl font-serif font-semibold mb-2">Set a new password</h1>
+        <h1 className="text-2xl font-serif font-semibold mb-2">{t("resetPassword.title")}</h1>
         <p className="text-sm text-muted-foreground mb-8">
           {ready
-            ? "Enter your new password below."
-            : "Verifying your reset link…"}
+            ? t("resetPassword.enterNewPassword")
+            : t("resetPassword.verifyingLink")}
         </p>
 
         {success ? (
-          <p className="text-sm text-primary">Password updated. Redirecting…</p>
+          <p className="text-sm text-primary">{t("resetPassword.updatedRedirecting")}</p>
         ) : (
           <div className="space-y-4">
             <div className="relative">
@@ -72,7 +74,7 @@ const ResetPasswordPage = () => {
                 type="password"
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setError(""); }}
-                placeholder="New password"
+                placeholder={t("resetPassword.newPasswordPlaceholder")}
                 disabled={!ready}
                 className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
               />
@@ -84,7 +86,7 @@ const ResetPasswordPage = () => {
                 value={confirm}
                 onChange={(e) => { setConfirm(e.target.value); setError(""); }}
                 onKeyDown={(e) => e.key === "Enter" && submit()}
-                placeholder="Confirm new password"
+                placeholder={t("resetPassword.confirmPasswordPlaceholder")}
                 disabled={!ready}
                 className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
               />
@@ -99,7 +101,7 @@ const ResetPasswordPage = () => {
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  Update Password
+                  {t("resetPassword.updatePassword")}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

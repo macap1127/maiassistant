@@ -1,7 +1,16 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Phone, X, Pencil, Crown, Check } from "lucide-react";
 import { useFamilyData, genId, type FamilyMember } from "@/lib/store";
 import HouseholdLogins from "@/components/HouseholdLogins";
+
+const ROLE_KEYS: Record<string, string> = {
+  Parent: "roleParent",
+  Child: "roleChild",
+  Member: "roleMember",
+  Caregiver: "roleCaregiver",
+  Other: "roleOther",
+};
 
 const AVATAR_CHOICES = [
   "👤", "🧑", "👩", "👨", "👧", "👦", "👶", "👵", "👴",
@@ -19,6 +28,7 @@ const ROLE_TONE: Record<string, string> = {
 };
 
 const Family = () => {
+  const { t } = useTranslation();
   const { data, update } = useFamilyData();
   const [showAdd, setShowAdd] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -89,11 +99,10 @@ const Family = () => {
     <div className="page-container">
       <div className="flex items-center justify-between mb-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-serif font-semibold">Family</h1>
+          <h1 className="text-2xl font-serif font-semibold">{t("familyPage.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            {data.members.length}{" "}
-            {data.members.length === 1 ? "member" : "members"} ·{" "}
-            {data.members.filter((m) => m.phone).length} phones linked
+            {t("familyPage.membersCount", { count: data.members.length })} ·{" "}
+            {t("familyPage.phonesLinked", { count: data.members.filter((m) => m.phone).length })}
           </p>
         </div>
         <button
@@ -103,7 +112,7 @@ const Family = () => {
             setEditingId(null);
           }}
           className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
-          aria-label="Add member"
+          aria-label={t("familyPage.addMember")}
         >
           <Plus className="w-5 h-5" />
         </button>
@@ -120,7 +129,7 @@ const Family = () => {
             resetForm();
           }}
           onSubmit={addMember}
-          submitLabel="Add Member"
+          submitLabel={t("familyPage.addMember")}
         />
       )}
 
@@ -129,7 +138,7 @@ const Family = () => {
         <div className="text-center py-12 animate-fade-in">
           <div className="text-5xl mb-3">👨‍👩‍👧</div>
           <p className="text-sm text-muted-foreground">
-            No members yet. Tap + to add the first one.
+            {t("familyPage.emptyState")}
           </p>
         </div>
       )}
@@ -150,7 +159,7 @@ const Family = () => {
                   resetForm();
                 }}
                 onSubmit={saveEdit}
-                submitLabel="Save"
+                submitLabel={t("familyPage.save")}
               />
             );
           }
@@ -169,10 +178,10 @@ const Family = () => {
                   {isOwner && (
                     <span
                       className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full bg-primary/20 text-primary"
-                      title="Household owner"
+                      title={t("familyPage.householdOwner")}
                     >
                       <Crown className="w-2.5 h-2.5" />
-                      Owner
+                      {t("familyPage.owner")}
                     </span>
 
                   )}
@@ -181,7 +190,7 @@ const Family = () => {
                       ROLE_TONE[member.role] || ROLE_TONE.Other
                     }`}
                   >
-                    {member.role}
+                    {t(`familyPage.${ROLE_KEYS[member.role] || "roleOther"}`, member.role)}
                   </span>
                 </div>
                 {member.phone && (
@@ -195,7 +204,7 @@ const Family = () => {
                 <button
                   onClick={() => startEdit(member)}
                   className="text-muted-foreground hover:text-foreground transition-colors p-1"
-                  aria-label="Edit"
+                  aria-label={t("familyPage.edit")}
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
@@ -203,7 +212,7 @@ const Family = () => {
                   <button
                     onClick={() => removeMember(member.id)}
                     className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                    aria-label="Remove"
+                    aria-label={t("familyPage.remove")}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -232,6 +241,7 @@ function MemberForm({
   onSubmit: () => void;
   submitLabel: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-card rounded-2xl p-4 border border-border mb-4 animate-slide-up space-y-3">
       <div className="flex items-center justify-between">
@@ -247,7 +257,7 @@ function MemberForm({
       {/* Avatar picker */}
       <div>
         <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">
-          Avatar
+          {t("familyPage.avatar")}
         </p>
         <div className="grid grid-cols-9 gap-1">
           {AVATAR_CHOICES.map((a) => (
@@ -268,7 +278,7 @@ function MemberForm({
       </div>
 
       <input
-        placeholder="Name"
+        placeholder={t("familyPage.namePlaceholder")}
         value={form.name}
         onChange={(e) => setForm({ ...form, name: e.target.value })}
         className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
@@ -279,11 +289,11 @@ function MemberForm({
         className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
       >
         {ROLES.map((r) => (
-          <option key={r}>{r}</option>
+          <option key={r} value={r}>{t(`familyPage.${ROLE_KEYS[r]}`, r)}</option>
         ))}
       </select>
       <input
-        placeholder="Phone (e.g. +16465551234)"
+        placeholder={t("familyPage.phonePlaceholder")}
         value={form.phone}
         onChange={(e) => setForm({ ...form, phone: e.target.value })}
         className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"

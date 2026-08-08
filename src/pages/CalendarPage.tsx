@@ -7,6 +7,7 @@ import { useHousehold } from "@/lib/useHousehold";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { formatTime12h } from "@/lib/date";
+import { useTranslation } from "react-i18next";
 
 type PendingEvent = {
   title: string;
@@ -30,6 +31,7 @@ import {
 } from "date-fns";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAY_KEYS = ["weekdaySun", "weekdayMon", "weekdayTue", "weekdayWed", "weekdayThu", "weekdayFri", "weekdaySat"];
 
 // Color palette for source tags
 const SOURCE_COLORS = [
@@ -47,6 +49,7 @@ function getSourceColor(source: string, allSources: string[]) {
 }
 
 const CalendarPage = () => {
+  const { t } = useTranslation();
   const { data, update } = useFamilyData();
   const { household } = useHousehold();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -148,15 +151,15 @@ const CalendarPage = () => {
       ...d,
       events: d.events.map((e) => (e.source === managingSource ? { ...e, source: newName } : e)),
     }));
-    toast.success(`Renamed to "${newName}"`);
+    toast.success(t("calendar.renamedTo", { name: newName }));
     setManagingSource(newName);
   };
 
   const deleteAllInSource = () => {
     if (!managingSource) return;
-    if (!confirm(`Delete all events tagged "${managingSource}"? This can't be undone.`)) return;
+    if (!confirm(t("calendar.confirmDeleteAllInTag", { tag: managingSource }))) return;
     update((d) => ({ ...d, events: d.events.filter((e) => e.source !== managingSource) }));
-    toast.success(`Removed all "${managingSource}" events`);
+    toast.success(t("calendar.removedAllInTag", { tag: managingSource }));
     setManagingSource(null);
   };
 
@@ -181,7 +184,7 @@ const CalendarPage = () => {
       ],
     }));
     setSourceNewEvent({ title: "", date: "", time: "", location: "" });
-    toast.success("Event added");
+    toast.success(t("calendar.eventAdded"));
   };
 
   const eventsInManagedSource = useMemo(
@@ -211,7 +214,7 @@ const CalendarPage = () => {
     const title = editDraft.title.trim();
     if (!title) return;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(editDraft.date)) {
-      toast.error("Please pick a valid date");
+      toast.error(t("calendar.invalidDate"));
       return;
     }
     update((d) => ({
@@ -245,7 +248,7 @@ const CalendarPage = () => {
     if (!pendingEvents) return;
     const valid = pendingEvents.filter((e) => e.title.trim() && /^\d{4}-\d{2}-\d{2}$/.test(e.date));
     if (valid.length === 0) {
-      toast.error("Each event needs a title and date");
+      toast.error(t("calendar.eachEventNeedsTitleDate"));
       return;
     }
     const { source, assignedTo } = pendingMeta;
@@ -266,7 +269,7 @@ const CalendarPage = () => {
         })),
       ],
     }));
-    toast.success(`Added ${valid.length} event${valid.length > 1 ? "s" : ""}`);
+    toast.success(t("calendar.addedEvents", { count: valid.length }));
     setPendingEvents(null);
   };
 
@@ -276,7 +279,7 @@ const CalendarPage = () => {
 
     const source = uploadSource.trim();
     if (!source) {
-      toast.error("Please enter a source label first (e.g. \"Jake's School\")");
+      toast.error(t("calendar.enterSourceFirst"));
       return;
     }
 
@@ -286,7 +289,7 @@ const CalendarPage = () => {
     const isPdf = file.type === "application/pdf" || lower.endsWith(".pdf");
 
     if (!isIcs && !isImage && !isPdf) {
-      toast.error("Upload a .ics file, image, or PDF");
+      toast.error(t("calendar.uploadValidFile"));
       return;
     }
 
@@ -297,11 +300,11 @@ const CalendarPage = () => {
         const text = await readFileAsText(file);
         const parsed = parseIcsFile(text, source).map((ev) => ({ ...ev, assignedTo }));
         if (parsed.length === 0) {
-          toast.error("No events found in the file");
+          toast.error(t("calendar.noEventsInFile"));
           return;
         }
         update((d) => ({ ...d, events: [...d.events, ...parsed] }));
-        toast.success(`Imported ${parsed.length} event${parsed.length > 1 ? "s" : ""} from "${source}"`);
+        toast.success(t("calendar.importedEvents", { count: parsed.length, source }));
       } else {
         // Image or PDF → AI extraction
         const dataUrl: string = await new Promise((resolve, reject) => {
@@ -319,11 +322,11 @@ const CalendarPage = () => {
           const msg = ctx?.error || (error as any)?.message || "";
           const code = ctx?.code || "";
           if (code === "AI_IMPORT_LIMIT_REACHED" || msg.includes("5 free AI calendar imports")) {
-            toast.error("You've used all 5 free AI calendar imports for this month. Upgrade to Family for unlimited.");
+            toast.error(t("calendar.aiImportLimitReached"));
             return;
           }
           if (msg.includes("Family") || msg.includes("upgrade")) {
-            toast.error("AI calendar import requires the Family plan. Upgrade in Settings to enable.");
+            toast.error(t("calendar.aiImportRequiresFamily"));
             return;
           }
           throw error;
@@ -334,7 +337,7 @@ const CalendarPage = () => {
           location?: string | null; notes?: string | null; source?: string;
         }>;
         if (extracted.length === 0) {
-          toast.error("No events found in that file");
+          toast.error(t("calendar.noEventsInThatFile"));
           return;
         }
 
@@ -355,7 +358,7 @@ const CalendarPage = () => {
       setUploadAssignedTo("");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to import events from that file");
+      toast.error(t("calendar.failedToImport"));
     } finally {
       setImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -364,9 +367,9 @@ const CalendarPage = () => {
 
   return (
     <div className="page-container">
-      <h1 className="text-2xl font-serif font-semibold mb-1 animate-fade-in">Calendar</h1>
+      <h1 className="text-2xl font-serif font-semibold mb-1 animate-fade-in">{t("calendar.title")}</h1>
       <p className="text-sm text-muted-foreground mb-5 animate-fade-in">
-        {data.events.length} upcoming events
+        {t("calendar.upcomingEvents", { count: data.events.length })}
       </p>
 
       {/* Month navigation */}
@@ -391,9 +394,9 @@ const CalendarPage = () => {
 
         {/* Weekday headers */}
         <div className="grid grid-cols-7 mb-1">
-          {WEEKDAYS.map((d) => (
+          {WEEKDAYS.map((d, i) => (
             <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">
-              {d}
+              {t(`calendar.${WEEKDAY_KEYS[i]}`)}
             </div>
           ))}
         </div>
@@ -432,13 +435,13 @@ const CalendarPage = () => {
       <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-serif font-semibold">
-            {isToday(selectedDate) ? "Today" : format(selectedDate, "MMM d, yyyy")}
+            {isToday(selectedDate) ? t("calendar.today") : format(selectedDate, "MMM d, yyyy")}
           </h3>
           <div className="flex items-center gap-2">
             <button
               onClick={() => { setShowUpload(!showUpload); setShowForm(false); }}
               className="w-8 h-8 rounded-full bg-secondary text-foreground flex items-center justify-center hover:opacity-90 transition-opacity"
-              title="Import calendar"
+              title={t("calendar.importCalendar")}
             >
               <Upload className="w-4 h-4" />
             </button>
@@ -456,10 +459,10 @@ const CalendarPage = () => {
           <div className="bg-card rounded-2xl border border-border p-4 mb-3 space-y-3 animate-slide-up">
             <div className="flex items-center gap-2 mb-1">
               <FileUp className="w-4 h-4 text-primary" />
-              <p className="text-sm font-medium">Import Calendar</p>
+              <p className="text-sm font-medium">{t("calendar.importCalendar")}</p>
             </div>
             <p className="text-xs text-muted-foreground">
-              Upload an .ics file, a photo of a schedule/flyer, or a PDF. We'll pull out the events automatically.
+              {t("calendar.importDescription")}
             </p>
             {household?.subscriptionTier === "basic" && (() => {
               const periodStart = household.aiCalendarImportsPeriodStart
@@ -473,8 +476,8 @@ const CalendarPage = () => {
               return (
                 <div className={`text-xs rounded-lg px-3 py-2 ${remaining === 0 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
                   {remaining > 0
-                    ? `${remaining} of 5 free AI imports left this month (.ics files are always free)`
-                    : "You've used all 5 free AI imports this month. Upgrade to Family for unlimited."}
+                    ? t("calendar.aiImportsRemaining", { count: remaining })
+                    : t("calendar.aiImportsAllUsed")}
                 </div>
               );
             })()}
@@ -483,7 +486,7 @@ const CalendarPage = () => {
               <input
                 value={uploadSource}
                 onChange={(e) => setUploadSource(e.target.value)}
-                placeholder="Source label (e.g. Jake's School)"
+                placeholder={t("calendar.sourceLabelPlaceholder")}
                 className="w-full bg-background border border-border rounded-xl pl-9 pr-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
@@ -493,7 +496,7 @@ const CalendarPage = () => {
                 onChange={(e) => setUploadAssignedTo(e.target.value)}
                 className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="">Assign to family member (optional)</option>
+                <option value="">{t("calendar.assignToOptional")}</option>
                 {data.members.map((m) => (
                   <option key={m.id} value={m.name}>{m.name}</option>
                 ))}
@@ -509,7 +512,7 @@ const CalendarPage = () => {
             <button
               onClick={() => {
                 if (!uploadSource.trim()) {
-                  toast.error("Enter a source label first");
+                  toast.error(t("calendar.enterSourceLabelFirst"));
                   return;
                 }
                 fileInputRef.current?.click();
@@ -518,13 +521,13 @@ const CalendarPage = () => {
               className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <Upload className="w-4 h-4" />
-              {importing ? "Reading…" : "Choose file (.ics, image, PDF)"}
+              {importing ? t("calendar.reading") : t("calendar.chooseFile")}
             </button>
             <button
               onClick={() => setShowUpload(false)}
               className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              Cancel
+              {t("calendar.cancel")}
             </button>
           </div>
         )}
@@ -535,7 +538,7 @@ const CalendarPage = () => {
             <input
               value={newEvent.title}
               onChange={(e) => setNewEvent((p) => ({ ...p, title: e.target.value }))}
-              placeholder="Event title"
+              placeholder={t("calendar.eventTitlePlaceholder")}
               className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <div className="flex gap-2">
@@ -548,14 +551,14 @@ const CalendarPage = () => {
               <input
                 value={newEvent.location}
                 onChange={(e) => setNewEvent((p) => ({ ...p, location: e.target.value }))}
-                placeholder="Location"
+                placeholder={t("calendar.locationPlaceholder")}
                 className="flex-1 bg-background border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
             <input
               value={newEvent.notes}
               onChange={(e) => setNewEvent((p) => ({ ...p, notes: e.target.value }))}
-              placeholder="Notes (optional)"
+              placeholder={t("calendar.notesOptionalPlaceholder")}
               className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
             {data.members.length > 0 && (
@@ -564,7 +567,7 @@ const CalendarPage = () => {
                 onChange={(e) => setNewEvent((p) => ({ ...p, assignedTo: e.target.value }))}
                 className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="">Assign to family member (optional)</option>
+                <option value="">{t("calendar.assignToOptional")}</option>
                 {data.members.map((m) => (
                   <option key={m.id} value={m.name}>{m.name}</option>
                 ))}
@@ -574,7 +577,7 @@ const CalendarPage = () => {
               onClick={addEvent}
               className="w-full bg-primary text-primary-foreground rounded-xl py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
             >
-              Add Event
+              {t("calendar.addEvent")}
             </button>
           </div>
         )}
@@ -589,7 +592,7 @@ const CalendarPage = () => {
                   key={src}
                   onClick={() => openManageSource(src)}
                   className={`text-xs font-medium px-2 py-0.5 rounded-full border hover:opacity-80 transition-opacity ${getSourceColor(src, allSources)}`}
-                  title={`Manage "${src}" (${count})`}
+                  title={t("calendar.manageTag", { tag: src, count })}
                 >
                   {src} <span className="opacity-70">· {count}</span>
                 </button>
@@ -600,7 +603,7 @@ const CalendarPage = () => {
 
         {/* Event list */}
         {eventsForDate.length === 0 && tasksForDate.length === 0 && !showForm && !showUpload && (
-          <p className="text-sm text-muted-foreground text-center py-8">No events for this day</p>
+          <p className="text-sm text-muted-foreground text-center py-8">{t("calendar.noEventsForDay")}</p>
         )}
         <div className="space-y-2">
           {eventsForDate
@@ -617,7 +620,7 @@ const CalendarPage = () => {
                       <input
                         value={editDraft.title}
                         onChange={(e) => setEditDraft((d) => ({ ...d, title: e.target.value }))}
-                        placeholder="Event title"
+                        placeholder={t("calendar.eventTitlePlaceholder")}
                         className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                       />
                       <div className="flex gap-2">
@@ -637,13 +640,13 @@ const CalendarPage = () => {
                       <input
                         value={editDraft.location}
                         onChange={(e) => setEditDraft((d) => ({ ...d, location: e.target.value }))}
-                        placeholder="Location"
+                        placeholder={t("calendar.locationPlaceholder")}
                         className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                       />
                       <input
                         value={editDraft.notes}
                         onChange={(e) => setEditDraft((d) => ({ ...d, notes: e.target.value }))}
-                        placeholder="Notes"
+                        placeholder={t("calendar.notesPlaceholder")}
                         className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                       />
                       {data.members.length > 0 && (
@@ -652,7 +655,7 @@ const CalendarPage = () => {
                           onChange={(e) => setEditDraft((d) => ({ ...d, assignedTo: e.target.value }))}
                           className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                         >
-                          <option value="">Assign to family member (optional)</option>
+                          <option value="">{t("calendar.assignToOptional")}</option>
                           {data.members.map((m) => (
                             <option key={m.id} value={m.name}>{m.name}</option>
                           ))}
@@ -663,13 +666,13 @@ const CalendarPage = () => {
                           onClick={saveEdit}
                           className="flex-1 bg-primary text-primary-foreground rounded-xl py-2 text-sm font-medium hover:opacity-90 transition-opacity"
                         >
-                          Save
+                          {t("calendar.save")}
                         </button>
                         <button
                           onClick={cancelEdit}
                           className="flex-1 bg-secondary text-secondary-foreground rounded-xl py-2 text-sm font-medium hover:bg-secondary/80 transition-colors"
                         >
-                          Cancel
+                          {t("calendar.cancel")}
                         </button>
                       </div>
                     </div>
@@ -737,7 +740,7 @@ const CalendarPage = () => {
               <button
                 onClick={() => toggleTask(task.id)}
                 className={`w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center shrink-0 transition-colors ${task.completed ? "bg-primary" : "hover:bg-primary/10"}`}
-                aria-label="Toggle task"
+                aria-label={t("calendar.toggleTask")}
               >
                 {task.completed && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
               </button>
@@ -747,7 +750,7 @@ const CalendarPage = () => {
                     {task.title}
                   </p>
                   <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-primary/30 bg-primary/10 text-primary shrink-0 flex items-center gap-1">
-                    <CheckSquare className="w-2.5 h-2.5" /> Task
+                    <CheckSquare className="w-2.5 h-2.5" /> {t("calendar.task")}
                   </span>
                 </div>
                 {task.assignedTo && (
@@ -762,10 +765,10 @@ const CalendarPage = () => {
       {/* Sync info */}
       <div className="mt-6 bg-secondary/50 rounded-2xl p-4 animate-slide-up" style={{ animationDelay: "200ms" }}>
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-          Calendar Import
+          {t("calendar.calendarImportHeading")}
         </p>
         <p className="text-sm text-muted-foreground">
-          Upload .ics files from schools, sports leagues, or any calendar app. Events are tagged by source so you always know where they came from.
+          {t("calendar.calendarImportInfo")}
         </p>
       </div>
 
@@ -773,14 +776,14 @@ const CalendarPage = () => {
       <Dialog open={!!managingSource} onOpenChange={(o) => { if (!o) { setManagingSource(null); setSourceNewEvent({ title: "", date: "", time: "", location: "" }); } }}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Manage tag</DialogTitle>
+            <DialogTitle>{t("calendar.manageTagTitle")}</DialogTitle>
             <DialogDescription>
-              Rename this tag, remove events one by one, or delete the whole group.
+              {t("calendar.manageTagDescription")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Tag name</label>
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("calendar.tagName")}</label>
             <div className="flex gap-2">
               <input
                 value={renameDraft}
@@ -792,17 +795,17 @@ const CalendarPage = () => {
                 disabled={!renameDraft.trim() || renameDraft.trim() === managingSource}
                 className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                Rename
+                {t("calendar.rename")}
               </button>
             </div>
           </div>
 
           <div className="mt-2 space-y-2 border-t border-border pt-4">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Add event to this tag</label>
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("calendar.addEventToTag")}</label>
             <input
               value={sourceNewEvent.title}
               onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, title: e.target.value })}
-              placeholder="Event title"
+              placeholder={t("calendar.eventTitlePlaceholder")}
               className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <div className="flex gap-2">
@@ -822,7 +825,7 @@ const CalendarPage = () => {
             <input
               value={sourceNewEvent.location}
               onChange={(e) => setSourceNewEvent({ ...sourceNewEvent, location: e.target.value })}
-              placeholder="Location (optional)"
+              placeholder={t("calendar.locationOptionalPlaceholder")}
               className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <button
@@ -830,14 +833,14 @@ const CalendarPage = () => {
               disabled={!sourceNewEvent.title.trim() || !sourceNewEvent.date}
               className="w-full px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              Add event
+              {t("calendar.addEventBtn")}
             </button>
           </div>
 
 
           <div className="mt-2">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-              {eventsInManagedSource.length} event{eventsInManagedSource.length === 1 ? "" : "s"}
+              {t("calendar.eventCount", { count: eventsInManagedSource.length })}
             </p>
             <div className="space-y-2">
               {eventsInManagedSource.map((ev) => (
@@ -863,7 +866,7 @@ const CalendarPage = () => {
                   <button
                     onClick={() => removeEvent(ev.id)}
                     className="text-muted-foreground hover:text-destructive transition-colors p-1 shrink-0"
-                    aria-label="Delete event"
+                    aria-label={t("calendar.deleteEvent")}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -871,7 +874,7 @@ const CalendarPage = () => {
               ))}
               {eventsInManagedSource.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-4">
-                  No events left. Close to remove this tag.
+                  {t("calendar.noEventsLeftCloseTag")}
                 </p>
               )}
             </div>
@@ -882,13 +885,13 @@ const CalendarPage = () => {
               onClick={deleteAllInSource}
               className="px-4 py-2 rounded-xl bg-destructive/10 text-destructive text-sm font-medium hover:bg-destructive/20 transition-colors"
             >
-              Delete all
+              {t("calendar.deleteAll")}
             </button>
             <button
               onClick={() => setManagingSource(null)}
               className="px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
             >
-              Done
+              {t("calendar.done")}
             </button>
           </DialogFooter>
         </DialogContent>
@@ -898,10 +901,11 @@ const CalendarPage = () => {
       <Dialog open={!!pendingEvents} onOpenChange={(o) => { if (!o) setPendingEvents(null); }}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Review {pendingEvents?.length ?? 0} event{(pendingEvents?.length ?? 0) === 1 ? "" : "s"}</DialogTitle>
+            <DialogTitle>{t("calendar.reviewEvents", { count: pendingEvents?.length ?? 0 })}</DialogTitle>
             <DialogDescription>
-              Edit anything that looks off, then confirm to add to your calendar
-              {pendingMeta.source ? ` under "${pendingMeta.source}"` : ""}.
+              {pendingMeta.source
+                ? t("calendar.reviewDescriptionWithSource", { source: pendingMeta.source })
+                : t("calendar.reviewDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
@@ -911,13 +915,13 @@ const CalendarPage = () => {
                   <input
                     value={ev.title}
                     onChange={(e) => updatePending(idx, { title: e.target.value })}
-                    placeholder="Title"
+                    placeholder={t("calendar.titlePlaceholder")}
                     className="flex-1 bg-background border border-border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                   <button
                     onClick={() => removePending(idx)}
                     className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                    aria-label="Remove"
+                    aria-label={t("calendar.remove")}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -939,19 +943,19 @@ const CalendarPage = () => {
                 <input
                   value={ev.location}
                   onChange={(e) => updatePending(idx, { location: e.target.value })}
-                  placeholder="Location (optional)"
+                  placeholder={t("calendar.locationOptionalPlaceholder")}
                   className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 <input
                   value={ev.notes}
                   onChange={(e) => updatePending(idx, { notes: e.target.value })}
-                  placeholder="Notes (optional)"
+                  placeholder={t("calendar.notesOptionalPlaceholder")}
                   className="w-full bg-background border border-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
             ))}
             {pendingEvents?.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">No events to add.</p>
+              <p className="text-sm text-muted-foreground text-center py-4">{t("calendar.noEventsToAdd")}</p>
             )}
           </div>
           <DialogFooter className="gap-2">
@@ -959,14 +963,14 @@ const CalendarPage = () => {
               onClick={() => setPendingEvents(null)}
               className="px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
             >
-              Cancel
+              {t("calendar.cancel")}
             </button>
             <button
               onClick={confirmPending}
               disabled={!pendingEvents?.length}
               className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              Add to calendar
+              {t("calendar.addToCalendar")}
             </button>
           </DialogFooter>
         </DialogContent>
