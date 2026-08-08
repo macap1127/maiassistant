@@ -247,7 +247,7 @@ const AppLayout = () => {
                   <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-gradient-brand shadow-[0_0_12px_hsl(var(--primary))]" />
                 )}
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 1.8} />
-                <span className="text-[11px] uppercase tracking-wide font-medium whitespace-nowrap">{label}</span>
+                <span className="text-[11px] uppercase tracking-wide font-medium whitespace-nowrap">{t(labelKey)}</span>
               </button>
             );
           })}

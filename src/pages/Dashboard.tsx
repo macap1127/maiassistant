@@ -12,14 +12,15 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { todayISO, bucketForDate, formatDueLabel } from "@/lib/date";
 import maiLogo from "@/assets/mai-logo.png";
+import { useTranslation } from "react-i18next";
 
-const greetingFor = () => {
+const greetingKeyFor = () => {
   const h = new Date().getHours();
-  if (h < 5) return "Good night";
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  if (h < 21) return "Good evening";
-  return "Good night";
+  if (h < 5) return "dash.night";
+  if (h < 12) return "dash.morning";
+  if (h < 17) return "dash.afternoon";
+  if (h < 21) return "dash.evening";
+  return "dash.night";
 };
 
 const firstNameFrom = (name?: string | null) => {
@@ -33,6 +34,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { data, loading } = useFamilyData();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [linkedMemberName, setLinkedMemberName] = useState("");
   const [loggedInMemberName, setLoggedInMemberName] = useState("");
 
@@ -154,7 +156,7 @@ const Dashboard = () => {
     return (
       <div className="page-container flex items-center justify-center min-h-[60vh]">
         <p className="text-sm text-muted-foreground animate-pulse">
-          Loading family data…
+          {t("dash.loadingFamily")}
         </p>
       </div>
     );
@@ -163,30 +165,30 @@ const Dashboard = () => {
   const quickCards = [
     {
       icon: ShoppingCart,
-      label: "Groceries",
+      label: t("dash.groceries"),
       count: pendingGroceries,
-      sub: "to get",
+      sub: t("dash.toGet"),
       path: "/grocery",
     },
     {
       icon: CheckSquare,
-      label: "To Do",
+      label: t("dash.todo"),
       count: pendingTasks,
-      sub: "pending",
+      sub: t("dash.pending"),
       path: "/tasks",
     },
     {
       icon: CalendarIcon,
-      label: "Events today",
+      label: t("dash.eventsToday"),
       count: todaysEvents.length,
-      sub: "scheduled",
+      sub: t("dash.scheduled"),
       path: "/calendar",
     },
     {
       icon: Users,
-      label: "Family",
+      label: t("dash.family"),
       count: data.members.length,
-      sub: "members",
+      sub: t("dash.members"),
       path: "/family",
     },
   ];
@@ -200,13 +202,15 @@ const Dashboard = () => {
           <div className="absolute inset-0 rounded-3xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
         </div>
         <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
-          {greetingFor()}
+          {t(greetingKeyFor())}
         </p>
         <h1 className="text-3xl font-display font-bold tracking-tight mt-1">
-          Welcome back, <span className="text-gradient">{displayName}</span>
+          <span dangerouslySetInnerHTML={{ __html: "" }} />
+          {t("dash.welcomeBack", { name: "" }).replace("{{name}}", "")}
+          <span className="text-gradient">{displayName}</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
-          This is <span className="text-foreground font-semibold">MIA</span> — your AI co-pilot for everything {data.familyName}. Ready when you are. ✨
+          {t("dash.tagline", { family: data.familyName })}
         </p>
       </div>
 
@@ -232,12 +236,12 @@ const Dashboard = () => {
       {(weekTotalTasks > 0 || groceryTotal > 0) && (
         <div className="bg-card border border-border rounded-2xl p-4 mb-6 animate-slide-up">
           <p className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
-            Progress
+            {t("dash.progress")}
           </p>
           <div className="space-y-3">
             {weekTotalTasks > 0 && (
               <ProgressRow
-                label="To Do"
+                label={t("dash.todo")}
                 done={weekDoneTasks}
                 total={weekTotalTasks}
                 value={taskProgress}
@@ -245,7 +249,7 @@ const Dashboard = () => {
             )}
             {groceryTotal > 0 && (
               <ProgressRow
-                label="Groceries"
+                label={t("dash.groceries")}
                 done={groceryDone}
                 total={groceryTotal}
                 value={groceryProgress}
@@ -261,19 +265,19 @@ const Dashboard = () => {
         style={{ animationDelay: "180ms" }}
       >
         <div className="flex items-baseline justify-between mb-3">
-          <h2 className="text-lg font-serif font-semibold">Today</h2>
+          <h2 className="text-lg font-serif font-semibold">{t("dash.today")}</h2>
           <button
             onClick={() => navigate("/tasks")}
             className="text-xs text-primary hover:underline flex items-center gap-1"
           >
-            <Plus className="w-3 h-3" /> Add to-do
+            <Plus className="w-3 h-3" /> {t("dash.addTodo")}
           </button>
         </div>
 
         {todaysEvents.length === 0 && todaysTasks.length === 0 ? (
           <div className="bg-card border border-border rounded-2xl p-6 text-center">
             <p className="text-sm text-muted-foreground">
-              Nothing scheduled today. Enjoy the breathing room. 🌿
+              {t("dash.nothingToday")}
             </p>
           </div>
         ) : (
