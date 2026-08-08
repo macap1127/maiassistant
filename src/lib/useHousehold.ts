@@ -55,6 +55,10 @@ export const useHousehold = () => {
   const { user } = useAuth();
   const [household, setHousehold] = useState<HouseholdState | null>(null);
   const [loading, setLoading] = useState(true);
+  // Unique per hook instance — several components mount useHousehold() at the
+  // same time, and reusing one Supabase channel topic throws
+  // "cannot add `postgres_changes` callbacks ... after `subscribe()`".
+  const channelIdRef = useRef(Math.random().toString(36).slice(2));
 
   const refresh = useCallback(async () => {
     if (!user) {
