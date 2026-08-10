@@ -394,7 +394,7 @@ const CalendarPage = () => {
             <ChevronLeft className="w-4 h-4" />
           </button>
           <h2 className="text-base font-serif font-semibold">
-            {format(currentMonth, "MMMM yyyy")}
+            {safeFormat(currentMonth, "MMMM yyyy")}
           </h2>
           <button
             onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
