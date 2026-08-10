@@ -45,7 +45,19 @@ const SOURCE_COLORS = [
 
 function getSourceColor(source: string, allSources: string[]) {
   const idx = allSources.indexOf(source);
+  if (idx < 0) return SOURCE_COLORS[0];
   return SOURCE_COLORS[idx % SOURCE_COLORS.length];
+}
+
+/** Safe wrapper around date-fns format — never throws on bad/missing dates. */
+function safeFormat(value: Date | string | null | undefined, pattern: string, fallback = "") {
+  try {
+    const d = typeof value === "string" ? new Date(`${value}T00:00:00`) : value;
+    if (!d || !(d instanceof Date) || isNaN(d.getTime())) return fallback;
+    return format(d, pattern);
+  } catch {
+    return fallback;
+  }
 }
 
 const CalendarPage = () => {
@@ -75,7 +87,7 @@ const CalendarPage = () => {
   const calendarEnd = endOfWeek(monthEnd);
   const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
-  const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
+  const selectedDateStr = safeFormat(selectedDate, "yyyy-MM-dd");
   const eventsForDate = data.events.filter((e) => e.date === selectedDateStr);
   const tasksForDate = useMemo(
     () => data.tasks.filter((t) => t.dueDate && t.dueDate === selectedDateStr),
@@ -382,7 +394,7 @@ const CalendarPage = () => {
             <ChevronLeft className="w-4 h-4" />
           </button>
           <h2 className="text-base font-serif font-semibold">
-            {format(currentMonth, "MMMM yyyy")}
+            {safeFormat(currentMonth, "MMMM yyyy")}
           </h2>
           <button
             onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
@@ -435,7 +447,7 @@ const CalendarPage = () => {
       <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-serif font-semibold">
-            {isToday(selectedDate) ? t("calendar.today") : format(selectedDate, "MMM d, yyyy")}
+            {isToday(selectedDate) ? t("calendar.today") : safeFormat(selectedDate, "MMM d, yyyy")}
           </h3>
           <div className="flex items-center gap-2">
             <button
@@ -847,10 +859,12 @@ const CalendarPage = () => {
                 <div key={ev.id} className="border border-border rounded-xl p-3 bg-card flex items-start gap-2">
                   <button
                     onClick={() => {
-                      const [y, m, d] = ev.date.split("-").map(Number);
-                      const dt = new Date(y, m - 1, d);
-                      setSelectedDate(dt);
-                      setCurrentMonth(dt);
+                      const [y, m, d] = (ev.date || "").split("-").map(Number);
+                      const dt = new Date(y, (m || 1) - 1, d);
+                      if (!isNaN(dt.getTime())) {
+                        setSelectedDate(dt);
+                        setCurrentMonth(dt);
+                      }
                       startEdit(ev);
                       setManagingSource(null);
                     }}
@@ -858,7 +872,7 @@ const CalendarPage = () => {
                   >
                     <p className="text-sm font-medium truncate">{ev.title}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {format(new Date(ev.date + "T00:00:00"), "MMM d, yyyy")}
+                      {safeFormat(ev.date, "MMM d, yyyy")}
                       {ev.time ? ` · ${formatTime12h(ev.time)}` : ""}
                       {ev.location ? ` · ${ev.location}` : ""}
                     </p>

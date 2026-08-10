@@ -25,6 +25,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminTesters from "./pages/AdminTesters";
 import { DeepLinkHandler } from "@/lib/deepLinks";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +43,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/grocery" element={<GroceryList />} />
               <Route path="/tasks" element={<Tasks />} />
-              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/calendar" element={<ErrorBoundary><CalendarPage /></ErrorBoundary>} />
               <Route path="/family" element={<Family />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/pricing" element={<PricingPage />} />
