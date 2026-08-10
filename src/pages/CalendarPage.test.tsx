@@ -46,8 +46,8 @@ vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 import CalendarPage from "./CalendarPage";
 
 describe("CalendarPage resilience", () => {
-  beforeEach(() => vi.clearAllMocks();
-  );
+  beforeEach(() => vi.clearAllMocks());
+
 
   it("renders without throwing when event/task dates are malformed", () => {
     expect(() => render(<CalendarPage />)).not.toThrow();
