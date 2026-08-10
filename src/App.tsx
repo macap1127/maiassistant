@@ -25,6 +25,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminTesters from "./pages/AdminTesters";
 import { DeepLinkHandler } from "@/lib/deepLinks";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
