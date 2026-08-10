@@ -870,7 +870,7 @@ const CalendarPage = () => {
                   >
                     <p className="text-sm font-medium truncate">{ev.title}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {format(new Date(ev.date + "T00:00:00"), "MMM d, yyyy")}
+                      {safeFormat(ev.date, "MMM d, yyyy")}
                       {ev.time ? ` · ${formatTime12h(ev.time)}` : ""}
                       {ev.location ? ` · ${ev.location}` : ""}
                     </p>
