@@ -45,7 +45,19 @@ const SOURCE_COLORS = [
 
 function getSourceColor(source: string, allSources: string[]) {
   const idx = allSources.indexOf(source);
+  if (idx < 0) return SOURCE_COLORS[0];
   return SOURCE_COLORS[idx % SOURCE_COLORS.length];
+}
+
+/** Safe wrapper around date-fns format — never throws on bad/missing dates. */
+function safeFormat(value: Date | string | null | undefined, pattern: string, fallback = "") {
+  try {
+    const d = typeof value === "string" ? new Date(`${value}T00:00:00`) : value;
+    if (!d || !(d instanceof Date) || isNaN(d.getTime())) return fallback;
+    return format(d, pattern);
+  } catch {
+    return fallback;
+  }
 }
 
 const CalendarPage = () => {
