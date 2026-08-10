@@ -447,7 +447,7 @@ const CalendarPage = () => {
       <div className="animate-slide-up" style={{ animationDelay: "100ms" }}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-serif font-semibold">
-            {isToday(selectedDate) ? t("calendar.today") : format(selectedDate, "MMM d, yyyy")}
+            {isToday(selectedDate) ? t("calendar.today") : safeFormat(selectedDate, "MMM d, yyyy")}
           </h3>
           <div className="flex items-center gap-2">
             <button
