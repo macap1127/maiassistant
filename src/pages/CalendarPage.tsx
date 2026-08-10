@@ -87,7 +87,7 @@ const CalendarPage = () => {
   const calendarEnd = endOfWeek(monthEnd);
   const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
-  const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
+  const selectedDateStr = safeFormat(selectedDate, "yyyy-MM-dd");
   const eventsForDate = data.events.filter((e) => e.date === selectedDateStr);
   const tasksForDate = useMemo(
     () => data.tasks.filter((t) => t.dueDate && t.dueDate === selectedDateStr),
