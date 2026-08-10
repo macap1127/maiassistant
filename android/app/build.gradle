@@ -13,13 +13,8 @@ android {
         applicationId "com.aiblueribbon.mia"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-<<<<<<< HEAD
-        versionCode 22
-        versionName "1.0.22"
-=======
         versionCode 23
         versionName "1.0.23"
->>>>>>> 173170534867621a62fd966dc1519e56618764b4
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
