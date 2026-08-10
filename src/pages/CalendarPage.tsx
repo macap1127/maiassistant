@@ -859,10 +859,12 @@ const CalendarPage = () => {
                 <div key={ev.id} className="border border-border rounded-xl p-3 bg-card flex items-start gap-2">
                   <button
                     onClick={() => {
-                      const [y, m, d] = ev.date.split("-").map(Number);
-                      const dt = new Date(y, m - 1, d);
-                      setSelectedDate(dt);
-                      setCurrentMonth(dt);
+                      const [y, m, d] = (ev.date || "").split("-").map(Number);
+                      const dt = new Date(y, (m || 1) - 1, d);
+                      if (!isNaN(dt.getTime())) {
+                        setSelectedDate(dt);
+                        setCurrentMonth(dt);
+                      }
                       startEdit(ev);
                       setManagingSource(null);
                     }}
