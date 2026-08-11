@@ -444,30 +444,6 @@ export type Database = {
         }
         Relationships: []
       }
-      public_sms_optins: {
-        Row: {
-          consent: boolean
-          created_at: string
-          id: string
-          phone: string
-          user_agent: string | null
-        }
-        Insert: {
-          consent?: boolean
-          created_at?: string
-          id?: string
-          phone: string
-          user_agent?: string | null
-        }
-        Update: {
-          consent?: boolean
-          created_at?: string
-          id?: string
-          phone?: string
-          user_agent?: string | null
-        }
-        Relationships: []
-      }
       push_preferences: {
         Row: {
           account_billing: boolean
@@ -561,42 +537,6 @@ export type Database = {
           store?: string
           total?: number | null
           updated_at?: string
-        }
-        Relationships: []
-      }
-      sms_reminder_prefs: {
-        Row: {
-          created_at: string
-          household_id: string
-          last_sent_date: string | null
-          opted_in: boolean
-          phone: string
-          send_time: string
-          timezone: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          household_id: string
-          last_sent_date?: string | null
-          opted_in?: boolean
-          phone?: string
-          send_time?: string
-          timezone?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          household_id?: string
-          last_sent_date?: string | null
-          opted_in?: boolean
-          phone?: string
-          send_time?: string
-          timezone?: string
-          updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
