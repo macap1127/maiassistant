@@ -60,6 +60,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/invite/:code" element={<AcceptInvitePage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
+            <Route path="/sms-optin" element={<SmsOptInPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
