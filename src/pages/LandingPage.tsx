@@ -5,8 +5,7 @@ import maiLogo from "@/assets/mai-logo.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 
-// TODO: replace with the final App Store listing URL once the app ID is live.
-const APP_STORE_URL = "https://apps.apple.com/search?term=Mia%20Family%20Assistant";
+const APP_STORE_URL = "https://apps.apple.com/us/app/mia-family-assistant/id6776078875";
 const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.aiblueribbon.mia";
 
 const FEATURES = [
