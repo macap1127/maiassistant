@@ -32,7 +32,7 @@ const PrivacyPolicy = () => {
             </li>
             <li>
               <strong>Phone numbers (optional):</strong> Only if you choose to save one on a household member profile.
-              Phone numbers are not used to send SMS.
+              Phone numbers are used only for display within your household.
             </li>
             <li>
               <strong>Photos & files:</strong> Receipt images you upload for scanning, and calendar files (ICS, PDF,
@@ -86,7 +86,7 @@ const PrivacyPolicy = () => {
           <p>
             You can turn any category off, or disable push entirely, from Settings or from your device notification
             settings. Notification tokens and preferences are never shared with third parties for marketing. Members
-            cannot use Mia to send SMS or push notifications to each other.
+            cannot use Mia to send push notifications to each other.
           </p>
           <p>
             <strong>Data rates may apply.</strong> Delivery depends on device, network, and operating system settings.

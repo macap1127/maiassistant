@@ -55,7 +55,7 @@ const Terms = () => {
             <strong>Message frequency:</strong> Notification frequency may vary based on reminder settings, scheduled events, and household activity.
           </p>
           <p>
-            <strong>One-way only:</strong> Notifications from Mia Family Assistant (Sole Proprietor) are automated reminders and alerts sent from the service to the opted-in user. Members cannot use the Service to send SMS messages to each other.
+            <strong>One-way only:</strong> Notifications from Mia Family Assistant (Sole Proprietor) are automated reminders and alerts sent from the service to the opted-in user. Members cannot use the Service to send messages to each other.
           </p>
           <p>
             <strong>Data rates may apply.</strong> Check your mobile plan for details. Delivery may depend on device, network, and operating system settings.
