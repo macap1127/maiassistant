@@ -23,6 +23,7 @@ import AuthPage from "./pages/AuthPage";
 import AuthConfirmedPage from "./pages/AuthConfirmedPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
+import SmsOptInPage from "./pages/SmsOptInPage";
 import AdminTesters from "./pages/AdminTesters";
 import { DeepLinkHandler } from "@/lib/deepLinks";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/invite/:code" element={<AcceptInvitePage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
+            <Route path="/sms-optin" element={<SmsOptInPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
