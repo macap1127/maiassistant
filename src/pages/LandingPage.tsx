@@ -190,9 +190,6 @@ const LandingPage = () => {
             <a href="mailto:support@miafamilyassistant.com" className="hover:text-foreground transition-colors">
               Support
             </a>
-            <Link to="/sms-optin" className="hover:text-foreground transition-colors">
-              SMS Opt-In
-            </Link>
           </div>
           <p className="text-xs text-muted-foreground/50 mt-6">
             © {new Date().getFullYear()} Mia Family Assistant

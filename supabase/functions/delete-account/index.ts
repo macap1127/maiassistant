@@ -65,7 +65,6 @@ Deno.serve(async (req) => {
         await admin.from("grocery_items").delete().eq("household_id", hid);
         await admin.from("family_members").delete().eq("household_id", hid);
         await admin.from("receipts").delete().eq("household_id", hid);
-        await admin.from("sms_reminder_prefs").delete().eq("household_id", hid);
         await admin.from("voice_usage_log").delete().eq("household_id", hid);
         await admin.from("household_invites").delete().eq("household_id", hid);
         await admin.from("household_members").delete().eq("household_id", hid);
@@ -73,7 +72,6 @@ Deno.serve(async (req) => {
       } else {
         // Just a member: remove from the household, leave it intact.
         await admin.from("household_members").delete().eq("user_id", user.id);
-        await admin.from("sms_reminder_prefs").delete().eq("user_id", user.id);
       }
     }
 
