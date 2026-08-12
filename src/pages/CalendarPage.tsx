@@ -947,7 +947,11 @@ const CalendarPage = () => {
 
       {/* Confirm scanned events */}
       <Dialog open={!!pendingEvents} onOpenChange={(o) => { if (!o) setPendingEvents(null); }}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogContent
+          className="max-w-lg max-h-[85vh] overflow-y-auto"
+          onInteractOutside={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle>{t("calendar.reviewEvents", { count: pendingEvents?.length ?? 0 })}</DialogTitle>
             <DialogDescription>
