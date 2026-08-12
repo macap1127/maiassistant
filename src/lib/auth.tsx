@@ -24,11 +24,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Track the last applied identity so token refreshes (which fire every time
+    // the native app returns to the foreground, e.g. after the photo picker)
+    // don't hand down a brand-new `user` object and remount the whole tree.
+    let lastUserId: string | null = null;
+
+    const applySession = (s: Session | null) => {
+      setSession(s);
+      const nextId = s?.user?.id ?? null;
+      if (nextId !== lastUserId) {
+        lastUserId = nextId;
+        setUser(s?.user ?? null);
+      }
+    };
+
     // Set listener FIRST
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
+      applySession(s);
       setLoading(false);
+
       // Auto-create a household for first-time sign-ins (covers Google OAuth
       // users who never go through the email signup form). Defer to avoid
       // deadlocks inside the auth callback.
