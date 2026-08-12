@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { Plus, MapPin, Clock, Trash2, ChevronLeft, ChevronRight, Upload, Tag, FileUp, X, CheckSquare, Check, Pencil } from "lucide-react";
 import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
@@ -60,6 +60,9 @@ function safeFormat(value: Date | string | null | undefined, pattern: string, fa
   }
 }
 
+const PENDING_KEY = "mia.calendar.pendingImport";
+const PENDING_META_KEY = "mia.calendar.pendingImportMeta";
+
 const CalendarPage = () => {
   const { t } = useTranslation();
   const { data, update } = useFamilyData();
@@ -74,8 +77,39 @@ const CalendarPage = () => {
   const [importing, setImporting] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState({ title: "", date: "", time: "", location: "", notes: "", assignedTo: "" });
-  const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(null);
-  const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
+  // Persisted so that a background refetch / app-foreground remount can't wipe
+  // an in-progress import review (the scanned events used to vanish instantly
+  // on native after the photo picker closed).
+  const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(() => {
+    try {
+      const raw = sessionStorage.getItem(PENDING_KEY);
+      return raw ? (JSON.parse(raw) as PendingEvent[]) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>(() => {
+    try {
+      const raw = sessionStorage.getItem(PENDING_META_KEY);
+      return raw ? JSON.parse(raw) : { source: "" };
+    } catch {
+      return { source: "" };
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (pendingEvents) sessionStorage.setItem(PENDING_KEY, JSON.stringify(pendingEvents));
+      else sessionStorage.removeItem(PENDING_KEY);
+    } catch { /* ignore */ }
+  }, [pendingEvents]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(PENDING_META_KEY, JSON.stringify(pendingMeta));
+    } catch { /* ignore */ }
+  }, [pendingMeta]);
+
   const [managingSource, setManagingSource] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
   const [sourceNewEvent, setSourceNewEvent] = useState({ title: "", date: "", time: "", location: "" });
@@ -913,7 +947,11 @@ const CalendarPage = () => {
 
       {/* Confirm scanned events */}
       <Dialog open={!!pendingEvents} onOpenChange={(o) => { if (!o) setPendingEvents(null); }}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogContent
+          className="max-w-lg max-h-[85vh] overflow-y-auto"
+          onInteractOutside={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle>{t("calendar.reviewEvents", { count: pendingEvents?.length ?? 0 })}</DialogTitle>
             <DialogDescription>
