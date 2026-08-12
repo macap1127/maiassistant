@@ -109,7 +109,7 @@ export const useHousehold = () => {
         stripeCustomerId: h.stripe_customer_id,
         stripeSubscriptionId: h.stripe_subscription_id,
         hasUsedTrial: (h as any).has_used_trial ?? false,
-        isOwner: h.owner_user_id === user.id,
+        isOwner: h.owner_user_id === userId,
         memberCount: count ?? 1,
         assistantLanguage: (h as any).assistant_language ?? "en",
         aiCalendarImportsUsed: (h as any).ai_calendar_imports_used ?? 0,
@@ -117,8 +117,10 @@ export const useHousehold = () => {
         ...derived,
       });
     }
+    loadedOnceRef.current = true;
     setLoading(false);
-  }, [user]);
+  }, [userId]);
+
 
   useEffect(() => {
     void refresh();
