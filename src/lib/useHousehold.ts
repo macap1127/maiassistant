@@ -53,24 +53,30 @@ function deriveAccess(h: any): { hasAccess: boolean; isInTrial: boolean; trialDa
 
 export const useHousehold = () => {
   const { user } = useAuth();
+  const userId = user?.id ?? null;
   const [household, setHousehold] = useState<HouseholdState | null>(null);
   const [loading, setLoading] = useState(true);
+  // Once we've loaded successfully, later refetches must NOT flip `loading`
+  // back to true — that unmounts the whole page tree (and any in-progress
+  // dialog, like the calendar import review) while the refetch runs.
+  const loadedOnceRef = useRef(false);
   // Unique per hook instance — several components mount useHousehold() at the
   // same time, and reusing one Supabase channel topic throws
   // "cannot add `postgres_changes` callbacks ... after `subscribe()`".
   const channelIdRef = useRef(Math.random().toString(36).slice(2));
 
   const refresh = useCallback(async () => {
-    if (!user) {
+    if (!userId) {
       setHousehold(null);
       setLoading(false);
       return;
     }
-    setLoading(true);
+    if (!loadedOnceRef.current) setLoading(true);
     const { data: memRow } = await supabase
       .from("household_members")
       .select("household_id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
+
       .maybeSingle();
     if (!memRow) {
       setHousehold(null);
