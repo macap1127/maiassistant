@@ -74,8 +74,39 @@ const CalendarPage = () => {
   const [importing, setImporting] = useState(false);
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState({ title: "", date: "", time: "", location: "", notes: "", assignedTo: "" });
-  const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(null);
-  const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>({ source: "" });
+  // Persisted so that a background refetch / app-foreground remount can't wipe
+  // an in-progress import review (the scanned events used to vanish instantly
+  // on native after the photo picker closed).
+  const [pendingEvents, setPendingEvents] = useState<PendingEvent[] | null>(() => {
+    try {
+      const raw = sessionStorage.getItem(PENDING_KEY);
+      return raw ? (JSON.parse(raw) as PendingEvent[]) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [pendingMeta, setPendingMeta] = useState<{ source: string; assignedTo?: string }>(() => {
+    try {
+      const raw = sessionStorage.getItem(PENDING_META_KEY);
+      return raw ? JSON.parse(raw) : { source: "" };
+    } catch {
+      return { source: "" };
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (pendingEvents) sessionStorage.setItem(PENDING_KEY, JSON.stringify(pendingEvents));
+      else sessionStorage.removeItem(PENDING_KEY);
+    } catch { /* ignore */ }
+  }, [pendingEvents]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(PENDING_META_KEY, JSON.stringify(pendingMeta));
+    } catch { /* ignore */ }
+  }, [pendingMeta]);
+
   const [managingSource, setManagingSource] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
   const [sourceNewEvent, setSourceNewEvent] = useState({ title: "", date: "", time: "", location: "" });
