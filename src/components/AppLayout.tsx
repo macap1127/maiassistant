@@ -93,7 +93,11 @@ const AppLayout = () => {
     };
   }, [user]);
 
-  if (loading || (user && (checkingOnboarding || householdLoading))) {
+  // Only block on the initial load. Once we have data, background refetches
+  // must never swap the page for a loading screen (that would unmount whatever
+  // the user is doing, e.g. the calendar import review dialog).
+  if (loading || (user && !household && (checkingOnboarding || householdLoading))) {
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-sm text-muted-foreground animate-pulse">{t("common.loading")}</p>
