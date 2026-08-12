@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { Plus, MapPin, Clock, Trash2, ChevronLeft, ChevronRight, Upload, Tag, FileUp, X, CheckSquare, Check, Pencil } from "lucide-react";
 import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
@@ -59,6 +59,9 @@ function safeFormat(value: Date | string | null | undefined, pattern: string, fa
     return fallback;
   }
 }
+
+const PENDING_KEY = "mia.calendar.pendingImport";
+const PENDING_META_KEY = "mia.calendar.pendingImportMeta";
 
 const CalendarPage = () => {
   const { t } = useTranslation();
