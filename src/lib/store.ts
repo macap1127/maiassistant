@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./auth";
+import { toast } from "sonner";
 
 export interface FamilyMember {
   id: string;
@@ -282,6 +283,11 @@ export function useFamilyData() {
         );
       } catch (err) {
         console.error("update sync error", err);
+        // Roll back the optimistic update so the UI never shows rows that
+        // didn't actually save (they'd otherwise vanish on the next refresh).
+        dataRef.current = prev;
+        setData(prev);
+        toast.error("Couldn't save your changes. Please try again.");
       }
     },
     []
@@ -320,7 +326,10 @@ async function syncList<T extends { id: string }>(
       return row;
     });
     const { error } = await (supabase.from(table) as any).insert(rows);
-    if (error) console.error(`insert ${table}`, error);
+    if (error) {
+      console.error(`insert ${table}`, error);
+      throw error;
+    }
   }
 
   for (const item of toModify) {
