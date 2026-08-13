@@ -4,6 +4,8 @@ import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
 import { supabase } from "@/integrations/supabase/client";
 import { useHousehold } from "@/lib/useHousehold";
+import { startImportJob, subscribeImportJob, getImportJobState, clearImportJob } from "@/lib/calendarImportJob";
+
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { formatTime12h } from "@/lib/date";
