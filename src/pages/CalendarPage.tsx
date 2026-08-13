@@ -120,6 +120,12 @@ const CalendarPage = () => {
       if (s.error) {
         if (s.errorCode === "AI_IMPORT_LIMIT_REACHED" || s.error.includes("5 free AI calendar imports")) {
           toast.error(t("calendar.aiImportLimitReached"));
+        } else if (s.errorCode === "FILE_TOO_LARGE") {
+          toast.error(t("calendar.fileTooLarge", { defaultValue: "That file is too large. Choose a smaller image or PDF and try again." }));
+        } else if (s.errorCode === "IMAGE_PROCESSING_FAILED") {
+          toast.error(t("calendar.imageProcessingFailed", { defaultValue: "That photo could not be prepared. Choose a different photo and try again." }));
+        } else if (s.errorCode === "IMPORT_INTERRUPTED") {
+          toast.error(t("calendar.importInterrupted", { defaultValue: "The import was interrupted. Please select the file and try again." }));
         } else if (s.error.includes("Family") || s.error.includes("upgrade")) {
           toast.error(t("calendar.aiImportRequiresFamily"));
         } else {
