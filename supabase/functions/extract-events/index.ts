@@ -7,6 +7,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const MAX_DATA_URL_CHARS = 8 * 1024 * 1024;
+const AI_TIMEOUT_MS = 45_000;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -15,6 +18,12 @@ Deno.serve(async (req) => {
     if (!imageDataUrl) {
       return new Response(JSON.stringify({ error: "imageDataUrl required" }), {
         status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (typeof imageDataUrl !== "string" || imageDataUrl.length > MAX_DATA_URL_CHARS) {
+      return new Response(JSON.stringify({ error: "File is too large", code: "FILE_TOO_LARGE" }), {
+        status: 413,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -81,6 +90,7 @@ Return ONLY a JSON object: {"events":[{"title":"...","date":"YYYY-MM-DD","time":
           },
         ],
       }),
+      signal: AbortSignal.timeout(AI_TIMEOUT_MS),
     });
 
     if (!resp.ok) {

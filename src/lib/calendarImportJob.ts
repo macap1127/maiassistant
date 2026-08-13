@@ -29,6 +29,7 @@ export type ImportJobState = {
 };
 
 const RESULT_KEY = "mia.calendar.importJobResult";
+const ACTIVE_KEY = "mia.calendar.importJobActive";
 
 const initial: ImportJobState = {
   running: false,
@@ -41,7 +42,13 @@ const initial: ImportJobState = {
 function readPersisted(): ImportJobState {
   try {
     const raw = sessionStorage.getItem(RESULT_KEY);
-    if (!raw) return initial;
+    if (!raw) {
+      const wasInterrupted = sessionStorage.getItem(ACTIVE_KEY) === "true";
+      sessionStorage.removeItem(ACTIVE_KEY);
+      return wasInterrupted
+        ? { ...initial, error: "Import was interrupted. Please try again.", errorCode: "IMPORT_INTERRUPTED" }
+        : initial;
+    }
     const parsed = JSON.parse(raw);
     return { ...initial, ...parsed, running: false };
   } catch {
@@ -87,12 +94,21 @@ export function subscribeImportJob(cb: (s: ImportJobState) => void): () => void 
 /** Clear the finished result (after the user accepts/dismisses the review). */
 export function clearImportJob() {
   state = { ...initial };
+  try {
+    sessionStorage.removeItem(ACTIVE_KEY);
+  } catch {
+    /* ignore */
+  }
   persist();
   listeners.forEach((l) => l(state));
 }
 
 const MAX_DIM = 1600;
 const JPEG_QUALITY = 0.82;
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
+const MAX_PDF_BYTES = 6 * 1024 * 1024;
+const MAX_DATA_URL_CHARS = 8 * 1024 * 1024;
+const REQUEST_TIMEOUT_MS = 60_000;
 
 function readAsDataUrl(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -108,7 +124,13 @@ function readAsDataUrl(file: Blob): Promise<string> {
  * data URL if the browser can't decode it.
  */
 export async function toCompressedDataUrl(file: File): Promise<string> {
-  if (!file.type.startsWith("image/")) return readAsDataUrl(file);
+  if (!file.type.startsWith("image/")) {
+    if (file.size > MAX_PDF_BYTES) throw new Error("FILE_TOO_LARGE");
+    const raw = await readAsDataUrl(file);
+    if (raw.length > MAX_DATA_URL_CHARS) throw new Error("FILE_TOO_LARGE");
+    return raw;
+  }
+  if (file.size > MAX_IMAGE_BYTES) throw new Error("FILE_TOO_LARGE");
 
   let url: string | null = null;
   try {
@@ -128,16 +150,20 @@ export async function toCompressedDataUrl(file: File): Promise<string> {
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d");
-    if (!ctx) return readAsDataUrl(file);
+    if (!ctx) throw new Error("IMAGE_PROCESSING_FAILED");
     ctx.drawImage(img, 0, 0, w, h);
     const out = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
     // Free the decoded bitmap ASAP.
     canvas.width = 0;
     canvas.height = 0;
-    if (!out || out.length < 100) return readAsDataUrl(file);
+    if (!out || out.length < 100) throw new Error("IMAGE_PROCESSING_FAILED");
+    if (out.length > MAX_DATA_URL_CHARS) throw new Error("FILE_TOO_LARGE");
     return out;
-  } catch {
-    return readAsDataUrl(file);
+  } catch (error) {
+    if (error instanceof Error && (error.message === "FILE_TOO_LARGE" || error.message === "IMAGE_PROCESSING_FAILED")) {
+      throw error;
+    }
+    throw new Error("IMAGE_PROCESSING_FAILED");
   } finally {
     if (url) URL.revokeObjectURL(url);
   }
@@ -155,6 +181,11 @@ export function startImportJob(opts: {
 }) {
   if (state.running) return;
   setState({ running: true, events: null, meta: null, error: null, errorCode: null });
+  try {
+    sessionStorage.setItem(ACTIVE_KEY, "true");
+  } catch {
+    /* ignore */
+  }
 
   void (async () => {
     try {
@@ -162,12 +193,18 @@ export function startImportJob(opts: {
 
       const { data: result, error } = await supabase.functions.invoke("extract-events", {
         body: { imageDataUrl: dataUrl, source: opts.source, householdId: opts.householdId },
+        timeout: REQUEST_TIMEOUT_MS,
       });
 
       if (error) {
         const ctx = (error as any)?.context?.body;
         const msg = ctx?.error || (error as any)?.message || "";
         const code = ctx?.code || "";
+        try {
+          sessionStorage.removeItem(ACTIVE_KEY);
+        } catch {
+          /* ignore */
+        }
         setState({ running: false, error: msg || "failed", errorCode: code || null });
         return;
       }
@@ -180,6 +217,11 @@ export function startImportJob(opts: {
         notes?: string | null;
       }>;
 
+      try {
+        sessionStorage.removeItem(ACTIVE_KEY);
+      } catch {
+        /* ignore */
+      }
       setState({
         running: false,
         events: extracted.map((ev) => ({
@@ -195,7 +237,13 @@ export function startImportJob(opts: {
       });
     } catch (e) {
       console.error("calendar import job failed", e);
-      setState({ running: false, error: e instanceof Error ? e.message : "failed", errorCode: null });
+      try {
+        sessionStorage.removeItem(ACTIVE_KEY);
+      } catch {
+        /* ignore */
+      }
+      const message = e instanceof Error ? e.message : "failed";
+      setState({ running: false, error: message, errorCode: message });
     }
   })();
 }
