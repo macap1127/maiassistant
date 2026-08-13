@@ -161,9 +161,9 @@ const AuthPage = () => {
 
   if (signupSuccess) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="min-h-[100dvh] bg-background flex items-start sm:items-center justify-center overflow-y-auto px-6 py-8" style={{ paddingTop: "max(2rem, env(safe-area-inset-top))", paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}>
         <div className="w-full max-w-sm text-center animate-fade-in">
-          <img src={maiLogo} alt="Mia Family Assistant" className="w-28 h-28 rounded-2xl shadow-sm mx-auto mb-6" />
+          <img src={maiLogo} alt="Mia Family Assistant" className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl shadow-sm mx-auto mb-4 sm:mb-6" />
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Mail className="w-6 h-6 text-primary" />
           </div>
@@ -187,13 +187,13 @@ const AuthPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+    <div className="min-h-[100dvh] bg-background flex items-start sm:items-center justify-center overflow-y-auto px-6 py-8" style={{ paddingTop: "max(2rem, env(safe-area-inset-top))", paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}>
       <div className="w-full max-w-sm text-center animate-fade-in">
-        <img src={maiLogo} alt="Mia Family Assistant" className="w-28 h-28 rounded-2xl shadow-sm mx-auto mb-6" />
+        <img src={maiLogo} alt="Mia Family Assistant" className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl shadow-sm mx-auto mb-4 sm:mb-6" />
         <h1 className="text-2xl font-serif font-semibold mb-2">
           {mode === "signin" ? t("auth.welcomeBack") : mode === "signup" ? t("auth.createYourAccount") : t("auth.resetYourPassword")}
         </h1>
-        <p className="text-sm text-muted-foreground mb-8">
+        <p className="text-sm text-muted-foreground mb-6">
           {mode === "signin"
             ? t("auth.signInSubtitle")
             : mode === "signup"
@@ -222,7 +222,7 @@ const AuthPage = () => {
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(""); }}
               placeholder={t("auth.emailPlaceholder")}
-              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
           {mode !== "forgot" && (
@@ -234,7 +234,7 @@ const AuthPage = () => {
               onChange={(e) => { setPassword(e.target.value); setError(""); }}
               onKeyDown={(e) => e.key === "Enter" && submit()}
               placeholder={t("auth.passwordPlaceholder")}
-              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full bg-card border border-border rounded-xl pl-11 pr-4 py-3 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
           )}
