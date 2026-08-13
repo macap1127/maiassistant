@@ -377,66 +377,28 @@ const CalendarPage = () => {
       return;
     }
 
-    setImporting(true);
     const assignedTo = uploadAssignedTo || undefined;
+
+    if (!isIcs) {
+      // Image/PDF → AI extraction. Handed to a module-level job so it keeps
+      // running (and keeps its result) even if this page unmounts while the
+      // native photo picker closes.
+      setImporting(true);
+      startImportJob({ file, source, assignedTo, householdId: household?.id });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    setImporting(true);
     try {
-      if (isIcs) {
-        const text = await readFileAsText(file);
-        const parsed = parseIcsFile(text, source).map((ev) => ({ ...ev, assignedTo }));
-        if (parsed.length === 0) {
-          toast.error(t("calendar.noEventsInFile"));
-          return;
-        }
-        update((d) => ({ ...d, events: [...d.events, ...parsed] }));
-        toast.success(t("calendar.importedEvents", { count: parsed.length, source }));
-      } else {
-        // Image or PDF → AI extraction
-        const dataUrl: string = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject(reader.error);
-          reader.readAsDataURL(file);
-        });
-
-        const { data: result, error } = await supabase.functions.invoke("extract-events", {
-          body: { imageDataUrl: dataUrl, source, householdId: household?.id },
-        });
-        if (error) {
-          const ctx = (error as any)?.context?.body;
-          const msg = ctx?.error || (error as any)?.message || "";
-          const code = ctx?.code || "";
-          if (code === "AI_IMPORT_LIMIT_REACHED" || msg.includes("5 free AI calendar imports")) {
-            toast.error(t("calendar.aiImportLimitReached"));
-            return;
-          }
-          if (msg.includes("Family") || msg.includes("upgrade")) {
-            toast.error(t("calendar.aiImportRequiresFamily"));
-            return;
-          }
-          throw error;
-        }
-
-        const extracted = (result?.events || []) as Array<{
-          title: string; date: string; time?: string | null;
-          location?: string | null; notes?: string | null; source?: string;
-        }>;
-        if (extracted.length === 0) {
-          toast.error(t("calendar.noEventsInThatFile"));
-          return;
-        }
-
-        // Stage for user confirmation instead of inserting directly
-        setPendingEvents(
-          extracted.map((ev) => ({
-            title: ev.title || "",
-            date: ev.date || "",
-            time: ev.time || "",
-            location: ev.location || "",
-            notes: ev.notes || "",
-          }))
-        );
-        setPendingMeta({ source, assignedTo });
+      const text = await readFileAsText(file);
+      const parsed = parseIcsFile(text, source).map((ev) => ({ ...ev, assignedTo }));
+      if (parsed.length === 0) {
+        toast.error(t("calendar.noEventsInFile"));
+        return;
       }
+      update((d) => ({ ...d, events: [...d.events, ...parsed] }));
+      toast.success(t("calendar.importedEvents", { count: parsed.length, source }));
       setShowUpload(false);
       setUploadSource("");
       setUploadAssignedTo("");
@@ -448,6 +410,7 @@ const CalendarPage = () => {
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
+
 
   return (
     <div className="page-container">
