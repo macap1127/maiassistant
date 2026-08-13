@@ -644,6 +644,24 @@
       "disabledTitle": "推送通知已禁用",
       "errorTitle": "出了点问题",
       "couldntSaveTitle": "无法保存"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "每日摘要",
+        "desc": "早上汇总今天的日程、待办和采购清单。"
+      },
+      "event_reminders": {
+        "label": "日程提醒",
+        "desc": "日历日程开始前提前提醒你。"
+      },
+      "family_activity": {
+        "label": "家庭动态",
+        "desc": "有人添加或修改待办、清单或日程时通知。"
+      },
+      "account_billing": {
+        "label": "账户与账单",
+        "desc": "套餐续订、付款问题和重要账户通知。"
+      }
     }
   },
   "voice": {

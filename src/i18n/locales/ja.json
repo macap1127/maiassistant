@@ -644,6 +644,24 @@
       "disabledTitle": "プッシュ通知が無効になりました",
       "errorTitle": "問題が発生しました",
       "couldntSaveTitle": "保存できませんでした"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "今日のまとめ",
+        "desc": "今日の予定・タスク・買い物を朝にお知らせします。"
+      },
+      "event_reminders": {
+        "label": "予定のリマインダー",
+        "desc": "カレンダーの予定が始まる前にお知らせします。"
+      },
+      "family_activity": {
+        "label": "家族の更新",
+        "desc": "家族がタスク・買い物・予定を追加や変更したとき。"
+      },
+      "account_billing": {
+        "label": "アカウントとお支払い",
+        "desc": "プランの更新、支払いの問題、重要なお知らせ。"
+      }
     }
   },
   "voice": {

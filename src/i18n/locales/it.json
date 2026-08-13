@@ -651,6 +651,24 @@
       "disabledTitle": "Notifiche push disattivate",
       "errorTitle": "Qualcosa è andato storto",
       "couldntSaveTitle": "Impossibile salvare"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "Riepilogo giornaliero",
+        "desc": "Una panoramica mattutina di eventi, attività e spesa."
+      },
+      "event_reminders": {
+        "label": "Promemoria eventi",
+        "desc": "Un avviso prima dell'inizio degli eventi del calendario."
+      },
+      "family_activity": {
+        "label": "Aggiornamenti famiglia",
+        "desc": "Quando qualcuno aggiunge o modifica attività, articoli o eventi."
+      },
+      "account_billing": {
+        "label": "Account e fatturazione",
+        "desc": "Rinnovi, problemi di pagamento e avvisi importanti."
+      }
     }
   },
   "voice": {

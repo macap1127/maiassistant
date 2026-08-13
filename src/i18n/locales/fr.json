@@ -651,6 +651,24 @@
       "disabledTitle": "Notifications push désactivées",
       "errorTitle": "Une erreur s'est produite",
       "couldntSaveTitle": "Impossible d'enregistrer"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "Résumé quotidien",
+        "desc": "Un aperçu matinal des événements, tâches et courses du jour."
+      },
+      "event_reminders": {
+        "label": "Rappels d'événements",
+        "desc": "Une alerte avant le début des événements du calendrier."
+      },
+      "family_activity": {
+        "label": "Nouvelles de la famille",
+        "desc": "Quand quelqu'un ajoute ou modifie une tâche, un article ou un événement."
+      },
+      "account_billing": {
+        "label": "Compte et facturation",
+        "desc": "Renouvellements, problèmes de paiement et avis importants."
+      }
     }
   },
   "voice": {

@@ -651,6 +651,24 @@
       "disabledTitle": "Push-notiser inaktiverade",
       "errorTitle": "Något gick fel",
       "couldntSaveTitle": "Kunde inte spara"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "Daglig sammanfattning",
+        "desc": "En morgonöversikt över dagens händelser, uppgifter och inköp."
+      },
+      "event_reminders": {
+        "label": "Påminnelser om händelser",
+        "desc": "En påminnelse innan kalenderhändelser börjar."
+      },
+      "family_activity": {
+        "label": "Familjeuppdateringar",
+        "desc": "När någon lägger till eller ändrar uppgift, vara eller händelse."
+      },
+      "account_billing": {
+        "label": "Konto och betalning",
+        "desc": "Förnyelser, betalningsproblem och viktiga meddelanden."
+      }
     }
   },
   "voice": {

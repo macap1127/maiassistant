@@ -651,6 +651,24 @@
       "disabledTitle": "Pushmeldingen uitgeschakeld",
       "errorTitle": "Er is iets misgegaan",
       "couldntSaveTitle": "Kon niet opslaan"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "Dagelijks overzicht",
+        "desc": "Een ochtendoverzicht van afspraken, taken en boodschappen."
+      },
+      "event_reminders": {
+        "label": "Herinneringen voor afspraken",
+        "desc": "Een seintje voordat agenda-afspraken beginnen."
+      },
+      "family_activity": {
+        "label": "Familie-updates",
+        "desc": "Als iemand een taak, item of afspraak toevoegt of wijzigt."
+      },
+      "account_billing": {
+        "label": "Account en facturering",
+        "desc": "Verlengingen, betaalproblemen en belangrijke meldingen."
+      }
     }
   },
   "voice": {

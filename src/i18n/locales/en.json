@@ -651,6 +651,24 @@
       "disabledTitle": "Push notifications disabled",
       "errorTitle": "Something went wrong",
       "couldntSaveTitle": "Couldn't save"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "Daily summary",
+        "desc": "A morning rundown of today's events, tasks, and groceries."
+      },
+      "event_reminders": {
+        "label": "Event reminders",
+        "desc": "A heads-up before calendar events start."
+      },
+      "family_activity": {
+        "label": "Family updates",
+        "desc": "When someone adds or changes a task, list item, or event."
+      },
+      "account_billing": {
+        "label": "Account & billing",
+        "desc": "Plan renewals, payment issues, and important account notices."
+      }
     }
   },
   "voice": {
