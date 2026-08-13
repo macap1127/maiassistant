@@ -651,6 +651,24 @@
       "disabledTitle": "Push-Benachrichtigungen deaktiviert",
       "errorTitle": "Etwas ist schiefgelaufen",
       "couldntSaveTitle": "Konnte nicht gespeichert werden"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "Tagesüberblick",
+        "desc": "Ein Morgenüberblick über Termine, Aufgaben und Einkäufe."
+      },
+      "event_reminders": {
+        "label": "Termin-Erinnerungen",
+        "desc": "Ein Hinweis, bevor Kalendertermine beginnen."
+      },
+      "family_activity": {
+        "label": "Familien-Updates",
+        "desc": "Wenn jemand eine Aufgabe, einen Eintrag oder Termin ändert."
+      },
+      "account_billing": {
+        "label": "Konto & Abrechnung",
+        "desc": "Verlängerungen, Zahlungsprobleme und wichtige Hinweise."
+      }
     }
   },
   "voice": {

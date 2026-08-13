@@ -651,6 +651,24 @@
       "disabledTitle": "Powiadomienia push wyłączone",
       "errorTitle": "Coś poszło nie tak",
       "couldntSaveTitle": "Nie udało się zapisać"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "Codzienne podsumowanie",
+        "desc": "Poranny przegląd wydarzeń, zadań i zakupów."
+      },
+      "event_reminders": {
+        "label": "Przypomnienia o wydarzeniach",
+        "desc": "Powiadomienie przed rozpoczęciem wydarzeń w kalendarzu."
+      },
+      "family_activity": {
+        "label": "Aktualizacje rodziny",
+        "desc": "Gdy ktoś doda lub zmieni zadanie, produkt lub wydarzenie."
+      },
+      "account_billing": {
+        "label": "Konto i płatności",
+        "desc": "Odnowienia, problemy z płatnością i ważne komunikaty."
+      }
     }
   },
   "voice": {

@@ -651,6 +651,24 @@
       "disabledTitle": "Notificações push desativadas",
       "errorTitle": "Algo correu mal",
       "couldntSaveTitle": "Não foi possível guardar"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "Resumo diário",
+        "desc": "Uma visão matinal dos eventos, tarefas e compras de hoje."
+      },
+      "event_reminders": {
+        "label": "Lembretes de eventos",
+        "desc": "Um aviso antes de os eventos do calendário começarem."
+      },
+      "family_activity": {
+        "label": "Novidades da família",
+        "desc": "Quando alguém adiciona ou altera tarefa, item ou evento."
+      },
+      "account_billing": {
+        "label": "Conta e faturação",
+        "desc": "Renovações, problemas de pagamento e avisos importantes."
+      }
     }
   },
   "voice": {

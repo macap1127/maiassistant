@@ -644,6 +644,24 @@
       "disabledTitle": "푸시 알림이 비활성화되었습니다",
       "errorTitle": "문제가 발생했습니다",
       "couldntSaveTitle": "저장할 수 없습니다"
+    },
+    "rows": {
+      "daily_digest": {
+        "label": "오늘의 요약",
+        "desc": "오늘의 일정, 할 일, 장보기를 아침에 알려드려요."
+      },
+      "event_reminders": {
+        "label": "일정 알림",
+        "desc": "캘린더 일정이 시작되기 전에 미리 알려드려요."
+      },
+      "family_activity": {
+        "label": "가족 업데이트",
+        "desc": "가족이 할 일, 목록 항목, 일정을 추가하거나 바꿀 때."
+      },
+      "account_billing": {
+        "label": "계정 및 결제",
+        "desc": "플랜 갱신, 결제 문제, 중요한 계정 안내."
+      }
     }
   },
   "voice": {
