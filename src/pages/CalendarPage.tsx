@@ -110,6 +110,42 @@ const CalendarPage = () => {
     } catch { /* ignore */ }
   }, [pendingMeta]);
 
+  // The AI import runs outside React (see calendarImportJob) so it survives a
+  // remount while the native photo picker closes. Mirror its state here.
+  useEffect(() => {
+    const apply = (s: ReturnType<typeof getImportJobState>) => {
+      setImporting(s.running);
+      if (s.error) {
+        if (s.errorCode === "AI_IMPORT_LIMIT_REACHED" || s.error.includes("5 free AI calendar imports")) {
+          toast.error(t("calendar.aiImportLimitReached"));
+        } else if (s.error.includes("Family") || s.error.includes("upgrade")) {
+          toast.error(t("calendar.aiImportRequiresFamily"));
+        } else {
+          toast.error(t("calendar.failedToImport"));
+        }
+        clearImportJob();
+        return;
+      }
+      if (s.events) {
+        if (s.events.length === 0) {
+          toast.error(t("calendar.noEventsInThatFile"));
+          clearImportJob();
+          return;
+        }
+        setPendingEvents(s.events);
+        setPendingMeta(s.meta || { source: "" });
+        setShowUpload(false);
+        setUploadSource("");
+        setUploadAssignedTo("");
+        clearImportJob();
+      }
+    };
+    apply(getImportJobState());
+    return subscribeImportJob(apply);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
   const [managingSource, setManagingSource] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
   const [sourceNewEvent, setSourceNewEvent] = useState({ title: "", date: "", time: "", location: "" });
