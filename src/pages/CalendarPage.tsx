@@ -4,6 +4,8 @@ import { useFamilyData, genId, type CalendarEvent } from "@/lib/store";
 import { parseIcsFile, readFileAsText } from "@/lib/ics-parser";
 import { supabase } from "@/integrations/supabase/client";
 import { useHousehold } from "@/lib/useHousehold";
+import { startImportJob, subscribeImportJob, getImportJobState, clearImportJob } from "@/lib/calendarImportJob";
+
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { formatTime12h } from "@/lib/date";
@@ -109,6 +111,42 @@ const CalendarPage = () => {
       sessionStorage.setItem(PENDING_META_KEY, JSON.stringify(pendingMeta));
     } catch { /* ignore */ }
   }, [pendingMeta]);
+
+  // The AI import runs outside React (see calendarImportJob) so it survives a
+  // remount while the native photo picker closes. Mirror its state here.
+  useEffect(() => {
+    const apply = (s: ReturnType<typeof getImportJobState>) => {
+      setImporting(s.running);
+      if (s.error) {
+        if (s.errorCode === "AI_IMPORT_LIMIT_REACHED" || s.error.includes("5 free AI calendar imports")) {
+          toast.error(t("calendar.aiImportLimitReached"));
+        } else if (s.error.includes("Family") || s.error.includes("upgrade")) {
+          toast.error(t("calendar.aiImportRequiresFamily"));
+        } else {
+          toast.error(t("calendar.failedToImport"));
+        }
+        clearImportJob();
+        return;
+      }
+      if (s.events) {
+        if (s.events.length === 0) {
+          toast.error(t("calendar.noEventsInThatFile"));
+          clearImportJob();
+          return;
+        }
+        setPendingEvents(s.events);
+        setPendingMeta(s.meta || { source: "" });
+        setShowUpload(false);
+        setUploadSource("");
+        setUploadAssignedTo("");
+        clearImportJob();
+      }
+    };
+    apply(getImportJobState());
+    return subscribeImportJob(apply);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   const [managingSource, setManagingSource] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
@@ -339,66 +377,28 @@ const CalendarPage = () => {
       return;
     }
 
-    setImporting(true);
     const assignedTo = uploadAssignedTo || undefined;
+
+    if (!isIcs) {
+      // Image/PDF → AI extraction. Handed to a module-level job so it keeps
+      // running (and keeps its result) even if this page unmounts while the
+      // native photo picker closes.
+      setImporting(true);
+      startImportJob({ file, source, assignedTo, householdId: household?.id });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    setImporting(true);
     try {
-      if (isIcs) {
-        const text = await readFileAsText(file);
-        const parsed = parseIcsFile(text, source).map((ev) => ({ ...ev, assignedTo }));
-        if (parsed.length === 0) {
-          toast.error(t("calendar.noEventsInFile"));
-          return;
-        }
-        update((d) => ({ ...d, events: [...d.events, ...parsed] }));
-        toast.success(t("calendar.importedEvents", { count: parsed.length, source }));
-      } else {
-        // Image or PDF → AI extraction
-        const dataUrl: string = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject(reader.error);
-          reader.readAsDataURL(file);
-        });
-
-        const { data: result, error } = await supabase.functions.invoke("extract-events", {
-          body: { imageDataUrl: dataUrl, source, householdId: household?.id },
-        });
-        if (error) {
-          const ctx = (error as any)?.context?.body;
-          const msg = ctx?.error || (error as any)?.message || "";
-          const code = ctx?.code || "";
-          if (code === "AI_IMPORT_LIMIT_REACHED" || msg.includes("5 free AI calendar imports")) {
-            toast.error(t("calendar.aiImportLimitReached"));
-            return;
-          }
-          if (msg.includes("Family") || msg.includes("upgrade")) {
-            toast.error(t("calendar.aiImportRequiresFamily"));
-            return;
-          }
-          throw error;
-        }
-
-        const extracted = (result?.events || []) as Array<{
-          title: string; date: string; time?: string | null;
-          location?: string | null; notes?: string | null; source?: string;
-        }>;
-        if (extracted.length === 0) {
-          toast.error(t("calendar.noEventsInThatFile"));
-          return;
-        }
-
-        // Stage for user confirmation instead of inserting directly
-        setPendingEvents(
-          extracted.map((ev) => ({
-            title: ev.title || "",
-            date: ev.date || "",
-            time: ev.time || "",
-            location: ev.location || "",
-            notes: ev.notes || "",
-          }))
-        );
-        setPendingMeta({ source, assignedTo });
+      const text = await readFileAsText(file);
+      const parsed = parseIcsFile(text, source).map((ev) => ({ ...ev, assignedTo }));
+      if (parsed.length === 0) {
+        toast.error(t("calendar.noEventsInFile"));
+        return;
       }
+      update((d) => ({ ...d, events: [...d.events, ...parsed] }));
+      toast.success(t("calendar.importedEvents", { count: parsed.length, source }));
       setShowUpload(false);
       setUploadSource("");
       setUploadAssignedTo("");
@@ -410,6 +410,7 @@ const CalendarPage = () => {
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
+
 
   return (
     <div className="page-container">
