@@ -133,8 +133,12 @@ const CalendarPage = () => {
         } else if (s.error && !s.error.includes("non-2xx") && s.error !== "failed") {
           toast.error(s.error);
         } else {
-          toast.error(t("calendar.failedToImport"));
+          console.error("calendar import failed", { code: s.errorCode, error: s.error });
+          toast.error(
+            `${t("calendar.failedToImport")}${s.errorCode ? ` (${s.errorCode})` : ""}`
+          );
         }
+
 
         clearImportJob();
         return;
@@ -380,13 +384,17 @@ const CalendarPage = () => {
 
     const lower = file.name.toLowerCase();
     const isIcs = lower.endsWith(".ics");
-    const isImage = file.type.startsWith("image/");
+    // Some pickers (iOS Photos, Android file managers) hand over HEIC/HEIF or
+    // camera shots with an empty MIME type — treat those as images too.
+    const isImage =
+      file.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|webp|gif|bmp|tiff?)$/.test(lower);
     const isPdf = file.type === "application/pdf" || lower.endsWith(".pdf");
 
     if (!isIcs && !isImage && !isPdf) {
       toast.error(t("calendar.uploadValidFile"));
       return;
     }
+
 
     const assignedTo = uploadAssignedTo || undefined;
 
@@ -563,7 +571,7 @@ const CalendarPage = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".ics,image/*,application/pdf,.pdf"
+              accept=".ics,image/*,.heic,.heif,application/pdf,.pdf"
               onChange={handleFileUpload}
               className="hidden"
             />
