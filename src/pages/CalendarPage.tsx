@@ -384,13 +384,17 @@ const CalendarPage = () => {
 
     const lower = file.name.toLowerCase();
     const isIcs = lower.endsWith(".ics");
-    const isImage = file.type.startsWith("image/");
+    // Some pickers (iOS Photos, Android file managers) hand over HEIC/HEIF or
+    // camera shots with an empty MIME type — treat those as images too.
+    const isImage =
+      file.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|webp|gif|bmp|tiff?)$/.test(lower);
     const isPdf = file.type === "application/pdf" || lower.endsWith(".pdf");
 
     if (!isIcs && !isImage && !isPdf) {
       toast.error(t("calendar.uploadValidFile"));
       return;
     }
+
 
     const assignedTo = uploadAssignedTo || undefined;
 
