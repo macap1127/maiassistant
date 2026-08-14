@@ -133,8 +133,12 @@ const CalendarPage = () => {
         } else if (s.error && !s.error.includes("non-2xx") && s.error !== "failed") {
           toast.error(s.error);
         } else {
-          toast.error(t("calendar.failedToImport"));
+          console.error("calendar import failed", { code: s.errorCode, error: s.error });
+          toast.error(
+            `${t("calendar.failedToImport")}${s.errorCode ? ` (${s.errorCode})` : ""}`
+          );
         }
+
 
         clearImportJob();
         return;
