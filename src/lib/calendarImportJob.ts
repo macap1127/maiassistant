@@ -198,17 +198,31 @@ export function startImportJob(opts: {
 
   void (async () => {
     try {
+      if (!opts.householdId) throw new Error("HOUSEHOLD_NOT_READY");
+
       const dataUrl = await toCompressedDataUrl(opts.file);
 
       const { data: result, error } = await supabase.functions.invoke("extract-events", {
         body: { imageDataUrl: dataUrl, source: opts.source, householdId: opts.householdId },
-        timeout: REQUEST_TIMEOUT_MS,
       });
 
       if (error) {
-        const ctx = (error as any)?.context?.body;
-        const msg = ctx?.error || (error as any)?.message || "";
-        const code = ctx?.code || "";
+        // supabase-js only reports "non-2xx status code"; the real reason (and
+        // our error code) lives in the raw response body.
+        let msg = (error as any)?.message || "";
+        let code = "";
+        try {
+          const ctx = (error as any)?.context;
+          const text = typeof ctx?.text === "function" ? await ctx.text() : "";
+          if (text) {
+            const parsed = JSON.parse(text);
+            msg = parsed?.error || msg;
+            code = parsed?.code || "";
+          }
+        } catch {
+          /* keep the generic message */
+        }
+        console.error("extract-events failed", code, msg);
         try {
           sessionStorage.removeItem(ACTIVE_KEY);
         } catch {
@@ -217,6 +231,7 @@ export function startImportJob(opts: {
         setState({ running: false, error: msg || "failed", errorCode: code || null });
         return;
       }
+
 
       const extracted = (result?.events || []) as Array<{
         title: string;
