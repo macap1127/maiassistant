@@ -126,11 +126,16 @@ const CalendarPage = () => {
           toast.error(t("calendar.imageProcessingFailed", { defaultValue: "That photo could not be prepared. Choose a different photo and try again." }));
         } else if (s.errorCode === "IMPORT_INTERRUPTED") {
           toast.error(t("calendar.importInterrupted", { defaultValue: "The import was interrupted. Please select the file and try again." }));
+        } else if (s.errorCode === "HOUSEHOLD_NOT_READY") {
+          toast.error(t("calendar.householdNotReady", { defaultValue: "Still loading your household. Wait a moment and try again." }));
         } else if (s.error.includes("Family") || s.error.includes("upgrade")) {
           toast.error(t("calendar.aiImportRequiresFamily"));
+        } else if (s.error && !s.error.includes("non-2xx") && s.error !== "failed") {
+          toast.error(s.error);
         } else {
           toast.error(t("calendar.failedToImport"));
         }
+
         clearImportJob();
         return;
       }
