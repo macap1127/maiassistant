@@ -108,7 +108,6 @@ const JPEG_QUALITY = 0.82;
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
 const MAX_PDF_BYTES = 6 * 1024 * 1024;
 const MAX_DATA_URL_CHARS = 8 * 1024 * 1024;
-const REQUEST_TIMEOUT_MS = 60_000;
 
 function readAsDataUrl(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -160,14 +159,23 @@ export async function toCompressedDataUrl(file: File): Promise<string> {
     if (out.length > MAX_DATA_URL_CHARS) throw new Error("FILE_TOO_LARGE");
     return out;
   } catch (error) {
-    if (error instanceof Error && (error.message === "FILE_TOO_LARGE" || error.message === "IMAGE_PROCESSING_FAILED")) {
-      throw error;
+    if (error instanceof Error && error.message === "FILE_TOO_LARGE") throw error;
+    // Some formats (notably HEIC/HEIF from iOS Photos) can't be decoded into a
+    // canvas by every WebView. Send the original bytes instead of failing —
+    // the model can still read them.
+    try {
+      const raw = await readAsDataUrl(file);
+      if (raw.length > MAX_DATA_URL_CHARS) throw new Error("FILE_TOO_LARGE");
+      return raw;
+    } catch (fallbackError) {
+      if (fallbackError instanceof Error && fallbackError.message === "FILE_TOO_LARGE") throw fallbackError;
+      throw new Error("IMAGE_PROCESSING_FAILED");
     }
-    throw new Error("IMAGE_PROCESSING_FAILED");
   } finally {
     if (url) URL.revokeObjectURL(url);
   }
 }
+
 
 /**
  * Kick off an import. Safe to call once per file; concurrent calls are ignored
@@ -189,17 +197,31 @@ export function startImportJob(opts: {
 
   void (async () => {
     try {
+      if (!opts.householdId) throw new Error("HOUSEHOLD_NOT_READY");
+
       const dataUrl = await toCompressedDataUrl(opts.file);
 
       const { data: result, error } = await supabase.functions.invoke("extract-events", {
         body: { imageDataUrl: dataUrl, source: opts.source, householdId: opts.householdId },
-        timeout: REQUEST_TIMEOUT_MS,
       });
 
       if (error) {
-        const ctx = (error as any)?.context?.body;
-        const msg = ctx?.error || (error as any)?.message || "";
-        const code = ctx?.code || "";
+        // supabase-js only reports "non-2xx status code"; the real reason (and
+        // our error code) lives in the raw response body.
+        let msg = (error as any)?.message || "";
+        let code = "";
+        try {
+          const ctx = (error as any)?.context;
+          const text = typeof ctx?.text === "function" ? await ctx.text() : "";
+          if (text) {
+            const parsed = JSON.parse(text);
+            msg = parsed?.error || msg;
+            code = parsed?.code || "";
+          }
+        } catch {
+          /* keep the generic message */
+        }
+        console.error("extract-events failed", code, msg);
         try {
           sessionStorage.removeItem(ACTIVE_KEY);
         } catch {
@@ -208,6 +230,7 @@ export function startImportJob(opts: {
         setState({ running: false, error: msg || "failed", errorCode: code || null });
         return;
       }
+
 
       const extracted = (result?.events || []) as Array<{
         title: string;

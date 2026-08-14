@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 const MAX_DATA_URL_CHARS = 8 * 1024 * 1024;
-const AI_TIMEOUT_MS = 45_000;
+const AI_TIMEOUT_MS = 150_000;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
