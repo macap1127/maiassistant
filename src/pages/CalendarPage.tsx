@@ -571,7 +571,7 @@ const CalendarPage = () => {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".ics,image/*,application/pdf,.pdf"
+              accept=".ics,image/*,.heic,.heif,application/pdf,.pdf"
               onChange={handleFileUpload}
               className="hidden"
             />
