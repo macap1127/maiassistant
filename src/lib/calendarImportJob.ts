@@ -123,13 +123,17 @@ function readAsDataUrl(file: Blob): Promise<string> {
  * data URL if the browser can't decode it.
  */
 export async function toCompressedDataUrl(file: File): Promise<string> {
-  if (!file.type.startsWith("image/")) {
+  const looksLikeImage =
+    file.type.startsWith("image/") ||
+    /\.(heic|heif|jpe?g|png|webp|gif|bmp|tiff?)$/.test(file.name.toLowerCase());
+  if (!looksLikeImage) {
     if (file.size > MAX_PDF_BYTES) throw new Error("FILE_TOO_LARGE");
     const raw = await readAsDataUrl(file);
     if (raw.length > MAX_DATA_URL_CHARS) throw new Error("FILE_TOO_LARGE");
     return raw;
   }
   if (file.size > MAX_IMAGE_BYTES) throw new Error("FILE_TOO_LARGE");
+
 
   let url: string | null = null;
   try {
