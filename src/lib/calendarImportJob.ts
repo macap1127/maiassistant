@@ -160,14 +160,23 @@ export async function toCompressedDataUrl(file: File): Promise<string> {
     if (out.length > MAX_DATA_URL_CHARS) throw new Error("FILE_TOO_LARGE");
     return out;
   } catch (error) {
-    if (error instanceof Error && (error.message === "FILE_TOO_LARGE" || error.message === "IMAGE_PROCESSING_FAILED")) {
-      throw error;
+    if (error instanceof Error && error.message === "FILE_TOO_LARGE") throw error;
+    // Some formats (notably HEIC/HEIF from iOS Photos) can't be decoded into a
+    // canvas by every WebView. Send the original bytes instead of failing —
+    // the model can still read them.
+    try {
+      const raw = await readAsDataUrl(file);
+      if (raw.length > MAX_DATA_URL_CHARS) throw new Error("FILE_TOO_LARGE");
+      return raw;
+    } catch (fallbackError) {
+      if (fallbackError instanceof Error && fallbackError.message === "FILE_TOO_LARGE") throw fallbackError;
+      throw new Error("IMAGE_PROCESSING_FAILED");
     }
-    throw new Error("IMAGE_PROCESSING_FAILED");
   } finally {
     if (url) URL.revokeObjectURL(url);
   }
 }
+
 
 /**
  * Kick off an import. Safe to call once per file; concurrent calls are ignored
