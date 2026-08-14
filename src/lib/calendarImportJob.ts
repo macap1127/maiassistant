@@ -108,7 +108,6 @@ const JPEG_QUALITY = 0.82;
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
 const MAX_PDF_BYTES = 6 * 1024 * 1024;
 const MAX_DATA_URL_CHARS = 8 * 1024 * 1024;
-const REQUEST_TIMEOUT_MS = 60_000;
 
 function readAsDataUrl(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
