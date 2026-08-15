@@ -57,6 +57,7 @@ const SettingsPage = () => {
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [receiptsThisMonth, setReceiptsThisMonth] = useState(0);
   const navigate = useNavigate();
   
   const [searchParams, setSearchParams] = useSearchParams();
