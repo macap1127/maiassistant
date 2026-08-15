@@ -291,8 +291,18 @@ export default function ReceiptsPage() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 animate-fade-in">
           <Receipt className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">{t("receipts.noReceiptsYet")}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t("receipts.tapAddHint")}</p>
+          <p className="text-sm text-muted-foreground">
+            {filtersActive
+              ? t("receipts.noMatches", { defaultValue: "No receipts match these filters" })
+              : t("receipts.noReceiptsYet")}
+          </p>
+          {filtersActive ? (
+            <button onClick={clearFilters} className="text-xs text-primary font-medium mt-1">
+              {t("receipts.clearFilters", { defaultValue: "Clear" })}
+            </button>
+          ) : (
+            <p className="text-xs text-muted-foreground mt-1">{t("receipts.tapAddHint")}</p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
