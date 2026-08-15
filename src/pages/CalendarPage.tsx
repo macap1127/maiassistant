@@ -67,6 +67,7 @@ const PENDING_META_KEY = "mia.calendar.pendingImportMeta";
 
 const CalendarPage = () => {
   const { t } = useTranslation();
+  const { promptUpgrade, upgradeDialog } = useUpgradePrompt();
   const { data, update } = useFamilyData();
   const { household } = useHousehold();
   const [currentMonth, setCurrentMonth] = useState(new Date());
