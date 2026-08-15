@@ -41,6 +41,10 @@ const AuthPage = () => {
 
 
   const submit = async () => {
+    // Blur the focused field first: on iOS a focused input keeps the WebView
+    // zoomed in after we navigate away, and the user can't pinch back out.
+    (document.activeElement as HTMLElement | null)?.blur?.();
+    window.scrollTo(0, 0);
     if (mode === "forgot") {
       if (!email) {
         setError(t("auth.enterEmail"));
