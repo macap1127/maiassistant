@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { formatTime12h } from "@/lib/date";
 import { useTranslation } from "react-i18next";
+import { useUpgradePrompt, UpgradeLink } from "@/components/UpgradePrompt";
 
 type PendingEvent = {
   title: string;
@@ -121,6 +122,7 @@ const CalendarPage = () => {
       if (s.error) {
         if (s.errorCode === "AI_IMPORT_LIMIT_REACHED" || s.error.includes("5 free AI calendar imports")) {
           toast.error(t("calendar.aiImportLimitReached"));
+          promptUpgrade("aiCalendarImports");
         } else if (s.errorCode === "FILE_TOO_LARGE") {
           toast.error(t("calendar.fileTooLarge", { defaultValue: "That file is too large. Choose a smaller image or PDF and try again." }));
         } else if (s.errorCode === "IMAGE_PROCESSING_FAILED") {
@@ -544,7 +546,12 @@ const CalendarPage = () => {
                 <div className={`text-xs rounded-lg px-3 py-2 ${remaining === 0 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
                   {remaining > 0
                     ? t("calendar.aiImportsRemaining", { count: remaining })
-                    : t("calendar.aiImportsAllUsed")}
+                    : (
+                      <span className="flex items-center gap-2">
+                        {t("calendar.aiImportsAllUsed")}
+                        <UpgradeLink />
+                      </span>
+                    )}
                 </div>
               );
             })()}
@@ -1048,6 +1055,8 @@ const CalendarPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {upgradeDialog}
     </div>
   );
 };

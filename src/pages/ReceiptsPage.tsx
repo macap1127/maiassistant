@@ -8,6 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useTranslation } from "react-i18next";
 import { useHousehold } from "@/lib/useHousehold";
 import { limitsForTier, startOfCurrentMonth } from "@/lib/usageLimits";
+import { useUpgradePrompt, UpgradeLink } from "@/components/UpgradePrompt";
 
 type ReceiptRow = {
   id: string;
@@ -39,6 +40,7 @@ export default function ReceiptsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { household } = useHousehold();
+  const { promptUpgrade, upgradeDialog } = useUpgradePrompt();
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [receipts, setReceipts] = useState<ReceiptRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,11 +141,14 @@ export default function ReceiptsPage() {
               remaining === 0 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
             }`}
           >
-            {t("receipts.scansRemaining", {
-              count: remaining,
-              limit,
-              defaultValue: `{{count}} of {{limit}} receipt scans left this month`,
-            })}
+            <span className="flex items-center gap-2">
+              {t("receipts.scansRemaining", {
+                count: remaining,
+                limit,
+                defaultValue: `{{count}} of {{limit}} receipt scans left this month`,
+              })}
+              {remaining === 0 && <UpgradeLink />}
+            </span>
           </div>
         );
       })()}
@@ -194,6 +199,8 @@ export default function ReceiptsPage() {
           ))}
         </div>
       )}
+
+      {upgradeDialog}
 
       {householdId && (
         <ReceiptAdder
