@@ -5,6 +5,7 @@ import { Mic, MicOff, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { useNavigate } from "react-router-dom";
 import type { GroceryItem } from "@/lib/store";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
@@ -200,6 +201,7 @@ const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
@@ -548,17 +550,26 @@ const VoiceAssistantInner = () => {
           return `Failed to look up calendar: ${getErrorMessage(e)}`;
         }
       },
-      searchReceipts: async (params: { query: string }) => {
+      searchReceipts: async (params: { query: string; month?: string; minTotal?: number; maxTotal?: number }) => {
         console.log("[Mia] searchReceipts called", params);
         try {
           const hid = requireHousehold();
           const q = (params.query || "").trim();
           if (!q) return `What store or item should I search for?`;
-          const { data, error } = await supabase
+          let req = supabase
             .from("receipts")
             .select("store, purchase_date, total, currency, items_summary, image_path")
             .eq("household_id", hid)
-            .or(`store.ilike.%${q}%,items_summary.ilike.%${q}%,notes.ilike.%${q}%`)
+            .or(`store.ilike.%${q}%,items_summary.ilike.%${q}%,notes.ilike.%${q}%`);
+          // Optional narrowing: "from March" / "over $50".
+          if (params.month && /^\d{4}-\d{2}$/.test(params.month)) {
+            const [y, m] = params.month.split("-").map(Number);
+            const end = new Date(y, m, 1).toISOString().slice(0, 10);
+            req = req.gte("purchase_date", `${params.month}-01`).lt("purchase_date", end);
+          }
+          if (typeof params.minTotal === "number") req = req.gte("total", params.minTotal);
+          if (typeof params.maxTotal === "number") req = req.lte("total", params.maxTotal);
+          const { data, error } = await req
             .order("purchase_date", { ascending: false, nullsFirst: false })
             .limit(5);
           if (error) return `Couldn't search receipts: ${error.message}`;
@@ -569,7 +580,13 @@ const VoiceAssistantInner = () => {
             const items = r.items_summary ? ` (${r.items_summary})` : "";
             return `${r.store || "Unknown store"} on ${date}${total}${items}`;
           }).join("; ");
-          return `Found ${data.length} receipt${data.length === 1 ? "" : "s"} for "${q}": ${list}. Open the Receipts tab to view the photo.`;
+          // Show the matching receipts on screen so the user sees only those.
+          const sp = new URLSearchParams({ q });
+          if (params.month) sp.set("month", params.month);
+          if (typeof params.minTotal === "number") sp.set("min", String(params.minTotal));
+          if (typeof params.maxTotal === "number") sp.set("max", String(params.maxTotal));
+          navigate(`/receipts?${sp.toString()}`);
+          return `Found ${data.length} receipt${data.length === 1 ? "" : "s"} for "${q}": ${list}. I'm showing them on your Receipts screen now.`;
         } catch (e) {
           return `Failed to search receipts: ${getErrorMessage(e)}`;
         }

@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import { useHousehold } from "@/lib/useHousehold";
 import { limitsForTier, startOfCurrentMonth } from "@/lib/usageLimits";
 import { useUpgradePrompt, UpgradeLink } from "@/components/UpgradePrompt";
+import { useSearchParams } from "react-router-dom";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 type ReceiptRow = {
   id: string;
@@ -49,6 +51,52 @@ export default function ReceiptsPage() {
   const [viewer, setViewer] = useState<ReceiptRow | null>(null);
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const [receiptToDelete, setReceiptToDelete] = useState<ReceiptRow | null>(null);
+
+  // Filters — seeded from the URL so the voice assistant can deep-link
+  // (e.g. /receipts?q=Home%20Depot) and the screen shows only those receipts.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const [store, setStore] = useState(searchParams.get("store") ?? "");
+  const [month, setMonth] = useState(searchParams.get("month") ?? "");
+  const [minTotal, setMinTotal] = useState(searchParams.get("min") ?? "");
+  const [maxTotal, setMaxTotal] = useState(searchParams.get("max") ?? "");
+  const [showFilters, setShowFilters] = useState(
+    Boolean(searchParams.get("store") || searchParams.get("month") || searchParams.get("min") || searchParams.get("max")),
+  );
+
+  // Keep local filter state in sync when the assistant navigates here again.
+  useEffect(() => {
+    setQuery(searchParams.get("q") ?? "");
+    setStore(searchParams.get("store") ?? "");
+    setMonth(searchParams.get("month") ?? "");
+    setMinTotal(searchParams.get("min") ?? "");
+    setMaxTotal(searchParams.get("max") ?? "");
+  }, [searchParams]);
+
+  const storeOptions = Array.from(
+    new Set(receipts.map((r) => (r.store || "").trim()).filter(Boolean)),
+  ).sort((a, b) => a.localeCompare(b));
+
+  const q = query.trim().toLowerCase();
+  const min = minTotal === "" ? null : Number(minTotal);
+  const max = maxTotal === "" ? null : Number(maxTotal);
+  const filtered = receipts.filter((r) => {
+    if (q && ![r.store, r.items_summary, r.notes, r.added_by].some((f) => (f || "").toLowerCase().includes(q))) return false;
+    if (store && (r.store || "").toLowerCase() !== store.toLowerCase()) return false;
+    if (month) {
+      const d = r.purchase_date ?? r.created_at.slice(0, 10);
+      if (!d.startsWith(month)) return false;
+    }
+    if (min != null && !Number.isNaN(min) && (r.total ?? 0) < min) return false;
+    if (max != null && !Number.isNaN(max) && (r.total ?? 0) > max) return false;
+    return true;
+  });
+  const filtersActive = Boolean(q || store || month || minTotal || maxTotal);
+  const clearFilters = () => {
+    setQuery(""); setStore(""); setMonth(""); setMinTotal(""); setMaxTotal("");
+    setSearchParams({}, { replace: true });
+  };
+  const filteredTotal = filtered.reduce((sum, r) => sum + (r.total ?? 0), 0);
 
   // Basic plan has a monthly receipt-scan cap; block the adder once it's used up.
   const scanLimit = household?.subscriptionTier === "basic" ? (limitsForTier("basic").receiptScans ?? 0) : null;
@@ -160,17 +208,105 @@ export default function ReceiptsPage() {
 
 
 
+      {/* Search + filters */}
+      <div className="mb-4 space-y-2">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("receipts.searchPlaceholder", { defaultValue: "Search store, items or notes" })}
+              className="w-full bg-card border border-border rounded-xl pl-9 pr-3 py-2 text-sm"
+            />
+          </div>
+          <button
+            onClick={() => setShowFilters((v) => !v)}
+            className={`rounded-xl border px-3 py-2 text-sm flex items-center gap-1.5 ${showFilters || filtersActive ? "border-primary text-primary" : "border-border text-muted-foreground"}`}
+            aria-label={t("receipts.filters", { defaultValue: "Filters" })}
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+          </button>
+        </div>
+
+        {showFilters && (
+          <div className="bg-card border border-border rounded-xl p-3 grid grid-cols-2 gap-2">
+            <label className="text-xs text-muted-foreground col-span-2">
+              {t("receipts.filterStore", { defaultValue: "Store" })}
+              <select
+                value={store}
+                onChange={(e) => setStore(e.target.value)}
+                className="mt-1 w-full bg-background border border-border rounded-lg px-2 py-2 text-sm text-foreground"
+              >
+                <option value="">{t("receipts.allStores", { defaultValue: "All stores" })}</option>
+                {storeOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </label>
+            <label className="text-xs text-muted-foreground col-span-2">
+              {t("receipts.filterMonth", { defaultValue: "Month" })}
+              <input
+                type="month"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+                className="mt-1 w-full bg-background border border-border rounded-lg px-2 py-2 text-sm text-foreground"
+              />
+            </label>
+            <label className="text-xs text-muted-foreground">
+              {t("receipts.filterMin", { defaultValue: "Min $" })}
+              <input
+                type="number" inputMode="decimal" min="0" value={minTotal}
+                onChange={(e) => setMinTotal(e.target.value)}
+                className="mt-1 w-full bg-background border border-border rounded-lg px-2 py-2 text-sm text-foreground"
+              />
+            </label>
+            <label className="text-xs text-muted-foreground">
+              {t("receipts.filterMax", { defaultValue: "Max $" })}
+              <input
+                type="number" inputMode="decimal" min="0" value={maxTotal}
+                onChange={(e) => setMaxTotal(e.target.value)}
+                className="mt-1 w-full bg-background border border-border rounded-lg px-2 py-2 text-sm text-foreground"
+              />
+            </label>
+          </div>
+        )}
+
+        {filtersActive && (
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>
+              {t("receipts.filterSummary", {
+                count: filtered.length,
+                total: fmtMoney(filteredTotal, filtered[0]?.currency ?? "USD"),
+                defaultValue: "{{count}} receipts · {{total}}",
+              })}
+            </span>
+            <button onClick={clearFilters} className="text-primary font-medium">
+              {t("receipts.clearFilters", { defaultValue: "Clear" })}
+            </button>
+          </div>
+        )}
+      </div>
+
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
-      ) : receipts.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="text-center py-16 animate-fade-in">
           <Receipt className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">{t("receipts.noReceiptsYet")}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t("receipts.tapAddHint")}</p>
+          <p className="text-sm text-muted-foreground">
+            {filtersActive
+              ? t("receipts.noMatches", { defaultValue: "No receipts match these filters" })
+              : t("receipts.noReceiptsYet")}
+          </p>
+          {filtersActive ? (
+            <button onClick={clearFilters} className="text-xs text-primary font-medium mt-1">
+              {t("receipts.clearFilters", { defaultValue: "Clear" })}
+            </button>
+          ) : (
+            <p className="text-xs text-muted-foreground mt-1">{t("receipts.tapAddHint")}</p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
-          {receipts.map((r, i) => (
+          {filtered.map((r, i) => (
             <div
               key={r.id}
               className="group bg-card rounded-2xl border border-border overflow-hidden text-left animate-slide-up hover:border-primary/50 transition-colors relative"
