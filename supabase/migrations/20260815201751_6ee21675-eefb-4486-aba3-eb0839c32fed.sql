@@ -1,0 +1,1 @@
+UPDATE public.households SET subscription_tier='family_plus', subscription_status='active', current_period_end='2126-08-15 00:00:00+00', voice_seconds_limit=14400 WHERE id='c459ac26-d926-44a6-a49d-e91bfeab6c5b';
