@@ -50,6 +50,11 @@ export default function ReceiptsPage() {
   const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const [receiptToDelete, setReceiptToDelete] = useState<ReceiptRow | null>(null);
 
+  // Basic plan has a monthly receipt-scan cap; block the adder once it's used up.
+  const scanLimit = household?.subscriptionTier === "basic" ? (limitsForTier("basic").receiptScans ?? 0) : null;
+  const scansUsedThisMonth = receipts.filter((r) => new Date(r.created_at) >= startOfCurrentMonth()).length;
+  const scansExhausted = scanLimit != null && scansUsedThisMonth >= scanLimit;
+
   // Load household + receipts
   useEffect(() => {
     if (!user) return;
@@ -121,7 +126,7 @@ export default function ReceiptsPage() {
           <p className="text-xs text-muted-foreground mt-0.5">{t("receipts.subtitle")}</p>
         </div>
         <button
-          onClick={() => setAdderOpen(true)}
+          onClick={() => (scansExhausted ? promptUpgrade("receiptScans") : setAdderOpen(true))}
           disabled={!householdId}
           className="flex items-center gap-1.5 bg-primary text-primary-foreground rounded-xl px-3 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
         >
