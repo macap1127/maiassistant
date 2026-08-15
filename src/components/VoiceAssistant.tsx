@@ -985,7 +985,8 @@ const VoiceAssistantInner = () => {
         overrides: {
           agent: {
             // Makes the agent speak (not just understand) the chosen language.
-            language: agentLanguage,
+            // Runtime value comes from our own 15-language list; cast to the SDK's literal union.
+            language: agentLanguage as "en",
           },
         },
         dynamicVariables: {
