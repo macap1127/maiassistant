@@ -111,6 +111,17 @@
     font-family: 'Space Grotesk', system-ui, sans-serif;
     letter-spacing: -0.02em;
   }
+
+  /* Touch devices (iOS especially) auto-zoom into any form control whose text
+     is smaller than 16px, and the zoom sticks after navigation. Force 16px. */
+  @media (pointer: coarse) {
+    input,
+    textarea,
+    select,
+    [contenteditable="true"] {
+      font-size: 16px !important;
+    }
+  }
 }
 
 @layer utilities {
