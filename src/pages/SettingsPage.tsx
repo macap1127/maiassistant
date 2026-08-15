@@ -79,6 +79,21 @@ const SettingsPage = () => {
   };
 
 
+  // Receipt scans used in the current calendar month (Basic plan is capped).
+  useEffect(() => {
+    if (!household?.id) return;
+    let cancelled = false;
+    (async () => {
+      const { count } = await supabase
+        .from("receipts")
+        .select("*", { count: "exact", head: true })
+        .eq("household_id", household.id)
+        .gte("created_at", startOfCurrentMonth().toISOString());
+      if (!cancelled) setReceiptsThisMonth(count ?? 0);
+    })();
+    return () => { cancelled = true; };
+  }, [household?.id]);
+
   // Handle return from Stripe Checkout
   useEffect(() => {
     if (searchParams.get("checkout") !== "success") return;
