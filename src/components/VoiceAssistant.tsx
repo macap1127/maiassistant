@@ -201,6 +201,7 @@ const VOICE_ACCESS_MAX_AGE_MS = 60 * 1000;
 const VoiceAssistantInner = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [connecting, setConnecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [voiceReady, setVoiceReady] = useState(false);
