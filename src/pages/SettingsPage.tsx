@@ -135,6 +135,12 @@ const SettingsPage = () => {
   const tier = household ? TIER_INFO[household.subscriptionTier] : null;
   const usedMin = household ? Math.floor(household.voiceSecondsUsed / 60) : 0;
   const totalMin = household ? Math.floor(household.voiceSecondsLimit / 60) : 0;
+  const planLimits = limitsForTier(household?.subscriptionTier);
+  const importsUsed = household
+    ? usedThisMonth(household.aiCalendarImportsUsed, household.aiCalendarImportsPeriodStart)
+    : 0;
+  const importsLeft = remainingOf(planLimits.aiCalendarImports, importsUsed);
+  const receiptsLeft = remainingOf(planLimits.receiptScans, receiptsThisMonth);
   const renewDate = household?.currentPeriodEnd ? new Date(household.currentPeriodEnd).toLocaleDateString() : null;
   const isPastDue = household?.subscriptionStatus === "past_due";
   const isCanceledScheduled = household?.cancelAtPeriodEnd && household?.subscriptionStatus !== "canceled";
