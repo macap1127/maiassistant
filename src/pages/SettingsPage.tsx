@@ -17,6 +17,7 @@ import { useAuth } from "@/lib/auth";
 import { isNative, restorePurchases } from "@/lib/revenuecat";
 import { useTranslation } from "react-i18next";
 import { UI_LANGUAGES, setUiLanguage } from "@/i18n";
+import { limitsForTier, remainingOf, usedThisMonth, startOfCurrentMonth } from "@/lib/usageLimits";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
   { value: "en", label: "English" },
