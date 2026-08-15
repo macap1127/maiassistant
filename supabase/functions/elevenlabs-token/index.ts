@@ -13,6 +13,52 @@ Deno.serve(async (req) => {
     const { agentId, mode } = await req.json();
     if (!agentId) throw new Error("agentId required");
 
+    // One-off admin call: make sure the agent accepts a per-conversation
+    // language override, and knows the languages we ship in the app.
+    if (mode === "configure") {
+      const getRes = await fetch(`https://api.elevenlabs.io/v1/convai/agents/${agentId}`, {
+        headers: { "xi-api-key": apiKey },
+      });
+      if (!getRes.ok) {
+        const text = await getRes.text();
+        console.error("ElevenLabs get agent error:", getRes.status, text);
+        return new Response(JSON.stringify({ error: text }), {
+          status: getRes.status,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const agent = await getRes.json();
+      const overrides = agent?.platform_settings?.overrides ?? {};
+      const convOverride = overrides.conversation_config_override ?? {};
+      const patch = {
+        platform_settings: {
+          ...agent.platform_settings,
+          overrides: {
+            ...overrides,
+            conversation_config_override: {
+              ...convOverride,
+              agent: { ...(convOverride.agent ?? {}), language: true },
+            },
+          },
+        },
+      };
+      const patchRes = await fetch(`https://api.elevenlabs.io/v1/convai/agents/${agentId}`, {
+        method: "PATCH",
+        headers: { "xi-api-key": apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      const patchText = await patchRes.text();
+      if (!patchRes.ok) console.error("ElevenLabs patch agent error:", patchRes.status, patchText);
+      return new Response(
+        JSON.stringify({
+          ok: patchRes.ok,
+          status: patchRes.status,
+          details: patchRes.ok ? undefined : patchText,
+        }),
+        { status: patchRes.ok ? 200 : patchRes.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     if (mode === "voice") {
       const tokenRes = await fetch(
         `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${agentId}`,
