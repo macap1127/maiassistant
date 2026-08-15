@@ -243,9 +243,39 @@ const SettingsPage = () => {
                     style={{ width: `${Math.min(100, (usedMin / Math.max(1, totalMin)) * 100)}%` }}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">{usedMin} / {totalMin} min this period</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {Math.max(0, totalMin - usedMin)} min left · {usedMin} of {totalMin} used this period
+                </p>
+              </div>
+
+              {/* What's left on this plan */}
+              <div className="col-span-2 border-t border-border pt-3 space-y-2">
+                <p className="text-xs uppercase text-muted-foreground">Plan allowances</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">AI calendar imports</span>
+                  <span className={`font-medium ${importsLeft === 0 ? "text-destructive" : ""}`}>
+                    {importsLeft == null
+                      ? "Unlimited"
+                      : `${importsLeft} of ${planLimits.aiCalendarImports} left this month`}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Receipt scans</span>
+                  <span className={`font-medium ${receiptsLeft === 0 ? "text-destructive" : ""}`}>
+                    {receiptsLeft == null
+                      ? "Unlimited"
+                      : `${receiptsLeft} of ${planLimits.receiptScans} left this month`}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Family members</span>
+                  <span className="font-medium">
+                    {household.memberCount} of {planLimits.members} seats used
+                  </span>
+                </div>
               </div>
             </div>
+
 
             <div className="flex gap-2">
               <button
