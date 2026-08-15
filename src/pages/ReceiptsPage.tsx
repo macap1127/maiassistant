@@ -38,6 +38,7 @@ const fmtDate = (s: string | null, unknownLabel = "Date unknown") => {
 export default function ReceiptsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { household } = useHousehold();
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [receipts, setReceipts] = useState<ReceiptRow[]>([]);
   const [loading, setLoading] = useState(true);
