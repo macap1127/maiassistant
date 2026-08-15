@@ -6,6 +6,8 @@ import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useTranslation } from "react-i18next";
+import { useHousehold } from "@/lib/useHousehold";
+import { limitsForTier, startOfCurrentMonth } from "@/lib/usageLimits";
 
 type ReceiptRow = {
   id: string;
@@ -36,6 +38,7 @@ const fmtDate = (s: string | null, unknownLabel = "Date unknown") => {
 export default function ReceiptsPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { household } = useHousehold();
   const [householdId, setHouseholdId] = useState<string | null>(null);
   const [receipts, setReceipts] = useState<ReceiptRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,6 +126,29 @@ export default function ReceiptsPage() {
           <Plus className="w-4 h-4" /> {t("receipts.add")}
         </button>
       </div>
+
+      {/* Remaining monthly receipt scans (Basic plan only — higher tiers are unlimited) */}
+      {household?.subscriptionTier === "basic" && (() => {
+        const limit = limitsForTier("basic").receiptScans ?? 0;
+        const monthStart = startOfCurrentMonth();
+        const used = receipts.filter((r) => new Date(r.created_at) >= monthStart).length;
+        const remaining = Math.max(0, limit - used);
+        return (
+          <div
+            className={`text-xs rounded-lg px-3 py-2 mb-4 ${
+              remaining === 0 ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+            }`}
+          >
+            {t("receipts.scansRemaining", {
+              count: remaining,
+              limit,
+              defaultValue: `{{count}} of {{limit}} receipt scans left this month`,
+            })}
+          </div>
+        );
+      })()}
+
+
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>

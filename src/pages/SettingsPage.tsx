@@ -17,6 +17,7 @@ import { useAuth } from "@/lib/auth";
 import { isNative, restorePurchases } from "@/lib/revenuecat";
 import { useTranslation } from "react-i18next";
 import { UI_LANGUAGES, setUiLanguage } from "@/i18n";
+import { limitsForTier, remainingOf, usedThisMonth, startOfCurrentMonth } from "@/lib/usageLimits";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
   { value: "en", label: "English" },
@@ -57,6 +58,7 @@ const SettingsPage = () => {
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [receiptsThisMonth, setReceiptsThisMonth] = useState(0);
   const navigate = useNavigate();
   
   const [searchParams, setSearchParams] = useSearchParams();
@@ -76,6 +78,21 @@ const SettingsPage = () => {
     navigate("/", { replace: true });
   };
 
+
+  // Receipt scans used in the current calendar month (Basic plan is capped).
+  useEffect(() => {
+    if (!household?.id) return;
+    let cancelled = false;
+    (async () => {
+      const { count } = await supabase
+        .from("receipts")
+        .select("*", { count: "exact", head: true })
+        .eq("household_id", household.id)
+        .gte("created_at", startOfCurrentMonth().toISOString());
+      if (!cancelled) setReceiptsThisMonth(count ?? 0);
+    })();
+    return () => { cancelled = true; };
+  }, [household?.id]);
 
   // Handle return from Stripe Checkout
   useEffect(() => {
@@ -135,6 +152,12 @@ const SettingsPage = () => {
   const tier = household ? TIER_INFO[household.subscriptionTier] : null;
   const usedMin = household ? Math.floor(household.voiceSecondsUsed / 60) : 0;
   const totalMin = household ? Math.floor(household.voiceSecondsLimit / 60) : 0;
+  const planLimits = limitsForTier(household?.subscriptionTier);
+  const importsUsed = household
+    ? usedThisMonth(household.aiCalendarImportsUsed, household.aiCalendarImportsPeriodStart)
+    : 0;
+  const importsLeft = remainingOf(planLimits.aiCalendarImports, importsUsed);
+  const receiptsLeft = remainingOf(planLimits.receiptScans, receiptsThisMonth);
   const renewDate = household?.currentPeriodEnd ? new Date(household.currentPeriodEnd).toLocaleDateString() : null;
   const isPastDue = household?.subscriptionStatus === "past_due";
   const isCanceledScheduled = household?.cancelAtPeriodEnd && household?.subscriptionStatus !== "canceled";
@@ -220,9 +243,39 @@ const SettingsPage = () => {
                     style={{ width: `${Math.min(100, (usedMin / Math.max(1, totalMin)) * 100)}%` }}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">{usedMin} / {totalMin} min this period</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {Math.max(0, totalMin - usedMin)} min left · {usedMin} of {totalMin} used this period
+                </p>
+              </div>
+
+              {/* What's left on this plan */}
+              <div className="col-span-2 border-t border-border pt-3 space-y-2">
+                <p className="text-xs uppercase text-muted-foreground">Plan allowances</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">AI calendar imports</span>
+                  <span className={`font-medium ${importsLeft === 0 ? "text-destructive" : ""}`}>
+                    {importsLeft == null
+                      ? "Unlimited"
+                      : `${importsLeft} of ${planLimits.aiCalendarImports} left this month`}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Receipt scans</span>
+                  <span className={`font-medium ${receiptsLeft === 0 ? "text-destructive" : ""}`}>
+                    {receiptsLeft == null
+                      ? "Unlimited"
+                      : `${receiptsLeft} of ${planLimits.receiptScans} left this month`}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Family members</span>
+                  <span className="font-medium">
+                    {household.memberCount} of {planLimits.members} seats used
+                  </span>
+                </div>
               </div>
             </div>
+
 
             <div className="flex gap-2">
               <button
