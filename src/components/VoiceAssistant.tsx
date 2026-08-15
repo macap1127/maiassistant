@@ -985,7 +985,7 @@ const VoiceAssistantInner = () => {
         overrides: {
           agent: {
             // Makes the agent speak (not just understand) the chosen language.
-            language: agentLanguage,
+            language: agentLanguage as Parameters<typeof conversation.startSession>[0] extends { overrides?: { agent?: { language?: infer L } } } ? L : never,
           },
         },
         dynamicVariables: {
