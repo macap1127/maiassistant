@@ -13,6 +13,8 @@ Deno.serve(async (req) => {
     const { agentId, mode } = await req.json();
     if (!agentId) throw new Error("agentId required");
 
+    // One-off admin call: make sure the agent accepts a per-conversation
+    // language override, and knows the languages we ship in the app.
     if (mode === "voice") {
       const tokenRes = await fetch(
         `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${agentId}`,
