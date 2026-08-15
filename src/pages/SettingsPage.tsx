@@ -18,6 +18,7 @@ import { isNative, restorePurchases } from "@/lib/revenuecat";
 import { useTranslation } from "react-i18next";
 import { UI_LANGUAGES, setUiLanguage } from "@/i18n";
 import { limitsForTier, remainingOf, usedThisMonth, startOfCurrentMonth } from "@/lib/usageLimits";
+import { UpgradeLink } from "@/components/UpgradePrompt";
 
 const LANGUAGE_OPTIONS: { value: string; label: string }[] = [
   { value: "en", label: "English" },
@@ -245,6 +246,7 @@ const SettingsPage = () => {
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   {Math.max(0, totalMin - usedMin)} min left · {usedMin} of {totalMin} used this period
+                  {totalMin > 0 && usedMin >= totalMin && <> · <UpgradeLink label="Upgrade for more" /></>}
                 </p>
               </div>
 
@@ -257,6 +259,7 @@ const SettingsPage = () => {
                     {importsLeft == null
                       ? "Unlimited"
                       : `${importsLeft} of ${planLimits.aiCalendarImports} left this month`}
+                    {importsLeft === 0 && <> · <UpgradeLink /></>}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
@@ -265,12 +268,14 @@ const SettingsPage = () => {
                     {receiptsLeft == null
                       ? "Unlimited"
                       : `${receiptsLeft} of ${planLimits.receiptScans} left this month`}
+                    {receiptsLeft === 0 && <> · <UpgradeLink /></>}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Family members</span>
                   <span className="font-medium">
                     {household.memberCount} of {planLimits.members} seats used
+                    {household.memberCount >= planLimits.members && <> · <UpgradeLink /></>}
                   </span>
                 </div>
               </div>
