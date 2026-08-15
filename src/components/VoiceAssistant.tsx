@@ -966,11 +966,30 @@ const VoiceAssistantInner = () => {
       await refreshListSnapshots(householdIdRef.current);
       const grocerySnapshot = summarizeGroceryRows(groceryListRef.current, {});
       const todoSnapshot = summarizeTaskRows(taskListRef.current, {});
+      // Re-read the assistant language right before connecting so a change in
+      // Settings applies to the very next conversation.
+      if (householdIdRef.current) {
+        const { data: hh } = await supabase
+          .from("households")
+          .select("assistant_language")
+          .eq("id", householdIdRef.current)
+          .maybeSingle();
+        if (hh?.assistant_language) assistantLanguageRef.current = hh.assistant_language;
+      }
+      const agentLanguage = (assistantLanguageRef.current || "en").split("-")[0];
+      console.log("[Mia] start: agent language", agentLanguage);
       const result = conversation.startSession({
         signedUrl,
         connectionType: "websocket",
         useWakeLock: false,
+        overrides: {
+          agent: {
+            // Makes the agent speak (not just understand) the chosen language.
+            language: agentLanguage,
+          },
+        },
         dynamicVariables: {
+          assistant_language: agentLanguage,
           user_name: userName,
           family_members: familySummary || "no family members added yet",
           grocery_list_snapshot: grocerySnapshot,
