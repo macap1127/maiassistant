@@ -15,6 +15,16 @@ Deno.serve(async (req) => {
 
     // One-off admin call: make sure the agent accepts a per-conversation
     // language override, and knows the languages we ship in the app.
+    if (mode === "inspect") {
+      const r = await fetch(`https://api.elevenlabs.io/v1/convai/agents/${agentId}`, { headers: { "xi-api-key": apiKey } });
+      const a = await r.json();
+      return new Response(JSON.stringify({
+        language: a?.conversation_config?.agent?.language,
+        tts: a?.conversation_config?.tts,
+        overrides: a?.platform_settings?.overrides?.conversation_config_override,
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     if (mode === "configure") {
       const getRes = await fetch(`https://api.elevenlabs.io/v1/convai/agents/${agentId}`, {
         headers: { "xi-api-key": apiKey },
