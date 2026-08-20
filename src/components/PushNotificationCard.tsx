@@ -8,7 +8,9 @@ import {
   isPushSupported,
   registerPushNotifications,
   unregisterPushNotifications,
+  PushPermissionDeniedError,
 } from "@/lib/pushNotifications";
+import { setPushPreference, getPushPreference } from "@/lib/pushPreference";
 import { useTranslation } from "react-i18next";
 
 type Prefs = {
@@ -48,7 +50,7 @@ export function PushNotificationCard() {
         supabase.from("device_tokens").select("id").eq("user_id", user.id).limit(1),
         supabase.from("push_preferences" as any).select("*").eq("user_id", user.id).maybeSingle(),
       ]);
-      setEnabled((tokens?.length ?? 0) > 0);
+      setEnabled((tokens?.length ?? 0) > 0 && getPushPreference());
       if (pref) {
         setPrefs({
           daily_digest: (pref as any).daily_digest,
@@ -72,11 +74,14 @@ export function PushNotificationCard() {
     setSaving(true);
     try {
       if (!enabled) {
+        setPushPreference(true);
         const token = await registerPushNotifications();
         if (!token) {
+          setPushPreference(false);
           toast({
-            title: t("push.toast.permissionNeededTitle"),
-            description: t("push.toast.permissionNeededDesc"),
+            title: t("push.toast.errorTitle"),
+            description:
+              "We couldn't register this device for notifications. Please check your internet connection and try again in a moment.",
             variant: "destructive",
           });
         } else {
@@ -91,11 +96,21 @@ export function PushNotificationCard() {
         }
       } else {
         await unregisterPushNotifications();
+        setPushPreference(false);
         setEnabled(false);
         toast({ title: t("push.toast.disabledTitle") });
       }
     } catch (e: any) {
-      toast({ title: t("push.toast.errorTitle"), description: e?.message, variant: "destructive" });
+      setPushPreference(false);
+      if (e instanceof PushPermissionDeniedError) {
+        toast({
+          title: t("push.toast.permissionNeededTitle"),
+          description: t("push.toast.permissionNeededDesc"),
+          variant: "destructive",
+        });
+      } else {
+        toast({ title: t("push.toast.errorTitle"), description: e?.message, variant: "destructive" });
+      }
     } finally {
       setSaving(false);
     }
