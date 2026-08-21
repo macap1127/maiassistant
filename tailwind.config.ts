@@ -98,12 +98,18 @@ export default {
           from: { opacity: "0", transform: "translateY(16px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "ping-slow": {
+          "0%": { transform: "scale(1)", opacity: "0.6" },
+          "50%": { opacity: "0.3" },
+          "100%": { transform: "scale(1.35)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.4s ease-out",
         "slide-up": "slide-up 0.5s ease-out",
+        "ping-slow": "ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite",
       },
     },
   },
