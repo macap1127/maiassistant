@@ -1153,6 +1153,7 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
       try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch { /* noop */ }
     } else {
       setShowHint(false);
+      try { localStorage.setItem("mia_voice_hint_seen", "1"); } catch { /* noop */ }
       onToggle();
     }
   };
