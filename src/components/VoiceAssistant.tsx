@@ -1069,34 +1069,69 @@ type DraggableProps = {
   onToggle: () => void;
 };
 
-const POS_KEY = "mia_voice_button_pos_v1";
-const BTN_SIZE = 68;
+const POS_KEY = "mia_voice_button_pos_v2";
+const BTN_SIZE = 72;
+
+// Keep the floating voice button above the bottom nav bar and safe area.
+function getBottomSafeArea() {
+  const safeBottom = typeof window !== "undefined"
+    ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-height")) || 80
+    : 80;
+  // 0.75rem spacing + nav height + safe area inset + margin.
+  return safeBottom + 24;
+}
 
 const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceReady, statusMessage, quota, onToggle }: DraggableProps) => {
   const { t } = useTranslation();
-  const navH = 76; // approx var(--nav-height) + gap
-  const safeBottom = navH + 16;
+  const safeBottom = getBottomSafeArea();
+  const [showHint, setShowHint] = useState(() => {
+    try {
+      return localStorage.getItem("mia_voice_hint_seen") !== "1";
+    } catch { return true; }
+  });
   const [pos, setPos] = useState<{ x: number; y: number }>(() => {
     try {
       const raw = localStorage.getItem(POS_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // If the saved position is below the nav bar, reset it.
+        const h = typeof window !== "undefined" ? window.innerHeight : 800;
+        if (parsed.y > h - BTN_SIZE - safeBottom) {
+          return { x: parsed.x, y: h - BTN_SIZE - safeBottom };
+        }
+        return parsed;
+      }
     } catch { /* noop */ }
     const w = typeof window !== "undefined" ? window.innerWidth : 400;
     const h = typeof window !== "undefined" ? window.innerHeight : 800;
-    return { x: w - BTN_SIZE - 16, y: h - BTN_SIZE - safeBottom };
+    return { x: w - BTN_SIZE - 20, y: h - BTN_SIZE - safeBottom };
   });
   const draggingRef = useRef(false);
   const movedRef = useRef(false);
   const offsetRef = useRef({ x: 0, y: 0 });
 
-  useEffect(() => {
-    const clamp = () => setPos((p) => ({
-      x: Math.min(Math.max(8, p.x), window.innerWidth - BTN_SIZE - 8),
-      y: Math.min(Math.max(8, p.y), window.innerHeight - BTN_SIZE - 8),
-    }));
-    window.addEventListener("resize", clamp);
-    return () => window.removeEventListener("resize", clamp);
+  const clamp = useCallback((p: { x: number; y: number }) => {
+    const sb = getBottomSafeArea();
+    return {
+      x: Math.min(Math.max(12, p.x), window.innerWidth - BTN_SIZE - 12),
+      y: Math.min(Math.max(12, p.y), window.innerHeight - BTN_SIZE - sb),
+    };
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => setPos((p) => clamp(p));
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [clamp]);
+
+  useEffect(() => {
+    if (!showHint) return;
+    const timer = setTimeout(() => {
+      setShowHint(false);
+      try { localStorage.setItem("mia_voice_hint_seen", "1"); } catch { /* noop */ }
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, [showHint]);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     draggingRef.current = true;
@@ -1109,10 +1144,7 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
     const nx = e.clientX - offsetRef.current.x;
     const ny = e.clientY - offsetRef.current.y;
     if (Math.abs(nx - pos.x) > 3 || Math.abs(ny - pos.y) > 3) movedRef.current = true;
-    setPos({
-      x: Math.min(Math.max(8, nx), window.innerWidth - BTN_SIZE - 8),
-      y: Math.min(Math.max(8, ny), window.innerHeight - BTN_SIZE - 8),
-    });
+    setPos(clamp({ x: nx, y: ny }));
   };
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     draggingRef.current = false;
@@ -1120,6 +1152,8 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
     if (movedRef.current) {
       try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch { /* noop */ }
     } else {
+      setShowHint(false);
+      try { localStorage.setItem("mia_voice_hint_seen", "1"); } catch { /* noop */ }
       onToggle();
     }
   };
@@ -1131,6 +1165,11 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
       className="fixed z-40 flex flex-col gap-2 touch-none select-none"
       style={{ left: pos.x, top: pos.y, alignItems: onLeftHalf ? "flex-start" : "flex-end" }}
     >
+      {showHint && (
+        <div className="max-w-56 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-foreground shadow-lg animate-fade-in">
+          {t("voice.hint")}
+        </div>
+      )}
       {statusMessage && (
         <div className="max-w-64 rounded-md border border-border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-lg" role="status">
           {statusMessage}
@@ -1149,14 +1188,18 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         style={{ width: BTN_SIZE, height: BTN_SIZE, opacity: connecting ? 0.7 : 1 }}
-        className={`flex items-center justify-center rounded-full shadow-lg transition-colors cursor-grab active:cursor-grabbing ${
+        className={`relative flex items-center justify-center rounded-full shadow-xl transition-all cursor-grab active:cursor-grabbing ${
           isConnected
-            ? "bg-destructive text-destructive-foreground animate-pulse"
+            ? "bg-destructive text-destructive-foreground"
             : voiceReady
               ? "bg-primary text-primary-foreground"
               : "bg-secondary text-secondary-foreground"
         }`}
       >
+        {/* Pulsing glow ring to make the button more discoverable. */}
+        {!isConnected && (
+          <span className="absolute inset-[-6px] rounded-full border-2 border-primary/40 animate-ping-slow pointer-events-none" />
+        )}
         {connecting ? (
           <Loader2 className="w-7 h-7 animate-spin" />
         ) : isConnected ? (

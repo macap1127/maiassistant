@@ -672,6 +672,7 @@
     }
   },
   "voice": {
+    "hint": "Appuyez pour parler à Mia",
     "tapToPrepare": "Appuyez sur le micro pour préparer Mia.",
     "status": {
       "listening": "Écoute en cours…",

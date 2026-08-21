@@ -672,6 +672,7 @@
     }
   },
   "voice": {
+    "hint": "Tryck för att prata med Mia",
     "tapToPrepare": "Tryck på mikrofonen för att förbereda Mia.",
     "status": {
       "listening": "Lyssnar…",
