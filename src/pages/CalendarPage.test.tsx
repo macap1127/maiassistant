@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 // --- Mocks -----------------------------------------------------------------
 
@@ -50,11 +51,11 @@ describe("CalendarPage resilience", () => {
 
 
   it("renders without throwing when event/task dates are malformed", () => {
-    expect(() => render(<CalendarPage />)).not.toThrow();
+    expect(() => render(<MemoryRouter><CalendarPage /></MemoryRouter>)).not.toThrow();
   });
 
   it("still renders the month grid", () => {
-    render(<CalendarPage />);
+    render(<MemoryRouter><CalendarPage /></MemoryRouter>);
     // Weekday header row should be present -> grid rendered, no crash
     expect(screen.getAllByText(/Sun|weekdaySun/).length).toBeGreaterThan(0);
   });
