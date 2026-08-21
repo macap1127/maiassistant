@@ -1069,17 +1069,34 @@ type DraggableProps = {
   onToggle: () => void;
 };
 
-const POS_KEY = "mia_voice_button_pos_v2";
+const POS_KEY = "mia_voice_button_pos_v3";
 const BTN_SIZE = 72;
 
 // Keep the floating voice button above the bottom nav bar and safe area.
 function getBottomSafeArea() {
-  const safeBottom = typeof window !== "undefined"
-    ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-height")) || 80
-    : 80;
-  // 0.75rem spacing + nav height + safe area inset + margin.
-  return safeBottom + 24;
+  if (typeof window === "undefined") return 104;
+  // Prefer the real measured nav bar, it's the source of truth.
+  const nav = document.querySelector("nav");
+  let navHeight = nav ? nav.getBoundingClientRect().height : 0;
+  if (!navHeight) {
+    // Fall back to the CSS variable, converting rem/px correctly.
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue("--nav-height")
+      .trim();
+    const value = parseFloat(raw);
+    if (!Number.isNaN(value)) {
+      const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      navHeight = raw.endsWith("rem") ? value * rootPx : value;
+    }
+  }
+  if (!navHeight) navHeight = 80;
+  const inset = parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue("--safe-area-bottom"),
+  ) || 0;
+  // nav height + safe area inset + breathing room.
+  return navHeight + inset + 24;
 }
+
 
 const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceReady, statusMessage, quota, onToggle }: DraggableProps) => {
   const { t } = useTranslation();
@@ -1119,10 +1136,16 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
   }, []);
 
   useEffect(() => {
+    // Re-clamp once mounted: the nav bar can only be measured after render.
+    const id = requestAnimationFrame(() => setPos((p) => clamp(p)));
     const handleResize = () => setPos((p) => clamp(p));
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener("resize", handleResize);
+    };
   }, [clamp]);
+
 
   useEffect(() => {
     if (!showHint) return;
