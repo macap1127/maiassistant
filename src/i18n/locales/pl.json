@@ -672,7 +672,7 @@
     }
   },
   "voice": {
-    "hint": "Tap to talk to Mia",
+    "hint": "Dotknij, aby porozmawiać z Mią",
     "tapToPrepare": "Stuknij mikrofon, aby przygotować Mia.",
     "status": {
       "listening": "Słucham…",

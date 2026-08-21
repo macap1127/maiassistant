@@ -665,7 +665,7 @@
     }
   },
   "voice": {
-    "hint": "Tap to talk to Mia",
+    "hint": "Mia와 대화하려면 탭하세요",
     "tapToPrepare": "마이크를 탭하여 Mia를 준비하세요.",
     "status": {
       "listening": "듣고 있어요…",
