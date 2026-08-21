@@ -1136,10 +1136,16 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
   }, []);
 
   useEffect(() => {
+    // Re-clamp once mounted: the nav bar can only be measured after render.
+    const id = requestAnimationFrame(() => setPos((p) => clamp(p)));
     const handleResize = () => setPos((p) => clamp(p));
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener("resize", handleResize);
+    };
   }, [clamp]);
+
 
   useEffect(() => {
     if (!showHint) return;
