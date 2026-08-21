@@ -672,6 +672,7 @@
     }
   },
   "voice": {
+    "hint": "Tap to talk to Mia",
     "tapToPrepare": "اضغط على الميكروفون لتحضير ميا.",
     "status": {
       "listening": "تستمع…",

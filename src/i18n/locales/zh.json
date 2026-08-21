@@ -665,6 +665,7 @@
     }
   },
   "voice": {
+    "hint": "Tap to talk to Mia",
     "tapToPrepare": "点击麦克风以准备 Mia。",
     "status": {
       "listening": "正在聆听…",

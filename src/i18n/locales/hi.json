@@ -672,6 +672,7 @@
     }
   },
   "voice": {
+    "hint": "Tap to talk to Mia",
     "tapToPrepare": "मिया को तैयार करने के लिए माइक्रोफ़ोन टैप करें।",
     "status": {
       "listening": "सुन रही है…",

@@ -672,6 +672,7 @@
     }
   },
   "voice": {
+    "hint": "Tap to talk to Mia",
     "tapToPrepare": "Tik op de microfoon om Mia voor te bereiden.",
     "status": {
       "listening": "Luistert…",

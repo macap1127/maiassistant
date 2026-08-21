@@ -672,6 +672,7 @@
     }
   },
   "voice": {
+    "hint": "Tap to talk to Mia",
     "tapToPrepare": "Нажмите на микрофон, чтобы подготовить Mia.",
     "status": {
       "listening": "Слушаю…",
