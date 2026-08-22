@@ -10,7 +10,9 @@ export interface TemplateEntry {
 }
 
 import { template as householdInvite } from './household-invite.tsx'
+import { template as adminSignupAlert } from './admin-signup-alert.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'household-invite': householdInvite,
+  'admin-signup-alert': adminSignupAlert,
 }
