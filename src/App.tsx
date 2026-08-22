@@ -24,6 +24,7 @@ import AuthConfirmedPage from "./pages/AuthConfirmedPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminTesters from "./pages/AdminTesters";
+import AdminSignups from "./pages/AdminSignups";
 import { DeepLinkHandler } from "@/lib/deepLinks";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -50,6 +51,7 @@ const App = () => (
               <Route path="/receipts" element={<ReceiptsPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/admin/testers" element={<AdminTesters />} />
+              <Route path="/admin/signups" element={<AdminSignups />} />
             </Route>
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
