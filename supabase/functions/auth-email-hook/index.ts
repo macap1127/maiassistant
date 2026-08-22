@@ -39,10 +39,10 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 const SITE_NAME = "Mia Family Assistant"
 const SENDER_DOMAIN = "notify.miafamilyassistant.com"
 const ROOT_DOMAIN = "miafamilyassistant.com"
-// Use the hosted app URL for recovery so iOS does not intercept the link as a
-// Universal Link. Existing native builds do not reliably retain query params
-// on a cold launch, while this URL always opens the reset flow in the browser.
-const PASSWORD_RESET_URL = "https://maiassistant.lovable.app/reset-password"
+// Use a browser-only path on the custom domain. This path is deliberately not
+// included in the iOS associated-domains file, so it opens in the browser
+// without relying on a cross-domain redirect that email clients may block.
+const PASSWORD_RESET_URL = "https://miafamilyassistant.com/web-reset-password"
 const FROM_DOMAIN = "notify.miafamilyassistant.com" // Domain shown in From address (may be root or sender subdomain)
 
 // Sample data for preview mode ONLY (not used in actual email sending).
