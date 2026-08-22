@@ -444,7 +444,9 @@
     "updatedRedirecting": "密码已更新。正在重定向…",
     "newPasswordPlaceholder": "新密码",
     "confirmPasswordPlaceholder": "确认新密码",
-    "updatePassword": "更新密码"
+    "updatePassword": "更新密码",
+    "invalidLink": "This reset link is invalid or has expired. Please request a new one.",
+    "requestNewLink": "Request a new reset link"
   },
   "notFound": {
     "title": "404",

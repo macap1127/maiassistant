@@ -451,7 +451,9 @@
     "updatedRedirecting": "تم تحديث كلمة المرور. جارٍ إعادة التوجيه…",
     "newPasswordPlaceholder": "كلمة المرور الجديدة",
     "confirmPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
-    "updatePassword": "تحديث كلمة المرور"
+    "updatePassword": "تحديث كلمة المرور",
+    "invalidLink": "This reset link is invalid or has expired. Please request a new one.",
+    "requestNewLink": "Request a new reset link"
   },
   "notFound": {
     "title": "404",

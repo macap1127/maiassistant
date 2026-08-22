@@ -444,7 +444,9 @@
     "updatedRedirecting": "パスワードが更新されました。リダイレクトしています…",
     "newPasswordPlaceholder": "新しいパスワード",
     "confirmPasswordPlaceholder": "新しいパスワードを確認",
-    "updatePassword": "パスワードを更新"
+    "updatePassword": "パスワードを更新",
+    "invalidLink": "This reset link is invalid or has expired. Please request a new one.",
+    "requestNewLink": "Request a new reset link"
   },
   "notFound": {
     "title": "404",

@@ -451,7 +451,9 @@
     "updatedRedirecting": "पासवर्ड अपडेट हो गया। रीडायरेक्ट किया जा रहा है…",
     "newPasswordPlaceholder": "नया पासवर्ड",
     "confirmPasswordPlaceholder": "नए पासवर्ड की पुष्टि करें",
-    "updatePassword": "पासवर्ड अपडेट करें"
+    "updatePassword": "पासवर्ड अपडेट करें",
+    "invalidLink": "This reset link is invalid or has expired. Please request a new one.",
+    "requestNewLink": "Request a new reset link"
   },
   "notFound": {
     "title": "404",
