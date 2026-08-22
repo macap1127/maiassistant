@@ -228,6 +228,17 @@ async function handleWebhook(req: Request): Promise<Response> {
       ? `https://${ROOT_DOMAIN}/reset-password?token_hash=${encodeURIComponent(tokenHash)}&type=recovery`
       : payload.data.url
 
+  if (emailType === 'recovery') {
+    console.log('Recovery link built', {
+      hasTokenHash: !!tokenHash,
+      tokenHashLength: tokenHash ? String(tokenHash).length : 0,
+      linkHost: (() => { try { return new URL(actionUrl).host } catch { return 'invalid' } })(),
+      linkPath: (() => { try { return new URL(actionUrl).pathname } catch { return 'invalid' } })(),
+      run_id,
+    })
+  }
+
+
   const templateProps = {
     siteName: SITE_NAME,
     siteUrl: `https://${ROOT_DOMAIN}`,
