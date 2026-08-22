@@ -656,6 +656,7 @@ export type Database = {
     Functions: {
       accept_invite: { Args: { _code: string }; Returns: string }
       admin_active_users_today: { Args: never; Returns: Json }
+      admin_signup_activity: { Args: never; Returns: Json }
       admin_tester_activity_today: { Args: never; Returns: Json }
       can_use_ai_calendar_import: {
         Args: { _household_id: string }
@@ -736,6 +737,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      send_admin_activity_alert: { Args: { _data: Json }; Returns: undefined }
       tier_member_limit: { Args: { _tier: string }; Returns: number }
       voice_seconds_remaining: {
         Args: { _household_id: string }
