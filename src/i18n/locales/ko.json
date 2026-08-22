@@ -444,7 +444,9 @@
     "updatedRedirecting": "비밀번호가 업데이트되었습니다. 리디렉션 중…",
     "newPasswordPlaceholder": "새 비밀번호",
     "confirmPasswordPlaceholder": "새 비밀번호 확인",
-    "updatePassword": "비밀번호 업데이트"
+    "updatePassword": "비밀번호 업데이트",
+    "invalidLink": "This reset link is invalid or has expired. Please request a new one.",
+    "requestNewLink": "Request a new reset link"
   },
   "notFound": {
     "title": "404",

@@ -451,7 +451,9 @@
     "updatedRedirecting": "Passwort aktualisiert. Weiterleitung…",
     "newPasswordPlaceholder": "Neues Passwort",
     "confirmPasswordPlaceholder": "Neues Passwort bestätigen",
-    "updatePassword": "Passwort aktualisieren"
+    "updatePassword": "Passwort aktualisieren",
+    "invalidLink": "This reset link is invalid or has expired. Please request a new one.",
+    "requestNewLink": "Request a new reset link"
   },
   "notFound": {
     "title": "404",
