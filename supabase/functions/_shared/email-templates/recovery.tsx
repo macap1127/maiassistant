@@ -4,7 +4,6 @@ import * as React from 'npm:react@18.3.1'
 
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -32,9 +31,9 @@ export const RecoveryEmail = ({
           We received a request to reset your password for {siteName}. Click
           the button below to choose a new password.
         </Text>
-        <Button style={button} href={confirmationUrl}>
+        <a style={button} href={confirmationUrl} target="_blank" rel="noopener noreferrer">
           Reset Password
-        </Button>
+        </a>
         <Text style={helpText}>
           If the button does not open, copy and paste this link into your browser:
         </Text>
@@ -67,12 +66,14 @@ const text = {
   margin: '0 0 25px',
 }
 const button = {
+  display: 'inline-block',
   backgroundColor: '#000000',
   color: '#ffffff',
   fontSize: '14px',
   borderRadius: '8px',
   padding: '12px 20px',
   textDecoration: 'none',
+  fontWeight: 'bold',
 }
 const helpText = {
   fontSize: '13px',
