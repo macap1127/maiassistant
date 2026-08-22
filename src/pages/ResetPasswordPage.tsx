@@ -23,12 +23,34 @@ const ResetPasswordPage = () => {
         setReady(true);
       }
     });
-    // If we already have a session (link already consumed), allow update too.
-    supabase.auth.getSession().then(({ data }) => {
+
+    (async () => {
+      // Newer emails link here directly with ?token_hash=...&type=recovery so the
+      // link works from any mail client without relying on redirect allow-lists.
+      const params = new URLSearchParams(window.location.search);
+      const tokenHash = params.get("token_hash");
+      const type = params.get("type");
+      if (tokenHash && type) {
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: type as "recovery",
+        });
+        if (error) {
+          setError(error.message || t("resetPassword.couldNotUpdate"));
+        } else {
+          setReady(true);
+          window.history.replaceState({}, "", "/reset-password");
+        }
+        return;
+      }
+      // If we already have a session (link already consumed), allow update too.
+      const { data } = await supabase.auth.getSession();
       if (data.session) setReady(true);
-    });
+    })();
+
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [t]);
+
 
   const submit = async () => {
     if (password.length < 6) {

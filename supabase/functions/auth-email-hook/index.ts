@@ -36,10 +36,10 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "maiassistant"
+const SITE_NAME = "Mia Family Assistant"
 const SENDER_DOMAIN = "notify.miafamilyassistant.com"
 const ROOT_DOMAIN = "miafamilyassistant.com"
-const FROM_DOMAIN = "miafamilyassistant.com" // Domain shown in From address (may be root or sender subdomain)
+const FROM_DOMAIN = "notify.miafamilyassistant.com" // Domain shown in From address (may be root or sender subdomain)
 
 // Sample data for preview mode ONLY (not used in actual email sending).
 // URLs are baked in at scaffold time from the project's real data.
@@ -219,16 +219,26 @@ async function handleWebhook(req: Request): Promise<Response> {
   }
 
   // Build template props from payload.data (HookData structure)
+  // For password recovery we bypass Supabase's /verify redirect (which depends on
+  // the redirect allow-list and breaks when the link is opened in another client)
+  // and link straight to our own page with the token_hash, which it verifies itself.
+  const tokenHash = payload.data.token_hash
+  const actionUrl =
+    emailType === 'recovery' && tokenHash
+      ? `https://${ROOT_DOMAIN}/reset-password?token_hash=${encodeURIComponent(tokenHash)}&type=recovery`
+      : payload.data.url
+
   const templateProps = {
     siteName: SITE_NAME,
     siteUrl: `https://${ROOT_DOMAIN}`,
     recipient: payload.data.email,
-    confirmationUrl: payload.data.url,
+    confirmationUrl: actionUrl,
     token: payload.data.token,
     email: payload.data.email,
     oldEmail: payload.data.old_email,
     newEmail: payload.data.new_email,
   }
+
 
   // Render React Email to HTML and plain text
   const html = await renderAsync(React.createElement(EmailTemplate, templateProps))
