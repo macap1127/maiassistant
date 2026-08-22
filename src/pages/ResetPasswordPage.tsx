@@ -121,10 +121,11 @@ const ResetPasswordPage = () => {
         {success ? (
           <p className="text-sm text-primary">{t("resetPassword.updatedRedirecting")}</p>
         ) : (
-          <div className="space-y-4 relative">
+          <div className="space-y-4">
             {verifying && (
-              <div className="absolute inset-0 z-10 flex items-start justify-center bg-background/80 pt-12 rounded-xl">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              <div className="flex items-center justify-center gap-2 py-2">
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                <span className="text-sm text-muted-foreground">{t("resetPassword.verifyingLink")}</span>
               </div>
             )}
             <div className="relative text-left">
