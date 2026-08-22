@@ -35,6 +35,12 @@ export const RecoveryEmail = ({
         <Button style={button} href={confirmationUrl}>
           Reset Password
         </Button>
+        <Text style={helpText}>
+          If the button does not open, copy and paste this link into your browser:
+        </Text>
+        <Text style={linkText}>
+          <a href={confirmationUrl} style={link}>{confirmationUrl}</a>
+        </Text>
         <Text style={footer}>
           If you didn't request a password reset, you can safely ignore this
           email. Your password will not be changed.
@@ -68,4 +74,17 @@ const button = {
   padding: '12px 20px',
   textDecoration: 'none',
 }
+const helpText = {
+  fontSize: '13px',
+  color: '#55575d',
+  lineHeight: '1.5',
+  margin: '24px 0 6px',
+}
+const linkText = {
+  fontSize: '12px',
+  lineHeight: '1.5',
+  margin: '0',
+  wordBreak: 'break-all' as const,
+}
+const link = { color: '#2563eb', textDecoration: 'underline' }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }

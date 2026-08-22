@@ -57,6 +57,7 @@ const App = () => (
             <Route path="/auth/confirmed" element={<AuthConfirmedPage />} />
 
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/web-reset-password" element={<ResetPasswordPage />} />
             <Route path="/invite/:code" element={<AcceptInvitePage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="*" element={<NotFound />} />
