@@ -226,21 +226,42 @@ async function handleWebhook(req: Request): Promise<Response> {
   // For password recovery we bypass Supabase's /verify redirect (which depends on
   // the redirect allow-list and breaks when the link is opened in another client)
   // and link straight to our own page with the token_hash, which it verifies itself.
-  const tokenHash = payload.data.token_hash
-  const actionUrl =
-    emailType === 'recovery' && tokenHash
-      ? `${PASSWORD_RESET_URL}?token_hash=${encodeURIComponent(tokenHash)}&type=recovery`
-      : payload.data.url
+  // token_hash is not always present on the payload; Supabase's own verify URL
+  // carries the same hashed token in its `token` query param, so fall back to it.
+  let tokenHash: string | undefined = payload.data.token_hash
+  let tokenSource = tokenHash ? 'payload' : 'none'
+  if (!tokenHash && payload.data.url) {
+    try {
+      const u = new URL(payload.data.url)
+      const t = u.searchParams.get('token_hash') || u.searchParams.get('token')
+      if (t) {
+        tokenHash = t
+        tokenSource = 'url'
+      }
+    } catch { /* ignore */ }
+  }
 
+  let actionUrl = payload.data.url
   if (emailType === 'recovery') {
+    if (tokenHash) {
+      actionUrl = `${PASSWORD_RESET_URL}?token_hash=${encodeURIComponent(tokenHash)}&type=recovery`
+    } else {
+      // Last resort: keep Supabase's verify link but force it back to our web page.
+      try {
+        const u = new URL(payload.data.url)
+        u.searchParams.set('redirect_to', PASSWORD_RESET_URL)
+        actionUrl = u.toString()
+      } catch { /* ignore */ }
+    }
     console.log('Recovery link built', {
+      tokenSource,
       hasTokenHash: !!tokenHash,
-      tokenHashLength: tokenHash ? String(tokenHash).length : 0,
       linkHost: (() => { try { return new URL(actionUrl).host } catch { return 'invalid' } })(),
       linkPath: (() => { try { return new URL(actionUrl).pathname } catch { return 'invalid' } })(),
       run_id,
     })
   }
+
 
 
   const templateProps = {
