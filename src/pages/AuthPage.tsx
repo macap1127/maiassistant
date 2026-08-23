@@ -165,6 +165,32 @@ const AuthPage = () => {
     }
   };
 
+  const resendConfirmation = async () => {
+    if (!email || resendLoading) return;
+    setResendLoading(true);
+    try {
+      const confirmOrigin = isWeb ? window.location.origin : "https://miafamilyassistant.com";
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: {
+          emailRedirectTo: inviteCode
+            ? `${confirmOrigin}/invite/${inviteCode}`
+            : `${confirmOrigin}/auth/confirmed`,
+        },
+      });
+      if (error) throw error;
+      setResendSent(true);
+    } catch (err: any) {
+      console.error("Resend confirmation error:", err);
+      setError(err.message || t("auth.authFailed"));
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+
+
   if (signupSuccess) {
     return (
       <div className="min-h-[100dvh] bg-background flex items-start sm:items-center justify-center overflow-y-auto px-6 py-8" style={{ paddingTop: "max(2rem, env(safe-area-inset-top))", paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}>
