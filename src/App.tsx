@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
 import AuthPage from "./pages/AuthPage";
 import AuthConfirmedPage from "./pages/AuthConfirmedPage";
+import AuthConfirmPage from "./pages/AuthConfirmPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminTesters from "./pages/AdminTesters";
