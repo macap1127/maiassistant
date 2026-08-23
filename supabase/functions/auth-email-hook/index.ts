@@ -43,6 +43,9 @@ const ROOT_DOMAIN = "miafamilyassistant.com"
 // included in the iOS associated-domains file, so it opens in the browser
 // without relying on a cross-domain redirect that email clients may block.
 const PASSWORD_RESET_URL = "https://miafamilyassistant.com/web-reset-password"
+// Browser-only confirmation landing page on our own domain. Keeping every link
+// in the email on the sending domain avoids a major spam signal at Gmail/Yahoo/AOL.
+const CONFIRM_URL = "https://miafamilyassistant.com/auth/confirm"
 const FROM_DOMAIN = "notify.miafamilyassistant.com" // Domain shown in From address (may be root or sender subdomain)
 
 // Sample data for preview mode ONLY (not used in actual email sending).
