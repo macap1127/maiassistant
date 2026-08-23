@@ -22,6 +22,8 @@ const AuthPage = () => {
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSent, setResendSent] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
@@ -176,15 +178,33 @@ const AuthPage = () => {
             {t("auth.sentVerificationLink")}
           </p>
           <p className="text-sm font-medium mb-6 break-all">{email}</p>
-          <p className="text-xs text-muted-foreground mb-8">
+          <p className="text-xs text-muted-foreground mb-4">
             {t("auth.verifyEmailInstructions")}
           </p>
+          <p className="text-xs text-muted-foreground mb-6">
+            {t(
+              "auth.spamHint",
+              "Don't see it? Check your spam or junk folder and mark the email as \"Not spam\" so future messages from Mia arrive in your inbox."
+            )}
+          </p>
+          <button
+            onClick={resendConfirmation}
+            disabled={resendLoading}
+            className="w-full border border-border rounded-xl py-3 text-sm font-medium mb-3 disabled:opacity-60"
+          >
+            {resendLoading
+              ? t("common.loading")
+              : resendSent
+                ? t("auth.confirmationResent", "Confirmation email sent again")
+                : t("auth.resendConfirmation", "Resend confirmation email")}
+          </button>
           <button
             onClick={() => { setSignupSuccess(false); setMode("signin"); setPassword(""); }}
             className="w-full bg-primary text-primary-foreground rounded-xl py-3 text-sm font-medium hover:opacity-90 transition-opacity"
           >
             {t("auth.backToSignIn")}
           </button>
+
         </div>
       </div>
     );
