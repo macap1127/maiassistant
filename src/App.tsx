@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import AcceptInvitePage from "./pages/AcceptInvitePage";
 import AuthPage from "./pages/AuthPage";
 import AuthConfirmedPage from "./pages/AuthConfirmedPage";
+import AuthConfirmPage from "./pages/AuthConfirmPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import AdminTesters from "./pages/AdminTesters";
@@ -57,6 +58,8 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/auth/confirmed" element={<AuthConfirmedPage />} />
+            <Route path="/auth/confirm" element={<AuthConfirmPage />} />
+
 
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/web-reset-password" element={<ResetPasswordPage />} />

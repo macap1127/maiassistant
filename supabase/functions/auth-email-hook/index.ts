@@ -43,6 +43,9 @@ const ROOT_DOMAIN = "miafamilyassistant.com"
 // included in the iOS associated-domains file, so it opens in the browser
 // without relying on a cross-domain redirect that email clients may block.
 const PASSWORD_RESET_URL = "https://miafamilyassistant.com/web-reset-password"
+// Browser-only confirmation landing page on our own domain. Keeping every link
+// in the email on the sending domain avoids a major spam signal at Gmail/Yahoo/AOL.
+const CONFIRM_URL = "https://miafamilyassistant.com/auth/confirm"
 const FROM_DOMAIN = "notify.miafamilyassistant.com" // Domain shown in From address (may be root or sender subdomain)
 
 // Sample data for preview mode ONLY (not used in actual email sending).
@@ -258,6 +261,26 @@ async function handleWebhook(req: Request): Promise<Response> {
       hasTokenHash: !!tokenHash,
       linkHost: (() => { try { return new URL(actionUrl).host } catch { return 'invalid' } })(),
       linkPath: (() => { try { return new URL(actionUrl).pathname } catch { return 'invalid' } })(),
+      run_id,
+    })
+  } else if (['signup', 'magiclink', 'invite', 'email_change'].includes(emailType)) {
+    // Same-domain confirmation links: point at our own /auth/confirm page,
+    // which verifies the token itself. Keeps From-domain and link-domain
+    // aligned, which materially improves inbox placement.
+    if (tokenHash) {
+      actionUrl = `${CONFIRM_URL}?token_hash=${encodeURIComponent(tokenHash)}&type=${encodeURIComponent(emailType)}`
+    } else {
+      try {
+        const u = new URL(payload.data.url)
+        u.searchParams.set('redirect_to', `${CONFIRM_URL}?type=${encodeURIComponent(emailType)}`)
+        actionUrl = u.toString()
+      } catch { /* ignore */ }
+    }
+    console.log('Confirmation link built', {
+      emailType,
+      tokenSource,
+      hasTokenHash: !!tokenHash,
+      linkHost: (() => { try { return new URL(actionUrl).host } catch { return 'invalid' } })(),
       run_id,
     })
   }

@@ -4,54 +4,57 @@ import * as React from 'npm:react@18.3.1'
 
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
+  Hr,
   Html,
-  Link,
   Preview,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
 interface SignupEmailProps {
   siteName: string
-  siteUrl: string
-  recipient: string
+  siteUrl?: string
+  recipient?: string
   confirmationUrl: string
 }
 
 export const SignupEmail = ({
   siteName,
-  siteUrl,
+  siteUrl = 'https://miafamilyassistant.com',
   recipient,
   confirmationUrl,
 }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Confirm your email for {siteName}</Preview>
+    <Preview>Confirm your email address for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Confirm your email</Heading>
         <Text style={text}>
-          Thanks for signing up for{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          !
+          Thanks for creating your {siteName} account
+          {recipient ? ` with ${recipient}` : ''}. Please confirm your email
+          address to finish setting up your account.
         </Text>
-        <Text style={text}>
-          Please confirm your email address (
-          <Link href={`mailto:${recipient}`} style={link}>
-            {recipient}
-          </Link>
-          ) by clicking the button below:
+        <a style={button} href={confirmationUrl} target="_blank" rel="noopener noreferrer">
+          Confirm Email
+        </a>
+        <Text style={helpText}>
+          If the button does not open, copy and paste this link into your browser:
         </Text>
-        <Button style={button} href={confirmationUrl}>
-          Verify Email
-        </Button>
+        <Text style={linkText}>
+          <a href={confirmationUrl} style={link}>{confirmationUrl}</a>
+        </Text>
         <Text style={footer}>
           If you didn't create an account, you can safely ignore this email.
+        </Text>
+        <Hr style={hr} />
+        <Text style={identity}>
+          {siteName} · <a href={siteUrl} style={link}>miafamilyassistant.com</a>
+          <br />
+          You received this email because this address was used to sign up at
+          miafamilyassistant.com.
         </Text>
       </Container>
     </Body>
@@ -74,13 +77,29 @@ const text = {
   lineHeight: '1.5',
   margin: '0 0 25px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
 const button = {
+  display: 'inline-block',
   backgroundColor: '#000000',
   color: '#ffffff',
   fontSize: '14px',
   borderRadius: '8px',
   padding: '12px 20px',
   textDecoration: 'none',
+  fontWeight: 'bold',
 }
+const helpText = {
+  fontSize: '13px',
+  color: '#55575d',
+  lineHeight: '1.5',
+  margin: '24px 0 6px',
+}
+const linkText = {
+  fontSize: '12px',
+  lineHeight: '1.5',
+  margin: '0',
+  wordBreak: 'break-all' as const,
+}
+const link = { color: '#2563eb', textDecoration: 'underline' }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const hr = { borderColor: '#eaeaea', margin: '24px 0 12px' }
+const identity = { fontSize: '11px', color: '#999999', lineHeight: '1.6', margin: '0' }

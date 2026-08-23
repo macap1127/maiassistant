@@ -7,6 +7,7 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Preview,
   Text,
@@ -43,6 +44,13 @@ export const RecoveryEmail = ({
         <Text style={footer}>
           If you didn't request a password reset, you can safely ignore this
           email. Your password will not be changed.
+        </Text>
+        <Hr style={hr} />
+        <Text style={identity}>
+          {siteName} · <a href="https://miafamilyassistant.com" style={link}>miafamilyassistant.com</a>
+          <br />
+          You received this email because a password reset was requested for
+          this address at miafamilyassistant.com.
         </Text>
       </Container>
     </Body>
@@ -89,3 +97,5 @@ const linkText = {
 }
 const link = { color: '#2563eb', textDecoration: 'underline' }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const hr = { borderColor: '#eaeaea', margin: '24px 0 12px' }
+const identity = { fontSize: '11px', color: '#999999', lineHeight: '1.6', margin: '0' }
