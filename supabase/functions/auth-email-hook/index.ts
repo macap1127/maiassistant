@@ -263,6 +263,26 @@ async function handleWebhook(req: Request): Promise<Response> {
       linkPath: (() => { try { return new URL(actionUrl).pathname } catch { return 'invalid' } })(),
       run_id,
     })
+  } else if (['signup', 'magiclink', 'invite', 'email_change'].includes(emailType)) {
+    // Same-domain confirmation links: point at our own /auth/confirm page,
+    // which verifies the token itself. Keeps From-domain and link-domain
+    // aligned, which materially improves inbox placement.
+    if (tokenHash) {
+      actionUrl = `${CONFIRM_URL}?token_hash=${encodeURIComponent(tokenHash)}&type=${encodeURIComponent(emailType)}`
+    } else {
+      try {
+        const u = new URL(payload.data.url)
+        u.searchParams.set('redirect_to', `${CONFIRM_URL}?type=${encodeURIComponent(emailType)}`)
+        actionUrl = u.toString()
+      } catch { /* ignore */ }
+    }
+    console.log('Confirmation link built', {
+      emailType,
+      tokenSource,
+      hasTokenHash: !!tokenHash,
+      linkHost: (() => { try { return new URL(actionUrl).host } catch { return 'invalid' } })(),
+      run_id,
+    })
   }
 
 
