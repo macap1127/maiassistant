@@ -58,6 +58,8 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/auth/confirmed" element={<AuthConfirmedPage />} />
+            <Route path="/auth/confirm" element={<AuthConfirmPage />} />
+
 
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/web-reset-password" element={<ResetPasswordPage />} />
