@@ -1245,7 +1245,7 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
 
   return (
     <div
-      className="fixed z-40 flex flex-col gap-2 touch-none select-none"
+      className="fixed z-[60] flex flex-col gap-2 touch-none select-none"
       style={{ left: pos.x, top: pos.y, alignItems: onLeftHalf ? "flex-start" : "flex-end" }}
     >
       {showHint && (
