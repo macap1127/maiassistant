@@ -12,7 +12,7 @@ import {
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
-const ADMIN_EMAIL = 'michael@aiblueribbon.com'
+const ADMIN_EMAIL = 'michaeldmacri@gmail.com'
 
 interface AdminSignupAlertProps {
   eventType?: string
