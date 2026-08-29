@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-const ADMIN_EMAIL = "michael@aiblueribbon.com";
+const ADMIN_EMAILS = ["michael@aiblueribbon.com", "michaeldmacri@gmail.com", "michael.macri@gmail.com"];
 
 type Tester = {
   email: string;
