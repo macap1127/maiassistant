@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 
-const ADMIN_EMAIL = "michael@aiblueribbon.com";
+const ADMIN_EMAILS = ["michael@aiblueribbon.com", "michaeldmacri@gmail.com", "michael.macri@gmail.com"];
 
 type Row = {
   email: string;
@@ -51,7 +51,7 @@ export default function AdminSignups() {
   const [q, setQ] = useState("");
   const [tier, setTier] = useState<string>("all");
 
-  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
 
   async function load() {
     setLoading(true);
