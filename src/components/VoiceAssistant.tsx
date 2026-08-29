@@ -962,6 +962,17 @@ const VoiceAssistantInner = () => {
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error("Microphone access is not supported in this browser.");
       }
+      // Ask for the microphone explicitly first. On Android this triggers the
+      // native permission dialog (and registers the app under Settings →
+      // Permissions → Microphone) before the realtime session starts.
+      try {
+        const warmup = await navigator.mediaDevices.getUserMedia({ audio: true });
+        warmup.getTracks().forEach((track) => track.stop());
+      } catch (permError) {
+        console.error("[Mia] microphone permission denied", permError);
+        throw permError;
+      }
+
       console.log("[Mia] start: calling conversation.startSession()", { connectionType: "websocket" });
       // Always re-fetch the linked family member right before starting,
       // so Mia uses the latest "I am…" selection (set after sign-in, etc.)
