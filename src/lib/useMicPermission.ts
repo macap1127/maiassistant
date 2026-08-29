@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Capacitor } from "@capacitor/core";
-import { App } from "@capacitor/app";
+import { AppLauncher } from "@capacitor/app-launcher";
 
 export type MicStatus = "granted" | "denied" | "prompt" | "unsupported" | "unknown";
 
@@ -63,8 +63,16 @@ export function useMicPermission() {
   const openAppSettings = useCallback(async (): Promise<boolean> => {
     if (Capacitor.isNativePlatform()) {
       try {
-        await App.openSettings();
-        return true;
+        // iOS: "app-settings:" jumps straight to this app's Settings page.
+        // Android: an ACTION_VIEW intent with a "package:" URI opens the app's
+        // App info screen in system Settings, where the Microphone permission
+        // toggle lives under Permissions.
+        const url =
+          Capacitor.getPlatform() === "ios"
+            ? "app-settings:"
+            : "package:com.aiblueribbon.mia";
+        const result = await AppLauncher.openUrl({ url });
+        return !!result?.completed;
       } catch {
         return false;
       }
