@@ -22,15 +22,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- App Links: only claim the paths the native app can handle.
+                 Email confirmation / password reset links must stay in the
+                 browser, otherwise an older installed bundle shows a 404. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                      android:host="miafamilyassistant.com" />
-                <data android:scheme="https"
-                      android:host="www.miafamilyassistant.com" />
+                <data android:scheme="https" android:host="miafamilyassistant.com" android:pathPrefix="/accept-invite" />
+                <data android:scheme="https" android:host="www.miafamilyassistant.com" android:pathPrefix="/accept-invite" />
+                <data android:scheme="https" android:host="miafamilyassistant.com" android:pathPrefix="/dashboard" />
+                <data android:scheme="https" android:host="www.miafamilyassistant.com" android:pathPrefix="/dashboard" />
             </intent-filter>
+
 
 
         </activity>
@@ -49,4 +53,10 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Voice assistant: declaring these makes the Microphone toggle appear in
+         Android app settings and lets the WebView grant getUserMedia. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
 </manifest>
+
