@@ -310,6 +310,28 @@
     "continue": "Continue",
     "skipMembers": "Skip family members for now"
   },
+  "mic": {
+    "title": "Microphone",
+    "statusOn": "Microphone is on. Mia can hear you.",
+    "statusOff": "Microphone is off. Mia can't hear you.",
+    "statusUnknown": "Microphone access hasn't been set up yet.",
+    "explainer": "Mia uses your microphone so you can add groceries, to-dos, and calendar events hands-free.",
+    "enable": "Enable Microphone",
+    "openSettings": "Open Settings",
+    "deniedTitle": "Microphone is off",
+    "deniedDesc": "Microphone access was declined. Enable it in your device settings to talk to Mia.",
+    "deniedDialogDesc": "Mia needs microphone access to hear you. Turn it on in your device settings, then come back and try again.",
+    "grantedTitle": "Microphone enabled",
+    "skipForNow": "Skip for now",
+    "tryAgain": "Try again",
+    "webHowToTitle": "Enable in your browser",
+    "webHowToDesc": "Tap the lock icon in the address bar, set Microphone to Allow, then reload the page.",
+    "onboardingEyebrow": "Last step",
+    "onboardingTitlePrefix": "Turn on the",
+    "onboardingTitleAccent": "microphone",
+    "onboardingDesc": "Mia listens so you can add groceries, to-dos, and events hands-free. Tap below and choose Allow when your device asks.",
+    "onboardingHint": "You can change this anytime in your device settings. Without the microphone you can still use everything by typing."
+  },
   "pricing": {
     "back": "Back",
     "chooseYourPlan": "Choose your plan",
