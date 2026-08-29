@@ -1,12 +1,14 @@
 import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Mic, MicOff, Loader2 } from "lucide-react";
+import { Mic, MicOff, Loader2, Settings2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import type { GroceryItem } from "@/lib/store";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useMicPermission } from "@/lib/useMicPermission";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
@@ -34,6 +36,10 @@ const isGroceryLookup = (text: string) => /\b(grocery|groceries|shopping\s*list|
 
 const isTaskLookup = (text: string) =>
   /\b(to[-\s]?do\s*list|todo\s*list|task\s*list|tasks?|chores?|what\s+(?:do\s+)?(?:i|we)\s+(?:need|have)\s+to\s+do)\b/i.test(text);
+
+const isMicDeniedError = (err: unknown) =>
+  (err instanceof DOMException && (err.name === "NotAllowedError" || err.name === "SecurityError")) ||
+  (err instanceof Error && /permission|notallowed|denied/i.test(err.message));
 
 const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
@@ -208,6 +214,8 @@ const VoiceAssistantInner = () => {
   const [preparingVoice, setPreparingVoice] = useState(false);
   const [quota, setQuota] = useState<{ used: number; limit: number; tier: string } | null>(null);
   const [activeHouseholdId, setActiveHouseholdId] = useState<string | null>(null);
+  const [micDenied, setMicDenied] = useState(false);
+  const micPermission = useMicPermission();
   const householdIdRef = useRef<string | null>(null);
   const assistantLanguageRef = useRef<string>("en");
   const userNameRef = useRef<string>("");
@@ -949,6 +957,7 @@ const VoiceAssistantInner = () => {
             console.error("[Mia] start: prepare failed", error);
             const message = getStartErrorMessage(error);
             setStatusMessage(message);
+            if (isMicDeniedError(error)) setMicDenied(true);
             toast({ variant: "destructive", title: t("voice.toast.couldntPrepareTitle"), description: message });
           });
         return;
@@ -1034,6 +1043,7 @@ const VoiceAssistantInner = () => {
       setVoiceReady(false);
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
+      if (isMicDeniedError(err)) setMicDenied(true);
       toast({
         variant: "destructive",
         title: t("voice.toast.couldntStartTitle"),
@@ -1059,15 +1069,54 @@ const VoiceAssistantInner = () => {
     });
   }, [conversation.status, conversation.isSpeaking]);
 
-  return <DraggableVoiceButton
-    isConnected={isConnected}
-    connecting={connecting}
-    preparingVoice={preparingVoice}
-    voiceReady={voiceReady}
-    statusMessage={statusMessage}
-    quota={quota}
-    onToggle={isConnected ? stop : start}
-  />;
+  return (
+    <>
+      <DraggableVoiceButton
+        isConnected={isConnected}
+        connecting={connecting}
+        preparingVoice={preparingVoice}
+        voiceReady={voiceReady}
+        statusMessage={statusMessage}
+        quota={quota}
+        onToggle={isConnected ? stop : start}
+      />
+      <Dialog open={micDenied} onOpenChange={setMicDenied}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MicOff className="w-5 h-5 text-destructive" />
+              {t("mic.deniedTitle")}
+            </DialogTitle>
+            <DialogDescription>{t("mic.deniedDialogDesc")}</DialogDescription>
+          </DialogHeader>
+          <button
+            onClick={async () => {
+              const opened = await micPermission.openAppSettings();
+              if (!opened) {
+                toast({ title: t("mic.webHowToTitle"), description: t("mic.webHowToDesc") });
+              }
+            }}
+            className="w-full h-11 rounded-xl bg-gradient-brand text-primary-foreground text-sm font-medium shadow-glow flex items-center justify-center gap-2"
+          >
+            <Settings2 className="w-4 h-4" />
+            {t("mic.openSettings")}
+          </button>
+          <button
+            onClick={async () => {
+              const next = await micPermission.request();
+              if (next === "granted") {
+                setMicDenied(false);
+                toast({ title: t("mic.grantedTitle") });
+              }
+            }}
+            className="w-full h-10 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t("mic.tryAgain")}
+          </button>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 };
 
 type DraggableProps = {

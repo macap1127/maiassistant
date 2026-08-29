@@ -303,6 +303,28 @@
     "continue": "继续",
     "skipMembers": "暂时跳过家庭成员"
   },
+  "mic": {
+    "title": "麦克风",
+    "statusOn": "麦克风已开启。Mia 能听到你说话。",
+    "statusOff": "麦克风已关闭。Mia 无法听到你说话。",
+    "statusUnknown": "尚未设置麦克风权限。",
+    "explainer": "Mia 使用麦克风，让你可以免提添加 groceries、待办事项和日历事件。",
+    "enable": "开启麦克风",
+    "openSettings": "打开设置",
+    "deniedTitle": "麦克风已关闭",
+    "deniedDesc": "麦克风权限被拒绝。请在设备设置中开启后才能与 Mia 对话。",
+    "deniedDialogDesc": "Mia 需要麦克风权限才能听到你。请在设备设置中开启，然后重试。",
+    "grantedTitle": "麦克风已开启",
+    "skipForNow": "暂时跳过",
+    "tryAgain": "重试",
+    "webHowToTitle": "在浏览器中开启",
+    "webHowToDesc": "点击地址栏中的锁形图标，将麦克风设为“允许”，然后刷新页面。",
+    "onboardingEyebrow": "最后一步",
+    "onboardingTitlePrefix": "开启",
+    "onboardingTitleAccent": "麦克风",
+    "onboardingDesc": "Mia 会聆听，让你免提添加 groceries、待办和事件。点击下方按钮，设备询问时选择“允许”。",
+    "onboardingHint": "你可以随时在设备设置中更改。没有麦克风也可以通过打字使用所有功能。"
+  },
   "pricing": {
     "back": "返回",
     "chooseYourPlan": "选择您的计划",

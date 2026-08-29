@@ -310,6 +310,28 @@
     "continue": "Kontynuuj",
     "skipMembers": "Pomiń członków rodziny na razie"
   },
+  "mic": {
+    "title": "Mikrofon",
+    "statusOn": "Mikrofon jest włączony. Mia Cię słyszy.",
+    "statusOff": "Mikrofon jest wyłączony. Mia Cię nie słyszy.",
+    "statusUnknown": "Dostęp do mikrofonu nie został jeszcze skonfigurowany.",
+    "explainer": "Mia używa mikrofonu, abyś mógł dodawać zakupy, zadania i wydarzenia w kalendarzu bez użycia rąk.",
+    "enable": "Włącz mikrofon",
+    "openSettings": "Otwórz ustawienia",
+    "deniedTitle": "Mikrofon jest wyłączony",
+    "deniedDesc": "Odmówiono dostępu do mikrofonu. Włącz go w ustawieniach urządzenia, aby rozmawiać z Mią.",
+    "deniedDialogDesc": "Mia potrzebuje dostępu do mikrofonu, aby Cię słyszeć. Włącz go w ustawieniach urządzenia i spróbuj ponownie.",
+    "grantedTitle": "Mikrofon włączony",
+    "skipForNow": "Pomiń na razie",
+    "tryAgain": "Spróbuj ponownie",
+    "webHowToTitle": "Włącz w przeglądarce",
+    "webHowToDesc": "Dotknij ikony kłódki na pasku adresu, ustaw Mikrofon na Zezwalaj i odśwież stronę.",
+    "onboardingEyebrow": "Ostatni krok",
+    "onboardingTitlePrefix": "Włącz",
+    "onboardingTitleAccent": "mikrofon",
+    "onboardingDesc": "Mia słucha, abyś mógł dodawać zakupy, zadania i wydarzenia bez użycia rąk. Dotknij poniżej i wybierz Zezwól, gdy urządzenie zapyta.",
+    "onboardingHint": "Możesz to zmienić w każdej chwili w ustawieniach urządzenia. Bez mikrofonu nadal możesz wszystko wpisywać."
+  },
   "pricing": {
     "back": "Wstecz",
     "chooseYourPlan": "Wybierz swój plan",

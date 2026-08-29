@@ -310,6 +310,28 @@
     "continue": "Continua",
     "skipMembers": "Salta i membri della famiglia per ora"
   },
+  "mic": {
+    "title": "Microfono",
+    "statusOn": "Il microfono è attivo. Mia può sentirti.",
+    "statusOff": "Il microfono è disattivato. Mia non può sentirti.",
+    "statusUnknown": "L'accesso al microfono non è ancora stato configurato.",
+    "explainer": "Mia usa il microfono per farti aggiungere spesa, attività ed eventi del calendario a mani libere.",
+    "enable": "Attiva microfono",
+    "openSettings": "Apri impostazioni",
+    "deniedTitle": "Il microfono è disattivato",
+    "deniedDesc": "L'accesso al microfono è stato negato. Attivalo nelle impostazioni del dispositivo per parlare con Mia.",
+    "deniedDialogDesc": "Mia ha bisogno del microfono per sentirti. Attivalo nelle impostazioni del dispositivo e riprova.",
+    "grantedTitle": "Microfono attivato",
+    "skipForNow": "Salta per ora",
+    "tryAgain": "Riprova",
+    "webHowToTitle": "Attivalo nel browser",
+    "webHowToDesc": "Tocca l'icona del lucchetto nella barra degli indirizzi, consenti il microfono e ricarica la pagina.",
+    "onboardingEyebrow": "Ultimo passo",
+    "onboardingTitlePrefix": "Attiva il",
+    "onboardingTitleAccent": "microfono",
+    "onboardingDesc": "Mia ascolta per farti aggiungere spesa, attività ed eventi a mani libere. Tocca qui sotto e scegli Consenti quando il dispositivo lo chiede.",
+    "onboardingHint": "Puoi cambiarlo in qualsiasi momento nelle impostazioni del dispositivo. Senza microfono puoi comunque usare tutto digitando."
+  },
   "pricing": {
     "back": "Indietro",
     "chooseYourPlan": "Scegli il tuo piano",
