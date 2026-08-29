@@ -310,6 +310,28 @@
     "continue": "Doorgaan",
     "skipMembers": "Gezinsleden voorlopig overslaan"
   },
+  "mic": {
+    "title": "Microfoon",
+    "statusOn": "Microfoon staat aan. Mia kan je horen.",
+    "statusOff": "Microfoon staat uit. Mia kan je niet horen.",
+    "statusUnknown": "Microfoontoegang is nog niet ingesteld.",
+    "explainer": "Mia gebruikt je microfoon zodat je boodschappen, taken en agenda-afspraken handsfree kunt toevoegen.",
+    "enable": "Microfoon inschakelen",
+    "openSettings": "Instellingen openen",
+    "deniedTitle": "Microfoon staat uit",
+    "deniedDesc": "Microfoontoegang is geweigerd. Schakel dit in bij de apparaatinstellingen om met Mia te praten.",
+    "deniedDialogDesc": "Mia heeft microfoontoegang nodig om je te horen. Zet het aan in de apparaatinstellingen en probeer opnieuw.",
+    "grantedTitle": "Microfoon ingeschakeld",
+    "skipForNow": "Nu overslaan",
+    "tryAgain": "Opnieuw proberen",
+    "webHowToTitle": "Inschakelen in je browser",
+    "webHowToDesc": "Tik op het slotje in de adresbalk, zet Microfoon op Toestaan en herlaad de pagina.",
+    "onboardingEyebrow": "Laatste stap",
+    "onboardingTitlePrefix": "Zet de",
+    "onboardingTitleAccent": "microfoon aan",
+    "onboardingDesc": "Mia luistert zodat je boodschappen, taken en afspraken handsfree kunt toevoegen. Tik hieronder en kies Toestaan als je apparaat het vraagt.",
+    "onboardingHint": "Je kunt dit altijd wijzigen in de apparaatinstellingen. Zonder microfoon kun je alles nog steeds typen."
+  },
   "pricing": {
     "back": "Terug",
     "chooseYourPlan": "Kies je abonnement",

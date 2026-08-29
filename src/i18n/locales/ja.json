@@ -303,6 +303,28 @@
     "continue": "続ける",
     "skipMembers": "家族メンバーの追加を今はスキップ"
   },
+  "mic": {
+    "title": "マイク",
+    "statusOn": "マイクがオンです。Miaが声を聞き取れます。",
+    "statusOff": "マイクがオフです。Miaは声を聞き取れません。",
+    "statusUnknown": "マイクへのアクセスがまだ設定されていません。",
+    "explainer": "Miaはマイクを使って、買い物・ToDo・カレンダー予定をハンズフリーで追加できるようにします。",
+    "enable": "マイクを有効にする",
+    "openSettings": "設定を開く",
+    "deniedTitle": "マイクがオフです",
+    "deniedDesc": "マイクへのアクセスが拒否されました。Miaと話すにはデバイスの設定で有効にしてください。",
+    "deniedDialogDesc": "Miaが声を聞くにはマイクへのアクセスが必要です。デバイスの設定でオンにしてから、もう一度お試しください。",
+    "grantedTitle": "マイクが有効になりました",
+    "skipForNow": "今はスキップ",
+    "tryAgain": "もう一度試す",
+    "webHowToTitle": "ブラウザで有効にする",
+    "webHowToDesc": "アドレスバーの鍵アイコンをタップし、マイクを「許可」に設定してページを再読み込みしてください。",
+    "onboardingEyebrow": "最後のステップ",
+    "onboardingTitlePrefix": "オンにする：",
+    "onboardingTitleAccent": "マイク",
+    "onboardingDesc": "Miaが聞き取ることで、買い物・ToDo・予定をハンズフリーで追加できます。下をタップし、デバイスが尋ねたら「許可」を選んでください。",
+    "onboardingHint": "デバイスの設定でいつでも変更できます。マイクがなくても、入力ですべて利用できます。"
+  },
   "pricing": {
     "back": "戻る",
     "chooseYourPlan": "プランを選択",

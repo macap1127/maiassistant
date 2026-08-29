@@ -310,6 +310,28 @@
     "continue": "Weiter",
     "skipMembers": "Familienmitglieder vorerst überspringen"
   },
+  "mic": {
+    "title": "Mikrofon",
+    "statusOn": "Mikrofon ist an. Mia kann dich hören.",
+    "statusOff": "Mikrofon ist aus. Mia kann dich nicht hören.",
+    "statusUnknown": "Mikrofonzugriff wurde noch nicht eingerichtet.",
+    "explainer": "Mia nutzt dein Mikrofon, damit du Einkäufe, Aufgaben und Kalendertermine freihändig hinzufügen kannst.",
+    "enable": "Mikrofon aktivieren",
+    "openSettings": "Einstellungen öffnen",
+    "deniedTitle": "Mikrofon ist aus",
+    "deniedDesc": "Der Mikrofonzugriff wurde abgelehnt. Aktiviere ihn in den Geräteeinstellungen, um mit Mia zu sprechen.",
+    "deniedDialogDesc": "Mia braucht Mikrofonzugriff, um dich zu hören. Aktiviere ihn in den Geräteeinstellungen und versuche es erneut.",
+    "grantedTitle": "Mikrofon aktiviert",
+    "skipForNow": "Vorerst überspringen",
+    "tryAgain": "Erneut versuchen",
+    "webHowToTitle": "Im Browser aktivieren",
+    "webHowToDesc": "Tippe auf das Schloss-Symbol in der Adressleiste, stelle Mikrofon auf Zulassen und lade die Seite neu.",
+    "onboardingEyebrow": "Letzter Schritt",
+    "onboardingTitlePrefix": "Aktiviere das",
+    "onboardingTitleAccent": "Mikrofon",
+    "onboardingDesc": "Mia hört zu, damit du Einkäufe, Aufgaben und Termine freihändig hinzufügen kannst. Tippe unten und wähle Zulassen, wenn dein Gerät fragt.",
+    "onboardingHint": "Du kannst dies jederzeit in den Geräteeinstellungen ändern. Ohne Mikrofon kannst du alles weiterhin per Tastatur nutzen."
+  },
   "pricing": {
     "back": "Zurück",
     "chooseYourPlan": "Wählen Sie Ihren Plan",

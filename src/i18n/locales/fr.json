@@ -310,6 +310,28 @@
     "continue": "Continuer",
     "skipMembers": "Passer les membres de la famille pour l'instant"
   },
+  "mic": {
+    "title": "Microphone",
+    "statusOn": "Le micro est activé. Mia peut vous entendre.",
+    "statusOff": "Le micro est désactivé. Mia ne peut pas vous entendre.",
+    "statusUnknown": "L'accès au micro n'a pas encore été configuré.",
+    "explainer": "Mia utilise votre micro pour vous permettre d'ajouter courses, tâches et événements du calendrier mains libres.",
+    "enable": "Activer le micro",
+    "openSettings": "Ouvrir les réglages",
+    "deniedTitle": "Le micro est désactivé",
+    "deniedDesc": "L'accès au micro a été refusé. Activez-le dans les réglages de l'appareil pour parler à Mia.",
+    "deniedDialogDesc": "Mia a besoin du micro pour vous entendre. Activez-le dans les réglages de l'appareil, puis réessayez.",
+    "grantedTitle": "Micro activé",
+    "skipForNow": "Ignorer pour l'instant",
+    "tryAgain": "Réessayer",
+    "webHowToTitle": "Activer dans votre navigateur",
+    "webHowToDesc": "Touchez l'icône de cadenas dans la barre d'adresse, autorisez le micro, puis rechargez la page.",
+    "onboardingEyebrow": "Dernière étape",
+    "onboardingTitlePrefix": "Activez le",
+    "onboardingTitleAccent": "microphone",
+    "onboardingDesc": "Mia écoute pour vous permettre d'ajouter courses, tâches et événements mains libres. Touchez ci-dessous et choisissez Autoriser quand l'appareil le demande.",
+    "onboardingHint": "Vous pouvez modifier cela à tout moment dans les réglages de l'appareil. Sans micro, vous pouvez tout utiliser en tapant."
+  },
   "pricing": {
     "back": "Retour",
     "chooseYourPlan": "Choisissez votre forfait",

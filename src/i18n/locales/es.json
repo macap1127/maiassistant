@@ -310,6 +310,28 @@
     "continue": "Continuar",
     "skipMembers": "Omitir miembros de la familia por ahora"
   },
+  "mic": {
+    "title": "Micrófono",
+    "statusOn": "El micrófono está activado. Mia puede oírte.",
+    "statusOff": "El micrófono está desactivado. Mia no puede oírte.",
+    "statusUnknown": "El acceso al micrófono aún no se ha configurado.",
+    "explainer": "Mia usa tu micrófono para que puedas añadir compras, tareas y eventos del calendario sin usar las manos.",
+    "enable": "Activar micrófono",
+    "openSettings": "Abrir ajustes",
+    "deniedTitle": "El micrófono está desactivado",
+    "deniedDesc": "Se rechazó el acceso al micrófono. Actívalo en los ajustes del dispositivo para hablar con Mia.",
+    "deniedDialogDesc": "Mia necesita acceso al micrófono para oírte. Actívalo en los ajustes del dispositivo y vuelve a intentarlo.",
+    "grantedTitle": "Micrófono activado",
+    "skipForNow": "Omitir por ahora",
+    "tryAgain": "Intentar de nuevo",
+    "webHowToTitle": "Actívalo en tu navegador",
+    "webHowToDesc": "Toca el icono del candado en la barra de direcciones, permite el micrófono y recarga la página.",
+    "onboardingEyebrow": "Último paso",
+    "onboardingTitlePrefix": "Activa el",
+    "onboardingTitleAccent": "micrófono",
+    "onboardingDesc": "Mia escucha para que puedas añadir compras, tareas y eventos sin usar las manos. Toca abajo y elige Permitir cuando tu dispositivo lo pregunte.",
+    "onboardingHint": "Puedes cambiar esto en cualquier momento en los ajustes del dispositivo. Sin micrófono puedes seguir usando todo escribiendo."
+  },
   "pricing": {
     "back": "Atrás",
     "chooseYourPlan": "Elige tu plan",

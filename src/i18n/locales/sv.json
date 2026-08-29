@@ -310,6 +310,28 @@
     "continue": "Fortsätt",
     "skipMembers": "Hoppa över familjemedlemmar för nu"
   },
+  "mic": {
+    "title": "Mikrofon",
+    "statusOn": "Mikrofonen är på. Mia kan höra dig.",
+    "statusOff": "Mikrofonen är av. Mia kan inte höra dig.",
+    "statusUnknown": "Mikrofonåtkomst har inte ställts in ännu.",
+    "explainer": "Mia använder din mikrofon så att du kan lägga till matvaror, uppgifter och kalenderhändelser handsfree.",
+    "enable": "Aktivera mikrofon",
+    "openSettings": "Öppna inställningar",
+    "deniedTitle": "Mikrofonen är av",
+    "deniedDesc": "Mikrofonåtkomst nekades. Aktivera den i enhetens inställningar för att prata med Mia.",
+    "deniedDialogDesc": "Mia behöver mikrofonåtkomst för att höra dig. Slå på den i enhetens inställningar och försök igen.",
+    "grantedTitle": "Mikrofon aktiverad",
+    "skipForNow": "Hoppa över för nu",
+    "tryAgain": "Försök igen",
+    "webHowToTitle": "Aktivera i din webbläsare",
+    "webHowToDesc": "Tryck på låsikonen i adressfältet, sätt Mikrofon till Tillåt och ladda om sidan.",
+    "onboardingEyebrow": "Sista steget",
+    "onboardingTitlePrefix": "Slå på",
+    "onboardingTitleAccent": "mikrofonen",
+    "onboardingDesc": "Mia lyssnar så att du kan lägga till matvaror, uppgifter och händelser handsfree. Tryck nedan och välj Tillåt när enheten frågar.",
+    "onboardingHint": "Du kan ändra detta när som helst i enhetens inställningar. Utan mikrofon kan du fortfarande använda allt genom att skriva."
+  },
   "pricing": {
     "back": "Tillbaka",
     "chooseYourPlan": "Välj din plan",

@@ -303,6 +303,28 @@
     "continue": "계속",
     "skipMembers": "지금은 가족 구성원 추가 건너뛰기"
   },
+  "mic": {
+    "title": "마이크",
+    "statusOn": "마이크가 켜져 있습니다. Mia가 말을 들을 수 있어요.",
+    "statusOff": "마이크가 꺼져 있습니다. Mia가 말을 들을 수 없어요.",
+    "statusUnknown": "마이크 접근 권한이 아직 설정되지 않았습니다.",
+    "explainer": "Mia는 마이크를 사용해 장보기, 할 일, 캘린더 일정을 핸즈프리로 추가할 수 있게 합니다.",
+    "enable": "마이크 켜기",
+    "openSettings": "설정 열기",
+    "deniedTitle": "마이크가 꺼져 있습니다",
+    "deniedDesc": "마이크 접근이 거부되었습니다. Mia와 대화하려면 기기 설정에서 허용하세요.",
+    "deniedDialogDesc": "Mia가 말을 들으려면 마이크 접근 권한이 필요합니다. 기기 설정에서 켠 후 다시 시도하세요.",
+    "grantedTitle": "마이크가 켜졌습니다",
+    "skipForNow": "지금은 건너뛰기",
+    "tryAgain": "다시 시도",
+    "webHowToTitle": "브라우저에서 켜기",
+    "webHowToDesc": "주소창의 자물쇠 아이콘을 눌러 마이크를 '허용'으로 설정한 후 페이지를 새로고침하세요.",
+    "onboardingEyebrow": "마지막 단계",
+    "onboardingTitlePrefix": "켜기:",
+    "onboardingTitleAccent": "마이크",
+    "onboardingDesc": "Mia가 들을 수 있으면 장보기, 할 일, 일정을 핸즈프리로 추가할 수 있어요. 아래를 누르고 기기가 묻는다면 '허용'을 선택하세요.",
+    "onboardingHint": "기기 설정에서 언제든 변경할 수 있습니다. 마이크 없이도 입력으로 모든 기능을 사용할 수 있습니다."
+  },
   "pricing": {
     "back": "뒤로",
     "chooseYourPlan": "요금제 선택",
