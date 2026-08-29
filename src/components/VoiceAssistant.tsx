@@ -1137,7 +1137,14 @@ function getBottomSafeArea() {
   if (typeof window === "undefined") return 104;
   // Prefer the real measured nav bar, it's the source of truth.
   const nav = document.querySelector("nav");
-  let navHeight = nav ? nav.getBoundingClientRect().height : 0;
+  if (nav) {
+    const rect = nav.getBoundingClientRect();
+    if (rect.height > 0) {
+      // Distance from the viewport bottom to the top of the nav bar + breathing room.
+      return Math.max(0, window.innerHeight - rect.top) + 16;
+    }
+  }
+  let navHeight = 0;
   if (!navHeight) {
     // Fall back to the CSS variable, converting rem/px correctly.
     const raw = getComputedStyle(document.documentElement)
@@ -1245,7 +1252,7 @@ const DraggableVoiceButton = ({ isConnected, connecting, preparingVoice, voiceRe
 
   return (
     <div
-      className="fixed z-40 flex flex-col gap-2 touch-none select-none"
+      className="fixed z-[60] flex flex-col gap-2 touch-none select-none"
       style={{ left: pos.x, top: pos.y, alignItems: onLeftHalf ? "flex-start" : "flex-end" }}
     >
       {showHint && (
