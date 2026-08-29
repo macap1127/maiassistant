@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Sparkles } from "lucide-react";
+import { Plus, Trash2, Sparkles, Mic, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import maiLogo from "@/assets/mai-logo.png";
 import { useTranslation } from "react-i18next";
+import { useMicPermission } from "@/lib/useMicPermission";
 
 interface Row {
   name: string;
