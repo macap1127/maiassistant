@@ -361,7 +361,7 @@ export default function ReceiptsPage() {
             <div className="space-y-3">
               <div className="bg-muted rounded-xl overflow-hidden">
                 {viewerUrl ? (
-                  <img src={viewerUrl} alt="receipt" className="w-full max-h-[60vh] object-contain" />
+                  <ZoomableImage src={viewerUrl} alt="receipt" className="w-full h-[60vh]" />
                 ) : (
                   <div className="aspect-[3/4] flex items-center justify-center"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
                 )}
