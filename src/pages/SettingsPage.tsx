@@ -8,6 +8,7 @@ import { getStripeEnvironment } from "@/lib/stripe";
 import { CreditCard, ExternalLink, Loader2, AlertTriangle, Clock, Sparkles, Languages, Trash2, Users, Plus, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { PushNotificationCard } from "@/components/PushNotificationCard";
+import { MicPermissionCard } from "@/components/MicPermissionCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
@@ -327,6 +328,8 @@ const SettingsPage = () => {
         </div>
 
         <FamilyMembersCard data={data} update={update} />
+
+        <MicPermissionCard />
 
         <PushNotificationCard />
 

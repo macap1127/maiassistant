@@ -29,6 +29,8 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
   const [ownerPhone, setOwnerPhone] = useState("");
   const [extras, setExtras] = useState<Row[]>([]);
   const [saving, setSaving] = useState(false);
+  const [step, setStep] = useState<"family" | "mic">("family");
+  const mic = useMicPermission();
 
   useEffect(() => {
     if (!user) return;
@@ -77,7 +79,10 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
       const { error } = await supabase.from("family_members").insert(rows);
       if (error) throw error;
       toast({ title: t("onboarding.allSetToast"), description: t("onboarding.welcomeToMia") });
-      onDone();
+      // Move to the microphone step instead of leaving onboarding, so users
+      // grant mic access before their first voice interaction.
+      setStep("mic");
+      return;
     } catch (e) {
       const msg = e instanceof Error ? e.message : t("onboarding.couldNotSave");
       toast({ variant: "destructive", title: t("onboarding.somethingWentWrong"), description: msg });
@@ -85,6 +90,10 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
       setSaving(false);
     }
   };
+
+  if (step === "mic") {
+    return <MicStep t={t} mic={mic} onDone={onDone} />;
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -196,6 +205,86 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
         >
           {t("onboarding.skipMembers")}
         </button>
+      </div>
+    </div>
+  );
+};
+
+interface MicStepProps {
+  t: (key: string) => string;
+  mic: ReturnType<typeof useMicPermission>;
+  onDone: () => void;
+}
+
+const MicStep = ({ t, mic, onDone }: MicStepProps) => {
+  const [busy, setBusy] = useState(false);
+
+  // If permission was already granted earlier, nothing to do.
+  useEffect(() => {
+    if (mic.status === "granted") onDone();
+  }, [mic.status, onDone]);
+
+  const handleEnable = async () => {
+    setBusy(true);
+    try {
+      const next = await mic.request();
+      if (next === "granted") {
+        toast({ title: t("mic.grantedTitle") });
+        onDone();
+        return;
+      }
+      if (next === "denied") {
+        toast({ variant: "destructive", title: t("mic.deniedTitle"), description: t("mic.deniedDesc") });
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="max-w-lg mx-auto w-full px-5 pt-10 pb-24 flex-1 flex flex-col">
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="relative mb-4">
+            <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center relative z-10">
+              <Mic className="w-9 h-9 text-primary" />
+            </div>
+            <div className="absolute inset-0 rounded-2xl blur-2xl bg-gradient-brand opacity-70 scale-110" />
+          </div>
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground font-mono-tech">
+            {t("mic.onboardingEyebrow")}
+          </p>
+          <h1 className="text-2xl font-display font-bold tracking-tight mt-1">
+            {t("mic.onboardingTitlePrefix")} <span className="text-gradient">{t("mic.onboardingTitleAccent")}</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-3 max-w-xs leading-relaxed">
+            {t("mic.onboardingDesc")}
+          </p>
+        </div>
+
+        <div className="bg-card border border-border rounded-2xl p-4 mb-6">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {t("mic.onboardingHint")}
+          </p>
+        </div>
+
+        <div className="mt-auto">
+          <button
+            onClick={handleEnable}
+            disabled={busy}
+            className="w-full h-12 rounded-2xl bg-gradient-brand text-primary-foreground font-medium text-sm shadow-glow disabled:opacity-50 mb-2 flex items-center justify-center gap-2"
+          >
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mic className="w-4 h-4" />}
+            {t("mic.enable")}
+          </button>
+          <button
+            onClick={onDone}
+            disabled={busy}
+            className="w-full h-10 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t("mic.skipForNow")}
+          </button>
+        </div>
       </div>
     </div>
   );
