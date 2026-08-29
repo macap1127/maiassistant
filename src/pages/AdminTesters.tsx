@@ -46,7 +46,7 @@ export default function AdminTesters() {
   const [saving, setSaving] = useState(false);
 
 
-  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
 
   async function load() {
     setLoading(true);

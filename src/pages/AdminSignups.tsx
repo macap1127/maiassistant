@@ -51,7 +51,7 @@ export default function AdminSignups() {
   const [q, setQ] = useState("");
   const [tier, setTier] = useState<string>("all");
 
-  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
 
   async function load() {
     setLoading(true);
