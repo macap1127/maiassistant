@@ -1,12 +1,14 @@
 import { useConversation, ConversationProvider } from "@elevenlabs/react";
 import { useTranslation } from "react-i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Mic, MicOff, Loader2 } from "lucide-react";
+import { Mic, MicOff, Loader2, Settings2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useNavigate } from "react-router-dom";
 import type { GroceryItem } from "@/lib/store";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useMicPermission } from "@/lib/useMicPermission";
 
 const AGENT_ID = "agent_1201krd1pcfder390aqp7v76q9tx";
 
@@ -34,6 +36,10 @@ const isGroceryLookup = (text: string) => /\b(grocery|groceries|shopping\s*list|
 
 const isTaskLookup = (text: string) =>
   /\b(to[-\s]?do\s*list|todo\s*list|task\s*list|tasks?|chores?|what\s+(?:do\s+)?(?:i|we)\s+(?:need|have)\s+to\s+do)\b/i.test(text);
+
+const isMicDeniedError = (err: unknown) =>
+  (err instanceof DOMException && (err.name === "NotAllowedError" || err.name === "SecurityError")) ||
+  (err instanceof Error && /permission|notallowed|denied/i.test(err.message));
 
 const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
   if (err instanceof DOMException && err.name === "NotFoundError") return "No microphone was found on this device.";
@@ -1034,6 +1040,7 @@ const VoiceAssistantInner = () => {
       setVoiceReady(false);
       const message = getStartErrorMessage(err);
       setStatusMessage(message);
+      if (isMicDeniedError(err)) setMicDenied(true);
       toast({
         variant: "destructive",
         title: t("voice.toast.couldntStartTitle"),
