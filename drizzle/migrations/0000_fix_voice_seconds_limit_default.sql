@@ -1,0 +1,1 @@
+ALTER TABLE public.households ALTER COLUMN voice_seconds_limit SET DEFAULT 1800;
