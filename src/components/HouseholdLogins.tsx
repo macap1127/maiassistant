@@ -39,6 +39,15 @@ export default function HouseholdLogins() {
   const [creating, setCreating] = useState(false);
   const [linking, setLinking] = useState(false);
 
+// On native (iOS/Android) window.location.origin is `http://localhost`, which
+// produces dead invite links in emails. Always use the public web origin.
+const PUBLIC_ORIGIN = "https://miafamilyassistant.com";
+const inviteOrigin = () =>
+  window.location.protocol.startsWith("http") &&
+  !/^localhost$|^127\.0\.0\.1$/.test(window.location.hostname)
+    ? window.location.origin
+    : PUBLIC_ORIGIN;
+
   const loadAll = async () => {
     if (!household) return;
     const { data: invs } = await supabase
@@ -95,7 +104,7 @@ export default function HouseholdLogins() {
     }
     setEmail("");
     void loadAll();
-    const link = `${window.location.origin}/invite/${data.invite_code}`;
+    const link = `${inviteOrigin()}/invite/${data.invite_code}`;
 
     if (trimmedEmail) {
       const inviterName =
@@ -184,7 +193,7 @@ export default function HouseholdLogins() {
   };
 
   const copyLink = (code: string) => {
-    const link = `${window.location.origin}/invite/${code}`;
+    const link = `${inviteOrigin()}/invite/${code}`;
     void navigator.clipboard.writeText(link);
     toast({ title: t("logins.toast.linkCopiedTitle"), description: link });
   };
