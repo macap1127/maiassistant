@@ -57,9 +57,11 @@ const HouseholdInviteEmail = ({
             </Text>
 
             <Section style={{ textAlign: 'center', margin: '28px 0' }}>
-              <Button style={button} href={inviteUrl}>
+              {/* Plain anchor instead of <Button> — AOL/Yahoo strip some
+                  button markup, which made the link unclickable. */}
+              <a style={button} href={safeUrl} target="_blank" rel="noopener noreferrer">
                 Accept invite
-              </Button>
+              </a>
             </Section>
 
             <Text style={smallLabel}>Your invite code</Text>
