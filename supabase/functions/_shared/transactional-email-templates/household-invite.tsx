@@ -34,6 +34,11 @@ const HouseholdInviteEmail = ({
 }: HouseholdInviteProps) => {
   const inviterLabel = inviterName ? inviterName : 'Someone'
   const householdLabel = householdName ? `"${householdName}"` : 'their household'
+  // Guard against localhost URLs coming from the native apps.
+  const safeUrl =
+    inviteUrl && /^https:\/\//.test(inviteUrl) && !inviteUrl.includes('localhost')
+      ? inviteUrl
+      : `${APP_URL}/invite/${inviteCode}`
 
   return (
     <Html lang="en" dir="ltr">
