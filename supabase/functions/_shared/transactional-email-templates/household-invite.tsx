@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import {
   Body,
-  Button,
+
   Container,
   Head,
   Heading,
@@ -34,6 +34,11 @@ const HouseholdInviteEmail = ({
 }: HouseholdInviteProps) => {
   const inviterLabel = inviterName ? inviterName : 'Someone'
   const householdLabel = householdName ? `"${householdName}"` : 'their household'
+  // Guard against localhost URLs coming from the native apps.
+  const safeUrl =
+    inviteUrl && /^https:\/\//.test(inviteUrl) && !inviteUrl.includes('localhost')
+      ? inviteUrl
+      : `${APP_URL}/invite/${inviteCode}`
 
   return (
     <Html lang="en" dir="ltr">
@@ -57,9 +62,11 @@ const HouseholdInviteEmail = ({
             </Text>
 
             <Section style={{ textAlign: 'center', margin: '28px 0' }}>
-              <Button style={button} href={inviteUrl}>
+              {/* Plain anchor instead of <Button> — AOL/Yahoo strip some
+                  button markup, which made the link unclickable. */}
+              <a style={button} href={safeUrl} target="_blank" rel="noopener noreferrer">
                 Accept invite
-              </Button>
+              </a>
             </Section>
 
             <Text style={smallLabel}>Your invite code</Text>
@@ -70,8 +77,8 @@ const HouseholdInviteEmail = ({
             <Text style={text}>
               Or paste this link into your browser:
               <br />
-              <Link href={inviteUrl} style={link}>
-                {inviteUrl}
+              <Link href={safeUrl} style={link}>
+                {safeUrl}
               </Link>
             </Text>
 
