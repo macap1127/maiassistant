@@ -1,7 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import {
   Body,
-  Button,
+
   Container,
   Head,
   Heading,
@@ -77,8 +77,8 @@ const HouseholdInviteEmail = ({
             <Text style={text}>
               Or paste this link into your browser:
               <br />
-              <Link href={inviteUrl} style={link}>
-                {inviteUrl}
+              <Link href={safeUrl} style={link}>
+                {safeUrl}
               </Link>
             </Text>
 
