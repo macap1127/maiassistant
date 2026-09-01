@@ -731,5 +731,26 @@
       "couldntPrepareTitle": "Impossible de préparer Mia",
       "couldntStartTitle": "Impossible de démarrer Mia"
     }
+  },
+  "invites": {
+    "eyebrow": "VOTRE FAMILLE",
+    "titlePrefix": "Invitez votre",
+    "titleAccent": "famille",
+    "subtitle": "Chaque personne invitée obtient son propre accès sur son téléphone — et vous voyez tous le même calendrier, les tâches, les courses et les reçus, instantanément.",
+    "step1": "Saisissez ci-dessous l'e-mail de chaque personne.",
+    "step2": "Elles reçoivent un e-mail de Mia avec un lien pour rejoindre.",
+    "step3": "Elles créent un mot de passe et rejoignent votre famille.",
+    "seatsLeft": "{{count}} invitation(s) restante(s) sur {{total}} avec {{label}}",
+    "emailPlaceholder": "famille@email.com",
+    "send": "Envoyer les invitations",
+    "sending": "Envoi…",
+    "skip": "Passer pour l'instant — vous pourrez inviter plus tard depuis l'onglet Famille",
+    "continue": "Continuer",
+    "noneEntered": "Ajoutez au moins une adresse e-mail.",
+    "invalidEmail": "Cela ne ressemble pas à un e-mail : {{email}}",
+    "sentCount": "{{count}} invitation(s) envoyée(s)",
+    "someFailed": "{{count}} invitation(s) n'ont pas pu être envoyées",
+    "inviteHeading": "Inviter la famille",
+    "difference": "Les membres de la famille sont juste des noms que Mia reconnaît. Les accès sont des personnes avec leur propre compte."
   }
 }

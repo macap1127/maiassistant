@@ -724,5 +724,26 @@
       "couldntPrepareTitle": "Mia를 준비할 수 없습니다",
       "couldntStartTitle": "Mia를 시작할 수 없습니다"
     }
+  },
+  "invites": {
+    "eyebrow": "우리 가족",
+    "titlePrefix": "가족을",
+    "titleAccent": "초대하세요",
+    "subtitle": "초대한 사람은 각자의 휴대폰에서 자신의 로그인을 갖게 되며, 같은 캘린더·할 일·장보기·영수증을 즉시 함께 봅니다.",
+    "step1": "아래에 각 사람의 이메일 주소를 입력하세요.",
+    "step2": "Mia가 보낸 참여 링크 이메일을 받습니다.",
+    "step3": "비밀번호를 만들면 바로 가족에 합류합니다.",
+    "seatsLeft": "{{label}} 플랜에서 초대 {{total}}개 중 {{count}}개 남음",
+    "emailPlaceholder": "family@email.com",
+    "send": "초대 보내기",
+    "sending": "보내는 중…",
+    "skip": "나중에 하기 — 가족 탭에서 언제든 초대할 수 있어요",
+    "continue": "계속",
+    "noneEntered": "이메일 주소를 최소 하나 입력하세요.",
+    "invalidEmail": "이메일 형식이 아닙니다: {{email}}",
+    "sentCount": "초대 {{count}}건을 보냈습니다",
+    "someFailed": "초대 {{count}}건을 보내지 못했습니다",
+    "inviteHeading": "가족 초대",
+    "difference": "가족 구성원은 Mia가 인식하는 이름일 뿐입니다. 로그인은 자기 계정이 있는 사람입니다."
   }
 }

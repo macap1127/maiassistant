@@ -731,5 +731,26 @@
       "couldntPrepareTitle": "No se pudo preparar a Mia",
       "couldntStartTitle": "No se pudo iniciar a Mia"
     }
+  },
+  "invites": {
+    "eyebrow": "TU FAMILIA",
+    "titlePrefix": "Invita a tu",
+    "titleAccent": "familia",
+    "subtitle": "Cada persona que invites tendrá su propio acceso en su propio teléfono, y todos verán el mismo calendario, tareas, compras y recibos al instante.",
+    "step1": "Escribe abajo el correo de cada persona.",
+    "step2": "Recibirán un correo de Mia con un enlace para unirse.",
+    "step3": "Crean una contraseña y entran directamente en tu familia.",
+    "seatsLeft": "Quedan {{count}} de {{total}} invitaciones en {{label}}",
+    "emailPlaceholder": "familia@correo.com",
+    "send": "Enviar invitaciones",
+    "sending": "Enviando…",
+    "skip": "Omitir por ahora: puedes invitar más tarde desde la pestaña Familia",
+    "continue": "Continuar",
+    "noneEntered": "Añade al menos un correo electrónico.",
+    "invalidEmail": "Esto no parece un correo: {{email}}",
+    "sentCount": "{{count}} invitación(es) enviada(s)",
+    "someFailed": "No se pudo(ieron) enviar {{count}} invitación(es)",
+    "inviteHeading": "Invitar a la familia",
+    "difference": "Los miembros de la familia son solo nombres que Mia reconoce. Los accesos son personas con su propia cuenta."
   }
 }

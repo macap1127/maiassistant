@@ -731,5 +731,26 @@
       "couldntPrepareTitle": "Mia konnte nicht vorbereitet werden",
       "couldntStartTitle": "Mia konnte nicht gestartet werden"
     }
+  },
+  "invites": {
+    "eyebrow": "DEINE FAMILIE",
+    "titlePrefix": "Lade deine",
+    "titleAccent": "Familie ein",
+    "subtitle": "Jede eingeladene Person erhält einen eigenen Zugang auf ihrem Handy – und ihr seht alle denselben Kalender, Aufgaben, Einkäufe und Belege, sofort.",
+    "step1": "Gib unten die E-Mail-Adresse jeder Person ein.",
+    "step2": "Sie erhalten eine E-Mail von Mia mit einem Beitrittslink.",
+    "step3": "Sie erstellen ein Passwort und landen direkt in eurer Familie.",
+    "seatsLeft": "{{count}} von {{total}} Einladungen übrig bei {{label}}",
+    "emailPlaceholder": "familie@email.com",
+    "send": "Einladungen senden",
+    "sending": "Senden…",
+    "skip": "Später – du kannst jederzeit über den Familien-Tab einladen",
+    "continue": "Weiter",
+    "noneEntered": "Füge mindestens eine E-Mail-Adresse hinzu.",
+    "invalidEmail": "Das sieht nicht nach einer E-Mail aus: {{email}}",
+    "sentCount": "{{count}} Einladung(en) gesendet",
+    "someFailed": "{{count}} Einladung(en) konnten nicht gesendet werden",
+    "inviteHeading": "Familie einladen",
+    "difference": "Familienmitglieder sind nur Namen, die Mia kennt. Zugänge sind Personen mit eigenem Konto."
   }
 }

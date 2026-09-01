@@ -6,6 +6,8 @@ import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import InviteEmailsForm from "@/components/InviteEmailsForm";
+import { inviteLinkFor } from "@/lib/householdInvites";
 
 interface InviteRow {
   id: string;
@@ -35,18 +37,8 @@ export default function HouseholdLogins() {
   const [invites, setInvites] = useState<InviteRow[]>([]);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [familyMembers, setFamilyMembers] = useState<FamilyMemberRow[]>([]);
-  const [email, setEmail] = useState("");
-  const [creating, setCreating] = useState(false);
   const [linking, setLinking] = useState(false);
 
-// On native (iOS/Android) window.location.origin is `http://localhost`, which
-// produces dead invite links in emails. Always use the public web origin.
-const PUBLIC_ORIGIN = "https://miafamilyassistant.com";
-const inviteOrigin = () =>
-  window.location.protocol.startsWith("http") &&
-  !/^localhost$|^127\.0\.0\.1$/.test(window.location.hostname)
-    ? window.location.origin
-    : PUBLIC_ORIGIN;
 
   const loadAll = async () => {
     if (!household) return;
@@ -80,78 +72,8 @@ const inviteOrigin = () =>
   const tier = TIER_INFO[household.subscriptionTier];
   const atLimit = household.memberCount >= tier.logins;
 
-  const createInvite = async () => {
-    if (!household.isOwner || !user) return;
-    if (atLimit) {
-      toast({ variant: "destructive", title: t("logins.toast.limitReachedTitle"), description: t("logins.toast.limitReachedDesc", { count: tier.logins, label: tier.label }) });
-      return;
-    }
-    setCreating(true);
-    const trimmedEmail = email.trim();
-    const { data, error } = await supabase
-      .from("household_invites")
-      .insert({
-        household_id: household.id,
-        invited_by: user.id,
-        email: trimmedEmail || null,
-      })
-      .select("id, invite_code, expires_at")
-      .single();
-    setCreating(false);
-    if (error) {
-      toast({ variant: "destructive", title: t("logins.toast.couldntCreateInviteTitle"), description: error.message });
-      return;
-    }
-    setEmail("");
-    void loadAll();
-    const link = `${inviteOrigin()}/invite/${data.invite_code}`;
+  const remainingSeats = Math.max(0, tier.logins - household.memberCount);
 
-    if (trimmedEmail) {
-      const inviterName =
-        (user.user_metadata as any)?.full_name ||
-        (user.user_metadata as any)?.name ||
-        user.email?.split("@")[0] ||
-        t("logins.aFamilyMember");
-      const expiresAt = new Date(data.expires_at).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      const { error: emailError } = await supabase.functions.invoke(
-        "send-transactional-email",
-        {
-          body: {
-            templateName: "household-invite",
-            recipientEmail: trimmedEmail,
-            idempotencyKey: `household-invite-${data.id}`,
-            templateData: {
-              inviterName,
-              householdName: household.name,
-              inviteCode: data.invite_code,
-              inviteUrl: link,
-              expiresAt,
-            },
-          },
-        },
-      );
-      if (emailError) {
-        void navigator.clipboard.writeText(link).catch(() => {});
-        toast({
-          variant: "destructive",
-          title: t("logins.toast.emailFailedTitle"),
-          description: t("logins.toast.emailFailedDesc", { message: emailError.message }),
-        });
-      } else {
-        toast({
-          title: t("logins.toast.inviteSentTitle"),
-          description: t("logins.toast.inviteSentDesc", { email: trimmedEmail }),
-        });
-      }
-    } else {
-      void navigator.clipboard.writeText(link).catch(() => {});
-      toast({ title: t("logins.toast.inviteLinkCopiedTitle"), description: link });
-    }
-  };
 
   const revoke = async (id: string) => {
     await supabase.from("household_invites").delete().eq("id", id);
@@ -193,7 +115,7 @@ const inviteOrigin = () =>
   };
 
   const copyLink = (code: string) => {
-    const link = `${inviteOrigin()}/invite/${code}`;
+    const link = inviteLinkFor(code);
     void navigator.clipboard.writeText(link);
     toast({ title: t("logins.toast.linkCopiedTitle"), description: link });
   };
@@ -286,21 +208,17 @@ const inviteOrigin = () =>
             </button>
 
           ) : (
-            <div className="flex gap-2 pt-3 border-t border-border">
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("logins.emailPlaceholder")}
-                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <button
-                onClick={createInvite}
-                disabled={creating}
-                className="bg-primary text-primary-foreground rounded-xl px-3 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                {t("logins.invite")}
-              </button>
+            <div className="pt-3 border-t border-border space-y-2">
+              <div className="flex items-center gap-2">
+                <UserPlus className="w-3.5 h-3.5 text-primary" />
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">{t("invites.inviteHeading")}</p>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">{t("invites.subtitle")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("invites.seatsLeft", { count: remainingSeats, total: tier.logins, label: tier.label })}
+              </p>
+              <InviteEmailsForm maxInvites={remainingSeats} onSent={loadAll} />
+              <p className="text-xs text-muted-foreground leading-relaxed">{t("invites.difference")}</p>
             </div>
           )}
         </>

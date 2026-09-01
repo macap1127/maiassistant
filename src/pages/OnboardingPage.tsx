@@ -6,6 +6,8 @@ import { toast } from "@/hooks/use-toast";
 import maiLogo from "@/assets/mai-logo.png";
 import { useTranslation } from "react-i18next";
 import { useMicPermission } from "@/lib/useMicPermission";
+import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
+import InviteFamilyStep from "@/components/InviteFamilyStep";
 
 interface Row {
   name: string;
@@ -29,8 +31,11 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
   const [ownerPhone, setOwnerPhone] = useState("");
   const [extras, setExtras] = useState<Row[]>([]);
   const [saving, setSaving] = useState(false);
-  const [step, setStep] = useState<"family" | "mic">("family");
+  const [step, setStep] = useState<"family" | "invite" | "mic">("family");
   const mic = useMicPermission();
+  const { household } = useHousehold();
+  // Only households with more than one seat (Family / Family Plus) can invite.
+  const canInvite = !!household && household.isOwner && TIER_INFO[household.subscriptionTier].logins > 1;
 
   useEffect(() => {
     if (!user) return;
@@ -79,9 +84,9 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
       const { error } = await supabase.from("family_members").insert(rows);
       if (error) throw error;
       toast({ title: t("onboarding.allSetToast"), description: t("onboarding.welcomeToMia") });
-      // Move to the microphone step instead of leaving onboarding, so users
-      // grant mic access before their first voice interaction.
-      setStep("mic");
+      // Invite step next (multi-seat plans only), then the microphone step so
+      // users grant mic access before their first voice interaction.
+      setStep(canInvite ? "invite" : "mic");
       return;
     } catch (e) {
       const msg = e instanceof Error ? e.message : t("onboarding.couldNotSave");
@@ -90,6 +95,10 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
       setSaving(false);
     }
   };
+
+  if (step === "invite") {
+    return <InviteFamilyStep onDone={() => setStep("mic")} />;
+  }
 
   if (step === "mic") {
     return <MicStep t={t} mic={mic} onDone={onDone} />;
