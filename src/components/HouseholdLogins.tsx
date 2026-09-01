@@ -115,7 +115,7 @@ export default function HouseholdLogins() {
   };
 
   const copyLink = (code: string) => {
-    const link = `${inviteOrigin()}/invite/${code}`;
+    const link = inviteLinkFor(code);
     void navigator.clipboard.writeText(link);
     toast({ title: t("logins.toast.linkCopiedTitle"), description: link });
   };
