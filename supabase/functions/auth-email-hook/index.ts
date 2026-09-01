@@ -21,6 +21,50 @@ const ROOT_DOMAIN = "miafamilyassistant.com"
 const FROM_DOMAIN = "miafamilyassistant.com"
 const SITE_URL = `https://${ROOT_DOMAIN}`
 
+// Browser-only pages on our own domain. Keeping every link in the email on the
+// app's domain avoids cross-domain redirects that some email clients block and
+// is a materially better inbox-placement signal.
+const PASSWORD_RESET_URL = `${SITE_URL}/web-reset-password`
+const CONFIRM_URL = `${SITE_URL}/auth/confirm`
+
+// Supabase's payload does not always carry token_hash; its verify URL carries
+// the same hashed token in `token_hash` or `token`, so fall back to that.
+function extractTokenHash(data: { token_hash?: string; url?: string }): string | undefined {
+  if (data.token_hash) return data.token_hash
+  if (!data.url) return undefined
+  try {
+    const u = new URL(data.url)
+    return u.searchParams.get('token_hash') || u.searchParams.get('token') || undefined
+  } catch {
+    return undefined
+  }
+}
+
+// Build the link the recipient clicks: prefer our own verification page.
+function actionUrlFor(
+  emailType: string,
+  data: { token_hash?: string; url?: string },
+): string {
+  const base = emailType === 'recovery' ? PASSWORD_RESET_URL : CONFIRM_URL
+  const tokenHash = extractTokenHash(data)
+  if (tokenHash) {
+    return `${base}?token_hash=${encodeURIComponent(tokenHash)}&type=${encodeURIComponent(
+      emailType === 'recovery' ? 'recovery' : emailType,
+    )}`
+  }
+  // Last resort: keep Supabase's verify link but force it back to our page.
+  try {
+    const u = new URL(data.url ?? '')
+    u.searchParams.set(
+      'redirect_to',
+      emailType === 'recovery' ? base : `${base}?type=${encodeURIComponent(emailType)}`,
+    )
+    return u.toString()
+  } catch {
+    return data.url ?? base
+  }
+}
+
 // Template mapping for preview mode
 const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
   signup: SignupEmail,
