@@ -4,10 +4,10 @@ import * as React from 'npm:react@18.3.1'
 
 import {
   Body,
+  Button,
   Container,
   Head,
   Heading,
-  Hr,
   Html,
   Preview,
   Text,
@@ -23,7 +23,9 @@ export const RecoveryEmail = ({
   confirmationUrl,
 }: RecoveryEmailProps) => (
   <Html lang="en" dir="ltr">
-    <Head />
+    <Head>
+      <style>{darkModeCss}</style>
+    </Head>
     <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
@@ -32,25 +34,12 @@ export const RecoveryEmail = ({
           We received a request to reset your password for {siteName}. Click
           the button below to choose a new password.
         </Text>
-        <a style={button} href={confirmationUrl} target="_blank" rel="noopener noreferrer">
+        <Button className="dm-btn" style={button} href={confirmationUrl}>
           Reset Password
-        </a>
-        <Text style={helpText}>
-          If the button does not open, copy and paste this link into your browser:
-        </Text>
-        <Text style={linkText}>
-          <a href={confirmationUrl} style={link}>{confirmationUrl}</a>
-        </Text>
+        </Button>
         <Text style={footer}>
           If you didn't request a password reset, you can safely ignore this
           email. Your password will not be changed.
-        </Text>
-        <Hr style={hr} />
-        <Text style={identity}>
-          {siteName} · <a href="https://miafamilyassistant.com" style={link}>miafamilyassistant.com</a>
-          <br />
-          You received this email because a password reset was requested for
-          this address at miafamilyassistant.com.
         </Text>
       </Container>
     </Body>
@@ -74,28 +63,20 @@ const text = {
   margin: '0 0 25px',
 }
 const button = {
-  display: 'inline-block',
   backgroundColor: '#000000',
   color: '#ffffff',
   fontSize: '14px',
+  border: '1px solid #000000',
   borderRadius: '8px',
   padding: '12px 20px',
   textDecoration: 'none',
-  fontWeight: 'bold',
 }
-const helpText = {
-  fontSize: '13px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '24px 0 6px',
-}
-const linkText = {
-  fontSize: '12px',
-  lineHeight: '1.5',
-  margin: '0',
-  wordBreak: 'break-all' as const,
-}
-const link = { color: '#2563eb', textDecoration: 'underline' }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
-const hr = { borderColor: '#eaeaea', margin: '24px 0 12px' }
-const identity = { fontSize: '11px', color: '#999999', lineHeight: '1.6', margin: '0' }
+// Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
+const darkModeCss = `
+  @media (prefers-color-scheme: dark) {
+    .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  }
+  [data-ogsc] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  [data-ogsb] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+`

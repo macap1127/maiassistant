@@ -4,55 +4,49 @@ import * as React from 'npm:react@18.3.1'
 
 import {
   Body,
+  Button,
   Container,
   Head,
   Heading,
-  Hr,
   Html,
+  Link,
   Preview,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
 interface InviteEmailProps {
   siteName: string
-  siteUrl?: string
+  siteUrl: string
   confirmationUrl: string
 }
 
 export const InviteEmail = ({
   siteName,
-  siteUrl = 'https://miafamilyassistant.com',
+  siteUrl,
   confirmationUrl,
 }: InviteEmailProps) => (
   <Html lang="en" dir="ltr">
-    <Head />
+    <Head>
+      <style>{darkModeCss}</style>
+    </Head>
     <Preview>You've been invited to join {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>You've been invited</Heading>
         <Text style={text}>
-          Someone in your household invited you to join them on {siteName}, a
-          shared calendar, to-do and grocery assistant for families.
+          You've been invited to join{' '}
+          <Link href={siteUrl} style={link}>
+            <strong>{siteName}</strong>
+          </Link>
+          . Click the button below to accept the invitation and create your
+          account.
         </Text>
-        <a style={button} href={confirmationUrl} target="_blank" rel="noopener noreferrer">
+        <Button className="dm-btn" style={button} href={confirmationUrl}>
           Accept Invitation
-        </a>
-        <Text style={helpText}>
-          If the button does not open, copy and paste this link into your browser:
-        </Text>
-        <Text style={linkText}>
-          <a href={confirmationUrl} style={link}>{confirmationUrl}</a>
-        </Text>
+        </Button>
         <Text style={footer}>
           If you weren't expecting this invitation, you can safely ignore this
           email.
-        </Text>
-        <Hr style={hr} />
-        <Text style={identity}>
-          {siteName} · <a href={siteUrl} style={link}>miafamilyassistant.com</a>
-          <br />
-          You received this email because someone invited this address to a
-          household at miafamilyassistant.com.
         </Text>
       </Container>
     </Body>
@@ -75,29 +69,22 @@ const text = {
   lineHeight: '1.5',
   margin: '0 0 25px',
 }
+const link = { color: 'inherit', textDecoration: 'underline' }
 const button = {
-  display: 'inline-block',
   backgroundColor: '#000000',
   color: '#ffffff',
   fontSize: '14px',
+  border: '1px solid #000000',
   borderRadius: '8px',
   padding: '12px 20px',
   textDecoration: 'none',
-  fontWeight: 'bold',
 }
-const helpText = {
-  fontSize: '13px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '24px 0 6px',
-}
-const linkText = {
-  fontSize: '12px',
-  lineHeight: '1.5',
-  margin: '0',
-  wordBreak: 'break-all' as const,
-}
-const link = { color: '#2563eb', textDecoration: 'underline' }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
-const hr = { borderColor: '#eaeaea', margin: '24px 0 12px' }
-const identity = { fontSize: '11px', color: '#999999', lineHeight: '1.6', margin: '0' }
+// Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
+const darkModeCss = `
+  @media (prefers-color-scheme: dark) {
+    .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  }
+  [data-ogsc] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+  [data-ogsb] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
+`
