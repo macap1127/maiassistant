@@ -731,5 +731,26 @@
       "couldntPrepareTitle": "Kon Mia niet voorbereiden",
       "couldntStartTitle": "Kon Mia niet starten"
     }
+  },
+  "invites": {
+    "eyebrow": "JOUW GEZIN",
+    "titlePrefix": "Nodig je",
+    "titleAccent": "gezin uit",
+    "subtitle": "Iedereen die je uitnodigt krijgt een eigen login op de eigen telefoon — en jullie zien allemaal dezelfde agenda, taken, boodschappen en bonnen, direct.",
+    "step1": "Typ hieronder het e-mailadres van elke persoon.",
+    "step2": "Ze krijgen een e-mail van Mia met een deelnamelink.",
+    "step3": "Ze maken een wachtwoord aan en komen meteen in jouw gezin.",
+    "seatsLeft": "Nog {{count}} van {{total}} uitnodigingen op {{label}}",
+    "emailPlaceholder": "gezin@email.com",
+    "send": "Uitnodigingen versturen",
+    "sending": "Versturen…",
+    "skip": "Nu overslaan — je kunt later uitnodigen via het tabblad Gezin",
+    "continue": "Doorgaan",
+    "noneEntered": "Voeg minstens één e-mailadres toe.",
+    "invalidEmail": "Dat lijkt geen e-mailadres: {{email}}",
+    "sentCount": "{{count}} uitnodiging(en) verstuurd",
+    "someFailed": "{{count}} uitnodiging(en) konden niet worden verstuurd",
+    "inviteHeading": "Gezin uitnodigen",
+    "difference": "Gezinsleden zijn alleen namen die Mia herkent. Logins zijn mensen met een eigen account."
   }
 }

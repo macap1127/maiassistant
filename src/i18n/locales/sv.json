@@ -731,5 +731,26 @@
       "couldntPrepareTitle": "Kunde inte förbereda Mia",
       "couldntStartTitle": "Kunde inte starta Mia"
     }
+  },
+  "invites": {
+    "eyebrow": "DIN FAMILJ",
+    "titlePrefix": "Bjud in din",
+    "titleAccent": "familj",
+    "subtitle": "Alla du bjuder in får en egen inloggning i sin egen telefon – och ni ser samma kalender, uppgifter, inköpslistor och kvitton direkt.",
+    "step1": "Skriv varje persons e-postadress nedan.",
+    "step2": "De får ett mejl från Mia med en länk för att gå med.",
+    "step3": "De skapar ett lösenord och hamnar direkt i din familj.",
+    "seatsLeft": "{{count}} av {{total}} inbjudningar kvar på {{label}}",
+    "emailPlaceholder": "familj@email.com",
+    "send": "Skicka inbjudningar",
+    "sending": "Skickar…",
+    "skip": "Hoppa över nu – du kan bjuda in senare från fliken Familj",
+    "continue": "Fortsätt",
+    "noneEntered": "Lägg till minst en e-postadress.",
+    "invalidEmail": "Det ser inte ut som en e-postadress: {{email}}",
+    "sentCount": "{{count}} inbjudning(ar) skickade",
+    "someFailed": "{{count}} inbjudning(ar) kunde inte skickas",
+    "inviteHeading": "Bjud in familjen",
+    "difference": "Familjemedlemmar är bara namn som Mia känner igen. Inloggningar är personer med eget konto."
   }
 }

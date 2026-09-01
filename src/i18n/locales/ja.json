@@ -724,5 +724,26 @@
       "couldntPrepareTitle": "Miaを準備できませんでした",
       "couldntStartTitle": "Miaを開始できませんでした"
     }
+  },
+  "invites": {
+    "eyebrow": "あなたの家族",
+    "titlePrefix": "家族を",
+    "titleAccent": "招待",
+    "subtitle": "招待した人はそれぞれのスマホで自分のログインを持ち、同じカレンダー・タスク・買い物リスト・レシートをすぐに共有できます。",
+    "step1": "下に各メンバーのメールアドレスを入力します。",
+    "step2": "Mia から参加リンク付きのメールが届きます。",
+    "step3": "パスワードを作成すると、すぐにあなたの家族に参加できます。",
+    "seatsLeft": "{{label}} プランで招待枠は残り {{count}}／{{total}}",
+    "emailPlaceholder": "family@email.com",
+    "send": "招待を送信",
+    "sending": "送信中…",
+    "skip": "あとで — 家族タブからいつでも招待できます",
+    "continue": "続ける",
+    "noneEntered": "メールアドレスを 1 つ以上入力してください。",
+    "invalidEmail": "メールアドレスの形式ではありません: {{email}}",
+    "sentCount": "{{count}} 件の招待を送信しました",
+    "someFailed": "{{count}} 件の招待を送信できませんでした",
+    "inviteHeading": "家族を招待",
+    "difference": "家族メンバーは Mia が認識する名前だけです。ログインは自分のアカウントを持つ人です。"
   }
 }

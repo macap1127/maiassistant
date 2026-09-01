@@ -724,5 +724,26 @@
       "couldntPrepareTitle": "无法准备 Mia",
       "couldntStartTitle": "无法启动 Mia"
     }
+  },
+  "invites": {
+    "eyebrow": "你的家庭",
+    "titlePrefix": "邀请你的",
+    "titleAccent": "家人",
+    "subtitle": "每位受邀成员都会在自己手机上拥有独立登录，大家即时看到同一个日历、待办、购物清单和收据。",
+    "step1": "在下面填写每个人的邮箱地址。",
+    "step2": "他们会收到 Mia 发送的加入链接邮件。",
+    "step3": "设置密码后即可直接加入你的家庭。",
+    "seatsLeft": "{{label}} 套餐还剩 {{count}}/{{total}} 个邀请名额",
+    "emailPlaceholder": "family@email.com",
+    "send": "发送邀请",
+    "sending": "发送中…",
+    "skip": "暂时跳过 — 之后可在“家庭”标签页邀请",
+    "continue": "继续",
+    "noneEntered": "请至少填写一个邮箱地址。",
+    "invalidEmail": "这看起来不是邮箱：{{email}}",
+    "sentCount": "已发送 {{count}} 个邀请",
+    "someFailed": "有 {{count}} 个邀请发送失败",
+    "inviteHeading": "邀请家人",
+    "difference": "家庭成员只是 Mia 认识的名字；登录账号是拥有自己账户、可以登录的人。"
   }
 }

@@ -731,5 +731,26 @@
       "couldntPrepareTitle": "Couldn't prepare Mia",
       "couldntStartTitle": "Couldn't start Mia"
     }
+  },
+  "invites": {
+    "eyebrow": "YOUR FAMILY",
+    "titlePrefix": "Invite your",
+    "titleAccent": "family",
+    "subtitle": "Everyone you invite gets their own login on their own phone — and you all see the same calendar, to-dos, groceries and receipts, instantly.",
+    "step1": "Type each person's email address below.",
+    "step2": "They get an email from Mia with a join link.",
+    "step3": "They create a password and land right in your family.",
+    "seatsLeft": "{{count}} of {{total}} invites left on {{label}}",
+    "emailPlaceholder": "family@email.com",
+    "send": "Send invites",
+    "sending": "Sending…",
+    "skip": "Skip for now — you can invite anyone later from the Family tab",
+    "continue": "Continue",
+    "noneEntered": "Add at least one email address.",
+    "invalidEmail": "That doesn't look like an email: {{email}}",
+    "sentCount": "{{count}} invite(s) sent",
+    "someFailed": "{{count}} invite(s) couldn't be sent",
+    "inviteHeading": "Invite family members",
+    "difference": "Family members are just names Mia recognises. Logins are people with their own account who can sign in."
   }
 }

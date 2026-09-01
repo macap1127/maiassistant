@@ -731,5 +731,26 @@
       "couldntPrepareTitle": "Nie udało się przygotować Mia",
       "couldntStartTitle": "Nie udało się uruchomić Mia"
     }
+  },
+  "invites": {
+    "eyebrow": "TWOJA RODZINA",
+    "titlePrefix": "Zaproś swoją",
+    "titleAccent": "rodzinę",
+    "subtitle": "Każda zaproszona osoba dostaje własne logowanie na swoim telefonie — i wszyscy widzicie ten sam kalendarz, zadania, zakupy i paragony, natychmiast.",
+    "step1": "Wpisz poniżej adres e-mail każdej osoby.",
+    "step2": "Otrzymają e-mail od Mii z linkiem dołączenia.",
+    "step3": "Tworzą hasło i od razu trafiają do Twojej rodziny.",
+    "seatsLeft": "Pozostało {{count}} z {{total}} zaproszeń w planie {{label}}",
+    "emailPlaceholder": "rodzina@email.com",
+    "send": "Wyślij zaproszenia",
+    "sending": "Wysyłanie…",
+    "skip": "Pomiń na razie — możesz zaprosić później w zakładce Rodzina",
+    "continue": "Dalej",
+    "noneEntered": "Dodaj co najmniej jeden adres e-mail.",
+    "invalidEmail": "To nie wygląda na e-mail: {{email}}",
+    "sentCount": "Wysłano zaproszenia: {{count}}",
+    "someFailed": "Nie udało się wysłać zaproszeń: {{count}}",
+    "inviteHeading": "Zaproś rodzinę",
+    "difference": "Członkowie rodziny to tylko imiona, które zna Mia. Logowania to osoby z własnym kontem."
   }
 }
