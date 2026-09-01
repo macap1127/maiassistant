@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { sendTemplateEmail } from '../_shared/transactional-email-templates/send-email.ts'
+import { TEMPLATES } from '../_shared/transactional-email-templates/registry.ts'
 
 const TEMPLATE = 'admin-signup-alert'
 
@@ -67,7 +68,7 @@ Deno.serve(async (req) => {
     if (error) console.error('Failed to write email_send_log', { code: error.code, message: error.message })
   }
 
-  const recipient = 'admin'
+  const recipient = TEMPLATES[TEMPLATE]?.to ?? 'admin'
 
   try {
     const result = await sendTemplateEmail(TEMPLATE, '', {
