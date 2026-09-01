@@ -8,6 +8,13 @@
       "when": 1788149575846,
       "tag": "0000_fix_voice_seconds_limit_default",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788233510637,
+      "tag": "0001_admin_alert_managed_email",
+      "breakpoints": true
     }
   ]
 }
