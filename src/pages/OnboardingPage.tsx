@@ -84,9 +84,9 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
       const { error } = await supabase.from("family_members").insert(rows);
       if (error) throw error;
       toast({ title: t("onboarding.allSetToast"), description: t("onboarding.welcomeToMia") });
-      // Move to the microphone step instead of leaving onboarding, so users
-      // grant mic access before their first voice interaction.
-      setStep("mic");
+      // Invite step next (multi-seat plans only), then the microphone step so
+      // users grant mic access before their first voice interaction.
+      setStep(canInvite ? "invite" : "mic");
       return;
     } catch (e) {
       const msg = e instanceof Error ? e.message : t("onboarding.couldNotSave");
@@ -95,6 +95,10 @@ const OnboardingPage = ({ householdId, onDone }: Props) => {
       setSaving(false);
     }
   };
+
+  if (step === "invite") {
+    return <InviteFamilyStep onDone={() => setStep("mic")} />;
+  }
 
   if (step === "mic") {
     return <MicStep t={t} mic={mic} onDone={onDone} />;
