@@ -6,6 +6,8 @@ import { useHousehold, TIER_INFO } from "@/lib/useHousehold";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import InviteEmailsForm from "@/components/InviteEmailsForm";
+import { inviteLinkFor } from "@/lib/householdInvites";
 
 interface InviteRow {
   id: string;
@@ -206,21 +208,17 @@ export default function HouseholdLogins() {
             </button>
 
           ) : (
-            <div className="flex gap-2 pt-3 border-t border-border">
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("logins.emailPlaceholder")}
-                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <button
-                onClick={createInvite}
-                disabled={creating}
-                className="bg-primary text-primary-foreground rounded-xl px-3 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                {t("logins.invite")}
-              </button>
+            <div className="pt-3 border-t border-border space-y-2">
+              <div className="flex items-center gap-2">
+                <UserPlus className="w-3.5 h-3.5 text-primary" />
+                <p className="text-xs uppercase tracking-wider text-muted-foreground">{t("invites.inviteHeading")}</p>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">{t("invites.subtitle")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("invites.seatsLeft", { count: remainingSeats, total: tier.logins, label: tier.label })}
+              </p>
+              <InviteEmailsForm maxInvites={remainingSeats} onSent={loadAll} />
+              <p className="text-xs text-muted-foreground leading-relaxed">{t("invites.difference")}</p>
             </div>
           )}
         </>
