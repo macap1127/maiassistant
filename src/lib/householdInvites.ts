@@ -49,24 +49,10 @@ export async function sendHouseholdInvite(opts: {
   const link = inviteLinkFor(data.invite_code);
   if (!email) return { ok: true, link };
 
-  const expiresAt = new Date(data.expires_at).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
+  const { error: emailError } = await supabase.functions.invoke("send-household-invite", {
     body: {
-      templateName: "household-invite",
-      recipientEmail: email,
-      idempotencyKey: `household-invite-${data.id}`,
-      templateData: {
-        inviterName: opts.inviterName || opts.fallbackInviterLabel,
-        householdName: opts.householdName,
-        inviteCode: data.invite_code,
-        inviteUrl: link,
-        expiresAt,
-      },
+      inviteId: data.id,
+      inviterName: opts.inviterName || opts.fallbackInviterLabel,
     },
   });
 
