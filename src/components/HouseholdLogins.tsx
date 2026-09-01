@@ -35,18 +35,8 @@ export default function HouseholdLogins() {
   const [invites, setInvites] = useState<InviteRow[]>([]);
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [familyMembers, setFamilyMembers] = useState<FamilyMemberRow[]>([]);
-  const [email, setEmail] = useState("");
-  const [creating, setCreating] = useState(false);
   const [linking, setLinking] = useState(false);
 
-// On native (iOS/Android) window.location.origin is `http://localhost`, which
-// produces dead invite links in emails. Always use the public web origin.
-const PUBLIC_ORIGIN = "https://miafamilyassistant.com";
-const inviteOrigin = () =>
-  window.location.protocol.startsWith("http") &&
-  !/^localhost$|^127\.0\.0\.1$/.test(window.location.hostname)
-    ? window.location.origin
-    : PUBLIC_ORIGIN;
 
   const loadAll = async () => {
     if (!household) return;
