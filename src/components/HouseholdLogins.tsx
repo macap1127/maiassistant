@@ -70,78 +70,8 @@ export default function HouseholdLogins() {
   const tier = TIER_INFO[household.subscriptionTier];
   const atLimit = household.memberCount >= tier.logins;
 
-  const createInvite = async () => {
-    if (!household.isOwner || !user) return;
-    if (atLimit) {
-      toast({ variant: "destructive", title: t("logins.toast.limitReachedTitle"), description: t("logins.toast.limitReachedDesc", { count: tier.logins, label: tier.label }) });
-      return;
-    }
-    setCreating(true);
-    const trimmedEmail = email.trim();
-    const { data, error } = await supabase
-      .from("household_invites")
-      .insert({
-        household_id: household.id,
-        invited_by: user.id,
-        email: trimmedEmail || null,
-      })
-      .select("id, invite_code, expires_at")
-      .single();
-    setCreating(false);
-    if (error) {
-      toast({ variant: "destructive", title: t("logins.toast.couldntCreateInviteTitle"), description: error.message });
-      return;
-    }
-    setEmail("");
-    void loadAll();
-    const link = `${inviteOrigin()}/invite/${data.invite_code}`;
+  const remainingSeats = Math.max(0, tier.logins - household.memberCount);
 
-    if (trimmedEmail) {
-      const inviterName =
-        (user.user_metadata as any)?.full_name ||
-        (user.user_metadata as any)?.name ||
-        user.email?.split("@")[0] ||
-        t("logins.aFamilyMember");
-      const expiresAt = new Date(data.expires_at).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      const { error: emailError } = await supabase.functions.invoke(
-        "send-transactional-email",
-        {
-          body: {
-            templateName: "household-invite",
-            recipientEmail: trimmedEmail,
-            idempotencyKey: `household-invite-${data.id}`,
-            templateData: {
-              inviterName,
-              householdName: household.name,
-              inviteCode: data.invite_code,
-              inviteUrl: link,
-              expiresAt,
-            },
-          },
-        },
-      );
-      if (emailError) {
-        void navigator.clipboard.writeText(link).catch(() => {});
-        toast({
-          variant: "destructive",
-          title: t("logins.toast.emailFailedTitle"),
-          description: t("logins.toast.emailFailedDesc", { message: emailError.message }),
-        });
-      } else {
-        toast({
-          title: t("logins.toast.inviteSentTitle"),
-          description: t("logins.toast.inviteSentDesc", { email: trimmedEmail }),
-        });
-      }
-    } else {
-      void navigator.clipboard.writeText(link).catch(() => {});
-      toast({ title: t("logins.toast.inviteLinkCopiedTitle"), description: link });
-    }
-  };
 
   const revoke = async (id: string) => {
     await supabase.from("household_invites").delete().eq("id", id);
