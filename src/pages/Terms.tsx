@@ -12,7 +12,8 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">1. Acceptance of Terms</h2>
           <p>
-            <strong>Mia Family Assistant (Sole Proprietor)</strong> ("Mia Family Assistant", "we", "us", "our") is the
+            <strong>AI Blue Ribbon LLC</strong>, doing business as <strong>Mia Family Assistant</strong> ("Mia Family
+            Assistant", "we", "us", "our"), is the
             provider and operator of this service ("the Service"). By accessing or using the Service, you agree to be
             bound by these Terms and Conditions. If you do not agree, do not
             use the Service.
@@ -41,7 +42,7 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">4. Notification Terms</h2>
           <p>
-            <strong>Program name:</strong> Mia Family Assistant Alerts (operated by Mia Family Assistant, Sole Proprietor).
+            <strong>Program name:</strong> Mia Family Assistant Alerts (operated by AI Blue Ribbon LLC, doing business as Mia Family Assistant).
           </p>
           <p>
             <strong>Program description:</strong> If you enable push notifications in the app, you consent to receive automated app notifications from us:
@@ -55,7 +56,7 @@ const Terms = () => {
             <strong>Message frequency:</strong> Notification frequency may vary based on reminder settings, scheduled events, and household activity.
           </p>
           <p>
-            <strong>One-way only:</strong> Notifications from Mia Family Assistant (Sole Proprietor) are automated reminders and alerts sent from the service to the opted-in user. Members cannot use the Service to send messages to each other.
+            <strong>One-way only:</strong> Notifications from AI Blue Ribbon LLC (Mia Family Assistant) are automated reminders and alerts sent from the service to the opted-in user. Members cannot use the Service to send messages to each other.
           </p>
           <p>
             <strong>Data rates may apply.</strong> Check your mobile plan for details. Delivery may depend on device, network, and operating system settings.
