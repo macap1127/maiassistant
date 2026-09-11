@@ -12,7 +12,8 @@ const Terms = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">1. Acceptance of Terms</h2>
           <p>
-            <strong>Mia Family Assistant (Sole Proprietor)</strong> ("Mia Family Assistant", "we", "us", "our") is the
+            <strong>AI Blue Ribbon LLC</strong>, doing business as <strong>Mia Family Assistant</strong> ("Mia Family
+            Assistant", "we", "us", "our"), is the
             provider and operator of this service ("the Service"). By accessing or using the Service, you agree to be
             bound by these Terms and Conditions. If you do not agree, do not
             use the Service.

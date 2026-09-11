@@ -12,7 +12,8 @@ const PrivacyPolicy = () => {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">1. Introduction</h2>
           <p>
-            <strong>Mia Family Assistant (Sole Proprietor)</strong> ("Mia Family Assistant", "we", "us", "our") is the
+            <strong>AI Blue Ribbon LLC</strong>, doing business as <strong>Mia Family Assistant</strong> ("Mia Family
+            Assistant", "we", "us", "our"), is the
             operating entity and data controller for this service. Mia is a household management application that helps
             families coordinate groceries, tasks, receipts, and calendar events. This Privacy Policy explains what
             information we collect, how we use it, who we share it with, and the choices you have.
