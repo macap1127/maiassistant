@@ -229,6 +229,10 @@ const VoiceAssistantInner = () => {
   const [activeHouseholdId, setActiveHouseholdId] = useState<string | null>(null);
   const [micDenied, setMicDenied] = useState(false);
   const micPermission = useMicPermission();
+  const getVoiceErrorMessage = (err: unknown, fallback?: unknown) => {
+    if (isProviderFailure(err, fallback)) return t("voice.status.providerUnavailable");
+    return getStartErrorMessage(err, fallback);
+  };
   const householdIdRef = useRef<string | null>(null);
   const assistantLanguageRef = useRef<string>("en");
   const userNameRef = useRef<string>("");
