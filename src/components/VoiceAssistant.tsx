@@ -869,7 +869,7 @@ const VoiceAssistantInner = () => {
         rest,
       });
       setConnecting(false);
-      const message = getStartErrorMessage(error, rest[0]);
+      const message = getVoiceErrorMessage(error, rest[0]);
       setStatusMessage(message);
       toast({ variant: "destructive", title: t("voice.toast.connectionErrorTitle"), description: message });
     },
