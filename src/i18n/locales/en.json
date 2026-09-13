@@ -703,7 +703,8 @@
       "preparing": "Preparing Mia… tap the microphone again in a moment.",
       "readyTapAgain": "Mia is ready. Tap the microphone again to start talking.",
       "connecting": "Connecting to Mia…",
-      "noAccess": "You don't have access to voice right now."
+      "noAccess": "You don't have access to voice right now.",
+      "providerUnavailable": "Voice assistant is temporarily unavailable — please try again shortly."
     },
     "quota": {
       "minutes": "{{used}}/{{limit}} min"
