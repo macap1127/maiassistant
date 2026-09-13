@@ -937,7 +937,7 @@ const VoiceAssistantInner = () => {
         })
         .catch((error) => {
           console.error("[Mia] start: voice access check failed", error);
-          const message = getStartErrorMessage(error);
+          const message = getVoiceErrorMessage(error);
           setStatusMessage(message);
           toast({ variant: "destructive", title: t("voice.toast.voiceUnavailableTitle"), description: message });
         })
