@@ -972,7 +972,7 @@ const VoiceAssistantInner = () => {
           })
           .catch((error) => {
             console.error("[Mia] start: prepare failed", error);
-            const message = getStartErrorMessage(error);
+            const message = getVoiceErrorMessage(error);
             setStatusMessage(message);
             if (isMicDeniedError(error)) setMicDenied(true);
             toast({ variant: "destructive", title: t("voice.toast.couldntPrepareTitle"), description: message });
