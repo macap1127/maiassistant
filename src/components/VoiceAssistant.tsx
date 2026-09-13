@@ -56,6 +56,19 @@ const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
 
 const getErrorMessage = (err: unknown) => (err instanceof Error ? err.message : "unknown error");
 
+const isProviderFailure = (err: unknown, fallback?: unknown) => {
+  const message = [err, fallback]
+    .map((value) =>
+      typeof value === "string"
+        ? value
+        : value instanceof Error || value instanceof DOMException
+          ? `${value.name} ${value.message}`
+          : ""
+    )
+    .join(" ");
+  return /elevenlabs|workspace|payment|billing|unresolved|provider|api key|quota|limit exceeded|rate limit|authentication|account/i.test(message);
+};
+
 type MaiMessage = {
   message?: string;
   source?: string;
@@ -216,6 +229,10 @@ const VoiceAssistantInner = () => {
   const [activeHouseholdId, setActiveHouseholdId] = useState<string | null>(null);
   const [micDenied, setMicDenied] = useState(false);
   const micPermission = useMicPermission();
+  const getVoiceErrorMessage = (err: unknown, fallback?: unknown) => {
+    if (isProviderFailure(err, fallback)) return t("voice.status.providerUnavailable");
+    return getStartErrorMessage(err, fallback);
+  };
   const householdIdRef = useRef<string | null>(null);
   const assistantLanguageRef = useRef<string>("en");
   const userNameRef = useRef<string>("");
@@ -852,7 +869,7 @@ const VoiceAssistantInner = () => {
         rest,
       });
       setConnecting(false);
-      const message = getStartErrorMessage(error, rest[0]);
+      const message = getVoiceErrorMessage(error, rest[0]);
       setStatusMessage(message);
       toast({ variant: "destructive", title: t("voice.toast.connectionErrorTitle"), description: message });
     },
@@ -920,7 +937,7 @@ const VoiceAssistantInner = () => {
         })
         .catch((error) => {
           console.error("[Mia] start: voice access check failed", error);
-          const message = getStartErrorMessage(error);
+          const message = getVoiceErrorMessage(error);
           setStatusMessage(message);
           toast({ variant: "destructive", title: t("voice.toast.voiceUnavailableTitle"), description: message });
         })
@@ -955,7 +972,7 @@ const VoiceAssistantInner = () => {
           })
           .catch((error) => {
             console.error("[Mia] start: prepare failed", error);
-            const message = getStartErrorMessage(error);
+            const message = getVoiceErrorMessage(error);
             setStatusMessage(message);
             if (isMicDeniedError(error)) setMicDenied(true);
             toast({ variant: "destructive", title: t("voice.toast.couldntPrepareTitle"), description: message });
@@ -1041,7 +1058,7 @@ const VoiceAssistantInner = () => {
       console.error("[Mia] start: synchronous throw", err);
       voiceConnectionRef.current = null;
       setVoiceReady(false);
-      const message = getStartErrorMessage(err);
+      const message = getVoiceErrorMessage(err);
       setStatusMessage(message);
       if (isMicDeniedError(err)) setMicDenied(true);
       toast({

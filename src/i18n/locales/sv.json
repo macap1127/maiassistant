@@ -703,7 +703,8 @@
       "preparing": "Förbereder Mia… tryck på mikrofonen igen om ett ögonblick.",
       "readyTapAgain": "Mia är redo. Tryck på mikrofonen igen för att börja prata.",
       "connecting": "Ansluter till Mia…",
-      "noAccess": "Du har inte tillgång till rösten just nu."
+      "noAccess": "Du har inte tillgång till rösten just nu.",
+      "providerUnavailable": "Röstassistenten är tillfälligt otillgänglig — försök igen om en stund."
     },
     "quota": {
       "minutes": "{{used}}/{{limit}} min"

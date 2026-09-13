@@ -696,7 +696,8 @@
       "preparing": "Mia를 준비하고 있어요… 잠시 후 마이크를 다시 탭하세요.",
       "readyTapAgain": "Mia가 준비되었습니다. 마이크를 다시 탭하여 말하기를 시작하세요.",
       "connecting": "Mia에 연결하는 중…",
-      "noAccess": "현재 음성 기능에 접근할 수 없습니다."
+      "noAccess": "현재 음성 기능에 접근할 수 없습니다.",
+      "providerUnavailable": "음성 비서를 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해 주세요."
     },
     "quota": {
       "minutes": "{{used}}/{{limit}} 분"

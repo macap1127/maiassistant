@@ -703,7 +703,8 @@
       "preparing": "Preparando a Mia… toca el micrófono de nuevo en un momento.",
       "readyTapAgain": "Mia está lista. Toca el micrófono de nuevo para empezar a hablar.",
       "connecting": "Conectando con Mia…",
-      "noAccess": "No tienes acceso a la voz en este momento."
+      "noAccess": "No tienes acceso a la voz en este momento.",
+      "providerUnavailable": "La asistente de voz no está disponible temporalmente. Inténtalo de nuevo en un momento."
     },
     "quota": {
       "minutes": "{{used}}/{{limit}} min"

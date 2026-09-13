@@ -703,7 +703,8 @@
       "preparing": "Przygotowuję Mia… stuknij mikrofon ponownie za chwilę.",
       "readyTapAgain": "Mia jest gotowa. Stuknij mikrofon ponownie, aby zacząć mówić.",
       "connecting": "Łączenie z Mia…",
-      "noAccess": "Nie masz teraz dostępu do głosu."
+      "noAccess": "Nie masz teraz dostępu do głosu.",
+      "providerUnavailable": "Asystent głosowy jest tymczasowo niedostępny — spróbuj ponownie za chwilę."
     },
     "quota": {
       "minutes": "{{used}}/{{limit}} min"

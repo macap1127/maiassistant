@@ -696,7 +696,8 @@
       "preparing": "正在准备 Mia…请稍后再次点击麦克风。",
       "readyTapAgain": "Mia 已准备好。再次点击麦克风开始交谈。",
       "connecting": "正在连接 Mia…",
-      "noAccess": "您目前无法使用语音功能。"
+      "noAccess": "您目前无法使用语音功能。",
+      "providerUnavailable": "语音助手暂时不可用，请稍后再试。"
     },
     "quota": {
       "minutes": "{{used}}/{{limit}} 分钟"
