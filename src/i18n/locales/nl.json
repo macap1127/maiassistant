@@ -703,7 +703,8 @@
       "preparing": "Mia wordt voorbereid… tik zo weer op de microfoon.",
       "readyTapAgain": "Mia is klaar. Tik opnieuw op de microfoon om te beginnen met praten.",
       "connecting": "Verbinden met Mia…",
-      "noAccess": "Je hebt op dit moment geen toegang tot spraak."
+      "noAccess": "Je hebt op dit moment geen toegang tot spraak.",
+      "providerUnavailable": "De spraakassistent is tijdelijk niet beschikbaar — probeer het zo opnieuw."
     },
     "quota": {
       "minutes": "{{used}}/{{limit}} min"

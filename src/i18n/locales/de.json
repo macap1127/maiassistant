@@ -703,7 +703,8 @@
       "preparing": "Mia wird vorbereitet… tippen Sie gleich erneut auf das Mikrofon.",
       "readyTapAgain": "Mia ist bereit. Tippen Sie erneut auf das Mikrofon, um zu sprechen.",
       "connecting": "Verbindung zu Mia wird hergestellt…",
-      "noAccess": "Sie haben derzeit keinen Zugriff auf die Sprachfunktion."
+      "noAccess": "Sie haben derzeit keinen Zugriff auf die Sprachfunktion.",
+      "providerUnavailable": "Die Sprachassistentin ist vorübergehend nicht verfügbar — bitte versuchen Sie es gleich erneut."
     },
     "quota": {
       "minutes": "{{used}}/{{limit}} Min."
