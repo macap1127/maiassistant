@@ -1058,7 +1058,7 @@ const VoiceAssistantInner = () => {
       console.error("[Mia] start: synchronous throw", err);
       voiceConnectionRef.current = null;
       setVoiceReady(false);
-      const message = getStartErrorMessage(err);
+      const message = getVoiceErrorMessage(err);
       setStatusMessage(message);
       if (isMicDeniedError(err)) setMicDenied(true);
       toast({
