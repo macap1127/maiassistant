@@ -56,6 +56,19 @@ const getStartErrorMessage = (err: unknown, fallback?: unknown) => {
 
 const getErrorMessage = (err: unknown) => (err instanceof Error ? err.message : "unknown error");
 
+const isProviderFailure = (err: unknown, fallback?: unknown) => {
+  const message = [err, fallback]
+    .map((value) =>
+      typeof value === "string"
+        ? value
+        : value instanceof Error || value instanceof DOMException
+          ? `${value.name} ${value.message}`
+          : ""
+    )
+    .join(" ");
+  return /elevenlabs|workspace|payment|billing|unresolved|provider|api key|quota|limit exceeded|rate limit|authentication|account/i.test(message);
+};
+
 type MaiMessage = {
   message?: string;
   source?: string;
