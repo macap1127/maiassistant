@@ -23,3 +23,5 @@ project_id = "kdrtvdkmggscyrkmxhws"
     verify_jwt = true
   [functions.send-household-invite]
     verify_jwt = true
+  [functions.send-signup-reminders]
+    verify_jwt = true
