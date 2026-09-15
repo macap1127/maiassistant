@@ -15,6 +15,13 @@
       "when": 1788233510637,
       "tag": "0001_admin_alert_managed_email",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789443407613,
+      "tag": "0002_schedule_signup_reminders",
+      "breakpoints": true
     }
   ]
 }
