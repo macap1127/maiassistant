@@ -39,8 +39,13 @@ Deno.serve(async (req) => {
 
   const authHeader = req.headers.get('Authorization')
   if (!authHeader?.startsWith('Bearer ')) return json({ error: 'Unauthorized' }, 401)
-  const claims = parseJwtClaims(authHeader.slice('Bearer '.length).trim())
-  if (claims?.role !== 'service_role') return json({ error: 'Forbidden' }, 403)
+  const bearer = authHeader.slice('Bearer '.length).trim()
+  const claims = parseJwtClaims(bearer)
+  // pg_cron calls with the project key; end-user tokens are rejected.
+  const role = claims?.role
+  if (role !== 'service_role' && role !== 'anon') {
+    return json({ error: 'Forbidden' }, 403)
+  }
 
   const admin = createClient(supabaseUrl, serviceKey)
 
