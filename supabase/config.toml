@@ -25,3 +25,6 @@ project_id = "kdrtvdkmggscyrkmxhws"
     verify_jwt = true
   [functions.send-signup-reminders]
     verify_jwt = false
+
+  [functions.grant-free-month]
+    verify_jwt = false

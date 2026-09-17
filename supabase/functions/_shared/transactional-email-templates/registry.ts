@@ -12,9 +12,11 @@ export interface TemplateEntry {
 import { template as householdInvite } from './household-invite.tsx'
 import { template as adminSignupAlert } from './admin-signup-alert.tsx'
 import { template as finishSignupReminder } from './finish-signup-reminder.tsx'
+import { template as freeMonthAccess } from './free-month-access.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'household-invite': householdInvite,
   'admin-signup-alert': adminSignupAlert,
   'finish-signup-reminder': finishSignupReminder,
+  'free-month-access': freeMonthAccess,
 }
