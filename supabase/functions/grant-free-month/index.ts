@@ -3,7 +3,7 @@ import { sendTemplateEmail } from '../_shared/transactional-email-templates/send
 
 const TEMPLATE = 'free-month-access'
 const FREE_DAYS = 30
-const FREE_TIER = 'family'
+const FREE_TIER = 'basic'
 
 function json(body: Record<string, unknown>, status = 200): Response {
   return new Response(JSON.stringify(body), {
