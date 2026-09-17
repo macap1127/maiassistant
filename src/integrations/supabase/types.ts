@@ -656,6 +656,7 @@ export type Database = {
     Functions: {
       accept_invite: { Args: { _code: string }; Returns: string }
       admin_active_users_today: { Args: never; Returns: Json }
+      admin_free_month_activity: { Args: never; Returns: Json }
       admin_signup_activity: { Args: never; Returns: Json }
       admin_tester_activity_today: { Args: never; Returns: Json }
       can_use_ai_calendar_import: {

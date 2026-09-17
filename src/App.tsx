@@ -25,6 +25,7 @@ import AuthConfirmPage from "./pages/AuthConfirmPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import AdminTesters from "./pages/AdminTesters";
 import AdminSignups from "./pages/AdminSignups";
+import AdminFreeMonth from "./pages/AdminFreeMonth";
 import { DeepLinkHandler } from "@/lib/deepLinks";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/about" element={<AboutPage />} />
               <Route path="/admin/testers" element={<AdminTesters />} />
               <Route path="/admin/signups" element={<AdminSignups />} />
+              <Route path="/admin/free-month" element={<AdminFreeMonth />} />
             </Route>
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<Terms />} />
