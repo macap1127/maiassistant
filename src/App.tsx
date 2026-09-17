@@ -25,6 +25,7 @@ import AuthConfirmPage from "./pages/AuthConfirmPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import AdminTesters from "./pages/AdminTesters";
 import AdminSignups from "./pages/AdminSignups";
+import AdminFreeMonth from "./pages/AdminFreeMonth";
 import { DeepLinkHandler } from "@/lib/deepLinks";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
