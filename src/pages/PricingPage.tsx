@@ -383,8 +383,6 @@ const PricingPage = () => {
                     ? t("pricing.openingStore")
                     : household && hasActiveSub
                     ? t("pricing.switchTo", { name: tierName })
-                    : household && !household.hasUsedTrial
-                    ? t("pricing.start7DayTrial")
                     : t("pricing.get", { name: tierName })}
                 </button>
               </div>
@@ -470,14 +468,7 @@ const PricingPage = () => {
               return (
                 <>
                   <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
-                    {household && !household.hasUsedTrial ? (
-                      <>
-                        <p className="text-foreground font-medium mb-1">{t("pricing.trialThenPrice", { amount, period })}</p>
-                        <p>{t("pricing.trialTerms", { interval: billingInterval })}</p>
-                      </>
-                    ) : (
-                      <p>{t("pricing.renewsTerms", { interval: billingInterval, amount })}</p>
-                    )}
+                    <p>{t("pricing.renewsTerms", { interval: billingInterval, amount })}</p>
                     <p className="mt-2">
                       {t("pricing.bySubscribingPrefix")}{" "}
                       <Link to="/terms" className="underline hover:text-foreground" target="_blank">{t("pricing.terms")}</Link> {t("pricing.and")}{" "}
