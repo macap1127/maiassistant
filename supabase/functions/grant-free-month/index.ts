@@ -4,6 +4,10 @@ import { sendTemplateEmail } from '../_shared/transactional-email-templates/send
 const TEMPLATE = 'free-month-access'
 const FREE_DAYS = 30
 const FREE_TIER = 'basic'
+// Only auto-grant to accounts that have been stuck at plan selection this long,
+// and never to accounts older than the upper bound (stale signups).
+const MIN_AGE_DAYS = 5
+const MAX_AGE_DAYS = 60
 
 function json(body: Record<string, unknown>, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -26,7 +30,7 @@ function parseJwtClaims(token: string): Record<string, unknown> | null {
   }
 }
 
-// Admin-triggered one-off: grants a free month to every household that signed
+// Scheduled daily job (also admin-triggerable): grants a free month to every household that signed
 // up but never chose a plan, then emails them about it.
 Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
@@ -46,8 +50,10 @@ Deno.serve(async (req) => {
 
   const { data: households, error: hhError } = await admin
     .from('households')
-    .select('id, owner_user_id, subscription_status')
+    .select('id, owner_user_id, subscription_status, created_at')
     .in('subscription_status', ['incomplete', 'incomplete_expired'])
+    .lt('created_at', new Date(Date.now() - MIN_AGE_DAYS * 86_400_000).toISOString())
+    .gt('created_at', new Date(Date.now() - MAX_AGE_DAYS * 86_400_000).toISOString())
 
   if (hhError) {
     console.error('Failed to load households', { message: hhError.message })
@@ -82,7 +88,7 @@ Deno.serve(async (req) => {
     const { data: userRes } = await admin.auth.admin.getUserById(hh.owner_user_id)
     const user = userRes?.user
     const email = user?.email?.toLowerCase()
-    if (!email || !user?.email_confirmed_at || testerEmails.has(email)) {
+    if (!email || !user?.email_confirmed_at || testerEmails.has(email) || already.has(email)) {
       skipped++
       continue
     }
@@ -105,11 +111,6 @@ Deno.serve(async (req) => {
       continue
     }
     granted++
-
-    if (already.has(email)) {
-      skipped++
-      continue
-    }
     already.add(email)
 
     const firstName =
