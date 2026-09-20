@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
         <header>
           <h1 className="text-3xl font-bold">Privacy Policy</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Last updated: June 27, 2026
+            Last updated: September 20, 2026
           </p>
         </header>
 
@@ -50,8 +50,9 @@ const PrivacyPolicy = () => {
               when you enable push notifications, used solely to deliver the reminders you opt in to.
             </li>
             <li>
-              <strong>Subscription & purchase info:</strong> Plan, status, and renewal dates. Payment card details are
-              handled by Stripe (web) or Apple/Google + RevenueCat (mobile). We never see or store full card numbers.
+              <strong>Trial, subscription &amp; purchase info:</strong> Trial start and end dates, selected plan, billing
+              interval, subscription status, and renewal dates. Payment card details are handled by Stripe (web) or
+              Apple/Google + RevenueCat (mobile). We never see or store full card numbers.
             </li>
             <li>
               <strong>Usage & diagnostic data:</strong> Basic technical information such as device type, app version,
@@ -66,7 +67,7 @@ const PrivacyPolicy = () => {
             <li>Authenticate you and keep your account secure.</li>
             <li>Operate the household features (groceries, tasks, calendar, receipts, family members).</li>
             <li>Send push notification reminders and household activity alerts only when you opt in.</li>
-            <li>Process subscriptions and renewals.</li>
+            <li>Manage the one-time seven-day trial and process subscriptions, payments, cancellations, and renewals.</li>
             <li>Improve reliability, prevent abuse, and comply with legal obligations.</li>
           </ul>
           <p>We do not sell your personal information and we do not use it for advertising.</p>
