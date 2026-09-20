@@ -16,18 +16,18 @@ import type { TemplateEntry } from './registry.ts'
 const SITE_NAME = 'Mia Family Assistant'
 const APP_URL = 'https://miafamilyassistant.com'
 
-interface FinishSignupProps {
+interface TrialEndedProps {
   firstName?: string
 }
 
-const FinishSignupReminderEmail = ({ firstName }: FinishSignupProps) => {
+const TrialEndedReminderEmail = ({ firstName }: TrialEndedProps) => {
   const greeting = firstName ? `Hi ${firstName},` : 'Hi there,'
   const url = `${APP_URL}/pricing`
 
   return (
     <Html lang="en" dir="ltr">
       <Head />
-      <Preview>Your Mia account is ready — just pick a plan to start</Preview>
+      <Preview>Your 7-day free trial has ended — choose a plan to continue</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
@@ -36,12 +36,12 @@ const FinishSignupReminderEmail = ({ firstName }: FinishSignupProps) => {
           </Section>
 
           <Section style={card}>
-            <Heading style={h1}>Your account is ready</Heading>
+            <Heading style={h1}>Your free trial has ended</Heading>
             <Text style={text}>{greeting}</Text>
             <Text style={text}>
-              Your free 7-day trial of {SITE_NAME} is running right now — you
-              can use everything, no card needed. When the 7 days are up,
-              choose a plan to keep going. It takes about a minute.
+              Your 7-day free trial of {SITE_NAME} is over. To keep your family
+              calendar, lists, receipts, and voice assistant, choose a plan —
+              it takes about a minute and you can cancel anytime.
             </Text>
 
             <Section style={{ textAlign: 'center', margin: '28px 0' }}>
@@ -62,18 +62,17 @@ const FinishSignupReminderEmail = ({ firstName }: FinishSignupProps) => {
           <Hr style={hr} />
 
           <Section>
-            <Heading style={h2}>What you get</Heading>
+            <Heading style={h2}>Everything stays where you left it</Heading>
             <Text style={bodyText}>
-              A shared family calendar, to-do lists, grocery lists, receipt
-              scanning, and a voice assistant that can add things for you — all
-              in sync across everyone in your household.
+              Your events, to-dos, grocery lists, and receipts are saved. Pick a
+              plan and you're right back where you were.
             </Text>
           </Section>
 
           <Text style={footer}>
             You're receiving this because you created an account at
             miafamilyassistant.com. AI Blue Ribbon LLC, doing business as{' '}
-            {SITE_NAME}. If you didn't sign up, you can ignore this email.
+            {SITE_NAME}.
           </Text>
         </Container>
       </Body>
@@ -82,9 +81,9 @@ const FinishSignupReminderEmail = ({ firstName }: FinishSignupProps) => {
 }
 
 export const template = {
-  component: FinishSignupReminderEmail,
-  subject: 'Finish setting up your Mia account',
-  displayName: 'Finish signup reminder',
+  component: TrialEndedReminderEmail,
+  subject: 'Your Mia free trial has ended — pick a plan to continue',
+  displayName: 'Trial ended reminder',
   previewData: { firstName: 'Alex' },
 } satisfies TemplateEntry
 

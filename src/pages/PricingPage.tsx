@@ -302,11 +302,6 @@ const PricingPage = () => {
               {t("pricing.billedThrough", { store: nativePlatform === "ios" ? t("pricing.appStore") : t("pricing.googlePlay") })}
             </p>
           )}
-          {household && !household.hasUsedTrial && (
-            <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
-              <Sparkles className="w-3 h-3" /> {t("pricing.sevenDayTrialBadge")}
-            </div>
-          )}
         </div>
 
         <div className="flex justify-center mb-6">
@@ -388,8 +383,6 @@ const PricingPage = () => {
                     ? t("pricing.openingStore")
                     : household && hasActiveSub
                     ? t("pricing.switchTo", { name: tierName })
-                    : household && !household.hasUsedTrial
-                    ? t("pricing.start7DayTrial")
                     : t("pricing.get", { name: tierName })}
                 </button>
               </div>
@@ -471,18 +464,10 @@ const PricingPage = () => {
             {(() => {
               const tier = tiers.find(t2 => t2.id === checkoutTier)!;
               const amount = billingInterval === "monthly" ? tier.monthly : tier.yearly;
-              const period = billingInterval === "monthly" ? t("pricing.month") : t("pricing.year");
               return (
                 <>
                   <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
-                    {household && !household.hasUsedTrial ? (
-                      <>
-                        <p className="text-foreground font-medium mb-1">{t("pricing.trialThenPrice", { amount, period })}</p>
-                        <p>{t("pricing.trialTerms", { interval: billingInterval })}</p>
-                      </>
-                    ) : (
-                      <p>{t("pricing.renewsTerms", { interval: billingInterval, amount })}</p>
-                    )}
+                    <p>{t("pricing.renewsTerms", { interval: billingInterval, amount })}</p>
                     <p className="mt-2">
                       {t("pricing.bySubscribingPrefix")}{" "}
                       <Link to="/terms" className="underline hover:text-foreground" target="_blank">{t("pricing.terms")}</Link> {t("pricing.and")}{" "}
