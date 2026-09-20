@@ -258,7 +258,7 @@
     "createYourAccount": "Créez votre compte",
     "resetYourPassword": "Réinitialisez votre mot de passe",
     "signInSubtitle": "Connectez-vous avec votre e-mail et mot de passe.",
-    "signUpSubtitle": "Entrez votre e-mail et un mot de passe pour créer un compte.",
+    "signUpSubtitle": "Créez votre compte pour démarrer automatiquement votre essai gratuit unique de 7 jours. Aucune carte ni sélection de forfait requise.",
     "forgotSubtitle": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.",
     "resetSentMessagePart1": "Si un compte existe pour",
     "resetSentMessagePart2": ", un lien de réinitialisation de mot de passe est en route. Vérifiez votre boîte de réception (et le dossier spam).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Retour",
     "chooseYourPlan": "Choisissez votre forfait",
-    "selectPlanToActivate": "Votre essai gratuit de 7 jours est terminé. Choisissez un forfait pour continuer à utiliser Mia : la facturation commence aujourd'hui et se renouvelle à chaque période. Annulez à tout moment.",
-    "startFreeTrial": "Choisissez le forfait adapté à votre famille. La facturation commence aujourd'hui et se renouvelle à chaque période. Annulez à tout moment.",
+    "selectPlanToActivate": "Votre essai gratuit unique de 7 jours est terminé. Choisissez un forfait pour continuer à utiliser Mia. Vous serez facturé aujourd’hui, puis votre abonnement se renouvellera automatiquement jusqu’à résiliation.",
+    "startFreeTrial": "Votre essai gratuit unique de 7 jours a commencé à la création du compte. Choisissez un forfait à tout moment : vous serez facturé immédiatement, puis l’abonnement se renouvellera automatiquement jusqu’à résiliation.",
     "billedThrough": "Facturé via {{store}}",
     "appStore": "l'App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Fermer",
     "month": "mois",
     "year": "an",
-    "renewsTerms": "Votre abonnement se renouvelle automatiquement chaque {{interval}} au tarif de {{amount}} $ jusqu'à annulation. Annulez à tout moment depuis Paramètres → Gérer la facturation.",
+    "renewsTerms": "Vous serez facturé ${{amount}} aujourd’hui. Votre abonnement se renouvelle automatiquement chaque {{interval}} au tarif de ${{amount}} jusqu’à résiliation. Aucun autre essai gratuit ne s’applique.",
     "bySubscribingPrefix": "En vous abonnant, vous acceptez nos",
     "terms": "Conditions",
     "privacyPolicy": "Politique de confidentialité",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "Une seule appli pour les courses, le calendrier, les tâches et les rappels de votre famille",
       "subtitle": "Gardez enfin toute votre famille organisée au même endroit. Listes partagées, plannings, tâches ménagères et aide de l'IA — tout fonctionne ensemble.",
-      "startTrial": "Essai gratuit de 7 jours",
+      "startTrial": "Créer un compte et commencer l’essai de 7 jours",
       "signIn": "Se connecter",
       "privacyNote": "Vos données restent privées et ne sont jamais vendues."
     },
@@ -749,5 +749,11 @@
     "someFailed": "{{count}} invitation(s) n'ont pas pu être envoyées",
     "inviteHeading": "Inviter la famille",
     "difference": "Les membres de la famille sont juste des noms que Mia reconnaît. Les accès sont des personnes avec leur propre compte."
+  },
+  "trial": {
+    "banner_one": "Il reste 1 jour d’essai gratuit — choisissez un forfait",
+    "banner_other": "Il reste {{count}} jours d’essai gratuit — choisissez un forfait",
+    "settingsActive_one": "Votre essai gratuit unique de 7 jours est actif — il reste 1 jour. Choisir un forfait déclenche immédiatement la facturation.",
+    "settingsActive_other": "Votre essai gratuit unique de 7 jours est actif — il reste {{count}} jours. Choisir un forfait déclenche immédiatement la facturation."
   }
 }

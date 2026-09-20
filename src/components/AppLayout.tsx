@@ -109,7 +109,7 @@ const AppLayout = () => {
     return <Navigate to="/" replace />;
   }
 
-  // A plan is required to use the app — every plan includes a 7-day free trial.
+  // Every new household gets one automatic 7-day trial. A plan is required after it ends.
   const needsPlan = !!household && !household.hasAccess;
   if (needsPlan && location.pathname !== "/pricing" && location.pathname !== "/settings") {
     return <Navigate to="/pricing" replace />;
@@ -136,9 +136,7 @@ const AppLayout = () => {
           onClick={() => navigate("/pricing")}
           className="w-full bg-primary/10 text-primary text-xs py-2 px-4 text-center border-b border-primary/20"
         >
-          {household.trialDaysLeft === 1
-            ? "1 day left in your free trial — choose a plan"
-            : `${household.trialDaysLeft ?? 0} days left in your free trial — choose a plan`}
+          {t("trial.banner", { count: household.trialDaysLeft ?? 0 })}
         </button>
       )}
       {/* Top header bar */}

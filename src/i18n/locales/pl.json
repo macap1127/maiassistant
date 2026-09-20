@@ -258,7 +258,7 @@
     "createYourAccount": "Utwórz swoje konto",
     "resetYourPassword": "Zresetuj swoje hasło",
     "signInSubtitle": "Zaloguj się przy użyciu adresu e-mail i hasła.",
-    "signUpSubtitle": "Podaj adres e-mail i hasło, aby utworzyć konto.",
+    "signUpSubtitle": "Utwórz konto, aby automatycznie rozpocząć jednorazowy 7-dniowy bezpłatny okres próbny. Karta ani wybór planu nie są wymagane.",
     "forgotSubtitle": "Podaj swój adres e-mail, a wyślemy Ci link do zresetowania hasła.",
     "resetSentMessagePart1": "Jeśli konto istnieje dla",
     "resetSentMessagePart2": ", link do zresetowania hasła jest już w drodze. Sprawdź skrzynkę odbiorczą (i folder spam).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Wstecz",
     "chooseYourPlan": "Wybierz swój plan",
-    "selectPlanToActivate": "Twój 7-dniowy bezpłatny okres próbny dobiegł końca. Wybierz plan, aby dalej korzystać z Mii — płatność rozpoczyna się dziś i odnawia się w każdym okresie. Anuluj w dowolnym momencie.",
-    "startFreeTrial": "Wybierz plan odpowiedni dla Twojej rodziny. Płatność rozpoczyna się dziś i odnawia się w każdym okresie. Anuluj w dowolnym momencie.",
+    "selectPlanToActivate": "Jednorazowy 7-dniowy bezpłatny okres próbny dobiegł końca. Wybierz plan, aby nadal korzystać z Mia. Opłata zostanie pobrana dzisiaj, a subskrypcja będzie odnawiana automatycznie do czasu anulowania.",
+    "startFreeTrial": "Jednorazowy 7-dniowy bezpłatny okres próbny rozpoczął się przy tworzeniu konta. Wybierz plan w dowolnym momencie; opłata zostanie pobrana od razu, a subskrypcja będzie odnawiana automatycznie do czasu anulowania.",
     "billedThrough": "Rozliczane przez {{store}}",
     "appStore": "App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Zamknij",
     "month": "miesiąc",
     "year": "rok",
-    "renewsTerms": "Twoja subskrypcja odnawia się automatycznie {{interval}} za ${{amount}}, dopóki jej nie anulujesz. Anuluj w dowolnym momencie w Ustawieniach → Zarządzaj rozliczeniami.",
+    "renewsTerms": "Dzisiaj zostanie pobrana opłata ${{amount}}. Subskrypcja odnawia się automatycznie co {{interval}} za ${{amount}} do czasu anulowania. Kolejny okres próbny nie przysługuje.",
     "bySubscribingPrefix": "Subskrybując, zgadzasz się na nasze",
     "terms": "Warunki",
     "privacyPolicy": "Politykę prywatności",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "Jedna aplikacja na zakupy, kalendarz, zadania i przypomnienia Twojej rodziny",
       "subtitle": "Wreszcie zorganizuj całą rodzinę w jednym miejscu. Wspólne listy, harmonogramy, obowiązki domowe i pomoc AI — wszystko działa razem.",
-      "startTrial": "Rozpocznij 7-dniowy bezpłatny okres próbny",
+      "startTrial": "Utwórz konto i rozpocznij 7-dniowy okres próbny",
       "signIn": "Zaloguj się",
       "privacyNote": "Twoje dane pozostają prywatne i nigdy nie są sprzedawane."
     },
@@ -749,5 +749,11 @@
     "someFailed": "Nie udało się wysłać zaproszeń: {{count}}",
     "inviteHeading": "Zaproś rodzinę",
     "difference": "Członkowie rodziny to tylko imiona, które zna Mia. Logowania to osoby z własnym kontem."
+  },
+  "trial": {
+    "banner_one": "Pozostał 1 dzień okresu próbnego — wybierz plan",
+    "banner_other": "Pozostało {{count}} dni okresu próbnego — wybierz plan",
+    "settingsActive_one": "Jednorazowy 7-dniowy okres próbny jest aktywny — pozostał 1 dzień. Wybór planu rozpoczyna płatne rozliczenie natychmiast.",
+    "settingsActive_other": "Jednorazowy 7-dniowy okres próbny jest aktywny — pozostało {{count}} dni. Wybór planu rozpoczyna płatne rozliczenie natychmiast."
   }
 }

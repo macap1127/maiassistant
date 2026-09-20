@@ -251,7 +251,7 @@
     "createYourAccount": "创建您的账户",
     "resetYourPassword": "重置您的密码",
     "signInSubtitle": "使用您的电子邮件和密码登录。",
-    "signUpSubtitle": "输入您的电子邮件和密码以创建账户。",
+    "signUpSubtitle": "创建账户即可自动开始一次性的 7 天免费试用，无需银行卡，也无需选择套餐。",
     "forgotSubtitle": "输入您的电子邮件，我们将发送重置链接给您。",
     "resetSentMessagePart1": "如果存在账户",
     "resetSentMessagePart2": "，密码重置链接即将发出。请查看您的收件箱（和垃圾邮件文件夹）。",
@@ -328,8 +328,8 @@
   "pricing": {
     "back": "返回",
     "chooseYourPlan": "选择您的计划",
-    "selectPlanToActivate": "您的7天免费试用已结束。请选择一个计划以继续使用 Mia——今天开始扣费，并按周期续订。随时可取消。",
-    "startFreeTrial": "选择适合您家庭的计划。今天开始扣费，并按周期续订。随时可取消。",
+    "selectPlanToActivate": "您一次性的 7 天免费试用已结束。请选择套餐以继续使用 Mia。今天将立即扣款，之后会按周期自动续订，直至取消。",
+    "startFreeTrial": "您一次性的 7 天免费试用已在创建账户时开始。可随时选择套餐；选择后会立即扣款，并自动续订直至取消。",
     "billedThrough": "通过{{store}}计费",
     "appStore": "App Store",
     "googlePlay": "Google Play",
@@ -420,7 +420,7 @@
     "close": "关闭",
     "month": "月",
     "year": "年",
-    "renewsTerms": "在您取消之前，您的订阅将按${{amount}}{{interval}}自动续订。可随时从设置→管理账单中取消。",
+    "renewsTerms": "今天将收取 ${{amount}}。此后每 {{interval}} 自动续订，费用为 ${{amount}}，直至取消。不会再次提供免费试用。",
     "bySubscribingPrefix": "订阅即表示您同意我们的",
     "terms": "条款",
     "privacyPolicy": "隐私政策",
@@ -477,7 +477,7 @@
     "hero": {
       "title": "一个应用管理您家庭的购物、日历、任务和提醒",
       "subtitle": "终于可以在一个地方管理好整个家庭。共享列表、日程、家务和 AI 帮助——一切协同运作。",
-      "startTrial": "开始 7 天免费试用",
+      "startTrial": "创建账户并开始 7 天试用",
       "signIn": "登录",
       "privacyNote": "您的数据保持私密，绝不出售。"
     },
@@ -742,5 +742,11 @@
     "someFailed": "有 {{count}} 个邀请发送失败",
     "inviteHeading": "邀请家人",
     "difference": "家庭成员只是 Mia 认识的名字；登录账号是拥有自己账户、可以登录的人。"
+  },
+  "trial": {
+    "banner_one": "免费试用还剩 1 天 — 选择套餐",
+    "banner_other": "免费试用还剩 {{count}} 天 — 选择套餐",
+    "settingsActive_one": "您一次性的 7 天免费试用正在进行 — 还剩 1 天。选择套餐后将立即开始付费。",
+    "settingsActive_other": "您一次性的 7 天免费试用正在进行 — 还剩 {{count}} 天。选择套餐后将立即开始付费。"
   }
 }

@@ -258,7 +258,7 @@
     "createYourAccount": "Crea tu cuenta",
     "resetYourPassword": "Restablece tu contraseña",
     "signInSubtitle": "Inicia sesión con tu correo y contraseña.",
-    "signUpSubtitle": "Introduce tu correo y una contraseña para crear una cuenta.",
+    "signUpSubtitle": "Crea tu cuenta para iniciar automáticamente tu única prueba gratuita de 7 días. No se requiere tarjeta ni elegir un plan.",
     "forgotSubtitle": "Introduce tu correo y te enviaremos un enlace de restablecimiento.",
     "resetSentMessagePart1": "Si existe una cuenta para",
     "resetSentMessagePart2": ", un enlace para restablecer la contraseña está en camino. Revisa tu bandeja de entrada (y la carpeta de spam).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Atrás",
     "chooseYourPlan": "Elige tu plan",
-    "selectPlanToActivate": "Tu prueba gratuita de 7 días ha terminado. Elige un plan para seguir usando Mia: el cobro comienza hoy y se renueva cada período. Cancela cuando quieras.",
-    "startFreeTrial": "Elige el plan que se adapte a tu familia. El cobro comienza hoy y se renueva cada período. Cancela cuando quieras.",
+    "selectPlanToActivate": "Tu única prueba gratuita de 7 días ha terminado. Elige un plan para seguir usando Mia. Se te cobrará hoy y tu suscripción se renovará automáticamente cada período hasta que la canceles.",
+    "startFreeTrial": "Tu única prueba gratuita de 7 días comenzó al crear tu cuenta. Elige un plan cuando quieras; se te cobrará de inmediato y la suscripción se renovará automáticamente hasta que la canceles.",
     "billedThrough": "Facturado a través de {{store}}",
     "appStore": "la App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Cerrar",
     "month": "mes",
     "year": "año",
-    "renewsTerms": "Tu suscripción se renueva automáticamente cada {{interval}} por ${{amount}} hasta que canceles. Cancela cuando quieras desde Configuración → Gestionar facturación.",
+    "renewsTerms": "Se te cobrarán ${{amount}} hoy. Tu suscripción se renueva automáticamente cada {{interval}} por ${{amount}} hasta que la canceles. No se aplica otra prueba gratuita.",
     "bySubscribingPrefix": "Al suscribirte, aceptas nuestros",
     "terms": "Términos",
     "privacyPolicy": "Política de Privacidad",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "Una app para las compras, el calendario, las tareas y los recordatorios de tu familia",
       "subtitle": "Por fin mantén a toda tu familia organizada en un solo lugar. Listas compartidas, horarios, tareas domésticas y ayuda de IA, todo trabajando en conjunto.",
-      "startTrial": "Iniciar prueba gratuita de 7 días",
+      "startTrial": "Crear cuenta e iniciar prueba de 7 días",
       "signIn": "Iniciar sesión",
       "privacyNote": "Tus datos permanecen privados y nunca se venden."
     },
@@ -749,5 +749,11 @@
     "someFailed": "No se pudo(ieron) enviar {{count}} invitación(es)",
     "inviteHeading": "Invitar a la familia",
     "difference": "Los miembros de la familia son solo nombres que Mia reconoce. Los accesos son personas con su propia cuenta."
+  },
+  "trial": {
+    "banner_one": "Queda 1 día de tu prueba gratuita — elige un plan",
+    "banner_other": "Quedan {{count}} días de tu prueba gratuita — elige un plan",
+    "settingsActive_one": "Tu única prueba gratuita de 7 días está activa — queda 1 día. Al elegir un plan, el cobro comienza de inmediato.",
+    "settingsActive_other": "Tu única prueba gratuita de 7 días está activa — quedan {{count}} días. Al elegir un plan, el cobro comienza de inmediato."
   }
 }

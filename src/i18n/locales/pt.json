@@ -258,7 +258,7 @@
     "createYourAccount": "Crie sua conta",
     "resetYourPassword": "Redefina sua senha",
     "signInSubtitle": "Entre com seu e-mail e senha.",
-    "signUpSubtitle": "Digite seu e-mail e uma senha para criar uma conta.",
+    "signUpSubtitle": "Crie sua conta para iniciar automaticamente seu único teste grátis de 7 dias. Não é necessário cartão nem escolher um plano.",
     "forgotSubtitle": "Digite seu e-mail e enviaremos um link de redefinição.",
     "resetSentMessagePart1": "Se existir uma conta para",
     "resetSentMessagePart2": ", um link de redefinição de senha está a caminho. Verifique sua caixa de entrada (e a pasta de spam).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Voltar",
     "chooseYourPlan": "Escolha seu plano",
-    "selectPlanToActivate": "Seu teste gratuito de 7 dias terminou. Escolha um plano para continuar usando a Mia: a cobrança começa hoje e se renova a cada período. Cancele quando quiser.",
-    "startFreeTrial": "Escolha o plano ideal para sua família. A cobrança começa hoje e se renova a cada período. Cancele quando quiser.",
+    "selectPlanToActivate": "Seu único teste grátis de 7 dias terminou. Escolha um plano para continuar usando a Mia. A cobrança será feita hoje e a assinatura será renovada automaticamente até o cancelamento.",
+    "startFreeTrial": "Seu único teste grátis de 7 dias começou ao criar a conta. Escolha um plano quando quiser; a cobrança será imediata e a assinatura será renovada automaticamente até o cancelamento.",
     "billedThrough": "Cobrado via {{store}}",
     "appStore": "a App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Fechar",
     "month": "mês",
     "year": "ano",
-    "renewsTerms": "Sua assinatura renova automaticamente a cada {{interval}} por ${{amount}} até que você cancele. Cancele quando quiser em Configurações → Gerenciar cobrança.",
+    "renewsTerms": "Você será cobrado em ${{amount}} hoje. Sua assinatura será renovada automaticamente a cada {{interval}} por ${{amount}} até o cancelamento. Não há outro teste grátis.",
     "bySubscribingPrefix": "Ao assinar, você concorda com nossos",
     "terms": "Termos",
     "privacyPolicy": "Política de Privacidade",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "Um único app para as compras, calendário, tarefas e lembretes da sua família",
       "subtitle": "Finalmente mantenha toda a sua família organizada num só lugar. Listas partilhadas, horários, tarefas domésticas e ajuda de IA — tudo a funcionar em conjunto.",
-      "startTrial": "Iniciar teste gratuito de 7 dias",
+      "startTrial": "Criar conta e iniciar teste de 7 dias",
       "signIn": "Iniciar sessão",
       "privacyNote": "Os seus dados permanecem privados e nunca são vendidos."
     },
@@ -749,5 +749,11 @@
     "someFailed": "{{count}} convite(s) não puderam ser enviados",
     "inviteHeading": "Convidar a família",
     "difference": "Membros da família são apenas nomes que a Mia reconhece. Acessos são pessoas com a própria conta."
+  },
+  "trial": {
+    "banner_one": "Resta 1 dia do teste grátis — escolha um plano",
+    "banner_other": "Restam {{count}} dias do teste grátis — escolha um plano",
+    "settingsActive_one": "Seu único teste grátis de 7 dias está ativo — resta 1 dia. Ao escolher um plano, a cobrança começa imediatamente.",
+    "settingsActive_other": "Seu único teste grátis de 7 dias está ativo — restam {{count}} dias. Ao escolher um plano, a cobrança começa imediatamente."
   }
 }

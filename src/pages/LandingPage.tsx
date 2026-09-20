@@ -165,7 +165,7 @@ const LandingPage = () => {
                 ))}
               </div>
               <p className="text-sm text-muted-foreground mt-4">
-                Built for busy families. 7-day trial on every plan.
+                Built for busy families. Every new family gets one automatic 7-day free trial — no card required.
               </p>
             </div>
           </div>

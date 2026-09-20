@@ -27,7 +27,7 @@ const FinishSignupReminderEmail = ({ firstName }: FinishSignupProps) => {
   return (
     <Html lang="en" dir="ltr">
       <Head />
-      <Preview>Your Mia account is ready — just pick a plan to start</Preview>
+      <Preview>Your automatic 7-day Mia trial is already active</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
@@ -39,9 +39,10 @@ const FinishSignupReminderEmail = ({ firstName }: FinishSignupProps) => {
             <Heading style={h1}>Your account is ready</Heading>
             <Text style={text}>{greeting}</Text>
             <Text style={text}>
-              Your free 7-day trial of {SITE_NAME} is running right now — you
-              can use everything, no card needed. When the 7 days are up,
-              choose a plan to keep going. It takes about a minute.
+              Your one-time 7-day free trial of {SITE_NAME} started automatically
+              when you created your account — no card or plan choice was needed.
+              When the trial ends, choose a plan to keep going. Selecting a plan
+              starts paid billing immediately and does not include another trial.
             </Text>
 
             <Section style={{ textAlign: 'center', margin: '28px 0' }}>
@@ -83,7 +84,7 @@ const FinishSignupReminderEmail = ({ firstName }: FinishSignupProps) => {
 
 export const template = {
   component: FinishSignupReminderEmail,
-  subject: 'Finish setting up your Mia account',
+  subject: 'Your 7-day Mia trial is active',
   displayName: 'Finish signup reminder',
   previewData: { firstName: 'Alex' },
 } satisfies TemplateEntry
