@@ -302,11 +302,6 @@ const PricingPage = () => {
               {t("pricing.billedThrough", { store: nativePlatform === "ios" ? t("pricing.appStore") : t("pricing.googlePlay") })}
             </p>
           )}
-          {household && !household.hasUsedTrial && (
-            <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
-              <Sparkles className="w-3 h-3" /> {t("pricing.sevenDayTrialBadge")}
-            </div>
-          )}
         </div>
 
         <div className="flex justify-center mb-6">
