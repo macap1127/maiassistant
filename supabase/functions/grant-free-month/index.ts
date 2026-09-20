@@ -48,9 +48,9 @@ Deno.serve(async (req) => {
 
   const admin = createClient(supabaseUrl, serviceKey)
 
-  const { data: households, error: hhError } = await admin
+  const { data: allHouseholds, error: hhError } = await admin
     .from('households')
-    .select('id, owner_user_id, subscription_status, created_at')
+    .select('id, owner_user_id, subscription_status, created_at, trial_ends_at')
     .in('subscription_status', ['incomplete', 'incomplete_expired'])
     .lt('created_at', new Date(Date.now() - MIN_AGE_DAYS * 86_400_000).toISOString())
     .gt('created_at', new Date(Date.now() - MAX_AGE_DAYS * 86_400_000).toISOString())
@@ -59,7 +59,12 @@ Deno.serve(async (req) => {
     console.error('Failed to load households', { message: hhError.message })
     return json({ error: 'Failed to load households' }, 500)
   }
+  // Never hand out the free month while the built-in 7-day trial is still running.
+  const households = (allHouseholds ?? []).filter(
+    (h) => !h.trial_ends_at || new Date(h.trial_ends_at as string).getTime() <= Date.now(),
+  )
   if (!households?.length) return json({ success: true, granted: 0, sent: 0, skipped: 0 })
+
 
   const { data: testers } = await admin.from('internal_testers').select('email')
   const testerEmails = new Set((testers ?? []).map((t) => String(t.email).toLowerCase()))
