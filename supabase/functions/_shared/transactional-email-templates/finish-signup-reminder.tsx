@@ -39,9 +39,9 @@ const FinishSignupReminderEmail = ({ firstName }: FinishSignupProps) => {
             <Heading style={h1}>Your account is ready</Heading>
             <Text style={text}>{greeting}</Text>
             <Text style={text}>
-              You created a {SITE_NAME} account but haven't chosen a plan yet,
-              so your family workspace isn't active. Choosing a plan takes about
-              a minute, and every plan starts with a 7-day free trial.
+              Your free 7-day trial of {SITE_NAME} is running right now — you
+              can use everything, no card needed. When the 7 days are up,
+              choose a plan to keep going. It takes about a minute.
             </Text>
 
             <Section style={{ textAlign: 'center', margin: '28px 0' }}>
