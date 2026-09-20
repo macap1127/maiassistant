@@ -83,9 +83,10 @@ Deno.serve(async (req) => {
 
     const customerId = await resolveOrCreateCustomer(stripe, { email: user.email, userId: user.id });
 
-    // 7-day free trial — one per household. Card is collected up-front; Stripe
-    // charges automatically at the end of the trial unless the user cancels.
-    const eligibleForTrial = !h.has_used_trial;
+    // No Stripe trial: every account already gets a free 7-day in-app trial at
+    // signup, so paid plans are charged immediately and renew each period.
+
+
 
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: stripePrice.id, quantity: 1 }],
