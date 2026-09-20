@@ -131,7 +131,18 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {household?.isInTrial && (
+        <button
+          onClick={() => navigate("/pricing")}
+          className="w-full bg-primary/10 text-primary text-xs py-2 px-4 text-center border-b border-primary/20"
+        >
+          {household.trialDaysLeft === 1
+            ? "1 day left in your free trial — choose a plan"
+            : `${household.trialDaysLeft ?? 0} days left in your free trial — choose a plan`}
+        </button>
+      )}
       {/* Top header bar */}
+
       <header
         className="fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border"
         style={{
