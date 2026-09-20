@@ -258,7 +258,7 @@
     "createYourAccount": "Crea il tuo account",
     "resetYourPassword": "Reimposta la tua password",
     "signInSubtitle": "Accedi con la tua email e password.",
-    "signUpSubtitle": "Inserisci la tua email e una password per creare un account.",
+    "signUpSubtitle": "Crea il tuo account per iniziare automaticamente la prova gratuita una tantum di 7 giorni. Non servono carta o scelta del piano.",
     "forgotSubtitle": "Inserisci la tua email e ti invieremo un link di reimpostazione.",
     "resetSentMessagePart1": "Se esiste un account per",
     "resetSentMessagePart2": ", un link per reimpostare la password è in arrivo. Controlla la tua casella di posta (e la cartella spam).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Indietro",
     "chooseYourPlan": "Scegli il tuo piano",
-    "selectPlanToActivate": "La tua prova gratuita di 7 giorni è terminata. Scegli un piano per continuare a usare Mia: l'addebito inizia oggi e si rinnova a ogni periodo. Annulla quando vuoi.",
-    "startFreeTrial": "Scegli il piano adatto alla tua famiglia. L'addebito inizia oggi e si rinnova a ogni periodo. Annulla quando vuoi.",
+    "selectPlanToActivate": "La prova gratuita una tantum di 7 giorni è terminata. Scegli un piano per continuare a usare Mia. L’addebito avviene oggi e l’abbonamento si rinnova automaticamente fino alla cancellazione.",
+    "startFreeTrial": "La prova gratuita una tantum di 7 giorni è iniziata alla creazione dell’account. Scegli un piano in qualsiasi momento: l’addebito è immediato e il rinnovo automatico fino alla cancellazione.",
     "billedThrough": "Fatturato tramite {{store}}",
     "appStore": "App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Chiudi",
     "month": "mese",
     "year": "anno",
-    "renewsTerms": "L'abbonamento si rinnova automaticamente ogni {{interval}} a ${{amount}} fino alla disdetta. Annulla in qualsiasi momento da Impostazioni → Gestisci fatturazione.",
+    "renewsTerms": "Ti verranno addebitati ${{amount}} oggi. L’abbonamento si rinnova automaticamente ogni {{interval}} a ${{amount}} fino alla cancellazione. Non si applica un’altra prova gratuita.",
     "bySubscribingPrefix": "Abbonandoti, accetti i nostri",
     "terms": "Termini",
     "privacyPolicy": "Informativa sulla privacy",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "Un'unica app per la spesa, il calendario, le attività e i promemoria della tua famiglia",
       "subtitle": "Finalmente tieni tutta la famiglia organizzata in un unico posto. Liste condivise, orari, faccende e aiuto dell'IA, tutto insieme.",
-      "startTrial": "Inizia la prova gratuita di 7 giorni",
+      "startTrial": "Crea account e inizia la prova di 7 giorni",
       "signIn": "Accedi",
       "privacyNote": "I tuoi dati restano privati e non vengono mai venduti."
     },
@@ -749,5 +749,11 @@
     "someFailed": "{{count}} invito/i non inviato/i",
     "inviteHeading": "Invita la famiglia",
     "difference": "I membri della famiglia sono solo nomi che Mia riconosce. Gli accessi sono persone con un proprio account."
+  },
+  "trial": {
+    "banner_one": "Resta 1 giorno di prova gratuita — scegli un piano",
+    "banner_other": "Restano {{count}} giorni di prova gratuita — scegli un piano",
+    "settingsActive_one": "La tua prova gratuita una tantum di 7 giorni è attiva — resta 1 giorno. Scegliendo un piano, l’addebito inizia subito.",
+    "settingsActive_other": "La tua prova gratuita una tantum di 7 giorni è attiva — restano {{count}} giorni. Scegliendo un piano, l’addebito inizia subito."
   }
 }

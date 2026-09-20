@@ -199,10 +199,7 @@ const SettingsPage = () => {
             {!isLocked && household.isInTrial && (
               <div className="flex items-start gap-2 bg-primary/10 text-foreground border border-primary/20 rounded-xl p-3 mb-3 text-xs">
                 <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-primary" />
-                <span>
-                  You're on a free trial — {household.trialDaysLeft ?? 0} day{household.trialDaysLeft === 1 ? "" : "s"} left.
-                  Subscribe anytime to keep your access.
-                </span>
+                <span>{t("trial.settingsActive", { count: household.trialDaysLeft ?? 0 })}</span>
               </div>
             )}
 

@@ -258,7 +258,7 @@
     "createYourAccount": "Maak je account aan",
     "resetYourPassword": "Reset je wachtwoord",
     "signInSubtitle": "Log in met je e-mail en wachtwoord.",
-    "signUpSubtitle": "Voer je e-mail en een wachtwoord in om een account aan te maken.",
+    "signUpSubtitle": "Maak je account aan om automatisch je eenmalige gratis proefperiode van 7 dagen te starten. Geen kaart of abonnementskeuze nodig.",
     "forgotSubtitle": "Voer je e-mail in en we sturen je een resetlink.",
     "resetSentMessagePart1": "Als er een account bestaat voor",
     "resetSentMessagePart2": ", is er een wachtwoord-resetlink onderweg. Controleer je inbox (en spammap).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Terug",
     "chooseYourPlan": "Kies je abonnement",
-    "selectPlanToActivate": "Je gratis proefperiode van 7 dagen is afgelopen. Kies een abonnement om Mia te blijven gebruiken — de betaling start vandaag en wordt elke periode verlengd. Altijd opzegbaar.",
-    "startFreeTrial": "Kies het abonnement dat bij je gezin past. De betaling start vandaag en wordt elke periode verlengd. Altijd opzegbaar.",
+    "selectPlanToActivate": "Je eenmalige gratis proefperiode van 7 dagen is afgelopen. Kies een abonnement om Mia te blijven gebruiken. Je betaalt vandaag en het abonnement wordt automatisch verlengd tot je opzegt.",
+    "startFreeTrial": "Je eenmalige gratis proefperiode van 7 dagen begon bij het aanmaken van je account. Kies wanneer je wilt een abonnement; de betaling start direct en wordt automatisch verlengd tot je opzegt.",
     "billedThrough": "Gefactureerd via {{store}}",
     "appStore": "de App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Sluiten",
     "month": "maand",
     "year": "jaar",
-    "renewsTerms": "Je abonnement wordt automatisch elke {{interval}} verlengd voor ${{amount}} totdat je opzegt. Altijd opzegbaar via Instellingen → Facturering beheren.",
+    "renewsTerms": "Vandaag wordt ${{amount}} in rekening gebracht. Je abonnement wordt elke {{interval}} automatisch verlengd voor ${{amount}} tot je opzegt. Er geldt geen extra proefperiode.",
     "bySubscribingPrefix": "Door je te abonneren, ga je akkoord met onze",
     "terms": "Voorwaarden",
     "privacyPolicy": "Privacybeleid",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "Eén app voor de boodschappen, agenda, taken en herinneringen van je gezin",
       "subtitle": "Houd eindelijk je hele gezin op één plek georganiseerd. Gedeelde lijsten, schema's, klusjes en AI-hulp — alles werkt samen.",
-      "startTrial": "Start 7-daagse gratis proefperiode",
+      "startTrial": "Account maken en proefperiode van 7 dagen starten",
       "signIn": "Inloggen",
       "privacyNote": "Je gegevens blijven privé en worden nooit verkocht."
     },
@@ -749,5 +749,11 @@
     "someFailed": "{{count}} uitnodiging(en) konden niet worden verstuurd",
     "inviteHeading": "Gezin uitnodigen",
     "difference": "Gezinsleden zijn alleen namen die Mia herkent. Logins zijn mensen met een eigen account."
+  },
+  "trial": {
+    "banner_one": "Nog 1 dag gratis — kies een abonnement",
+    "banner_other": "Nog {{count}} dagen gratis — kies een abonnement",
+    "settingsActive_one": "Je eenmalige gratis proefperiode van 7 dagen is actief — nog 1 dag. Bij het kiezen van een abonnement start de betaling direct.",
+    "settingsActive_other": "Je eenmalige gratis proefperiode van 7 dagen is actief — nog {{count}} dagen. Bij het kiezen van een abonnement start de betaling direct."
   }
 }

@@ -258,7 +258,7 @@
     "createYourAccount": "Konto erstellen",
     "resetYourPassword": "Passwort zurücksetzen",
     "signInSubtitle": "Melden Sie sich mit Ihrer E-Mail und Ihrem Passwort an.",
-    "signUpSubtitle": "Geben Sie Ihre E-Mail und ein Passwort ein, um ein Konto zu erstellen.",
+    "signUpSubtitle": "Erstellen Sie Ihr Konto, um automatisch Ihren einmaligen 7-tägigen Gratiszeitraum zu starten. Keine Karte und keine Tarifwahl erforderlich.",
     "forgotSubtitle": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Link zum Zurücksetzen.",
     "resetSentMessagePart1": "Falls ein Konto existiert für",
     "resetSentMessagePart2": ", ist ein Link zum Zurücksetzen des Passworts unterwegs. Prüfen Sie Ihren Posteingang (und den Spam-Ordner).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Zurück",
     "chooseYourPlan": "Wählen Sie Ihren Plan",
-    "selectPlanToActivate": "Ihre 7-tägige kostenlose Testphase ist beendet. Wählen Sie einen Plan, um Mia weiter zu nutzen – die Abrechnung beginnt heute und verlängert sich jede Periode. Jederzeit kündbar.",
-    "startFreeTrial": "Wählen Sie den Plan, der zu Ihrer Familie passt. Die Abrechnung beginnt heute und verlängert sich jede Periode. Jederzeit kündbar.",
+    "selectPlanToActivate": "Ihr einmaliger 7-tägiger Gratiszeitraum ist beendet. Wählen Sie einen Tarif, um Mia weiter zu nutzen. Die Abrechnung beginnt heute und verlängert sich automatisch, bis Sie kündigen.",
+    "startFreeTrial": "Ihr einmaliger 7-tägiger Gratiszeitraum begann mit der Kontoerstellung. Wählen Sie jederzeit einen Tarif; die Abrechnung beginnt sofort und verlängert sich automatisch bis zur Kündigung.",
     "billedThrough": "Abgerechnet über {{store}}",
     "appStore": "den App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Schließen",
     "month": "Monat",
     "year": "Jahr",
-    "renewsTerms": "Ihr Abonnement verlängert sich automatisch alle {{interval}} zum Preis von {{amount}} $, bis Sie kündigen. Jederzeit kündbar unter Einstellungen → Abrechnung verwalten.",
+    "renewsTerms": "Heute werden ${{amount}} berechnet. Ihr Abonnement verlängert sich automatisch alle {{interval}} für ${{amount}}, bis Sie kündigen. Es gilt kein weiterer Gratiszeitraum.",
     "bySubscribingPrefix": "Mit dem Abonnieren stimmen Sie unseren",
     "terms": "Nutzungsbedingungen",
     "privacyPolicy": "Datenschutzrichtlinie",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "Eine App für Einkäufe, Kalender, Aufgaben und Erinnerungen Ihrer Familie",
       "subtitle": "Halten Sie endlich Ihre ganze Familie an einem Ort organisiert. Gemeinsame Listen, Zeitpläne, Hausarbeiten und KI-Hilfe — alles arbeitet zusammen.",
-      "startTrial": "7-tägige kostenlose Testversion starten",
+      "startTrial": "Konto erstellen und 7 Tage gratis starten",
       "signIn": "Anmelden",
       "privacyNote": "Ihre Daten bleiben privat und werden niemals verkauft."
     },
@@ -749,5 +749,11 @@
     "someFailed": "{{count}} Einladung(en) konnten nicht gesendet werden",
     "inviteHeading": "Familie einladen",
     "difference": "Familienmitglieder sind nur Namen, die Mia kennt. Zugänge sind Personen mit eigenem Konto."
+  },
+  "trial": {
+    "banner_one": "Noch 1 Tag im Gratiszeitraum — Tarif wählen",
+    "banner_other": "Noch {{count}} Tage im Gratiszeitraum — Tarif wählen",
+    "settingsActive_one": "Ihr einmaliger 7-tägiger Gratiszeitraum ist aktiv — noch 1 Tag. Mit der Tarifwahl beginnt die Abrechnung sofort.",
+    "settingsActive_other": "Ihr einmaliger 7-tägiger Gratiszeitraum ist aktiv — noch {{count}} Tage. Mit der Tarifwahl beginnt die Abrechnung sofort."
   }
 }

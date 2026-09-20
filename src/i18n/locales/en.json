@@ -258,7 +258,7 @@
     "createYourAccount": "Create Your Account",
     "resetYourPassword": "Reset Your Password",
     "signInSubtitle": "Sign in with your email and password.",
-    "signUpSubtitle": "Enter your email and a password to create an account.",
+    "signUpSubtitle": "Create your account to start your one-time 7-day free trial automatically. No card or plan choice is required.",
     "forgotSubtitle": "Enter your email and we'll send you a reset link.",
     "resetSentMessagePart1": "If an account exists for",
     "resetSentMessagePart2": ", a password reset link is on its way. Check your inbox (and spam folder).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Back",
     "chooseYourPlan": "Choose your plan",
-    "selectPlanToActivate": "Your free 7-day trial has ended. Choose a plan to keep using Mia — billing starts today and renews each period. Cancel anytime.",
-    "startFreeTrial": "Choose the plan that fits your family. Billing starts today and renews each period. Cancel anytime.",
+    "selectPlanToActivate": "Your one-time 7-day free trial has ended. Choose a plan to keep using Mia. You will be charged today, and your subscription will renew automatically each period until canceled.",
+    "startFreeTrial": "Your one-time 7-day free trial started when you created your account. Choose a plan anytime; you will be charged immediately and your subscription will renew automatically until canceled.",
     "billedThrough": "Billed through {{store}}",
     "appStore": "the App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Close",
     "month": "month",
     "year": "year",
-    "renewsTerms": "Your subscription auto-renews {{interval}} at ${{amount}} until you cancel. Cancel anytime from Settings → Manage billing.",
+    "renewsTerms": "You will be charged ${{amount}} today. Your subscription renews automatically every {{interval}} at ${{amount}} until canceled. No additional free trial applies.",
     "bySubscribingPrefix": "By subscribing, you agree to our",
     "terms": "Terms",
     "privacyPolicy": "Privacy Policy",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "One app for your family's groceries, calendar, tasks, and reminders",
       "subtitle": "Finally keep your whole family organized in one place. Shared lists, schedules, chores, and AI help — all working together.",
-      "startTrial": "Start 7-Day Free Trial",
+      "startTrial": "Create Account & Start 7-Day Trial",
       "signIn": "Sign in",
       "privacyNote": "Your data stays private and is never sold."
     },
@@ -749,5 +749,11 @@
     "someFailed": "{{count}} invite(s) couldn't be sent",
     "inviteHeading": "Invite family members",
     "difference": "Family members are just names Mia recognises. Logins are people with their own account who can sign in."
+  },
+  "trial": {
+    "banner_one": "1 day left in your free trial — choose a plan",
+    "banner_other": "{{count}} days left in your free trial — choose a plan",
+    "settingsActive_one": "Your one-time 7-day free trial is active — 1 day left. Choosing a plan starts paid billing immediately.",
+    "settingsActive_other": "Your one-time 7-day free trial is active — {{count}} days left. Choosing a plan starts paid billing immediately."
   }
 }

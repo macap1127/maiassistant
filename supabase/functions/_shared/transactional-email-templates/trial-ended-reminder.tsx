@@ -40,8 +40,10 @@ const TrialEndedReminderEmail = ({ firstName }: TrialEndedProps) => {
             <Text style={text}>{greeting}</Text>
             <Text style={text}>
               Your 7-day free trial of {SITE_NAME} is over. To keep your family
-              calendar, lists, receipts, and voice assistant, choose a plan —
-              it takes about a minute and you can cancel anytime.
+              calendar, lists, receipts, and voice assistant, choose a plan.
+              Payment begins immediately when you select a plan, there is no
+              second trial, and your subscription renews automatically at the
+              displayed interval until canceled.
             </Text>
 
             <Section style={{ textAlign: 'center', margin: '28px 0' }}>

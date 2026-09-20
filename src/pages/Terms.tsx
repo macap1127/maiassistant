@@ -5,7 +5,7 @@ const Terms = () => {
         <header>
           <h1 className="text-3xl font-bold">Terms and Conditions</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Last updated: June 27, 2026
+            Last updated: September 20, 2026
           </p>
         </header>
 
@@ -82,7 +82,28 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">5. Acceptable Use</h2>
+          <h2 className="text-xl font-semibold">5. Free Trial, Subscriptions, Billing, Renewal, and Cancellation</h2>
+          <p>
+            Each new household or account receives one automatic seven-day free trial when the account is created. No
+            payment card or plan selection is required to begin this trial. The trial does not automatically enroll you
+            in a paid subscription and is limited to one trial per household or account.
+          </p>
+          <p>
+            When the trial ends, access to paid features is limited until the household owner selects a subscription
+            plan. Selecting a plan authorizes an immediate charge for the first monthly or yearly billing period at the
+            price displayed during purchase. Selecting a plan does not provide a second free trial.
+          </p>
+          <p>
+            Paid subscriptions renew automatically at the selected monthly or yearly interval until canceled. Web
+            purchases are processed by Stripe; purchases made in the mobile apps are processed by Apple or Google. You
+            may cancel through the billing provider used for your purchase. Cancellation stops future renewals, and
+            access generally continues through the end of the paid billing period, subject to the applicable provider's
+            terms and refund policies.
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">6. Acceptable Use</h2>
           <p>You agree not to:</p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Use the Service for any unlawful purpose.</li>
@@ -93,7 +114,7 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">6. User Content</h2>
+          <h2 className="text-xl font-semibold">7. User Content</h2>
           <p>
             You retain ownership of any content you create in the Service
             (groceries, tasks, events, etc.). You grant us a limited license to
@@ -102,7 +123,7 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">7. Termination</h2>
+          <h2 className="text-xl font-semibold">8. Termination</h2>
           <p>
             We may suspend or terminate your access to the Service at any time
             if you violate these Terms. You may stop using the Service and
@@ -111,7 +132,7 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">8. Disclaimers</h2>
+          <h2 className="text-xl font-semibold">9. Disclaimers</h2>
           <p>
             The Service is provided "as is" without warranties of any kind. We
             do not guarantee that the Service will be uninterrupted, error-free,
@@ -120,7 +141,7 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">9. Limitation of Liability</h2>
+          <h2 className="text-xl font-semibold">10. Limitation of Liability</h2>
           <p>
             To the maximum extent permitted by law, Mia Family Assistant shall not be
             liable for any indirect, incidental, special, or consequential
@@ -130,7 +151,7 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">10. Changes to These Terms</h2>
+          <h2 className="text-xl font-semibold">11. Changes to These Terms</h2>
           <p>
             We may update these Terms from time to time. Continued use of the
             Service after changes are posted constitutes acceptance of the
@@ -139,7 +160,7 @@ const Terms = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">11. Contact</h2>
+          <h2 className="text-xl font-semibold">12. Contact</h2>
           <p>
             Questions about these Terms? Contact us at{" "}
             <a className="underline" href="mailto:support@miafamilyassistant.com">

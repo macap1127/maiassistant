@@ -258,7 +258,7 @@
     "createYourAccount": "Skapa ditt konto",
     "resetYourPassword": "Återställ ditt lösenord",
     "signInSubtitle": "Logga in med din e-postadress och ditt lösenord.",
-    "signUpSubtitle": "Ange din e-postadress och ett lösenord för att skapa ett konto.",
+    "signUpSubtitle": "Skapa ditt konto för att automatiskt starta din kostnadsfria engångsperiod på 7 dagar. Inget kort eller planval krävs.",
     "forgotSubtitle": "Ange din e-postadress så skickar vi en återställningslänk.",
     "resetSentMessagePart1": "Om ett konto finns för",
     "resetSentMessagePart2": " är en länk för lösenordsåterställning på väg. Kolla din inkorg (och skräppost).",
@@ -335,8 +335,8 @@
   "pricing": {
     "back": "Tillbaka",
     "chooseYourPlan": "Välj din plan",
-    "selectPlanToActivate": "Din 7-dagars gratis provperiod har tagit slut. Välj en plan för att fortsätta använda Mia — betalningen startar idag och förnyas varje period. Avbryt när som helst.",
-    "startFreeTrial": "Välj den plan som passar din familj. Betalningen startar idag och förnyas varje period. Avbryt när som helst.",
+    "selectPlanToActivate": "Din kostnadsfria engångsperiod på 7 dagar är slut. Välj en plan för att fortsätta använda Mia. Du debiteras idag och abonnemanget förnyas automatiskt tills du säger upp det.",
+    "startFreeTrial": "Din kostnadsfria engångsperiod på 7 dagar började när kontot skapades. Välj en plan när som helst; du debiteras omedelbart och abonnemanget förnyas automatiskt tills du säger upp det.",
     "billedThrough": "Faktureras via {{store}}",
     "appStore": "App Store",
     "googlePlay": "Google Play",
@@ -427,7 +427,7 @@
     "close": "Stäng",
     "month": "månad",
     "year": "år",
-    "renewsTerms": "Din prenumeration förnyas automatiskt {{interval}} för ${{amount}} tills du avbryter. Avbryt när som helst i Inställningar → Hantera fakturering.",
+    "renewsTerms": "Du debiteras ${{amount}} idag. Abonnemanget förnyas automatiskt varje {{interval}} för ${{amount}} tills du säger upp det. Ingen ytterligare provperiod gäller.",
     "bySubscribingPrefix": "Genom att prenumerera godkänner du våra",
     "terms": "Villkor",
     "privacyPolicy": "integritetspolicy",
@@ -484,7 +484,7 @@
     "hero": {
       "title": "En app för din familjs matinköp, kalender, uppgifter och påminnelser",
       "subtitle": "Håll äntligen hela din familj organiserad på ett ställe. Delade listor, scheman, sysslor och AI-hjälp — allt samverkar.",
-      "startTrial": "Starta 7 dagars gratis provperiod",
+      "startTrial": "Skapa konto och starta 7 dagar gratis",
       "signIn": "Logga in",
       "privacyNote": "Dina uppgifter förblir privata och säljs aldrig."
     },
@@ -749,5 +749,11 @@
     "someFailed": "{{count}} inbjudning(ar) kunde inte skickas",
     "inviteHeading": "Bjud in familjen",
     "difference": "Familjemedlemmar är bara namn som Mia känner igen. Inloggningar är personer med eget konto."
+  },
+  "trial": {
+    "banner_one": "1 dag kvar av gratisperioden — välj en plan",
+    "banner_other": "{{count}} dagar kvar av gratisperioden — välj en plan",
+    "settingsActive_one": "Din kostnadsfria engångsperiod på 7 dagar är aktiv — 1 dag kvar. Betalningen börjar direkt när du väljer en plan.",
+    "settingsActive_other": "Din kostnadsfria engångsperiod på 7 dagar är aktiv — {{count}} dagar kvar. Betalningen börjar direkt när du väljer en plan."
   }
 }
