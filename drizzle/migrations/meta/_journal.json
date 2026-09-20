@@ -29,6 +29,13 @@
       "when": 1789682980352,
       "tag": "0003_admin_free_month_activity",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789915616396,
+      "tag": "0004_auto_seven_day_trial",
+      "breakpoints": true
     }
   ]
 }
