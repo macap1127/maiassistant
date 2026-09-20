@@ -97,10 +97,6 @@ Deno.serve(async (req) => {
       metadata: { userId: user.id, householdId },
       subscription_data: {
         metadata: { userId: user.id, householdId },
-        ...(eligibleForTrial && {
-          trial_period_days: 7,
-          trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
-        }),
       },
     });
 
