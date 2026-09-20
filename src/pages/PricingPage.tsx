@@ -464,7 +464,6 @@ const PricingPage = () => {
             {(() => {
               const tier = tiers.find(t2 => t2.id === checkoutTier)!;
               const amount = billingInterval === "monthly" ? tier.monthly : tier.yearly;
-              const period = billingInterval === "monthly" ? t("pricing.month") : t("pricing.year");
               return (
                 <>
                   <div className="bg-secondary/40 border border-border rounded-xl p-3 mb-4 text-xs text-muted-foreground leading-relaxed">
