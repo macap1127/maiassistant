@@ -18,6 +18,8 @@ const AuthPage = () => {
   const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
@@ -77,6 +79,10 @@ const AuthPage = () => {
       setError(t("auth.invalidEmailPassword"));
       return;
     }
+    if (mode === "signup" && (!firstName.trim() || !lastName.trim())) {
+      setError(t("auth.enterName", "Please enter your first and last name."));
+      return;
+    }
     if (mode === "signup" && !agreedToTerms) {
       setError(t("auth.mustAgreeToTerms"));
       return;
@@ -91,6 +97,8 @@ const AuthPage = () => {
         // native app (where plans are purchased through the App Store / Google
         // Play) instead of stranding the user on the Stripe web checkout.
         const confirmOrigin = isWeb ? window.location.origin : "https://miafamilyassistant.com";
+        const fn = firstName.trim().slice(0, 50);
+        const ln = lastName.trim().slice(0, 50);
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -98,6 +106,7 @@ const AuthPage = () => {
             emailRedirectTo: inviteCode
               ? `${confirmOrigin}/invite/${inviteCode}`
               : `${confirmOrigin}/auth/confirmed`,
+            data: { first_name: fn, last_name: ln, full_name: `${fn} ${ln}` },
           },
         });
         if (error) {
@@ -265,6 +274,28 @@ const AuthPage = () => {
           </div>
         ) : (
         <div className="space-y-4">
+          {mode === "signup" && (
+            <div className="flex gap-3">
+              <input
+                type="text"
+                autoComplete="given-name"
+                value={firstName}
+                maxLength={50}
+                onChange={(e) => { setFirstName(e.target.value); setError(""); }}
+                placeholder={t("auth.firstNamePlaceholder", "First name")}
+                className="w-1/2 min-w-0 bg-card border border-border rounded-xl px-4 py-3 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <input
+                type="text"
+                autoComplete="family-name"
+                value={lastName}
+                maxLength={50}
+                onChange={(e) => { setLastName(e.target.value); setError(""); }}
+                placeholder={t("auth.lastNamePlaceholder", "Last name")}
+                className="w-1/2 min-w-0 bg-card border border-border rounded-xl px-4 py-3 text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          )}
           <div className="relative">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
