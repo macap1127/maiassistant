@@ -14,6 +14,7 @@ import { template as adminSignupAlert } from './admin-signup-alert.tsx'
 import { template as finishSignupReminder } from './finish-signup-reminder.tsx'
 import { template as freeMonthAccess } from './free-month-access.tsx'
 import { template as trialEndedReminder } from './trial-ended-reminder.tsx'
+import { template as paymentFailed } from './payment-failed.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'household-invite': householdInvite,
@@ -21,4 +22,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'finish-signup-reminder': finishSignupReminder,
   'free-month-access': freeMonthAccess,
   'trial-ended-reminder': trialEndedReminder,
+  'payment-failed': paymentFailed,
 }
